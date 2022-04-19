@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_colectivos">
+
+    <fragment
+        android:id="@+id/nav_colectivos"
+        android:name="cs10.apps.travels.tracer.ui.buses.BusesFragment"
+        android:label="@string/colectivos"
+        tools:layout="@layout/fragment_buses" />
+
+    <fragment
+        android:id="@+id/nav_trenes"
+        android:name="cs10.apps.travels.tracer.ui.trains.TrainsFragment"
+        android:label="@string/trenes"
+        tools:layout="@layout/fragment_trains" />
+
+    <fragment
+        android:id="@+id/nav_paradas"
+        android:name="cs10.apps.travels.tracer.ui.stops.StopsFragment"
+        android:label="@string/stops"
+        tools:layout="@layout/fragment_stops" />
+</navigation>

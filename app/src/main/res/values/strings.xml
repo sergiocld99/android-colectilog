@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Travel Tracer</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_drawer">DrawerActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Seguimiento de Viajes</string>
+    <string name="nav_header_subtitle">sergio.calderon@alu.ing.unlp.edu.ar</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="colectivos">Colectivos</string>
+    <string name="trenes">Trenes</string>
+    <string name="title_activity_stop_creator">Creador de Paradas</string>
+    <string name="done">Hecho</string>
+    <string name="new_stop">Nueva Parada</string>
+    <string name="write_stop_name">Ingrese un nombre único</string>
+    <string name="stop_name_example">Parada Av. 1 y 50</string>
+    <string name="write_latitude">Ingrese latitud</string>
+    <string name="double_value_example">0.0</string>
+    <string name="write_longitude">Ingrese longitud</string>
+    <string name="stops">Paradas</string>
+    <string name="editing_stop">Editando Parada</string>
+    <string name="action_delete">Borrar</string>
+</resources>

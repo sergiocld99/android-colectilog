@@ -12,6 +12,7 @@ public class Parada {
 
     private double latitud;
     private double longitud;
+    private int tipo;
 
     @NonNull
     public String getNombre() {
@@ -36,5 +37,13 @@ public class Parada {
 
     public void setLongitud(double longitud) {
         this.longitud = longitud;
+    }
+
+    public int getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(int tipo) {
+        this.tipo = tipo;
     }
 }

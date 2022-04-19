@@ -3,6 +3,9 @@ package cs10.apps.travels.tracer.ui.stops;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,10 +18,11 @@ import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ParadasDao;
 import cs10.apps.travels.tracer.model.Parada;
 
-public class StopEditor extends AppCompatActivity {
+public class StopEditor extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private ContentStopCreatorBinding content;
     private ParadasDao dao;
     private String originalName;
+    private int type;
 
     private final String[] messages = {
             "Parada actualizada con éxito",
@@ -50,8 +54,16 @@ public class StopEditor extends AppCompatActivity {
             runOnUiThread(() -> {
                 content.etLatitude.setText(String.valueOf(parada.getLatitud()));
                 content.etLongitude.setText(String.valueOf(parada.getLongitud()));
+                content.selectorType.setSelection(parada.getTipo());
             });
         }).start();
+
+        // Selector
+        String[] options = {"Colectivo", "Tren"};
+        ArrayAdapter<String> aa = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item, options);
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        content.selectorType.setAdapter(aa);
+        content.selectorType.setOnItemSelectedListener(this);
     }
 
     @Override
@@ -95,6 +107,7 @@ public class StopEditor extends AppCompatActivity {
             parada.setNombre(stopName);
             parada.setLatitud(Double.parseDouble(latitude));
             parada.setLongitud(Double.parseDouble(longitude));
+            parada.setTipo(type);
 
             if (originalName.equals(stopName)) dao.update(parada);
             else {
@@ -115,5 +128,15 @@ public class StopEditor extends AppCompatActivity {
     public void onBackPressed() {
         Toast.makeText(getApplicationContext(), "Cambios descartados", Toast.LENGTH_LONG).show();
         super.onBackPressed();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        type = i;
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }

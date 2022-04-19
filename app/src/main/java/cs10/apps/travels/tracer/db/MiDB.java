@@ -19,14 +19,14 @@ import cs10.apps.travels.tracer.model.Circuito;
 import cs10.apps.travels.tracer.model.Comunicacion;
 import cs10.apps.travels.tracer.model.Estacion;
 import cs10.apps.travels.tracer.model.FormacionCircuito;
+import cs10.apps.travels.tracer.model.Horario;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.TipoDia;
 import cs10.apps.travels.tracer.model.Tren;
-import cs10.apps.travels.tracer.model.Horario;
 import cs10.apps.travels.tracer.model.Viaje;
 
 @Database(entities = {Circuito.class, Comunicacion.class, Estacion.class, FormacionCircuito.class,
-        Tren.class, Horario.class, Parada.class, Viaje.class}, version = 4)
+        Tren.class, Horario.class, Parada.class, Viaje.class}, version = 5)
 public abstract class MiDB extends RoomDatabase {
     private static MiDB instance;
     public static final String RAMAL_LP = "Constitución - La Plata";
@@ -34,11 +34,18 @@ public abstract class MiDB extends RoomDatabase {
     public static MiDB getInstance(Context context) {
         if (instance == null){
             instance = Room.databaseBuilder(context.getApplicationContext(), MiDB.class,
-                    "miDb").fallbackToDestructiveMigration().build();
+                    "miDb").addMigrations(MIGRATION_4_5).build();
         }
 
         return instance;
     }
+
+    private static final Migration MIGRATION_4_5 = new Migration(4,5) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE parada ADD COLUMN tipo INTEGER NOT NULL DEFAULT 0");
+        }
+    };
 
     public abstract TrenesDao trenesDao();
     public abstract ParadasDao paradasDao();

@@ -1,14 +1,17 @@
 package cs10.apps.travels.tracer.adapter;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.databinding.ItemStopBinding;
 import cs10.apps.travels.tracer.model.Parada;
 
@@ -37,6 +40,12 @@ public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHold
         Parada item = paradas.get(position);
         holder.binding.tvName.setText(item.getNombre());
         holder.binding.tvLocation.setText(item.getLatitud() + ", " + item.getLongitud());
+        Drawable drawable;
+
+        if (item.getTipo() == 0) drawable = AppCompatResources.getDrawable(callback.getContext(), R.drawable.ic_bus);
+        else drawable = AppCompatResources.getDrawable(callback.getContext(), R.drawable.ic_train);
+
+        holder.binding.ivType.setImageDrawable(drawable);
     }
 
     @Override

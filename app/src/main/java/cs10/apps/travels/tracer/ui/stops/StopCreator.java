@@ -1,6 +1,9 @@
 package cs10.apps.travels.tracer.ui.stops;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,8 +15,9 @@ import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ParadasDao;
 import cs10.apps.travels.tracer.model.Parada;
 
-public class StopCreator extends AppCompatActivity {
+public class StopCreator extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private ContentStopCreatorBinding content;
+    private int type;
 
     private final String[] messages = {
             "Parada creada con éxito",
@@ -35,6 +39,13 @@ public class StopCreator extends AppCompatActivity {
 
         binding.fab.setOnClickListener(view -> new Thread(this::performDone, "performDone").start());
         content.tvTitle.setText(getString(R.string.new_stop));
+
+        // Selector
+        String[] options = {"Colectivo", "Tren"};
+        ArrayAdapter<String> aa = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item, options);
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        content.selectorType.setAdapter(aa);
+        content.selectorType.setOnItemSelectedListener(this);
     }
 
     private void performDone(){
@@ -61,6 +72,7 @@ public class StopCreator extends AppCompatActivity {
             parada.setNombre(stopName);
             parada.setLatitud(Double.parseDouble(latitude));
             parada.setLongitud(Double.parseDouble(longitude));
+            parada.setTipo(type);
             dao.insert(parada);
         } catch(NumberFormatException e){
             e.printStackTrace();
@@ -70,5 +82,15 @@ public class StopCreator extends AppCompatActivity {
         }
 
         return 0;
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        type = i;
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }

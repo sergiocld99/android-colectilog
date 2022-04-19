@@ -32,4 +32,5 @@
     <string name="stops">Paradas</string>
     <string name="editing_stop">Editando Parada</string>
     <string name="action_delete">Borrar</string>
+    <string name="select_type">Seleccione tipo</string>
 </resources>

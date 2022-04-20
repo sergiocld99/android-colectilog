@@ -75,7 +75,8 @@
             android:id="@+id/selector_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:listitem="@android:layout/simple_expandable_list_item_1"/>
+            android:layout_marginTop="8dp"
+            tools:listitem="@android:layout/simple_spinner_dropdown_item"/>
 
     </LinearLayout>
 

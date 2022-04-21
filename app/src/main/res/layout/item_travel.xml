@@ -18,7 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:contentDescription="@string/stops"
-        tools:src="@drawable/ic_train"/>
+        tools:src="@drawable/ic_bus"/>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -30,27 +30,29 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tv_name"
+            android:id="@+id/tv_datetime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="24sp"
             android:textStyle="bold"
-            tools:text="@string/stop_name_example"
+            tools:text="20/4 - 18:56"
             android:textColor="@android:color/white"/>
 
         <TextView
-            android:id="@+id/tv_location"
+            android:id="@+id/tv_start_place"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Latitud 0, Longitud 0"
+            tools:text="Estación La Plata - Estación Fcio. Varela"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textSize="18sp"
             android:textColor="@android:color/white"/>
 
         <TextView
-            android:id="@+id/tv_start_count"
+            android:id="@+id/tv_line"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="0 veces"
+            tools:text="Línea 338 - Centenario"
             android:textSize="18sp"
             android:textColor="@android:color/white"/>
 

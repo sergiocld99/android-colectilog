@@ -49,6 +49,7 @@ public abstract class MiDB extends RoomDatabase {
 
     public abstract TrenesDao trenesDao();
     public abstract ParadasDao paradasDao();
+    public abstract ViajesDao viajesDao();
 
     public void crearRamalLP(){
         if (trenesDao().getCircuito(RAMAL_LP) != null) return;

@@ -5,7 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
-public class Parada {
+public class Parada implements Comparable<Parada> {
 
     @PrimaryKey @NonNull
     private String nombre = "Nombre de ejemplo";
@@ -45,5 +45,15 @@ public class Parada {
 
     public void setTipo(int tipo) {
         this.tipo = tipo;
+    }
+
+    @Override
+    public int compareTo(@NonNull Parada parada) {
+        return this.nombre.compareTo(parada.nombre);
+    }
+
+    @Override @NonNull
+    public String toString() {
+        return nombre;
     }
 }

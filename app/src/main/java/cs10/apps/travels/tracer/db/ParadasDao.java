@@ -7,12 +7,14 @@ import androidx.room.Update;
 
 import java.util.List;
 
+import cs10.apps.travels.tracer.model.DetailedParada;
 import cs10.apps.travels.tracer.model.Parada;
+import cs10.apps.travels.tracer.model.ScheduledParada;
 
 @Dao
 public interface ParadasDao {
 
-    @Query("SELECT * FROM parada where nombre is :stopName")
+    @Query("SELECT * FROM parada where nombre is :stopName LIMIT 1")
     Parada getByName(String stopName);
 
     @Insert
@@ -24,6 +26,15 @@ public interface ParadasDao {
     @Query("DELETE FROM parada where nombre is :stopName")
     void delete(String stopName);
 
-    @Query("SELECT * FROM parada")
+    @Query("SELECT * FROM parada ORDER BY nombre")
     List<Parada> getAll();
+
+    @Query("SELECT p.*, (select count(*) from viaje v where p.nombre is v.nombrePdaInicio) as veces " +
+            "FROM parada p order by veces desc, nombre")
+    List<DetailedParada> getAllDetailed();
+
+    @Query("SELECT * FROM (select p.*, linea, startHour, startMinute from parada p, viaje v " +
+            "where p.nombre is v.nombrePdaInicio and startHour >= :hour " +
+            "order by startHour, startMinute) group by nombre order by startHour, startMinute")
+    List<ScheduledParada> getScheduledStops(int hour);
 }

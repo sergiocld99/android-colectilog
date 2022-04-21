@@ -12,19 +12,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import cs10.apps.travels.tracer.R;
+import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ItemStopBinding;
-import cs10.apps.travels.tracer.model.Parada;
+import cs10.apps.travels.tracer.model.ScheduledParada;
 
 public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHolder> {
-    private List<Parada> paradas;
+    private List<ScheduledParada> paradas;
     private EditStopCallback callback;
 
     public void setCallback(EditStopCallback callback) {
         this.callback = callback;
     }
 
-    public void setParadas(List<Parada> paradas) {
+    public void setParadas(@NonNull List<ScheduledParada> paradas) {
         this.paradas = paradas;
+    }
+
+    public List<ScheduledParada> getParadas() {
+        return paradas;
     }
 
     @NonNull
@@ -37,15 +42,22 @@ public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHold
 
     @Override
     public void onBindViewHolder(@NonNull StopViewHolder holder, int position) {
-        Parada item = paradas.get(position);
+        ScheduledParada item = paradas.get(position);
         holder.binding.tvName.setText(item.getNombre());
         holder.binding.tvLocation.setText(item.getLatitud() + ", " + item.getLongitud());
-        Drawable drawable;
+        holder.binding.tvStartCount.setText("Next is " + item.getLinea() + " at " + item.getStartHour() + ":" + Utils.twoDecimals(item.getStartMinute()));
+        //holder.binding.tvStartCount.setText(item.getVeces() + " veces");
+        Drawable icon, bg;
 
-        if (item.getTipo() == 0) drawable = AppCompatResources.getDrawable(callback.getContext(), R.drawable.ic_bus);
-        else drawable = AppCompatResources.getDrawable(callback.getContext(), R.drawable.ic_train);
+        if (item.getTipo() == 0) {
+            icon = AppCompatResources.getDrawable(callback.getContext(), R.drawable.ic_bus);
+        } else {
+            icon = AppCompatResources.getDrawable(callback.getContext(), R.drawable.ic_train);
+        }
 
-        holder.binding.ivType.setImageDrawable(drawable);
+        bg = AppCompatResources.getDrawable(callback.getContext(), Utils.colorFor(item.getLinea()));
+        holder.binding.ivType.setImageDrawable(icon);
+        holder.binding.getRoot().setBackground(bg);
     }
 
     @Override
@@ -65,7 +77,7 @@ public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHold
 
         @Override
         public void onClick(View view) {
-            callback.onEdit(paradas.get(getAdapterPosition()).getNombre());
+            callback.onEditStop(paradas.get(getAdapterPosition()).getNombre());
         }
     }
 }

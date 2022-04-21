@@ -7,4 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="bus">@android:color/holo_blue_dark</color>
+    <color name="train">#3F51B5</color>
+    <color name="bus_159">#009688</color>
+    <color name="bus_324">#AE6A1E</color>
+    <color name="bus_414">@android:color/holo_red_dark</color>
+    <color name="bus_500">@android:color/holo_green_dark</color>
 </resources>

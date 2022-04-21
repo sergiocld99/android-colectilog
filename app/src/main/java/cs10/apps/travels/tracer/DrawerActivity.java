@@ -14,7 +14,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
 
 import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
-import cs10.apps.travels.tracer.ui.stops.StopCreator;
+import cs10.apps.travels.tracer.ui.travels.TravelCreator;
 
 public class DrawerActivity extends AppCompatActivity {
 
@@ -30,7 +30,7 @@ public class DrawerActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.appBarDrawer.toolbar);
         binding.appBarDrawer.fab.setOnClickListener(view -> {
-            Intent intent = new Intent(DrawerActivity.this, StopCreator.class);
+            Intent intent = new Intent(DrawerActivity.this, TravelCreator.class);
             startActivity(intent);
         });
 

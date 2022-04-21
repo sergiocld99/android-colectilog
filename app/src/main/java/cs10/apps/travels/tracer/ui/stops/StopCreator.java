@@ -65,7 +65,10 @@ public class StopCreator extends AppCompatActivity implements AdapterView.OnItem
         if (stopName.isEmpty() || latitude.isEmpty() || longitude.isEmpty()) return 1;
 
         ParadasDao dao = MiDB.getInstance(getApplicationContext()).paradasDao();
-        if (dao.getByName(stopName) != null) return 2;
+        if (dao.getByName(stopName) != null) {
+            runOnUiThread(() -> content.etStopName.setError("Intente con otro nombre"));
+            return 2;
+        }
 
         try {
             Parada parada = new Parada();

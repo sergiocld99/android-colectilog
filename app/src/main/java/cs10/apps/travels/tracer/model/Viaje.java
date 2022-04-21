@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import cs10.apps.travels.tracer.Utils;
+
 @Entity
 public class Viaje {
 
@@ -136,5 +138,18 @@ public class Viaje {
 
     public void setNombrePdaFin(@NonNull String nombrePdaFin) {
         this.nombrePdaFin = nombrePdaFin;
+    }
+
+    public String getTime() {
+        return getDay() + "/" + getMonth() + " - " + getStartHour() + ":" + Utils.twoDecimals(getStartMinute());
+    }
+
+    public String getStartAndEnd(){
+        return getNombrePdaInicio() + " - " + getNombrePdaFin();
+    }
+
+    public String getLineInformation() {
+        if (getLinea() == null) return null;
+        return "Línea " + getLinea() + (getRamal() != null ? " - " + getRamal() : "");
     }
 }

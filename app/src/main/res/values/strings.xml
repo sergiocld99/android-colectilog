@@ -33,4 +33,14 @@
     <string name="editing_stop">Editando Parada</string>
     <string name="action_delete">Borrar</string>
     <string name="select_type">Seleccione tipo</string>
+    <string name="new_travel">Nuevo Viaje</string>
+    <string name="line">Línea</string>
+    <string name="line_example">338</string>
+    <string name="write_ramal">Ramal (opcional)</string>
+    <string name="date">Fecha</string>
+    <string name="start_hour">Hora de subida</string>
+    <string name="select_start_place">Lugar de subida</string>
+    <string name="select_end_place">Lugar de bajada</string>
+    <string name="travels">Mis Viajes</string>
+    <string name="edit_travel">Editando Viaje</string>
 </resources>

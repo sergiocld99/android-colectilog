@@ -12,15 +12,19 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import java.util.Calendar;
+import java.util.List;
+
 import cs10.apps.travels.tracer.adapter.EditStopCallback;
 import cs10.apps.travels.tracer.adapter.StopsAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentStopsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.db.ParadasDao;
+import cs10.apps.travels.tracer.model.ScheduledParada;
 
 public class StopsFragment extends Fragment implements EditStopCallback {
     private FragmentStopsBinding binding;
     private StopsAdapter adapter;
+    private MiDB miDB;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -46,10 +50,22 @@ public class StopsFragment extends Fragment implements EditStopCallback {
     public void onResume() {
         super.onResume();
 
+        Calendar c = Calendar.getInstance();
+        int h = c.get(Calendar.HOUR_OF_DAY);
+        int m = c.get(Calendar.MINUTE);
+
         new Thread(() -> {
-            ParadasDao dao = MiDB.getInstance(getContext()).paradasDao();
-            adapter.setParadas(dao.getAll());
-            if (getActivity() != null) getActivity().runOnUiThread(adapter::notifyDataSetChanged);
+            miDB = MiDB.getInstance(getContext());
+            List<ScheduledParada> paradas = miDB.paradasDao().getScheduledStops(h);
+            int originalSize = adapter.getItemCount();
+            adapter.setParadas(paradas);
+
+            if (getActivity() != null){
+                if (originalSize == 0) getActivity().runOnUiThread(() ->
+                        adapter.notifyItemRangeInserted(0, paradas.size()));
+                else getActivity().runOnUiThread(adapter::notifyDataSetChanged);
+            }
+
         }, "fillStopsRecycler").start();
     }
 
@@ -60,7 +76,7 @@ public class StopsFragment extends Fragment implements EditStopCallback {
     }
 
     @Override
-    public void onEdit(String stopName) {
+    public void onEditStop(String stopName) {
         Intent intent = new Intent(getActivity(), StopEditor.class);
         intent.putExtra("stopName", stopName);
         startActivity(intent);

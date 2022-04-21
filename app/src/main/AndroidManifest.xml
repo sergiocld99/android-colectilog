@@ -9,28 +9,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TravelTracer">
-        <activity
-            android:name=".ui.stops.StopCreator"
-            android:exported="false"
+
+        <activity android:name=".ui.travels.TravelCreator"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
-        <activity
-            android:name=".ui.stops.StopEditor"
-            android:exported="false"
+        <activity android:name=".ui.travels.TravelEditor"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
+        <activity android:name=".ui.stops.StopCreator"
+            android:theme="@style/Theme.TravelTracer.NoActionBar" />
+        <activity android:name=".ui.stops.StopEditor"
+            android:theme="@style/Theme.TravelTracer.NoActionBar" />
+
         <activity
             android:name=".DrawerActivity"
             android:exported="true"
-            android:label="@string/title_activity_drawer"
             android:theme="@style/Theme.TravelTracer.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".MainActivity"
-            android:exported="false"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
     </application>
 

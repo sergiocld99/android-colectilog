@@ -50,13 +50,12 @@ public class StopsFragment extends Fragment implements EditStopCallback {
     public void onResume() {
         super.onResume();
 
-        Calendar c = Calendar.getInstance();
-        int h = c.get(Calendar.HOUR_OF_DAY);
-        int m = c.get(Calendar.MINUTE);
-
         new Thread(() -> {
+            Calendar c = Calendar.getInstance();
+            int h = c.get(Calendar.HOUR_OF_DAY);
+            int m = c.get(Calendar.MINUTE);
             miDB = MiDB.getInstance(getContext());
-            List<ScheduledParada> paradas = miDB.paradasDao().getScheduledStops(h);
+            List<ScheduledParada> paradas = miDB.paradasDao().getScheduledStops(h, m);
             int originalSize = adapter.getItemCount();
             adapter.setParadas(paradas);
 
@@ -65,7 +64,6 @@ public class StopsFragment extends Fragment implements EditStopCallback {
                         adapter.notifyItemRangeInserted(0, paradas.size()));
                 else getActivity().runOnUiThread(adapter::notifyDataSetChanged);
             }
-
         }, "fillStopsRecycler").start();
     }
 

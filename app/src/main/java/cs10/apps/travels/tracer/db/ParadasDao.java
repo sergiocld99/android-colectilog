@@ -34,7 +34,8 @@ public interface ParadasDao {
     List<DetailedParada> getAllDetailed();
 
     @Query("SELECT * FROM (select p.*, linea, startHour, startMinute from parada p, viaje v " +
-            "where p.nombre is v.nombrePdaInicio and startHour >= :hour " +
+            "where p.nombre is v.nombrePdaInicio " +
+            "and ((startHour is :hour and startMinute >= :minute) or startHour > :hour) " +
             "order by startHour, startMinute) group by nombre order by startHour, startMinute")
-    List<ScheduledParada> getScheduledStops(int hour);
+    List<ScheduledParada> getScheduledStops(int hour, int minute);
 }

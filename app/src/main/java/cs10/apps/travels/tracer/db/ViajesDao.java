@@ -21,7 +21,7 @@ public interface ViajesDao {
     @Query("DELETE FROM viaje where id is :id")
     void delete(long id);
 
-    @Query("SELECT * FROM viaje ORDER BY year desc, month desc, day desc, startHour desc, startHour desc")
+    @Query("SELECT * FROM viaje ORDER BY year desc, month desc, day desc, startHour desc, startMinute desc")
     List<Viaje> getAll();
 
     @Query("SELECT * FROM viaje where id is :travelId LIMIT 1")

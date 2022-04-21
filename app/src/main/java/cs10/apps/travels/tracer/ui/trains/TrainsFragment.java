@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.ui.trains;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -66,11 +67,17 @@ public class TrainsFragment extends Fragment implements EditTravelCallback {
     public void onDeleteTravel(long travelId, int pos) {
         if (getActivity() == null) return;
 
-        new Thread(() -> {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(adapter.getViajes().get(pos).getStartAndEnd());
+        builder.setMessage("¿Quieres eliminar este viaje de tu historial?");
+        builder.setPositiveButton("Si", (dialogInterface, i) -> new Thread(() -> {
             ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
             dao.delete(travelId);
             getActivity().runOnUiThread(() -> adapter.notifyItemRemoved(pos));
-        }, "onDeleteTravel").start();
+        }, "onDeleteTravel").start());
+
+        builder.setNeutralButton("Volver", (dialogInterface, i) -> dialogInterface.cancel());
+        builder.create().show();
     }
 
     @Override

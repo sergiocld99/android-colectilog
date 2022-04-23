@@ -18,8 +18,14 @@
         tools:layout="@layout/fragment_trains" />
 
     <fragment
-        android:id="@+id/nav_paradas"
+        android:id="@+id/nav_proximos"
         android:name="cs10.apps.travels.tracer.ui.stops.StopsFragment"
+        android:label="@string/next_ones"
+        tools:layout="@layout/fragment_stops" />
+
+    <fragment
+        android:id="@+id/nav_paradas"
+        android:name="cs10.apps.travels.tracer.ui.stops.StopListFragment"
         android:label="@string/stops"
         tools:layout="@layout/fragment_stops" />
 </navigation>

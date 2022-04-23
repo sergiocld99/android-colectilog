@@ -2,7 +2,7 @@ package cs10.apps.travels.tracer.model;
 
 import androidx.room.ColumnInfo;
 
-public class DetailedParada extends Parada {
+public class CountedParada extends Parada {
 
     @ColumnInfo(name = "veces")
     private int veces;

@@ -43,4 +43,5 @@
     <string name="select_end_place">Lugar de bajada</string>
     <string name="travels">Mis Viajes</string>
     <string name="edit_travel">Editando Viaje</string>
+    <string name="next_ones">Próximos</string>
 </resources>

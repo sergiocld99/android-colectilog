@@ -1,6 +1,7 @@
 package cs10.apps.travels.tracer.ui.travels;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.Calendar;
 import java.util.List;
@@ -28,7 +30,7 @@ import cs10.apps.travels.tracer.ui.stops.StopCreator;
 
 public class TravelCreator extends AppCompatActivity {
     private ContentTravelCreatorBinding content;
-    private ArrayAdapter<Parada> startAdapter, endAdapter;
+    private ArrayAdapter<? extends Parada> startAdapter, endAdapter;
     private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
     private FusedLocationProviderClient client;
     private List<Parada> paradas;
@@ -70,29 +72,46 @@ public class TravelCreator extends AppCompatActivity {
         int minute = calendar.get(Calendar.MINUTE);
         content.etDate.setText(day + "/" + month + "/" + year);
         content.etStartHour.setText(hour + ":" + Utils.twoDecimals(minute));
+
+        client = LocationServices.getFusedLocationProviderClient(this);
+        getLocation();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void getLocation() throws SecurityException {
+        if (Utils.checkPermissions(this)) client.getLastLocation().addOnSuccessListener(location -> {
+            if (location == null) loadStopsByDefault();
+            else loadStopsByProximity(location);
+        });
+    }
 
+    private void loadStopsByDefault() {
         new Thread(() -> {
             ParadasDao dao = MiDB.getInstance(this).paradasDao();
             paradas = dao.getAll();
+            runOnUiThread(this::setSpinners);
+        }, "stopsByDefault").start();
+    }
 
-            startAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, paradas);
-            endAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, paradas);
+    private void loadStopsByProximity(Location location) {
+        new Thread(() -> {
+            ParadasDao dao = MiDB.getInstance(this).paradasDao();
+            paradas = dao.getAll();
+            Utils.orderByProximity(paradas, location.getLatitude(), location.getLongitude());
+            runOnUiThread(this::setSpinners);
+        }, "stopsByProximity").start();
+    }
 
-            startAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    private void setSpinners(){
+        startAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, paradas);
+        endAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, paradas);
 
-            runOnUiThread(() -> {
-                content.selectorStartPlace.setAdapter(startAdapter);
-                content.selectorEndPlace.setAdapter(endAdapter);
-                content.selectorStartPlace.setOnItemSelectedListener(onStartPlaceSelected);
-                content.selectorEndPlace.setOnItemSelectedListener(onEndPlaceSelected);
-            });
-        }, "stopsSpinnerFiller").start();
+        startAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        content.selectorStartPlace.setAdapter(startAdapter);
+        content.selectorEndPlace.setAdapter(endAdapter);
+        content.selectorStartPlace.setOnItemSelectedListener(onStartPlaceSelected);
+        content.selectorEndPlace.setOnItemSelectedListener(onEndPlaceSelected);
     }
 
     private void performDone(){

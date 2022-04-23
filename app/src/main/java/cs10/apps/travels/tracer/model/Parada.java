@@ -2,6 +2,7 @@ package cs10.apps.travels.tracer.model;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity
@@ -13,6 +14,12 @@ public class Parada implements Comparable<Parada> {
     private double latitud;
     private double longitud;
     private int tipo;
+
+    @Ignore
+    private double deltaX;
+
+    @Ignore
+    private double deltaY;
 
     @NonNull
     public String getNombre() {
@@ -45,6 +52,30 @@ public class Parada implements Comparable<Parada> {
 
     public void setTipo(int tipo) {
         this.tipo = tipo;
+    }
+
+    public double getDeltaX() {
+        return deltaX;
+    }
+
+    public double getDeltaY() {
+        return deltaY;
+    }
+
+    public void setDeltaX(double deltaX){
+        this.deltaX = deltaX;
+    }
+
+    public void setDeltaY(double deltaY){
+        this.deltaY = deltaY;
+    }
+
+    public double getDistance(){
+        return Math.sqrt(deltaX * deltaX + deltaY * deltaY) * 91.97;
+    }
+
+    public String getDistanceInKm(){
+        return Math.round(getDistance() * 100) / 100.0 + " km";
     }
 
     @Override

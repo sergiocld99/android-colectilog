@@ -42,8 +42,7 @@ public class DrawerActivity extends AppCompatActivity {
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_colectivos, R.id.nav_trenes, R.id.nav_paradas)
+        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_colectivos)
                 .setOpenableLayout(drawer)
                 .build();
 

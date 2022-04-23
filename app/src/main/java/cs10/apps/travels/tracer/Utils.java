@@ -8,6 +8,11 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
+import java.util.Comparator;
+import java.util.List;
+
+import cs10.apps.travels.tracer.model.Parada;
+
 public class Utils {
 
     @NonNull
@@ -41,6 +46,17 @@ public class Utils {
         }
 
         return true;
+    }
+
+    public static void orderByProximity(@NonNull List<Parada> list, Double latitude, Double longitude){
+        for (Parada p : list){
+            p.setDeltaX(p.getLatitud() - latitude);
+            p.setDeltaY(p.getLongitud() - longitude);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            list.sort(Comparator.comparingDouble(Parada::getDistance));
+        }
     }
 
     public static int colorFor(Integer bus){

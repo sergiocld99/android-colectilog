@@ -12,23 +12,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import cs10.apps.travels.tracer.R;
-import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ItemStopBinding;
-import cs10.apps.travels.tracer.model.ScheduledParada;
+import cs10.apps.travels.tracer.model.Parada;
 
-public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHolder> {
-    private List<ScheduledParada> paradas;
+public class LocatedStopsAdapter extends RecyclerView.Adapter<LocatedStopsAdapter.StopViewHolder> {
+    private List<Parada> paradas;
     private EditStopCallback callback;
 
     public void setCallback(EditStopCallback callback) {
         this.callback = callback;
     }
 
-    public void setParadas(@NonNull List<ScheduledParada> paradas) {
+    public void setParadas(@NonNull List<Parada> paradas) {
         this.paradas = paradas;
     }
 
-    public List<ScheduledParada> getParadas() {
+    public List<Parada> getParadas() {
         return paradas;
     }
 
@@ -42,20 +41,20 @@ public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHold
 
     @Override
     public void onBindViewHolder(@NonNull StopViewHolder holder, int position) {
-        ScheduledParada item = paradas.get(position);
+        Parada item = paradas.get(position);
         holder.binding.tvName.setText(item.getNombre());
         holder.binding.tvLocation.setText(item.getLatitud() + ", " + item.getLongitud());
-        holder.binding.tvStartCount.setText("Next is " + (item.getLinea() == null ? "Tren" : item.getLinea()) + " at " + item.getStartHour() + ":" + Utils.twoDecimals(item.getStartMinute()));
-        //holder.binding.tvStartCount.setText(item.getVeces() + " veces");
+        holder.binding.tvStartCount.setText("Distance: " + item.getDistanceInKm());
         Drawable icon, bg;
 
         if (item.getTipo() == 0) {
             icon = AppCompatResources.getDrawable(callback.getContext(), R.drawable.ic_bus);
+            bg = AppCompatResources.getDrawable(callback.getContext(), R.color.bus);
         } else {
             icon = AppCompatResources.getDrawable(callback.getContext(), R.drawable.ic_train);
+            bg = AppCompatResources.getDrawable(callback.getContext(), R.color.train);
         }
 
-        bg = AppCompatResources.getDrawable(callback.getContext(), Utils.colorFor(item.getLinea()));
         holder.binding.ivType.setImageDrawable(icon);
         holder.binding.getRoot().setBackground(bg);
     }

@@ -10,6 +10,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -28,6 +30,7 @@ public class TravelCreator extends AppCompatActivity {
     private ContentTravelCreatorBinding content;
     private ArrayAdapter<Parada> startAdapter, endAdapter;
     private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
+    private FusedLocationProviderClient client;
     private List<Parada> paradas;
     private int startIndex, endIndex;
 

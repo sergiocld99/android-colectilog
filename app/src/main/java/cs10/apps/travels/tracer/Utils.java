@@ -1,6 +1,12 @@
 package cs10.apps.travels.tracer;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.os.Build;
+
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 
 public class Utils {
 
@@ -16,12 +22,34 @@ public class Utils {
         return updated.trim();
     }
 
+    public static boolean checkPermissions(Activity activity) {
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                activity.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
     public static int colorFor(Integer bus){
         if (bus == null) return R.color.train;
 
         switch (bus){
             case 324:
                 return R.color.bus_324;
+            case 160:
             case 178:
             case 414:
                 return R.color.bus_414;

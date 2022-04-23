@@ -8,7 +8,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+
 import cs10.apps.travels.tracer.R;
+import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ActivityStopCreatorBinding;
 import cs10.apps.travels.tracer.databinding.ContentStopCreatorBinding;
 import cs10.apps.travels.tracer.db.MiDB;
@@ -17,6 +21,7 @@ import cs10.apps.travels.tracer.model.Parada;
 
 public class StopCreator extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private ContentStopCreatorBinding content;
+    private FusedLocationProviderClient client;
     private int type;
 
     private final String[] messages = {
@@ -46,6 +51,17 @@ public class StopCreator extends AppCompatActivity implements AdapterView.OnItem
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         content.selectorType.setAdapter(aa);
         content.selectorType.setOnItemSelectedListener(this);
+
+        client = LocationServices.getFusedLocationProviderClient(this);
+        getLocation();
+    }
+
+    private void getLocation() throws SecurityException {
+        if (Utils.checkPermissions(this)) client.getLastLocation().addOnSuccessListener(location -> {
+            if (location == null) return;
+            content.etLatitude.setText(String.valueOf(location.getLatitude()));
+            content.etLongitude.setText(String.valueOf(location.getLongitude()));
+        });
     }
 
     private void performDone(){

@@ -95,8 +95,8 @@ public class TravelEditor extends AppCompatActivity {
     }
 
     private void retrieve() {
-        content.etLine.setText(String.valueOf(viaje.getLinea()));
-        content.etRamal.setText(viaje.getRamal());
+        if (viaje.getLinea() != null) content.etLine.setText(String.valueOf(viaje.getLinea()));
+        if (viaje.getRamal() != null) content.etRamal.setText(viaje.getRamal());
         content.etDate.setText(viaje.getDay() + "/" + viaje.getMonth() + "/" + viaje.getYear());
         content.etStartHour.setText(viaje.getStartHour() + ":" + Utils.twoDecimals(viaje.getStartMinute()));
 

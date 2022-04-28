@@ -7,7 +7,6 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import cs10.apps.travels.tracer.model.CountedParada;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.ScheduledParada;
 
@@ -29,11 +28,7 @@ public interface ParadasDao {
     @Query("SELECT * FROM parada ORDER BY nombre")
     List<Parada> getAll();
 
-    @Query("SELECT p.*, (select count(*) from viaje v where p.nombre is v.nombrePdaInicio) as veces " +
-            "FROM parada p order by veces desc, nombre")
-    List<CountedParada> getCountedStops();
-
-    @Query("SELECT * FROM (select p.*, linea, startHour, startMinute from parada p, viaje v " +
+    @Query("SELECT * FROM (select p.*, linea, ramal, startHour, startMinute from parada p, viaje v " +
             "where p.nombre is v.nombrePdaInicio " +
             "and ((startHour is :hour and startMinute >= :minute) or startHour > :hour) " +
             "order by startHour, startMinute) group by nombre order by startHour, startMinute")

@@ -15,10 +15,12 @@ import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ItemStopBinding;
 import cs10.apps.travels.tracer.model.ScheduledParada;
+import cs10.apps.travels.tracer.ui.UpsideDownSwitcher;
 
 public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHolder> {
     private List<ScheduledParada> paradas;
     private EditStopCallback callback;
+    private Runnable r;
 
     public void setCallback(EditStopCallback callback) {
         this.callback = callback;
@@ -44,9 +46,6 @@ public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHold
     public void onBindViewHolder(@NonNull StopViewHolder holder, int position) {
         ScheduledParada item = paradas.get(position);
         holder.binding.tvName.setText(item.getNombre());
-        holder.binding.tvLocation.setText(item.getLatitud() + ", " + item.getLongitud());
-        holder.binding.tvStartCount.setText("Next is " + (item.getLinea() == null ? "Tren" : item.getLinea()) + " at " + item.getStartHour() + ":" + Utils.twoDecimals(item.getStartMinute()));
-        //holder.binding.tvStartCount.setText(item.getVeces() + " veces");
         Drawable icon, bg;
 
         if (item.getTipo() == 0) {
@@ -58,6 +57,24 @@ public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHold
         bg = AppCompatResources.getDrawable(callback.getContext(), Utils.colorFor(item.getLinea()));
         holder.binding.ivType.setImageDrawable(icon);
         holder.binding.getRoot().setBackground(bg);
+
+        if (position < 3 && item.getRamal() != null){
+            UpsideDownSwitcher uds = new UpsideDownSwitcher();
+            uds.setContext(callback.getContext());
+            uds.setItem(item);
+            uds.setTvSwitcher(holder.binding.tvSwitcher);
+            uds.startAnimation();
+            holder.binding.tvLocation.setVisibility(View.GONE);
+            holder.binding.tvStartCount.setVisibility(View.INVISIBLE);
+            holder.binding.tvSwitcher.setVisibility(View.VISIBLE);
+        } else {
+            holder.binding.tvLocation.setText("Next is " + item.getTransportInfo());
+            holder.binding.tvStartCount.setText("Arrives at " + item.getNextArrival());
+            holder.binding.tvLocation.setVisibility(View.VISIBLE);
+            holder.binding.tvStartCount.setVisibility(View.VISIBLE);
+            holder.binding.tvSwitcher.setVisibility(View.GONE);
+        }
+
     }
 
     @Override

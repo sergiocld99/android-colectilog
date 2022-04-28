@@ -38,11 +38,30 @@
             tools:text="@string/stop_name_example"
             android:textColor="@android:color/white"/>
 
+        <TextSwitcher
+            android:id="@+id/tv_switcher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"/>
+
+        </TextSwitcher>
+
         <TextView
             android:id="@+id/tv_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Latitud 0, Longitud 0"
+            tools:text="Next is 338 (Centenario)"
             android:textSize="18sp"
             android:textColor="@android:color/white"/>
 
@@ -50,7 +69,7 @@
             android:id="@+id/tv_start_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="0 veces"
+            tools:text="Arrives at 10:19"
             android:textSize="18sp"
             android:textColor="@android:color/white"/>
 

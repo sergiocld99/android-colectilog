@@ -7,6 +7,7 @@ import androidx.room.Update;
 
 import java.util.List;
 
+import cs10.apps.travels.tracer.model.LineInfo;
 import cs10.apps.travels.tracer.model.Viaje;
 
 @Dao
@@ -26,4 +27,7 @@ public interface ViajesDao {
 
     @Query("SELECT * FROM viaje where id is :travelId LIMIT 1")
     Viaje getById(long travelId);
+
+    @Query("SELECT linea, count(linea) as count FROM viaje group by linea order by count limit 5")
+    List<LineInfo> getFavouriteLines();
 }

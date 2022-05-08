@@ -55,6 +55,6 @@ public class UpsideDownSwitcher {
     }
 
     public void stop(){
-        h.removeCallbacks(r);
+        if (h != null) h.removeCallbacks(r);
     }
 }

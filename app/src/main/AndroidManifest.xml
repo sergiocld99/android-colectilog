@@ -25,6 +25,7 @@
         <activity
             android:name=".DrawerActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.TravelTracer.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

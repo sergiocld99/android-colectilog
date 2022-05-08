@@ -44,4 +44,6 @@
     <string name="travels">Mis Viajes</string>
     <string name="edit_travel">Editando Viaje</string>
     <string name="next_ones">Próximos</string>
+    <string name="next_is">Siguiente es %1$s</string>
+    <string name="arrives_at">Llega a las %1$s</string>
 </resources>

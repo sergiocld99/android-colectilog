@@ -20,7 +20,6 @@ import cs10.apps.travels.tracer.ui.UpsideDownSwitcher;
 public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHolder> {
     private List<ScheduledParada> paradas;
     private EditStopCallback callback;
-    private Runnable r;
 
     public void setCallback(EditStopCallback callback) {
         this.callback = callback;
@@ -59,22 +58,21 @@ public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHold
         holder.binding.getRoot().setBackground(bg);
 
         if (position < 3 && item.getRamal() != null){
-            UpsideDownSwitcher uds = new UpsideDownSwitcher();
-            uds.setContext(callback.getContext());
-            uds.setItem(item);
-            uds.setTvSwitcher(holder.binding.tvSwitcher);
-            uds.startAnimation();
+            holder.uds.setContext(callback.getContext());
+            holder.uds.setItem(item);
+            holder.uds.setTvSwitcher(holder.binding.tvSwitcher);
+            holder.uds.startAnimation();
             holder.binding.tvLocation.setVisibility(View.GONE);
             holder.binding.tvStartCount.setVisibility(View.INVISIBLE);
             holder.binding.tvSwitcher.setVisibility(View.VISIBLE);
         } else {
-            holder.binding.tvLocation.setText("Next is " + item.getTransportInfo());
-            holder.binding.tvStartCount.setText("Arrives at " + item.getNextArrival());
+            holder.uds.stop();
+            holder.binding.tvLocation.setText(callback.getContext().getString(R.string.next_is, item.getTransportInfo()));
+            holder.binding.tvStartCount.setText(callback.getContext().getString(R.string.arrives_at, item.getNextArrival()));
             holder.binding.tvLocation.setVisibility(View.VISIBLE);
             holder.binding.tvStartCount.setVisibility(View.VISIBLE);
             holder.binding.tvSwitcher.setVisibility(View.GONE);
         }
-
     }
 
     @Override
@@ -84,12 +82,14 @@ public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHold
 
     protected class StopViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected ItemStopBinding binding;
+        protected UpsideDownSwitcher uds;
 
         public StopViewHolder(@NonNull ItemStopBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
 
             binding.getRoot().setOnClickListener(this);
+            uds = new UpsideDownSwitcher();
         }
 
         @Override

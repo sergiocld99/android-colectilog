@@ -8,10 +8,26 @@ public class ScheduledParada extends Parada {
 
     private Integer linea;
     private int startHour, startMinute;
-    private String ramal;
+    private String ramal, nombrePdaInicio, nombrePdaFin;
 
     @Ignore
     public boolean switched;
+
+    public String getNombrePdaInicio() {
+        return nombrePdaInicio;
+    }
+
+    public void setNombrePdaInicio(String nombrePdaInicio) {
+        this.nombrePdaInicio = nombrePdaInicio;
+    }
+
+    public String getNombrePdaFin() {
+        return nombrePdaFin;
+    }
+
+    public void setNombrePdaFin(String nombrePdaFin) {
+        this.nombrePdaFin = nombrePdaFin;
+    }
 
     public Integer getLinea() {
         return linea;
@@ -48,6 +64,11 @@ public class ScheduledParada extends Parada {
     public String getTransportInfo(){
         if (getLinea() == null) return "Tren";
         return getLinea() + (ramal == null ? "" : " (" + getRamal() + ")");
+    }
+
+    public String getLineaAsString(){
+        if (getLinea() == null) return "Tren";
+        return String.valueOf(getLinea());
     }
 
     public String getNextArrival(){

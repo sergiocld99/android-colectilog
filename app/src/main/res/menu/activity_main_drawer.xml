@@ -20,6 +20,11 @@
             android:icon="@drawable/ic_schedule"/>
 
         <item
+            android:id="@+id/nav_prox_destinos"
+            android:title="@string/next_ones_to"
+            android:icon="@drawable/ic_directions"/>
+
+        <item
             android:id="@+id/nav_paradas"
             android:title="@string/stops"
             android:icon="@drawable/ic_edit_location"/>

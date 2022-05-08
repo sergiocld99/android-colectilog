@@ -28,6 +28,7 @@ public class UpsideDownSwitcher {
     }
 
     public void startAnimation(){
+        if (h != null) return;
         h = new Handler();
 
         r = () -> {
@@ -36,12 +37,12 @@ public class UpsideDownSwitcher {
                     // Slide down
                     tvSwitcher.setInAnimation(context, R.anim.slide_down_in);
                     tvSwitcher.setOutAnimation(context, R.anim.slide_down_out);
-                    tvSwitcher.setText("Arrives at " + item.getNextArrival());
+                    tvSwitcher.setText(context.getString(R.string.arrives_at, item.getNextArrival()));
                 } else {
                     // Slide up
                     tvSwitcher.setInAnimation(context, R.anim.slide_up_in);
                     tvSwitcher.setOutAnimation(context, R.anim.slide_up_out);
-                    tvSwitcher.setText("Next is " + item.getTransportInfo());
+                    tvSwitcher.setText(context.getString(R.string.next_is, item.getTransportInfo()));
                 }
             } catch (Exception e){
                 stop();
@@ -55,6 +56,9 @@ public class UpsideDownSwitcher {
     }
 
     public void stop(){
-        if (h != null) h.removeCallbacks(r);
+        if (h != null){
+            h.removeCallbacks(r);
+            h = null;
+        }
     }
 }

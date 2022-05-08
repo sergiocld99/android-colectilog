@@ -63,16 +63,16 @@ public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHold
             holder.uds.setTvSwitcher(holder.binding.tvSwitcher);
             holder.uds.startAnimation();
             holder.binding.tvLocation.setVisibility(View.GONE);
-            holder.binding.tvStartCount.setVisibility(View.INVISIBLE);
             holder.binding.tvSwitcher.setVisibility(View.VISIBLE);
         } else {
             holder.uds.stop();
-            holder.binding.tvLocation.setText(callback.getContext().getString(R.string.next_is, item.getTransportInfo()));
-            holder.binding.tvStartCount.setText(callback.getContext().getString(R.string.arrives_at, item.getNextArrival()));
+            holder.binding.tvLocation.setText(callback.getContext().getString(R.string.next_to, item.getLineaAsString(), item.getNextArrival()));
             holder.binding.tvLocation.setVisibility(View.VISIBLE);
-            holder.binding.tvStartCount.setVisibility(View.VISIBLE);
             holder.binding.tvSwitcher.setVisibility(View.GONE);
         }
+
+        // always
+        holder.binding.tvStartCount.setText(callback.getContext().getString(R.string.destination, item.getNombrePdaFin()));
     }
 
     @Override

@@ -12,22 +12,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import cs10.apps.travels.tracer.R;
+import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ItemStopBinding;
-import cs10.apps.travels.tracer.model.Parada;
+import cs10.apps.travels.tracer.model.ScheduledParada;
+import cs10.apps.travels.tracer.ui.UpsideDownSwitcher;
 
-public class LocatedStopsAdapter extends RecyclerView.Adapter<LocatedStopsAdapter.StopViewHolder> {
-    private List<Parada> paradas;
+public class StopsToAdapter extends RecyclerView.Adapter<StopsToAdapter.StopViewHolder> {
+    private List<ScheduledParada> paradas;
     private EditStopCallback callback;
 
     public void setCallback(EditStopCallback callback) {
         this.callback = callback;
     }
 
-    public void setParadas(@NonNull List<Parada> paradas) {
+    public void setParadas(@NonNull List<ScheduledParada> paradas) {
         this.paradas = paradas;
     }
 
-    public List<Parada> getParadas() {
+    public List<ScheduledParada> getParadas() {
         return paradas;
     }
 
@@ -41,23 +43,36 @@ public class LocatedStopsAdapter extends RecyclerView.Adapter<LocatedStopsAdapte
 
     @Override
     public void onBindViewHolder(@NonNull StopViewHolder holder, int position) {
-        Parada item = paradas.get(position);
+        ScheduledParada item = paradas.get(position);
         holder.binding.tvName.setText(item.getNombre());
-        holder.binding.tvSwitcher.setVisibility(View.GONE);
-        holder.binding.tvLocation.setText(item.getLatitud() + ", " + item.getLongitud());
-        holder.binding.tvStartCount.setText("Distance: " + item.getDistanceInKm());
         Drawable icon, bg;
 
         if (item.getTipo() == 0) {
             icon = AppCompatResources.getDrawable(callback.getContext(), R.drawable.ic_bus);
-            bg = AppCompatResources.getDrawable(callback.getContext(), R.color.bus);
         } else {
             icon = AppCompatResources.getDrawable(callback.getContext(), R.drawable.ic_train);
-            bg = AppCompatResources.getDrawable(callback.getContext(), R.color.train);
         }
 
+        bg = AppCompatResources.getDrawable(callback.getContext(), Utils.colorFor(item.getLinea()));
         holder.binding.ivType.setImageDrawable(icon);
         holder.binding.getRoot().setBackground(bg);
+
+        if (position < 3 && item.getRamal() != null){
+            holder.uds.setContext(callback.getContext());
+            holder.uds.setItem(item);
+            holder.uds.setTvSwitcher(holder.binding.tvSwitcher);
+            holder.uds.startAnimation();
+            holder.binding.tvLocation.setVisibility(View.GONE);
+            holder.binding.tvSwitcher.setVisibility(View.VISIBLE);
+        } else {
+            holder.uds.stop();
+            holder.binding.tvLocation.setText(callback.getContext().getString(R.string.next_to, item.getLineaAsString(), item.getNextArrival()));
+            holder.binding.tvLocation.setVisibility(View.VISIBLE);
+            holder.binding.tvSwitcher.setVisibility(View.GONE);
+        }
+
+        // always
+        holder.binding.tvStartCount.setText(callback.getContext().getString(R.string.take_in, item.getNombrePdaInicio()));
     }
 
     @Override
@@ -67,12 +82,14 @@ public class LocatedStopsAdapter extends RecyclerView.Adapter<LocatedStopsAdapte
 
     protected class StopViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected ItemStopBinding binding;
+        protected UpsideDownSwitcher uds;
 
         public StopViewHolder(@NonNull ItemStopBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
 
             binding.getRoot().setOnClickListener(this);
+            uds = new UpsideDownSwitcher();
         }
 
         @Override

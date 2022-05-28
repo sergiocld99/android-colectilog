@@ -11,6 +11,9 @@ public class ScheduledParada extends Parada {
     private String ramal, nombrePdaInicio, nombrePdaFin;
 
     @Ignore
+    private double costo;
+
+    @Ignore
     public boolean switched;
 
     public String getNombrePdaInicio() {
@@ -27,6 +30,14 @@ public class ScheduledParada extends Parada {
 
     public void setNombrePdaFin(String nombrePdaFin) {
         this.nombrePdaFin = nombrePdaFin;
+    }
+
+    public double getCosto() {
+        return costo;
+    }
+
+    public void setCosto(double costo) {
+        this.costo = costo;
     }
 
     public Integer getLinea() {

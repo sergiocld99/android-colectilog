@@ -8,16 +8,22 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
+import java.text.DecimalFormat;
 import java.util.Comparator;
 import java.util.List;
 
 import cs10.apps.travels.tracer.model.Parada;
 
 public class Utils {
+    private static final DecimalFormat df = new DecimalFormat("#.00");
 
     @NonNull
     public static String twoDecimals(int value){
         return value < 10 ? "0" + value : String.valueOf(value);
+    }
+
+    public static String priceFormat(double value){
+        return "$" + df.format(Math.round(value * 100) / 100d);
     }
 
     @NonNull
@@ -63,6 +69,8 @@ public class Utils {
         if (bus == null) return R.color.train;
 
         switch (bus){
+            case 202:
+                return R.color.bus_202;
             case 324:
                 return R.color.bus_324;
             case 160:
@@ -79,5 +87,13 @@ public class Utils {
             default:
                 return R.color.bus;
         }
+    }
+
+    public static String dateFormat(int day, int month, int year) {
+        return day + "/" + month + "/" + year;
+    }
+
+    public static CharSequence hourFormat(int hour, int minute) {
+        return hour + ":" + twoDecimals(minute);
     }
 }

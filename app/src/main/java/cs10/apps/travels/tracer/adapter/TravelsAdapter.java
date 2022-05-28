@@ -45,7 +45,7 @@ public class TravelsAdapter extends RecyclerView.Adapter<TravelsAdapter.TravelVi
         Viaje item = viajes.get(position);
         holder.binding.tvDatetime.setText(item.getTime());
         holder.binding.tvStartPlace.setText(item.getStartAndEnd());
-        holder.binding.tvLine.setText(item.getLineInformation());
+        holder.binding.tvLine.setText(item.getLineInfoAndPrice());
         Drawable icon, bg;
 
         if (item.getTipo() == 0) {

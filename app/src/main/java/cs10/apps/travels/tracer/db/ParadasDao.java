@@ -28,15 +28,21 @@ public interface ParadasDao {
     @Query("SELECT * FROM parada ORDER BY nombre")
     List<Parada> getAll();
 
-    @Query("SELECT * FROM (select p.*, linea, ramal, startHour, startMinute, nombrePdaFin from parada p, viaje v " +
+    @Query("SELECT * FROM (select p.*, linea, ramal, startHour, startMinute, nombrePdaFin " +
+            "from parada p, viaje v " +
             "where p.nombre is v.nombrePdaInicio " +
             "and ((startHour is :hour and startMinute >= :minute) or startHour > :hour) " +
             "order by startHour, startMinute) group by nombre order by startHour, startMinute")
     List<ScheduledParada> getScheduledStopsFrom(int hour, int minute);
 
-    @Query("SELECT * FROM (select p.*, linea, ramal, startHour, startMinute, nombrePdaInicio from parada p, viaje v " +
+    @Query("SELECT * FROM (select p.*, linea, ramal, startHour, startMinute, nombrePdaInicio " +
+            "from parada p, viaje v " +
             "where p.nombre is v.nombrePdaFin " +
             "and ((startHour is :hour and startMinute >= :minute) or startHour > :hour) " +
             "order by startHour, startMinute) group by nombre order by startHour, startMinute")
     List<ScheduledParada> getScheduledStopsTo(int hour, int minute);
+
+    @Query("SELECT * FROM parada p " +
+            "order by (latitud - :x) * (latitud - :x) + (longitud - :y) * (longitud - :y) limit 1")
+    Parada getClosestParada(double x, double y);
 }

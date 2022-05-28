@@ -97,8 +97,9 @@ public class TravelEditor extends AppCompatActivity {
     private void retrieve() {
         if (viaje.getLinea() != null) content.etLine.setText(String.valueOf(viaje.getLinea()));
         if (viaje.getRamal() != null) content.etRamal.setText(viaje.getRamal());
-        content.etDate.setText(viaje.getDay() + "/" + viaje.getMonth() + "/" + viaje.getYear());
-        content.etStartHour.setText(viaje.getStartHour() + ":" + Utils.twoDecimals(viaje.getStartMinute()));
+        if (viaje.getCosto() != 0) content.etPrice.setText(String.valueOf(viaje.getCosto()));
+        content.etDate.setText(Utils.dateFormat(viaje.getDay(), viaje.getMonth(), viaje.getYear()));
+        content.etStartHour.setText(Utils.hourFormat(viaje.getStartHour(), viaje.getStartMinute()));
 
         startIndex = getPosFor(viaje.getNombrePdaInicio());
         endIndex = getPosFor(viaje.getNombrePdaFin());
@@ -137,6 +138,7 @@ public class TravelEditor extends AppCompatActivity {
         String ramal = content.etRamal.getText().toString().trim();
         String date = content.etDate.getText().toString();
         String startHour = content.etStartHour.getText().toString();
+        String price = content.etPrice.getText().toString();
         Parada startPlace = paradas.get(startIndex);
         Parada endPlace = paradas.get(endIndex);
 
@@ -164,6 +166,7 @@ public class TravelEditor extends AppCompatActivity {
             viaje.setNombrePdaInicio(startPlace.getNombre());
             viaje.setNombrePdaFin(endPlace.getNombre());
             if (!ramal.isEmpty()) viaje.setRamal(ramal);
+            if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
             if (line.isEmpty()){
                 viaje.setTipo(1);
                 viaje.setLinea(null);

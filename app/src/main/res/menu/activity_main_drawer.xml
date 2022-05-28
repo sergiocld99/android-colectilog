@@ -6,13 +6,18 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_colectivos"
-            android:title="@string/colectivos"
-            android:icon="@drawable/ic_bus"/>
+            android:title="@string/this_month_balance"
+            android:icon="@drawable/ic_home"/>
 
         <item
             android:id="@+id/nav_trenes"
             android:title="@string/travels"
-            android:icon="@drawable/ic_train"/>
+            android:icon="@drawable/ic_calendar_month"/>
+
+        <item
+            android:id="@+id/nav_paradas"
+            android:title="@string/stops"
+            android:icon="@drawable/ic_edit_location"/>
 
         <item
             android:id="@+id/nav_proximos"
@@ -25,8 +30,9 @@
             android:icon="@drawable/ic_directions"/>
 
         <item
-            android:id="@+id/nav_paradas"
-            android:title="@string/stops"
-            android:icon="@drawable/ic_edit_location"/>
+            android:id="@+id/nav_charge"
+            android:title="@string/charge"
+            android:icon="@drawable/ic_money"/>
+
     </group>
 </menu>

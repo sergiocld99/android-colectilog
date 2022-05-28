@@ -17,38 +17,9 @@
             android:id="@+id/tv_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/new_travel"
+            android:text="@string/coffee"
             android:textSize="26sp"
             android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/line"
-            android:layout_marginTop="16dp"
-            android:textSize="20sp"/>
-
-        <EditText
-            android:id="@+id/et_line"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:autofillHints="line"
-            android:hint="@string/line_example"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/write_ramal"
-            android:layout_marginTop="16dp"
-            android:textSize="20sp"/>
-
-        <EditText
-            android:id="@+id/et_ramal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:autofillHints="ramal"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -67,44 +38,16 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/start_hour"
+            android:text="@string/hour"
             android:layout_marginTop="16dp"
             android:textSize="20sp"/>
 
         <EditText
-            android:id="@+id/et_start_hour"
+            android:id="@+id/et_hour"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="time"
             android:autofillHints="time"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/select_start_place"
-            android:layout_marginTop="16dp"
-            android:textSize="20sp"/>
-
-        <Spinner
-            android:id="@+id/selector_start_place"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            tools:listitem="@android:layout/simple_spinner_dropdown_item"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/select_end_place"
-            android:layout_marginTop="16dp"
-            android:textSize="20sp"/>
-
-        <Spinner
-            android:id="@+id/selector_end_place"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            tools:listitem="@android:layout/simple_spinner_dropdown_item"/>
 
         <TextView
             android:layout_width="match_parent"

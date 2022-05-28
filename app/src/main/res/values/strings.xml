@@ -50,4 +50,12 @@
     <string name="take_in">Tomar en %1$s</string>
     <string name="arrives_at">Llega a las %1$s</string>
     <string name="destination">Destino: %1$s</string>
+    <string name="price">Precio</string>
+    <string name="this_month_balance">Resumen del mes</string>
+    <string name="coffee">Café</string>
+    <string name="hour">Hora</string>
+    <string name="charge">Recarga de saldo</string>
+    <string name="mount">Monto</string>
+    <string name="charge_mount">Monto de la recarga</string>
+    <string name="confirm">Confirmar</string>
 </resources>

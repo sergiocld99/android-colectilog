@@ -13,6 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TravelTracer">
 
+        <activity android:name=".ui.coffee.CoffeeCreator"
+            android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity android:name=".ui.travels.TravelCreator"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity android:name=".ui.travels.TravelEditor"

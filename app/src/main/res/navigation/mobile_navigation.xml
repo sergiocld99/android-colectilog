@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/nav_colectivos"
         android:name="cs10.apps.travels.tracer.ui.buses.BusesFragment"
-        android:label="@string/colectivos"
+        android:label="@string/this_month_balance"
         tools:layout="@layout/fragment_buses" />
 
     <fragment
@@ -34,4 +34,10 @@
         android:name="cs10.apps.travels.tracer.ui.stops.StopListFragment"
         android:label="@string/stops"
         tools:layout="@layout/fragment_stops" />
+
+    <fragment
+        android:id="@+id/nav_charge"
+        android:name="cs10.apps.travels.tracer.ui.charge.ChargeFragment"
+        android:label="@string/charge"
+        tools:layout="@layout/fragment_charge"/>
 </navigation>

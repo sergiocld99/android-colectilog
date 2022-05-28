@@ -2,9 +2,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="cs10.apps.travels.tracer.MainActivity">
+
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_coffee"
+        android:orderInCategory="101"
+        android:title="@string/coffee"
+        android:icon="@drawable/ic_coffee"
+        app:showAsAction="ifRoom" />
+
 </menu>

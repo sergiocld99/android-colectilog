@@ -65,13 +65,15 @@ public class TravelCreator extends AppCompatActivity {
 
         // set today values
         Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, -1);
+
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         int month = calendar.get(Calendar.MONTH) + 1;
         int year = calendar.get(Calendar.YEAR);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
-        content.etDate.setText(day + "/" + month + "/" + year);
-        content.etStartHour.setText(hour + ":" + Utils.twoDecimals(minute));
+        content.etDate.setText(Utils.dateFormat(day, month, year));
+        content.etStartHour.setText(Utils.hourFormat(hour, minute));
 
         client = LocationServices.getFusedLocationProviderClient(this);
         getLocation();
@@ -134,6 +136,7 @@ public class TravelCreator extends AppCompatActivity {
         String ramal = content.etRamal.getText().toString().trim();
         String date = content.etDate.getText().toString();
         String startHour = content.etStartHour.getText().toString();
+        String price = content.etPrice.getText().toString();
         Parada startPlace = paradas.get(startIndex);
         Parada endPlace = paradas.get(endIndex);
 
@@ -160,6 +163,7 @@ public class TravelCreator extends AppCompatActivity {
             viaje.setYear(Integer.parseInt(dateParams[2]));
             viaje.setNombrePdaInicio(startPlace.getNombre());
             viaje.setNombrePdaFin(endPlace.getNombre());
+            if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
             if (!ramal.isEmpty()) viaje.setRamal(ramal);
             if (line.isEmpty()) viaje.setTipo(1);
             else viaje.setLinea(Integer.parseInt(line));
@@ -171,11 +175,23 @@ public class TravelCreator extends AppCompatActivity {
         return 0;
     }
 
+    public void updatePrice(){
+        if (paradas != null && !paradas.isEmpty()) new Thread(() -> {
+            ViajesDao dao = MiDB.getInstance(getApplicationContext()).viajesDao();
+            Double maxP = dao.getMaxPrice(paradas.get(startIndex).getNombre(), paradas.get(endIndex).getNombre());
+            runOnUiThread(() -> {
+                if (maxP != null) content.etPrice.setText(String.valueOf(maxP));
+                else content.etPrice.setText(null);
+            });
+        }).start();
+    }
+
     private class OnStartPlaceSelected implements AdapterView.OnItemSelectedListener {
 
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
             startIndex = i;
+            updatePrice();
         }
 
         @Override
@@ -189,6 +205,7 @@ public class TravelCreator extends AppCompatActivity {
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
             endIndex = i;
+            updatePrice();
         }
 
         @Override

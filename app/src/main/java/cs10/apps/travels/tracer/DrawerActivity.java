@@ -3,7 +3,9 @@ package cs10.apps.travels.tracer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -16,6 +18,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.material.navigation.NavigationView;
 
 import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
+import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.travels.TravelCreator;
 
 public class DrawerActivity extends AppCompatActivity {
@@ -43,7 +46,7 @@ public class DrawerActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_colectivos,
-                R.id.nav_proximos, R.id.nav_prox_destinos, R.id.nav_paradas)
+                R.id.nav_trenes, R.id.nav_proximos, R.id.nav_prox_destinos, R.id.nav_paradas)
                 .setOpenableLayout(drawer)
                 .build();
 
@@ -58,8 +61,17 @@ public class DrawerActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.drawer, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == R.id.action_coffee){
+            startActivity(new Intent(this, CoffeeCreator.class));
+            return true;
+        } else return super.onOptionsItemSelected(item);
     }
 
     @Override

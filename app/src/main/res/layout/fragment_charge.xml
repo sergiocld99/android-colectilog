@@ -85,6 +85,12 @@
         android:inputType="text"
         android:autofillHints="date"/>
 
+    <TextView
+        android:id="@+id/last_charge_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Tu ultima recarga fue de $500 el dia 28/5/2022"/>
+
     <Button
         android:id="@+id/confirm_button"
         android:layout_width="wrap_content"

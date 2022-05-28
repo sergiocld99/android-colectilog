@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.Calendar;
 
+import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.FragmentChargeBinding;
 import cs10.apps.travels.tracer.databinding.ViewCircularButtonBinding;
@@ -57,8 +58,18 @@ public class ChargeFragment extends Fragment implements ChargeButtonCallback {
         super.onResume();
 
         new Thread(() -> {
-
+            Recarga last = MiDB.getInstance(getContext()).recargaDao().getLastInserted();
+            if (last != null) doInForeground(() -> completeLastInsertedInfo(last));
         }).start();
+    }
+
+    public void doInForeground(Runnable r){
+        if (getActivity() != null) getActivity().runOnUiThread(r);
+    }
+
+    private void completeLastInsertedInfo(Recarga last) {
+        binding.lastChargeInfo.setText(getString(R.string.last_charge_info, Math.round(last.getMount()),
+                        Utils.dateFormat(last.getDay(), last.getMonth(), last.getYear())));
     }
 
     @Override

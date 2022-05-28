@@ -14,4 +14,7 @@ public interface RecargaDao {
 
     @Query("SELECT SUM(mount) FROM Recarga WHERE month >= :month")
     double getTotalChargedSince(int month);
+
+    @Query("SELECT * FROM Recarga ORDER BY id DESC LIMIT 1")
+    Recarga getLastInserted();
 }

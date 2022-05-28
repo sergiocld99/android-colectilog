@@ -61,7 +61,8 @@ public interface ViajesDao {
     @Query("SELECT SUM(costo) FROM viaje where linea is null and id > :travelId")
     double getSpentInTrainsSince(long travelId);
 
-    @Query("SELECT DISTINCT linea FROM viaje WHERE linea IS NOT NULL")
+    @Query("SELECT DISTINCT linea FROM viaje WHERE linea IS NOT NULL " +
+            "GROUP BY linea ORDER BY COUNT(id) DESC")
     List<Integer> getAllBuses();
 
     @Query("SELECT * FROM Parada WHERE nombre IN " +

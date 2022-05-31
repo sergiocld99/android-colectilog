@@ -66,7 +66,7 @@ public class ViaCircuitoFiller {
     };
 
     /*
-        Desde las 4:26 hasta las 9:38, parten 14 trenes DIRECTOS desde PLAZA cada 14 min exactos.
+        Desde las 4:26 hasta las 9:38, parten 14 trenes DIRECTOS desde PLAZA cada 24 min exactos.
         Luego, tenemos 10 servicios NORMALES que arrancan en diferentes horarios (no correlation).
         Después entre 16:02 y 19:38 tenemos 10 trenes DIRECTOS, cada 14 min nuevamente.
         Por último, se tienen 4 servicios NORMALES cada 30 minutos, de 20:04 a 21:34
@@ -74,7 +74,7 @@ public class ViaCircuitoFiller {
 
     public static final int[] PRIMER_DIRECTO_AM = new int[]{4,26};
     public static final int CANT_DIRECTOS_AM = 14;
-    public static final int FRECUENCIA_DIRECTO = 14;
+    public static final int FRECUENCIA_DIRECTO = 24;
 
     public static final String[] SALIDA_MATUTINOS = new String[]{
             "10:04", "10:34", "11:34", "12:04", "12:34",

@@ -5,6 +5,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 
 import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
+import cs10.apps.travels.tracer.db.MiDB;
+import cs10.apps.travels.tracer.db.filler.ViaCircuitoFiller;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.travels.TravelCreator;
 
@@ -58,6 +61,21 @@ public class DrawerActivity extends AppCompatActivity {
 
         client = LocationServices.getFusedLocationProviderClient(this);
         Utils.checkPermissions(this);
+
+        // Create Via Circuito if not exists
+        new Thread(() -> {
+            MiDB db = MiDB.getInstance(this);
+            int count = db.servicioDao().getHorariosCount();
+            if (count < 1000) {
+                db.servicioDao().dropHorarios();        // first this
+                db.servicioDao().dropServicios();       // then this
+
+                ViaCircuitoFiller filler = new ViaCircuitoFiller();
+                filler.create(db);
+                runOnUiThread(() -> Toast.makeText(this,
+                        "Via Circuito creado con éxito", Toast.LENGTH_LONG).show());
+            }
+        }, "viaCircuitoFiller").start();
     }
 
     @Override

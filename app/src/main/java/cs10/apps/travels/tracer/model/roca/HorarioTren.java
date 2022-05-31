@@ -1,8 +1,8 @@
 package cs10.apps.travels.tracer.model.roca;
 
 /*
-    Un arribo se identifica por el nombre de la estación y la hora. Para este primer modelo
-    suponemos que no pueden llegar 2 trenes en el mismo minuto a una misma estación.
+    Un arribo se identifica por el nombre de la estación y la hora. Sin embargo, usar solo eso
+    para la clave primaria no alcanza: no permite que 2 trenes estén en una estación a la vez.
 
     Para saber cuáles son las siguientes estaciones del recorrido no es necesario agregar
     un atributo "ordinal". Mediante el ID de servicio, se obtienen los arribos a cada estación
@@ -10,26 +10,22 @@ package cs10.apps.travels.tracer.model.roca;
     pudiendo ordenar los resultados y limitarlo al primero para obtener solo la siguiente.
  */
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 
-@Entity(primaryKeys = {"station", "hour", "minute"},
+@Entity(primaryKeys = {"service", "hour", "minute"},
         foreignKeys = {@ForeignKey(entity = ServicioTren.class, parentColumns = "id", childColumns = "service")})
 public class HorarioTren {
 
-    @NonNull
-    private String station = "Estación";
-
-    private int hour, minute;
     private long service;
+    private int hour, minute;
+    private String station;
 
-    @NonNull
     public String getStation() {
         return station;
     }
 
-    public void setStation(@NonNull String station) {
+    public void setStation(String station) {
         this.station = station;
     }
 
@@ -55,10 +51,5 @@ public class HorarioTren {
 
     public void setService(long service) {
         this.service = service;
-    }
-
-    public void setTime(int hour, int minute) {
-        setHour(hour);
-        setMinute(minute);
     }
 }

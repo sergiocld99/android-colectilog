@@ -33,7 +33,7 @@ import cs10.apps.travels.tracer.model.roca.ServicioTren;
 
 @Database(entities = {Circuito.class, Comunicacion.class, Estacion.class, FormacionCircuito.class,
         Tren.class, Horario.class, Parada.class, Viaje.class, TarifaBus.class, TarifaTren.class,
-        Coffee.class, Recarga.class, ServicioTren.class, HorarioTren.class}, version = 15)
+        Coffee.class, Recarga.class, ServicioTren.class, HorarioTren.class}, version = 16)
 public abstract class MiDB extends RoomDatabase {
     private static MiDB instance;
     public static final String RAMAL_LP = "Constitución - La Plata";
@@ -44,7 +44,7 @@ public abstract class MiDB extends RoomDatabase {
                     TIPO_PARADA_MIGRATION, TARIFA_MIGRATION, SCHEMA_MIGRATION,
                     COSTO_TARIFA_MIGRATION, ADD_FIXED_VIAJES_MIGRATION, TARIFA_BUS_MIGRATION,
                     ADD_COSTO_TO_VIAJE, CREATE_COFFEE_TABLE, CREATE_RECARGA_TABLE,
-                    CREATE_ROCA_TABLES
+                    CREATE_ROCA_TABLES, FIX_HORARIOS_TABLE
             };
 
             instance = Room.databaseBuilder(context.getApplicationContext(), MiDB.class,
@@ -176,6 +176,19 @@ public abstract class MiDB extends RoomDatabase {
                     "station TEXT NOT NULL, hour INTEGER NOT NULL, " +
                     "minute INTEGER NOT NULL, service INTEGER NOT NULL, " +
                     "PRIMARY KEY(station, hour, minute), " +
+                    "FOREIGN KEY(service) REFERENCES ServicioTren(id))");
+        }
+    };
+
+    private static final Migration FIX_HORARIOS_TABLE = new Migration(15,16) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("DROP TABLE HorarioTren");
+
+            database.execSQL("CREATE TABLE HorarioTren (" +
+                    "service INTEGER NOT NULL, hour INTEGER NOT NULL," +
+                    "minute INTEGER NOT NULL, station TEXT, " +
+                    "PRIMARY KEY(service, hour, minute), " +
                     "FOREIGN KEY(service) REFERENCES ServicioTren(id))");
         }
     };

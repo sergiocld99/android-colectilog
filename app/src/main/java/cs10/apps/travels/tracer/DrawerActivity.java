@@ -1,6 +1,7 @@
 package cs10.apps.travels.tracer;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +16,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 
 import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
@@ -45,7 +47,7 @@ public class DrawerActivity extends AppCompatActivity {
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_colectivos,
+        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_colectivos,
                 R.id.nav_trenes, R.id.nav_proximos, R.id.nav_prox_destinos, R.id.nav_paradas)
                 .setOpenableLayout(drawer)
                 .build();
@@ -86,6 +88,11 @@ public class DrawerActivity extends AppCompatActivity {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
         });
+    }
+
+    public Task<Location> requestCurrentLocation() throws SecurityException {
+        if (Utils.checkPermissions(this)) return client.getLastLocation();
+        return null;
     }
 
     @Override

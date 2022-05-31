@@ -8,7 +8,6 @@ import androidx.room.Update;
 import java.util.List;
 
 import cs10.apps.travels.tracer.model.LineInfo;
-import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.PriceSum;
 import cs10.apps.travels.tracer.model.Viaje;
 
@@ -65,8 +64,8 @@ public interface ViajesDao {
             "GROUP BY linea ORDER BY COUNT(id) DESC")
     List<Integer> getAllBuses();
 
-    @Query("SELECT * FROM Parada WHERE nombre IN " +
-            "(SELECT nombrePdaInicio FROM Viaje WHERE linea IS :busLine) OR nombre IN" +
-            "(SELECT nombrePdaFin FROM Viaje WHERE linea is :busLine)")
-    List<Parada> getParadasWhereStops(int busLine);
+    @Query("SELECT * FROM Viaje where nombrePdaInicio is :stopName " +
+            "and ((startHour = :hour and startMinute >= :minute) or startHour > :hour) " +
+            "order by startHour, startMinute limit 5")
+    List<Viaje> getNextArrivals(String stopName, int hour, int minute);
 }

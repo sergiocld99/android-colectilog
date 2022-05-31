@@ -59,4 +59,6 @@
     <string name="charge_mount">Monto de la recarga</string>
     <string name="confirm">Confirmar</string>
     <string name="last_charge_info">Tu última recarga fue de $%1$d el día %2$s</string>
+    <string name="current_money">Saldo: %1$s</string>
+    <string name="porcentage_value">%d%%</string>
 </resources>

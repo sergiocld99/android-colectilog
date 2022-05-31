@@ -8,19 +8,19 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import java.util.Calendar;
 
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
+import cs10.apps.common.android.CS_Fragment;
 import cs10.apps.travels.tracer.databinding.FragmentChargeBinding;
 import cs10.apps.travels.tracer.databinding.ViewCircularButtonBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.RecargaDao;
 import cs10.apps.travels.tracer.model.Recarga;
 
-public class ChargeFragment extends Fragment implements ChargeButtonCallback {
+public class ChargeFragment extends CS_Fragment implements ChargeButtonCallback {
     private FragmentChargeBinding binding;
     private static final String[] DEFAULT_VALUES = {"$100", "$200", "$500", "$810", "$1000"};
     private final ChargeButton[] buttons = new ChargeButton[DEFAULT_VALUES.length];
@@ -57,14 +57,10 @@ public class ChargeFragment extends Fragment implements ChargeButtonCallback {
     public void onResume() {
         super.onResume();
 
-        new Thread(() -> {
+        doInBackground(() -> {
             Recarga last = MiDB.getInstance(getContext()).recargaDao().getLastInserted();
             if (last != null) doInForeground(() -> completeLastInsertedInfo(last));
-        }).start();
-    }
-
-    public void doInForeground(Runnable r){
-        if (getActivity() != null) getActivity().runOnUiThread(r);
+        });
     }
 
     private void completeLastInsertedInfo(Recarga last) {

@@ -8,29 +8,24 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.Calendar;
 import java.util.List;
 
+import cs10.apps.common.android.CS_Fragment;
 import cs10.apps.travels.tracer.adapter.EditStopCallback;
-import cs10.apps.travels.tracer.adapter.StopsAdapter;
+import cs10.apps.travels.tracer.adapter.StopsFromAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentStopsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.ScheduledParada;
 
-public class StopsFragment extends Fragment implements EditStopCallback {
+public class NextArrivalsFragment extends CS_Fragment implements EditStopCallback {
     private FragmentStopsBinding binding;
-    private StopsAdapter adapter;
+    private StopsFromAdapter adapter;
     private MiDB miDB;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        SlideshowViewModel slideshowViewModel =
-                new ViewModelProvider(this).get(SlideshowViewModel.class);
-
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentStopsBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -39,9 +34,8 @@ public class StopsFragment extends Fragment implements EditStopCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new StopsAdapter();
+        adapter = new StopsFromAdapter();
         adapter.setCallback(this);
-
         binding.recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recycler.setAdapter(adapter);
     }
@@ -50,7 +44,7 @@ public class StopsFragment extends Fragment implements EditStopCallback {
     public void onResume() {
         super.onResume();
 
-        new Thread(() -> {
+        doInBackground(() -> {
             Calendar c = Calendar.getInstance();
             int h = c.get(Calendar.HOUR_OF_DAY);
             int m = c.get(Calendar.MINUTE);
@@ -59,12 +53,9 @@ public class StopsFragment extends Fragment implements EditStopCallback {
             int originalSize = adapter.getItemCount();
             adapter.setParadas(paradas);
 
-            if (getActivity() != null){
-                if (originalSize == 0) getActivity().runOnUiThread(() ->
-                        adapter.notifyItemRangeInserted(0, paradas.size()));
-                else getActivity().runOnUiThread(adapter::notifyDataSetChanged);
-            }
-        }, "fillStopsRecycler").start();
+            if (originalSize == 0) doInForeground(() -> adapter.notifyItemRangeInserted(0, paradas.size()));
+            else doInForeground(adapter::notifyDataSetChanged);
+        });
     }
 
     @Override

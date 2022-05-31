@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.trains;
+package cs10.apps.travels.tracer.ui.travels;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -9,21 +9,20 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import cs10.apps.common.android.CS_Fragment;
 import cs10.apps.travels.tracer.adapter.EditTravelCallback;
 import cs10.apps.travels.tracer.adapter.TravelsAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentTrainsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.model.Viaje;
-import cs10.apps.travels.tracer.ui.travels.TravelEditor;
 
-public class TrainsFragment extends Fragment implements EditTravelCallback {
+public class TravelsFragment extends CS_Fragment implements EditTravelCallback {
     private FragmentTrainsBinding binding;
     private TravelsAdapter adapter;
 
@@ -47,14 +46,13 @@ public class TrainsFragment extends Fragment implements EditTravelCallback {
     @Override
     public void onResume() {
         super.onResume();
-        if (getActivity() == null) return;
 
-        new Thread(() -> {
+        doInBackground(() -> {
             ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
             List<Viaje> viajes = dao.getAll();
             adapter.setViajes(viajes);
-            getActivity().runOnUiThread(adapter::notifyDataSetChanged);
-        }, "travelsFiller").start();
+            doInForeground(adapter::notifyDataSetChanged);
+        });
     }
 
     @Override
@@ -65,16 +63,14 @@ public class TrainsFragment extends Fragment implements EditTravelCallback {
 
     @Override
     public void onDeleteTravel(long travelId, int pos) {
-        if (getActivity() == null) return;
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(adapter.getViajes().get(pos).getStartAndEnd());
         builder.setMessage("¿Quieres eliminar este viaje de tu historial?");
-        builder.setPositiveButton("Si", (dialogInterface, i) -> new Thread(() -> {
+        builder.setPositiveButton("Si", (dialogInterface, i) -> doInBackground(() -> {
             ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
             dao.delete(travelId);
-            getActivity().runOnUiThread(() -> adapter.notifyItemRemoved(pos));
-        }, "onDeleteTravel").start());
+            doInForeground(() -> adapter.notifyItemRemoved(pos));
+        }));
 
         builder.setNeutralButton("Volver", (dialogInterface, i) -> dialogInterface.cancel());
         builder.create().show();

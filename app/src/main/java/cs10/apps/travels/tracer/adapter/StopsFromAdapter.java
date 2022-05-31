@@ -17,7 +17,7 @@ import cs10.apps.travels.tracer.databinding.ItemStopBinding;
 import cs10.apps.travels.tracer.model.ScheduledParada;
 import cs10.apps.travels.tracer.ui.UpsideDownSwitcher;
 
-public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHolder> {
+public class StopsFromAdapter extends RecyclerView.Adapter<StopsFromAdapter.StopViewHolder> {
     private List<ScheduledParada> paradas;
     private EditStopCallback callback;
 
@@ -29,12 +29,7 @@ public class StopsAdapter extends RecyclerView.Adapter<StopsAdapter.StopViewHold
         this.paradas = paradas;
     }
 
-    public List<ScheduledParada> getParadas() {
-        return paradas;
-    }
-
-    @NonNull
-    @Override
+    @NonNull @Override
     public StopViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(callback.getContext());
         ItemStopBinding binding = ItemStopBinding.inflate(inflater, parent, false);

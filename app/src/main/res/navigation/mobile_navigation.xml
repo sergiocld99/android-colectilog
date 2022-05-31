@@ -3,23 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_colectivos">
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="cs10.apps.travels.tracer.ui.stops.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_colectivos"
-        android:name="cs10.apps.travels.tracer.ui.buses.BusesFragment"
+        android:name="cs10.apps.travels.tracer.ui.stats.StatsFragment"
         android:label="@string/this_month_balance"
         tools:layout="@layout/fragment_buses" />
 
     <fragment
         android:id="@+id/nav_trenes"
-        android:name="cs10.apps.travels.tracer.ui.trains.TrainsFragment"
+        android:name="cs10.apps.travels.tracer.ui.travels.TravelsFragment"
         android:label="@string/travels"
         tools:layout="@layout/fragment_trains" />
 
     <fragment
         android:id="@+id/nav_proximos"
-        android:name="cs10.apps.travels.tracer.ui.stops.StopsFragment"
+        android:name="cs10.apps.travels.tracer.ui.stops.NextArrivalsFragment"
         android:label="@string/next_ones"
         tools:layout="@layout/fragment_stops" />
 

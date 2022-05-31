@@ -28,10 +28,12 @@ import cs10.apps.travels.tracer.model.Tren;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.prices.TarifaBus;
 import cs10.apps.travels.tracer.model.prices.TarifaTren;
+import cs10.apps.travels.tracer.model.roca.HorarioTren;
+import cs10.apps.travels.tracer.model.roca.ServicioTren;
 
 @Database(entities = {Circuito.class, Comunicacion.class, Estacion.class, FormacionCircuito.class,
         Tren.class, Horario.class, Parada.class, Viaje.class, TarifaBus.class, TarifaTren.class,
-        Coffee.class, Recarga.class}, version = 14)
+        Coffee.class, Recarga.class, ServicioTren.class, HorarioTren.class}, version = 15)
 public abstract class MiDB extends RoomDatabase {
     private static MiDB instance;
     public static final String RAMAL_LP = "Constitución - La Plata";
@@ -41,7 +43,8 @@ public abstract class MiDB extends RoomDatabase {
             Migration[] migrations = new Migration[]{
                     TIPO_PARADA_MIGRATION, TARIFA_MIGRATION, SCHEMA_MIGRATION,
                     COSTO_TARIFA_MIGRATION, ADD_FIXED_VIAJES_MIGRATION, TARIFA_BUS_MIGRATION,
-                    ADD_COSTO_TO_VIAJE, CREATE_COFFEE_TABLE, CREATE_RECARGA_TABLE
+                    ADD_COSTO_TO_VIAJE, CREATE_COFFEE_TABLE, CREATE_RECARGA_TABLE,
+                    CREATE_ROCA_TABLES
             };
 
             instance = Room.databaseBuilder(context.getApplicationContext(), MiDB.class,
@@ -162,11 +165,32 @@ public abstract class MiDB extends RoomDatabase {
         }
     };
 
+    private static final Migration CREATE_ROCA_TABLES = new Migration(14,15) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE ServicioTren (" +
+                    "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                    "cabecera TEXT, hora INTEGER NOT NULL, minuto INTEGER NOT NULL)");
+
+            database.execSQL("CREATE TABLE HorarioTren (" +
+                    "station TEXT NOT NULL, hour INTEGER NOT NULL, " +
+                    "minute INTEGER NOT NULL, service INTEGER NOT NULL, " +
+                    "PRIMARY KEY(station, hour, minute), " +
+                    "FOREIGN KEY(service) REFERENCES ServicioTren(id))");
+        }
+    };
+
     public abstract TrenesDao trenesDao();
     public abstract ParadasDao paradasDao();
     public abstract ViajesDao viajesDao();
     public abstract CoffeeDao coffeeDao();
     public abstract RecargaDao recargaDao();
+    public abstract ServicioDao servicioDao();
+
+    /*
+        Lo que sigue debajo fue una primera implementación fallida para implementar trenes.
+        Será eliminado cuando la misma haya sido reemplazada por un modelo consistente.
+     */
 
     public void crearRamalLP(){
         if (trenesDao().getCircuito(RAMAL_LP) != null) return;

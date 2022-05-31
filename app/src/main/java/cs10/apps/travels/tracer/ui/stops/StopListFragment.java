@@ -8,11 +8,11 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.List;
 
+import cs10.apps.common.android.CS_Fragment;
 import cs10.apps.travels.tracer.DrawerActivity;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.adapter.EditStopCallback;
@@ -21,7 +21,7 @@ import cs10.apps.travels.tracer.databinding.FragmentStopsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
 
-public class StopListFragment extends Fragment implements EditStopCallback {
+public class StopListFragment extends CS_Fragment implements EditStopCallback {
     private FragmentStopsBinding binding;
     private LocatedStopsAdapter adapter;
     private MiDB miDB;
@@ -37,7 +37,6 @@ public class StopListFragment extends Fragment implements EditStopCallback {
 
         adapter = new LocatedStopsAdapter();
         adapter.setCallback(this);
-
         binding.recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recycler.setAdapter(adapter);
     }
@@ -51,7 +50,7 @@ public class StopListFragment extends Fragment implements EditStopCallback {
             Double latitude = activity.getLatitude();
             Double longitude = activity.getLongitude();
 
-            if (latitude != null && latitude != 0) new Thread(() -> {
+            if (latitude != null && latitude != 0) doInBackground(() -> {
                 miDB = MiDB.getInstance(getContext());
                 List<Parada> paradas = miDB.paradasDao().getAll();
                 Utils.orderByProximity(paradas, latitude, longitude);
@@ -59,10 +58,10 @@ public class StopListFragment extends Fragment implements EditStopCallback {
                 int originalSize = adapter.getItemCount();
                 adapter.setParadas(paradas);
 
-                if (originalSize == 0) getActivity().runOnUiThread(() ->
+                if (originalSize == 0) doInForeground(() ->
                         adapter.notifyItemRangeInserted(0, paradas.size()));
-                else getActivity().runOnUiThread(adapter::notifyDataSetChanged);
-            }, "stopsRetriever").start();
+                else doInForeground(adapter::notifyDataSetChanged);
+            });
         }
     }
 

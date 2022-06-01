@@ -15,6 +15,10 @@ import androidx.room.PrimaryKey;
 
     El servicio debe usarse para cada arribo almacenado. Si usamos una clave primaria compuesta
     estaremos gastando mucho espacio (3 columnas), entonces mejor usamos un ID.
+
+    Ahora bien, el ramal con sus paradas se conoce perfectamente mediante consultas de horario
+    e ID de servicio, pero no se tiene un nombre formal para mostrar al usuario. Se necesita
+    crear otra tabla que contenga los nombres, o bien, agregar la columna para servicio.
  */
 
 @Entity
@@ -25,6 +29,9 @@ public class ServicioTren {
 
     private String cabecera;
     private int hora, minuto;
+
+    // agregado en migración 17
+    private String ramal;
 
     public long getId() {
         return id;
@@ -61,5 +68,13 @@ public class ServicioTren {
     public void setTime(int hora, int minuto) {
         setHora(hora);
         setMinuto(minuto);
+    }
+
+    public String getRamal() {
+        return ramal;
+    }
+
+    public void setRamal(String ramal) {
+        this.ramal = ramal;
     }
 }

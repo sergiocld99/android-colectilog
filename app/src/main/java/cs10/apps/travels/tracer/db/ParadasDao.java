@@ -41,9 +41,8 @@ public interface ParadasDao {
     List<ScheduledParada> getScheduledStopsTo(int hour, int minute);
 
     @Query("SELECT p.* FROM parada p inner join viaje v on v.nombrePdaInicio = p.nombre " +
-            "where (startHour is :hour and startMinute >= :minute) or startHour > :hour " +
             "group by nombre order by count(*) desc limit 4")
-    List<Parada> getFavouriteStops(int hour, int minute);
+    List<Parada> getFavouriteStops();
 
     @Query("SELECT * FROM Parada WHERE nombre IN " +
             "(SELECT nombrePdaInicio FROM Viaje WHERE linea IS :busLine) OR nombre IN" +

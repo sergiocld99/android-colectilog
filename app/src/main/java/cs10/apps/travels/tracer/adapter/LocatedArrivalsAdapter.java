@@ -16,8 +16,11 @@ import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ItemStopBinding;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.model.roca.ArriboTren;
+import cs10.apps.travels.tracer.ui.stops.DepartCallback;
+import cs10.apps.travels.tracer.ui.stops.ETA_Switcher;
 
-public class LocatedArrivalsAdapter extends RecyclerView.Adapter<LocatedArrivalsAdapter.StopViewHolder> {
+public class LocatedArrivalsAdapter extends RecyclerView.Adapter<LocatedArrivalsAdapter.StopViewHolder> implements DepartCallback {
     private List<Viaje> viajes;
     private Context context;
 
@@ -52,9 +55,20 @@ public class LocatedArrivalsAdapter extends RecyclerView.Adapter<LocatedArrivals
         holder.binding.ivType.setImageDrawable(icon);
         holder.binding.getRoot().setBackground(bg);
 
-        holder.binding.tvLocation.setText("Hora " + Utils.hourFormat(item.getStartHour(), item.getStartMinute()));
-        holder.binding.tvLocation.setVisibility(View.VISIBLE);
-        holder.binding.tvSwitcher.setVisibility(View.GONE);
+        // Animación de recorrido solo para el primer item (es conflictivo usar 2 a la vez)
+        if (position == 0 && item instanceof ArriboTren){
+            holder.switcher.setCallback(this);
+            holder.switcher.setItem((ArriboTren) item);
+            holder.switcher.setTvSwitcher(holder.binding.tvSwitcher);
+            holder.switcher.startAnimation();
+            holder.binding.tvLocation.setVisibility(View.GONE);
+            holder.binding.tvSwitcher.setVisibility(View.VISIBLE);
+        } else {
+            holder.switcher.stop();
+            holder.binding.tvLocation.setText("Hora " + Utils.hourFormat(item.getStartHour(), item.getStartMinute()));
+            holder.binding.tvLocation.setVisibility(View.VISIBLE);
+            holder.binding.tvSwitcher.setVisibility(View.GONE);
+        }
 
         // always
         holder.binding.tvStartCount.setText(context.getString(R.string.destination, item.getNombrePdaFin()));
@@ -65,12 +79,27 @@ public class LocatedArrivalsAdapter extends RecyclerView.Adapter<LocatedArrivals
         return viajes == null ? 0 : viajes.size();
     }
 
+    @Override
+    public void onDepart() {
+        viajes.remove(0);
+        notifyItemRemoved(0);
+
+        if (getItemCount() > 0) notifyItemChanged(0);
+    }
+
+    @Override
+    public Context getContext() {
+        return context;
+    }
+
     protected class StopViewHolder extends RecyclerView.ViewHolder {
         protected ItemStopBinding binding;
+        protected ETA_Switcher switcher;
 
         public StopViewHolder(@NonNull ItemStopBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+            this.switcher = new ETA_Switcher();
         }
     }
 }

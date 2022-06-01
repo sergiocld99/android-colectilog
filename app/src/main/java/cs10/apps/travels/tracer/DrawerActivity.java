@@ -5,6 +5,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,13 +25,16 @@ import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.filler.ViaCircuitoFiller;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
+import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
 import cs10.apps.travels.tracer.ui.travels.TravelCreator;
 
-public class DrawerActivity extends AppCompatActivity {
+public class DrawerActivity extends AppCompatActivity implements DatabaseCallback {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityDrawerBinding binding;
     private FusedLocationProviderClient client;
     private Double latitude, longitude;
+
+    private Thread dbThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,20 +66,26 @@ public class DrawerActivity extends AppCompatActivity {
         client = LocationServices.getFusedLocationProviderClient(this);
         Utils.checkPermissions(this);
 
-        // Create Via Circuito if not exists
-        new Thread(() -> {
+        // Re-create Via Circuito if is needed
+        dbThread = new Thread(() -> {
             MiDB db = MiDB.getInstance(this);
-            int count = db.servicioDao().getHorariosCount();
-            if (count < 1000) {
+            int count = db.servicioDao().getServicesCount("Varela T");
+            if (count == 0) {
                 db.servicioDao().dropHorarios();        // first this
                 db.servicioDao().dropServicios();       // then this
 
                 ViaCircuitoFiller filler = new ViaCircuitoFiller();
-                filler.create(db);
+                filler.create2_Q(db);       // hoja 2 de la planilla
+                filler.create2_T(db);       // hoja 1 de la planilla
                 runOnUiThread(() -> Toast.makeText(this,
-                        "Via Circuito creado con éxito", Toast.LENGTH_LONG).show());
+                        "Trenes creados con éxito", Toast.LENGTH_LONG).show());
             }
-        }, "viaCircuitoFiller").start();
+        }, "viaCircuitoFiller");
+
+        dbThread.start();
+
+        // Keep device awake
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
@@ -125,5 +135,16 @@ public class DrawerActivity extends AppCompatActivity {
 
     public Double getLongitude() {
         return longitude;
+    }
+
+    @Override
+    public MiDB getInstanceWhenFinished() {
+        try {
+            if (dbThread != null) dbThread.join();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
+        return MiDB.getInstance(this);
     }
 }

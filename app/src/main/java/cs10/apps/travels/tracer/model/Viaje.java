@@ -12,7 +12,7 @@ import cs10.apps.travels.tracer.Utils;
         @ForeignKey(entity = Parada.class, parentColumns = "nombre", childColumns = "nombrePdaInicio"),
         @ForeignKey(entity = Parada.class, parentColumns = "nombre", childColumns = "nombrePdaFin")
 })
-public class Viaje {
+public class Viaje implements Comparable<Viaje> {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -172,5 +172,11 @@ public class Viaje {
         if (getCosto() == 0) return li;
         if (li == null) return Utils.priceFormat(getCosto());
         return li + " (" + Utils.priceFormat(getCosto()) + ")";
+    }
+
+    @Override
+    public int compareTo(Viaje viaje) {
+        int r = Integer.compare(this.startHour, viaje.startHour);
+        return r == 0 ? Integer.compare(this.startMinute, viaje.startMinute) : r;
     }
 }

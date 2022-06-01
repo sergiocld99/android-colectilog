@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui;
+package cs10.apps.travels.tracer.ui.stops;
 
 import android.content.Context;
 import android.os.Handler;

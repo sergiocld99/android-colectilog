@@ -15,7 +15,7 @@ import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ItemStopBinding;
 import cs10.apps.travels.tracer.model.ScheduledParada;
-import cs10.apps.travels.tracer.ui.UpsideDownSwitcher;
+import cs10.apps.travels.tracer.ui.stops.UpsideDownSwitcher;
 
 public class StopsFromAdapter extends RecyclerView.Adapter<StopsFromAdapter.StopViewHolder> {
     private List<ScheduledParada> paradas;

@@ -33,7 +33,7 @@ import cs10.apps.travels.tracer.model.roca.ServicioTren;
 
 @Database(entities = {Circuito.class, Comunicacion.class, Estacion.class, FormacionCircuito.class,
         Tren.class, Horario.class, Parada.class, Viaje.class, TarifaBus.class, TarifaTren.class,
-        Coffee.class, Recarga.class, ServicioTren.class, HorarioTren.class}, version = 16)
+        Coffee.class, Recarga.class, ServicioTren.class, HorarioTren.class}, version = 17)
 public abstract class MiDB extends RoomDatabase {
     private static MiDB instance;
     public static final String RAMAL_LP = "Constitución - La Plata";
@@ -44,7 +44,7 @@ public abstract class MiDB extends RoomDatabase {
                     TIPO_PARADA_MIGRATION, TARIFA_MIGRATION, SCHEMA_MIGRATION,
                     COSTO_TARIFA_MIGRATION, ADD_FIXED_VIAJES_MIGRATION, TARIFA_BUS_MIGRATION,
                     ADD_COSTO_TO_VIAJE, CREATE_COFFEE_TABLE, CREATE_RECARGA_TABLE,
-                    CREATE_ROCA_TABLES, FIX_HORARIOS_TABLE
+                    CREATE_ROCA_TABLES, FIX_HORARIOS_TABLE, ADD_RAMAL_COLUMN_TO_SERVICIOS
             };
 
             instance = Room.databaseBuilder(context.getApplicationContext(), MiDB.class,
@@ -190,6 +190,13 @@ public abstract class MiDB extends RoomDatabase {
                     "minute INTEGER NOT NULL, station TEXT, " +
                     "PRIMARY KEY(service, hour, minute), " +
                     "FOREIGN KEY(service) REFERENCES ServicioTren(id))");
+        }
+    };
+
+    private static final Migration ADD_RAMAL_COLUMN_TO_SERVICIOS = new Migration(16,17) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE ServicioTren ADD COLUMN ramal TEXT");
         }
     };
 

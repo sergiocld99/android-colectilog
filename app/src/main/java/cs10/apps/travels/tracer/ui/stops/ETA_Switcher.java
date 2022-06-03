@@ -42,7 +42,7 @@ public class ETA_Switcher {
                     int diffM = 60 * (item.getStartHour() - currentH) + item.getStartMinute() - currentM;
 
                     // remove old data
-                    while (!item.getRecorrido().isEmpty() && isOld(item.getRecorrido().get(0), currentH, currentM)){
+                    while (item.getRecorrido().size() > 1 && isOld(item.getRecorrido().get(0), currentH, currentM)){
                         item.getRecorrido().remove(0);
                     }
 

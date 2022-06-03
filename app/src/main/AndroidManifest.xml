@@ -23,6 +23,8 @@
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity android:name=".ui.stops.StopEditor"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
+        <activity android:name=".ui.service.ServiceDetail"
+            android:theme="@style/Theme.TravelTracer.NoActionBar" />
 
         <activity
             android:name=".DrawerActivity"

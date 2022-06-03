@@ -8,10 +8,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 import cs10.apps.common.android.CS_Fragment;
@@ -21,14 +20,11 @@ import cs10.apps.travels.tracer.adapter.LocatedArrivalsAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentHomeBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
-import cs10.apps.travels.tracer.model.Viaje;
-import cs10.apps.travels.tracer.model.roca.ArriboTren;
-import cs10.apps.travels.tracer.model.roca.HorarioTren;
-import cs10.apps.travels.tracer.model.roca.RamalSchedule;
 
 public class HomeFragment extends CS_Fragment {
     private FragmentHomeBinding binding;
     private LocatedArrivalsAdapter adapter;
+    private HomeSliderAdapter sliderAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
@@ -39,17 +35,22 @@ public class HomeFragment extends CS_Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        sliderAdapter = new HomeSliderAdapter(this);
+        binding.viewPager.setAdapter(sliderAdapter);
+
+        /*
         adapter = new LocatedArrivalsAdapter();
         adapter.setContext(getContext());
 
         binding.recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recycler.setAdapter(adapter);
+         */
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        binding.recycler.setVisibility(View.GONE);
+        // binding.recycler.setVisibility(View.GONE);
         binding.pbar.setVisibility(View.VISIBLE);
 
         if (getActivity() instanceof DrawerActivity){
@@ -69,6 +70,13 @@ public class HomeFragment extends CS_Fragment {
             Utils.orderByProximity(favourites, location.getLatitude(), location.getLongitude());
             if (favourites.isEmpty()) return;
 
+            doInForeground(() -> {
+                binding.pbar.setVisibility(View.GONE);
+                sliderAdapter.setFavourites(favourites);
+                sliderAdapter.notifyDataSetChanged();
+            });
+
+            /*
             Calendar calendar = Calendar.getInstance();
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int m = calendar.get(Calendar.MINUTE);
@@ -89,7 +97,9 @@ public class HomeFragment extends CS_Fragment {
                 v.setStartMinute(tren.getMinute());
                 v.setNombrePdaFin(end.getStation());
                 v.setRecorrido(miDB.servicioDao().getRecorridoUntil(tren.getService(), now, target));
-                v.getRecorrido().add(end);
+                v.setRecorridoDestino(miDB.servicioDao().getRecorridoFrom(tren.getService(), target));
+                v.setEndHour(end.getHour());
+                v.setEndMinute(end.getMinute());
                 v.restartAux();
                 arrivals.add(v);
             }
@@ -103,6 +113,7 @@ public class HomeFragment extends CS_Fragment {
                 adapter.setViajes(arrivals);
                 adapter.notifyDataSetChanged();
             });
+             */
         }
     }
 
@@ -110,5 +121,30 @@ public class HomeFragment extends CS_Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private class HomeSliderAdapter extends FragmentStateAdapter {
+        private List<Parada> favourites;
+
+        public HomeSliderAdapter(@NonNull Fragment fragment) {
+            super(fragment);
+        }
+
+        public void setFavourites(List<Parada> favourites) {
+            this.favourites = favourites;
+        }
+
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            StopArrivalsFragment fragment = new StopArrivalsFragment();
+            fragment.setStopName(favourites.get(position).getNombre());
+            return fragment;
+        }
+
+        @Override
+        public int getItemCount() {
+            return favourites == null ? 0 : favourites.size();
+        }
     }
 }

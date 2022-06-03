@@ -38,15 +38,18 @@ public interface ServicioDao {
             "order by hour, minute limit 5")
     List<RamalSchedule> getNextArrivals(String stopName, int hour, int minute);
 
-    @Query("SELECT * FROM HorarioTren " +
-            "WHERE service is :serviceId AND ((hour = :hour and minute >= :minute) or hour > :hour)" +
-            "ORDER BY hour, minute")
-    List<HorarioTren> getRecorrido(long serviceId, int hour, int minute);
+    @Query("SELECT * FROM HorarioTren WHERE service = :serviceId ORDER BY hour, minute")
+    List<HorarioTren> getRecorrido(long serviceId);
 
     @Query("SELECT * FROM HorarioTren " +
             "WHERE service is :serviceId AND (hour * 60 + minute) BETWEEN :now and :target " +
             "ORDER BY hour, minute")
     List<HorarioTren> getRecorridoUntil(long serviceId, int now, int target);
+
+    @Query("SELECT * FROM HorarioTren " +
+            "WHERE service is :serviceId AND (hour * 60 + minute) > :target " +
+            "ORDER BY hour, minute")
+    List<HorarioTren> getRecorridoFrom(long serviceId, int target);
 
     @Query("SELECT * FROM HorarioTren WHERE service is :serviceId " +
             "ORDER BY hour desc, minute desc limit 1")

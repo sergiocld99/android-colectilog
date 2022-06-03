@@ -25,10 +25,12 @@ import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.filler.ViaCircuitoFiller;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
+import cs10.apps.travels.tracer.ui.service.ServiceDetail;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
+import cs10.apps.travels.tracer.ui.stops.ServiceCallback;
 import cs10.apps.travels.tracer.ui.travels.TravelCreator;
 
-public class DrawerActivity extends AppCompatActivity implements DatabaseCallback {
+public class DrawerActivity extends AppCompatActivity implements DatabaseCallback, ServiceCallback {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityDrawerBinding binding;
     private FusedLocationProviderClient client;
@@ -146,5 +148,12 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         }
 
         return MiDB.getInstance(this);
+    }
+
+    @Override
+    public void onServiceSelected(long id) {
+        Intent i = new Intent(this, ServiceDetail.class);
+        i.putExtra("id", id);
+        startActivity(i);
     }
 }

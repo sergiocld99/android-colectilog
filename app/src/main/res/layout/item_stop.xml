@@ -66,6 +66,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="Next is 338 (Centenario)"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textSize="18sp"
             android:textColor="@android:color/white"/>
 
@@ -74,6 +76,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="Arrives at 10:19"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textSize="18sp"
             android:textColor="@android:color/white"/>
 

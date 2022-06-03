@@ -15,6 +15,7 @@ import java.util.List;
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ItemStopBinding;
+import cs10.apps.travels.tracer.db.filler.Station;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.roca.ArriboTren;
 import cs10.apps.travels.tracer.ui.stops.DepartCallback;
@@ -42,8 +43,21 @@ public class LocatedArrivalsAdapter extends RecyclerView.Adapter<LocatedArrivals
     @Override
     public void onBindViewHolder(@NonNull StopViewHolder holder, int position) {
         Viaje item = viajes.get(position);
-        holder.binding.tvName.setText(item.getLineInformation());
         Drawable icon, bg;
+
+        if (item instanceof ArriboTren){
+            ArriboTren arribo = (ArriboTren) item;
+            boolean temperley = arribo.isFutureStation(Station.TEMPERLEY);
+            boolean quilmes = arribo.isFutureStation(Station.QUILMES);
+
+            if (temperley && !quilmes) holder.binding.tvName.setText("Via Temperley");
+            else if (quilmes && !temperley) holder.binding.tvName.setText("Via Quilmes");
+            else holder.binding.tvName.setText(item.getRamal());
+        } else holder.binding.tvName.setText(item.getLineInformation());
+
+        if (item.getEndHour() != null){
+            holder.binding.tvStartCount.setText("A " + item.getNombrePdaFin() + " (" + Utils.hourFormat(item.getEndHour(), item.getEndMinute()) + ")");
+        } else holder.binding.tvStartCount.setText(context.getString(R.string.destination, item.getNombrePdaFin()));
 
         if (item.getTipo() == 0) {
             icon = AppCompatResources.getDrawable(context, R.drawable.ic_bus);
@@ -69,9 +83,6 @@ public class LocatedArrivalsAdapter extends RecyclerView.Adapter<LocatedArrivals
             holder.binding.tvLocation.setVisibility(View.VISIBLE);
             holder.binding.tvSwitcher.setVisibility(View.GONE);
         }
-
-        // always
-        holder.binding.tvStartCount.setText(context.getString(R.string.destination, item.getNombrePdaFin()));
     }
 
     @Override

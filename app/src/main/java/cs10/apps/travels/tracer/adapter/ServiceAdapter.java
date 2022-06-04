@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ItemServiceBinding;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
@@ -37,6 +38,11 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ServiceH
         HorarioTren item = horarios.get(position);
         holder.binding.tvStation.setText(item.getStation());
         holder.binding.tvArrivalTime.setText(Utils.hourFormat(item.getHour(), item.getMinute()));
+
+        if (position == 0 || position == getItemCount()-1){
+            holder.binding.getRoot().setBackgroundColor(context.getResources().getColor(R.color.purple_700));
+        } else if (item.getService() == 0) holder.binding.getRoot().setBackground(null);
+        else holder.binding.getRoot().setBackgroundColor(context.getResources().getColor(R.color.bus));
     }
 
     @Override

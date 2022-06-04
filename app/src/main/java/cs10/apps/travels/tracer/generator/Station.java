@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.db.filler;
+package cs10.apps.travels.tracer.generator;
 
 public enum Station {
     PLAZA("Plaza Constitución"),
@@ -27,7 +27,16 @@ public enum Station {
     DON_BOSCO("Estación Don Bosco"),
     WILDE("Estación Wilde"),
     DOMINICO("Estación Villa Domínico"),
-    SARANDI("Estación Sarandí");
+    SARANDI("Estación Sarandí"),
+    PLATANOS("Estación Plátanos"),
+    HUDSON("Estación Hudson"),
+    PEREYRA("Estación Pereyra"),
+    VILLA_ELISA("Estación Villa Elisa"),
+    CITY_BELL("Estación City Bell"),
+    GONNET("Estación Gonnet"),
+    RINGUELET("Estación Ringuelet"),
+    TOLOSA("Estación Tolosa"),
+    LA_PLATA("Estación La Plata");
 
     private final String nombre;
 

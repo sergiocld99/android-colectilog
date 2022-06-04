@@ -64,8 +64,8 @@ public interface ViajesDao {
             "GROUP BY linea ORDER BY COUNT(id) DESC")
     List<Integer> getAllBuses();
 
-    @Query("SELECT * FROM Viaje where nombrePdaInicio is :stopName " +
+    @Query("SELECT * FROM Viaje where nombrePdaInicio = :stopName and linea is NOT NULL " +
             "and ((startHour = :hour and startMinute >= :minute) or startHour > :hour) " +
-            "order by startHour, startMinute limit 5")
+            "order by startHour, startMinute limit 6")
     List<Viaje> getNextArrivals(String stopName, int hour, int minute);
 }

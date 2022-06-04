@@ -66,7 +66,7 @@ public class HomeFragment extends CS_Fragment {
             DatabaseCallback callback = (DatabaseCallback) getActivity();
             MiDB miDB = callback.getInstanceWhenFinished();
 
-            List<Parada> favourites = miDB.paradasDao().getFavouriteStops();
+            List<Parada> favourites = miDB.paradasDao().getFavouritesAndTrains();
             Utils.orderByProximity(favourites, location.getLatitude(), location.getLongitude());
             if (favourites.isEmpty()) return;
 

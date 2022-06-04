@@ -2,13 +2,14 @@ package cs10.apps.travels.tracer.model.roca;
 
 import java.util.List;
 
-import cs10.apps.travels.tracer.db.filler.Station;
+import cs10.apps.travels.tracer.generator.Station;
 import cs10.apps.travels.tracer.model.Viaje;
 
 public class ArriboTren extends Viaje {
 
     private List<HorarioTren> recorrido;
     private List<HorarioTren> recorridoDestino;
+    private long serviceId;
     private int aux = 0;
 
     public void restartAux(){
@@ -41,6 +42,14 @@ public class ArriboTren extends Viaje {
         this.recorridoDestino = recorridoDestino;
     }
 
+    public long getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(long serviceId) {
+        this.serviceId = serviceId;
+    }
+
     public int getAux() {
         return aux;
     }
@@ -55,5 +64,14 @@ public class ArriboTren extends Viaje {
         }
 
         return false;
+    }
+
+    public boolean estaEnCabecera(){
+        if (recorrido.isEmpty()) return false;
+        return getNombrePdaInicio().equals(getTarget().getStation());
+    }
+
+    public HorarioTren getTarget(){
+        return recorrido.get(recorrido.size()-1);
     }
 }

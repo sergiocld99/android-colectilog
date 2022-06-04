@@ -7,6 +7,7 @@ import java.util.Calendar;
 
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
+import cs10.apps.travels.tracer.adapter.DepartCallback;
 import cs10.apps.travels.tracer.model.roca.ArriboTren;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 
@@ -16,6 +17,7 @@ public class ETA_Switcher {
     private DepartCallback callback;
     private Runnable r;
     private Handler h;
+    private int times;
 
     public void setCallback(DepartCallback callback) {
         this.callback = callback;
@@ -49,10 +51,12 @@ public class ETA_Switcher {
                     // Slide down
                     tvSwitcher.setInAnimation(callback.getContext(), R.anim.slide_down_in);
                     tvSwitcher.setOutAnimation(callback.getContext(), R.anim.slide_down_out);
-                    if (diffM > 0) tvSwitcher.setText("Llega al andén en " + diffM + " minutos");
-                    else if (diffM == 0) tvSwitcher.setText("¡Ahora mismo en andén!");
-                    else {
-                        stop();
+                    if (diffM > 0) {
+                        if (item.estaEnCabecera()) tvSwitcher.setText("Sale del andén en " + diffM + " minutos");
+                        else tvSwitcher.setText("Llega al andén en " + diffM + " minutos");
+                    } else if (diffM == 0) tvSwitcher.setText("¡Ahora mismo en andén!");
+                    else if (times > 1) {
+                        stop(); times = 0;
                         callback.onDepart();
                         return;
                     }
@@ -63,6 +67,7 @@ public class ETA_Switcher {
                     tvSwitcher.setInAnimation(callback.getContext(), R.anim.slide_up_in);
                     tvSwitcher.setOutAnimation(callback.getContext(), R.anim.slide_up_out);
                     tvSwitcher.setText(Utils.hourFormat(horarioC.getHour(), horarioC.getMinute()) + " - " + horarioC.getStation());
+                    times++;
                 }
 
                 item.incrementAux();

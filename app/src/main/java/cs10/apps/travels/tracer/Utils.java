@@ -15,7 +15,7 @@ import java.util.List;
 import cs10.apps.travels.tracer.model.Parada;
 
 public class Utils {
-    private static final DecimalFormat df = new DecimalFormat("#.00");
+    private static final DecimalFormat df = new DecimalFormat("0.00");
 
     @NonNull
     public static String twoDecimals(int value){

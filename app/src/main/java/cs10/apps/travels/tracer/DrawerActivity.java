@@ -23,14 +23,14 @@ import com.google.android.material.navigation.NavigationView;
 
 import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
 import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.db.filler.ViaCircuitoFiller;
+import cs10.apps.travels.tracer.generator.DelayData;
+import cs10.apps.travels.tracer.generator.LaPlataFiller;
+import cs10.apps.travels.tracer.generator.ViaCircuitoFiller;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
-import cs10.apps.travels.tracer.ui.service.ServiceDetail;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
-import cs10.apps.travels.tracer.ui.stops.ServiceCallback;
 import cs10.apps.travels.tracer.ui.travels.TravelCreator;
 
-public class DrawerActivity extends AppCompatActivity implements DatabaseCallback, ServiceCallback {
+public class DrawerActivity extends AppCompatActivity implements DatabaseCallback {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityDrawerBinding binding;
     private FusedLocationProviderClient client;
@@ -44,8 +44,9 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
 
         binding = ActivityDrawerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         setSupportActionBar(binding.appBarDrawer.toolbar);
+
+        // FAB
         binding.appBarDrawer.fab.setOnClickListener(view -> {
             Intent intent = new Intent(DrawerActivity.this, TravelCreator.class);
             startActivity(intent);
@@ -71,18 +72,32 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         // Re-create Via Circuito if is needed
         dbThread = new Thread(() -> {
             MiDB db = MiDB.getInstance(this);
-            int count = db.servicioDao().getServicesCount("Varela T");
+
+            // actualización 1: vias temperley y quilmes
+            int count = db.servicioDao().getServicesCount("Bosques T > Quilmes");
             if (count == 0) {
                 db.servicioDao().dropHorarios();        // first this
                 db.servicioDao().dropServicios();       // then this
 
-                ViaCircuitoFiller filler = new ViaCircuitoFiller();
+                DelayData delayData = new DelayData();
+                ViaCircuitoFiller filler = new ViaCircuitoFiller(delayData);
                 filler.create2_Q(db);       // hoja 2 de la planilla
                 filler.create2_T(db);       // hoja 1 de la planilla
                 runOnUiThread(() -> Toast.makeText(this,
-                        "Trenes creados con éxito", Toast.LENGTH_LONG).show());
+                        "Vias Temperley y Bosques creados con éxito", Toast.LENGTH_LONG).show());
             }
-        }, "viaCircuitoFiller");
+
+            // actualización 2: servicio la plata
+            count = db.servicioDao().getServicesCount("La Plata");
+            if (count == 0){
+                DelayData delayData = new DelayData();
+                LaPlataFiller filler = new LaPlataFiller(delayData);
+                filler.createIda(db);
+                filler.createVuelta(db);
+                runOnUiThread(() -> Toast.makeText(this,
+                        "Ramal La Plata creado con éxito", Toast.LENGTH_LONG).show());
+            }
+        }, "trenesDbUpdater");
 
         dbThread.start();
 
@@ -148,12 +163,5 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         }
 
         return MiDB.getInstance(this);
-    }
-
-    @Override
-    public void onServiceSelected(long id) {
-        Intent i = new Intent(this, ServiceDetail.class);
-        i.putExtra("id", id);
-        startActivity(i);
     }
 }

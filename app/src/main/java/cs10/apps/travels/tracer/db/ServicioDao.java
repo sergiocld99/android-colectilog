@@ -32,10 +32,10 @@ public interface ServicioDao {
             "WHERE cabecera is :cabecera and hora is :startHour and minuto is :startM")
     int getServicesCount(String cabecera, int startHour, int startM);
 
-    @Query("SELECT HT.*, ramal FROM HorarioTren HT " +
+    @Query("SELECT HT.*, cabecera, ramal FROM HorarioTren HT " +
             "inner join ServicioTren ST on ST.id = HT.service " +
             "WHERE station is :stopName AND ((hour = :hour and minute >= :minute) or hour > :hour) " +
-            "order by hour, minute limit 5")
+            "order by hour, minute limit 6")
     List<RamalSchedule> getNextArrivals(String stopName, int hour, int minute);
 
     @Query("SELECT * FROM HorarioTren WHERE service = :serviceId ORDER BY hour, minute")

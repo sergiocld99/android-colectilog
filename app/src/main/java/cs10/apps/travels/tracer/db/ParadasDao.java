@@ -44,6 +44,12 @@ public interface ParadasDao {
             "group by nombre order by count(*) desc limit 4")
     List<Parada> getFavouriteStops();
 
+    @Query("SELECT p.* FROM parada p " +
+            "inner join viaje v on v.nombrePdaInicio = p.nombre " +
+            "left join horariotren h on h.station = p.nombre " +
+            "group by nombre order by count(*) desc limit 8")
+    List<Parada> getFavouritesAndTrains();
+
     @Query("SELECT * FROM Parada WHERE nombre IN " +
             "(SELECT nombrePdaInicio FROM Viaje WHERE linea IS :busLine) OR nombre IN" +
             "(SELECT nombrePdaFin FROM Viaje WHERE linea is :busLine)")

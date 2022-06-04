@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.ui.stops;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +16,16 @@ import java.util.List;
 
 import cs10.apps.common.android.CS_Fragment;
 import cs10.apps.travels.tracer.adapter.LocatedArrivalsAdapter;
+import cs10.apps.travels.tracer.adapter.ServiceCallback;
 import cs10.apps.travels.tracer.databinding.FragmentArrivalsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.roca.ArriboTren;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 import cs10.apps.travels.tracer.model.roca.RamalSchedule;
+import cs10.apps.travels.tracer.ui.service.ServiceDetail;
 
-public class StopArrivalsFragment extends CS_Fragment {
+public class StopArrivalsFragment extends CS_Fragment implements ServiceCallback {
     private FragmentArrivalsBinding binding;
     private LocatedArrivalsAdapter adapter;
     private String stopName;
@@ -38,7 +41,7 @@ public class StopArrivalsFragment extends CS_Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         adapter = new LocatedArrivalsAdapter();
-        adapter.setContext(getContext());
+        adapter.setCallback(this);
 
         binding.recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recycler.setAdapter(adapter);
@@ -71,7 +74,9 @@ public class StopArrivalsFragment extends CS_Fragment {
                 v.setRamal(tren.getRamal());
                 v.setStartHour(tren.getHour());
                 v.setStartMinute(tren.getMinute());
+                v.setServiceId(tren.getService());
                 v.setNombrePdaFin(end.getStation());
+                v.setNombrePdaInicio(tren.getCabecera());
                 v.setRecorrido(miDB.servicioDao().getRecorridoUntil(tren.getService(), now, target));
                 v.setRecorridoDestino(miDB.servicioDao().getRecorridoFrom(tren.getService(), target));
                 v.setEndHour(end.getHour());
@@ -88,5 +93,13 @@ public class StopArrivalsFragment extends CS_Fragment {
                 adapter.notifyDataSetChanged();
             });
         });
+    }
+
+    @Override
+    public void onServiceSelected(long id) {
+        Intent intent = new Intent(getActivity(), ServiceDetail.class);
+        intent.putExtra("station", stopName);
+        intent.putExtra("id", id);
+        startActivity(intent);
     }
 }

@@ -50,7 +50,7 @@ public class LocatedArrivalsAdapter extends RecyclerView.Adapter<LocatedArrivals
         if (item instanceof ArriboTren){
             ArriboTren arribo = (ArriboTren) item;
 
-            if (item.getNombrePdaFin().equals(Station.PLAZA.getNombre())){
+            if (item.getNombrePdaFin().equals(item.getNombrePdaInicio())){
                 boolean bosques = arribo.isFutureStation(Station.BOSQUES);
                 boolean temperley = arribo.isFutureStation(Station.TEMPERLEY);
                 boolean quilmes = arribo.isFutureStation(Station.QUILMES);
@@ -65,8 +65,8 @@ public class LocatedArrivalsAdapter extends RecyclerView.Adapter<LocatedArrivals
             holder.binding.tvName.setText(item.getRamal());
         } else holder.binding.tvName.setText(item.getRamal() == null ? "" : "Ramal " + item.getRamal());
 
-        if (item.getEndHour() != null){
-            holder.binding.tvStartCount.setText("A " + item.getNombrePdaFin() + " (" + Utils.hourFormat(item.getEndHour(), item.getEndMinute()) + ")");
+        if (item.getEndHour() != null && item.getEndMinute() != null){
+            holder.binding.tvStartCount.setText(callback.getContext().getString(R.string.destination_full, item.getNombrePdaFin(), Utils.hourFormat(item.getEndHour(), item.getEndMinute())));
         } else holder.binding.tvStartCount.setText(callback.getContext().getString(R.string.destination, item.getNombrePdaFin()));
 
         bg = AppCompatResources.getDrawable(callback.getContext(), Utils.colorFor(item.getLinea()));
@@ -93,13 +93,13 @@ public class LocatedArrivalsAdapter extends RecyclerView.Adapter<LocatedArrivals
             holder.binding.tvSwitcher.setVisibility(View.VISIBLE);
         } else {
             holder.switcher.stop();
-            holder.binding.tvLocation.setText("Hora " + Utils.hourFormat(item.getStartHour(), item.getStartMinute()));
+            holder.binding.tvLocation.setText(callback.getContext().getString(R.string.arrival_time, Utils.hourFormat(item.getStartHour(), item.getStartMinute())));
             holder.binding.tvLocation.setVisibility(View.VISIBLE);
             holder.binding.tvSwitcher.setVisibility(View.GONE);
         }
 
         // always
-        if (item.getLinea() == null) holder.binding.tvLine.setText("ROCA");
+        if (item.getLinea() == null) holder.binding.tvLine.setText(callback.getContext().getString(R.string.default_train_line));
         else holder.binding.tvLine.setText(String.valueOf(item.getLinea()));
     }
 
@@ -109,11 +109,12 @@ public class LocatedArrivalsAdapter extends RecyclerView.Adapter<LocatedArrivals
     }
 
     @Override
-    public void onDepart() {
-        viajes.remove(0);
-        notifyItemRemoved(0);
-
-        new Handler().postDelayed(super::notifyDataSetChanged, 1500);
+    public void onDepart(ArriboTren item) {
+        if (!viajes.isEmpty() && viajes.get(0).equals(item)){
+            viajes.remove(0);
+            notifyItemRemoved(0);
+            new Handler().postDelayed(super::notifyDataSetChanged, 1500);
+        }
     }
 
     @Override
@@ -136,7 +137,7 @@ public class LocatedArrivalsAdapter extends RecyclerView.Adapter<LocatedArrivals
         public void onClick(View view) {
             if (viajes.get(getAdapterPosition()) instanceof ArriboTren){
                 ArriboTren item = (ArriboTren) viajes.get(getAdapterPosition());
-                callback.onServiceSelected(item.getServiceId());
+                callback.onServiceSelected(item.getServiceId(), item.getRamal());
             }
         }
     }

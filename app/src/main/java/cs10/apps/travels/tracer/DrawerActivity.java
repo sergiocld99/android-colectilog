@@ -74,7 +74,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
             MiDB db = MiDB.getInstance(this);
 
             // actualización 1: vias temperley y quilmes
-            int count = db.servicioDao().getServicesCount("Bosques T > Quilmes");
+            int count = db.servicioDao().getServicesCount("Temperley");
             if (count == 0) {
                 db.servicioDao().dropHorarios();        // first this
                 db.servicioDao().dropServicios();       // then this

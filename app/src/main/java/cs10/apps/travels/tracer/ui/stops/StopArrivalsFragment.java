@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import cs10.apps.common.android.CS_Fragment;
+import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.adapter.LocatedArrivalsAdapter;
 import cs10.apps.travels.tracer.adapter.ServiceCallback;
 import cs10.apps.travels.tracer.databinding.FragmentArrivalsBinding;
@@ -88,7 +89,7 @@ public class StopArrivalsFragment extends CS_Fragment implements ServiceCallback
             Collections.sort(arrivals);
 
             doInForeground(() -> {
-                binding.tvTitle.setText("Próximos en " + stopName);
+                binding.tvTitle.setText(getString(R.string.next_ones_in, stopName));
                 adapter.setViajes(arrivals);
                 adapter.notifyDataSetChanged();
             });
@@ -96,9 +97,10 @@ public class StopArrivalsFragment extends CS_Fragment implements ServiceCallback
     }
 
     @Override
-    public void onServiceSelected(long id) {
+    public void onServiceSelected(long id, String ramal) {
         Intent intent = new Intent(getActivity(), ServiceDetail.class);
         intent.putExtra("station", stopName);
+        intent.putExtra("ramal", ramal);
         intent.putExtra("id", id);
         startActivity(intent);
     }

@@ -101,9 +101,12 @@ public class ViaCircuitoHelper extends CircuitoHelper {
     }
 
     private String getRamalFor(Station inicio, Station fin, boolean haciaAdelante, Salteo salteo){
-        if (inicio == Station.PLAZA && fin == Station.PLAZA){
-            if (haciaAdelante) return "Bosques T > Quilmes";
-            return "Bosques Q > Temperley";
+        if (inicio == Station.PLAZA){
+            if (haciaAdelante) {
+                if (fin == Station.PLAZA) return Ramal.BOSQUES_T_QUILMES.getNombre();
+            } else if (fin == Station.TEMPERLEY || fin == Station.PLAZA){
+                return Ramal.BOSQUES_Q_TEMPERLEY.getNombre();
+            }
         }
 
         if (fin == Station.PLAZA){
@@ -121,6 +124,6 @@ public class ViaCircuitoHelper extends CircuitoHelper {
             return "Varela T";
         }
 
-        return fin.getNombre().replace("Estación","").trim();
+        return fin.getSimplified();
     }
 }

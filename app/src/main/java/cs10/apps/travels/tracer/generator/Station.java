@@ -36,7 +36,13 @@ public enum Station {
     GONNET("Estación Gonnet"),
     RINGUELET("Estación Ringuelet"),
     TOLOSA("Estación Tolosa"),
-    LA_PLATA("Estación La Plata");
+    LA_PLATA("Estación La Plata"),
+    ADROGUE("Estación Adrogué"),
+    BURZACO("Estación Burzaco"),
+    LONGCHAMPS("Estación Longchamps"),
+    GLEW("Estación Glew"),
+    GUERNICA("Estación Guernica"),
+    A_KORN("Estación Alejandro Korn");
 
     private final String nombre;
 
@@ -46,5 +52,9 @@ public enum Station {
 
     public String getNombre() {
         return nombre;
+    }
+
+    public String getSimplified(){
+        return nombre.replace("Estación","").trim();
     }
 }

@@ -12,6 +12,7 @@ package cs10.apps.travels.tracer.model.roca;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 
 @Entity(primaryKeys = {"service", "hour", "minute"},
         foreignKeys = {@ForeignKey(entity = ServicioTren.class, parentColumns = "id", childColumns = "service")})
@@ -20,6 +21,12 @@ public class HorarioTren {
     private long service;
     private int hour, minute;
     private String station;
+
+    @Ignore
+    private HorarioTren combination;
+
+    @Ignore
+    private String combinationRamal;
 
     public String getStation() {
         return station;
@@ -51,5 +58,21 @@ public class HorarioTren {
 
     public void setService(long service) {
         this.service = service;
+    }
+
+    public HorarioTren getCombination() {
+        return combination;
+    }
+
+    public void setCombination(HorarioTren combination) {
+        this.combination = combination;
+    }
+
+    public String getCombinationRamal() {
+        return combinationRamal;
+    }
+
+    public void setCombinationRamal(String combinationRamal) {
+        this.combinationRamal = combinationRamal;
     }
 }

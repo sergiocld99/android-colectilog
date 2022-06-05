@@ -57,7 +57,7 @@ public class ETA_Switcher {
                     } else if (diffM == 0) tvSwitcher.setText("¡Ahora mismo en andén!");
                     else if (times > 1) {
                         stop(); times = 0;
-                        callback.onDepart();
+                        callback.onDepart(item);
                         return;
                     }
                 } else {

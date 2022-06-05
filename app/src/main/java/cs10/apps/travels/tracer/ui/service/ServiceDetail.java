@@ -1,5 +1,7 @@
 package cs10.apps.travels.tracer.ui.service;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -12,37 +14,39 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.Calendar;
 import java.util.List;
 
+import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.adapter.ServiceAdapter;
+import cs10.apps.travels.tracer.adapter.ServiceCallback;
 import cs10.apps.travels.tracer.databinding.ActivityServiceDetailBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ServicioDao;
+import cs10.apps.travels.tracer.generator.Ramal;
+import cs10.apps.travels.tracer.generator.Station;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 
-public class ServiceDetail extends AppCompatActivity {
-    private ActivityServiceDetailBinding binding;
+public class ServiceDetail extends AppCompatActivity implements ServiceCallback {
     private LinearLayoutManager llm;
-    private RecyclerView.SmoothScroller smoothScroller;
+    private RecyclerView.SmoothScroller scroller;
     private ServiceAdapter adapter;
     private String stopName;
-    private int current;
     private long id;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityServiceDetailBinding.inflate(getLayoutInflater());
+        cs10.apps.travels.tracer.databinding.ActivityServiceDetailBinding binding = ActivityServiceDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
 
         adapter = new ServiceAdapter();
-        adapter.setContext(this);
+        adapter.setCallback(this);
 
         llm = new LinearLayoutManager(this);
         binding.recycler.setAdapter(adapter);
         binding.recycler.setLayoutManager(llm);
 
-        smoothScroller = new LinearSmoothScroller(getApplicationContext()) {
+        scroller = new LinearSmoothScroller(getApplicationContext()) {
             @Override
             protected int getVerticalSnapPreference() {
                 return LinearSmoothScroller.SNAP_TO_START;
@@ -50,31 +54,48 @@ public class ServiceDetail extends AppCompatActivity {
         };
 
         id = getIntent().getLongExtra("id", 0);
+        String ramal = getIntent().getStringExtra("ramal");
         stopName = getIntent().getStringExtra("station");
-        binding.tvTitle.setText("Servicio " + id);
+        binding.tvTitle.setText(getString(R.string.service_title, id, ramal));
 
         new Thread(() -> {
             ServicioDao dao = MiDB.getInstance(this).servicioDao();
             final List<HorarioTren> horarios = dao.getRecorrido(id);
+            final String start = horarios.get(0).getStation();
+            final String destination = horarios.get(horarios.size()-1).getStation();
 
             // change colour according current station
             Calendar calendar = Calendar.getInstance();
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int m = calendar.get(Calendar.MINUTE);
-            boolean found = false;
             int index = 0;
 
-            smoothScroller.setTargetPosition(0);
+            scroller.setTargetPosition(0);
 
             for (HorarioTren h : horarios){
-                if (h.getHour() == hour && h.getMinute() <= m) smoothScroller.setTargetPosition(index);
+                if (h.getHour() == hour && h.getMinute() <= m) scroller.setTargetPosition(index);
 
-                if (!found){
-                    if (h.getStation().equals(stopName)){
-                        h.setService(1);
-                        found = true;
-                    } else h.setService(0);
-                } else h.setService(0);
+                if (h.getStation().equals(stopName)) h.setService(1);
+                else h.setService(0);
+
+                // CASO COMBINACIÓN VIA CIRCUITO > LA PLATA
+                for (Station s : new Station[]{Station.BERA, Station.EZPELETA}){
+                    if (h.getStation().equals(s.getNombre())){
+                        if (start.equals(Station.LA_PLATA.getNombre())){
+                            // El servicio mostrado arrancó en La Plata -> me interesa a Bosques
+                            int target = h.getHour() * 60 + h.getMinute();
+                            HorarioTren comb = dao.getArrival(Ramal.BOSQUES_Q_TEMPERLEY.getNombre(), s.getNombre(), target);
+                            h.setCombinationRamal(Station.TEMPERLEY.getSimplified());
+                            h.setCombination(comb);
+                        } else if (destination.equals(start)){
+                            // El servicio mostrado es un via circuito -> me interesa a La Plata
+                            int target = h.getHour() * 60 + h.getMinute();
+                            HorarioTren comb = dao.getArrival(Station.LA_PLATA.getSimplified(), s.getNombre(), target);
+                            h.setCombinationRamal(Station.LA_PLATA.getSimplified());
+                            h.setCombination(comb);
+                        }
+                    }
+                }
 
                 index++;
             }
@@ -82,8 +103,21 @@ public class ServiceDetail extends AppCompatActivity {
             adapter.setHorarios(horarios);
             runOnUiThread(() -> {
                 adapter.notifyDataSetChanged();
-                new Handler().postDelayed(() -> llm.startSmoothScroll(smoothScroller), 500);
+                new Handler().postDelayed(() -> llm.startSmoothScroll(scroller), 500);
             });
         }, "serviceDetail").start();
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    @Override
+    public void onServiceSelected(long id, String ramal) {
+        Intent intent = new Intent(this, ServiceDetail.class);
+        intent.putExtra("ramal", ramal);
+        intent.putExtra("id", id);
+        startActivity(intent);
     }
 }

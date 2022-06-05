@@ -38,6 +38,16 @@
             android:textSize="18sp"
             android:textColor="@android:color/white"/>
 
+        <TextView
+            android:id="@+id/tv_combination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Combinación: Ramal La Plata (16:02)"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"/>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,13 +1,11 @@
 package cs10.apps.travels.tracer.generator;
 
-import cs10.apps.common.android.CS_Time;
 import cs10.apps.travels.tracer.db.MiDB;
 
-public class ViaCircuitoFiller {
-    private final ViaCircuitoHelper helper;
+public class ViaCircuitoFiller extends AdvancedFiller {
 
     public ViaCircuitoFiller(DelayData delayData){
-        helper = new ViaCircuitoHelper(delayData);
+        super(new ViaCircuitoHelper(delayData));
     }
 
     // versión usando helper
@@ -109,27 +107,5 @@ public class ViaCircuitoFiller {
         helper.create(Station.BOSQUES, 22, 48, Station.TEMPERLEY, false, null, db);
 
         // Hay otro tren que pasa por bosques 22:57 pero CREO que es un diesel de gutierrez
-    }
-
-    private void createAux(Station inicio, int hora, int minuto, int cantidad, int frecuencia,
-                           Station fin, boolean haciaAdelante, Salteo salteo, MiDB db){
-
-        CS_Time time = new CS_Time();
-        time.setHour(hora);
-        time.setMinute(minuto);
-
-        for (int i=0; i<cantidad; i++){
-            helper.create(inicio, time.getHour(), time.getMinute(), fin, haciaAdelante, salteo, db);
-            time.add(frecuencia);
-        }
-    }
-
-    private void createAux(Station inicio, String[] salidas, Station fin, boolean haciaAdelante, Salteo salteo, MiDB db){
-        CS_Time time = new CS_Time();
-
-        for (String s : salidas){
-            time.setFromString(s);
-            helper.create(inicio, time.getHour(), time.getMinute(), fin, haciaAdelante, salteo, db);
-        }
     }
 }

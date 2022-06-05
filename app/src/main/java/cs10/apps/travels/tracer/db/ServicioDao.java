@@ -58,7 +58,7 @@ public interface ServicioDao {
     @Query("SELECT HT.* FROM HorarioTren HT " +
             "inner join ServicioTren ST on HT.service = ST.id " +
             "WHERE ST.ramal = :targetRamal AND HT.station = :currentStation " +
-            "AND (HT.hour * 60 + HT.minute) >= :sinceTime " +
+            "AND (HT.hour * 60 + HT.minute) BETWEEN :sinceTime AND (:sinceTime + 9) " +
             "ORDER BY HT.hour, HT.minute limit 1")
     HorarioTren getArrival(String targetRamal, String currentStation, int sinceTime);
 
@@ -67,4 +67,10 @@ public interface ServicioDao {
 
     @Query("DELETE FROM ServicioTren")
     void dropServicios();
+
+    @Query("DELETE FROM HorarioTren WHERE service >= :targetService")
+    void deleteHorariosSince(long targetService);
+
+    @Query("DELETE FROM ServicioTren WHERE id >= :target")
+    void deleteServicesSince(long target);
 }

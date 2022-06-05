@@ -61,4 +61,10 @@
     <string name="last_charge_info">Tu última recarga fue de $%1$d el día %2$s</string>
     <string name="current_money">Saldo: %1$s</string>
     <string name="porcentage_value">%d%%</string>
+    <string name="combination_info">Combinación: Ramal %1$s (%2$s)</string>
+    <string name="service_title">%1$d - %2$s</string>
+    <string name="destination_full">A %1$s (%2$s)</string>
+    <string name="arrival_time">Hora %1$s</string>
+    <string name="default_train_line">Roca</string>
+    <string name="next_ones_in">Próximos en %1$s</string>
 </resources>

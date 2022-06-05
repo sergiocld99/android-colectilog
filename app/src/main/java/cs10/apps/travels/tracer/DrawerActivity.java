@@ -24,6 +24,7 @@ import com.google.android.material.navigation.NavigationView;
 import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.generator.DelayData;
+import cs10.apps.travels.tracer.generator.GlewFiller;
 import cs10.apps.travels.tracer.generator.LaPlataFiller;
 import cs10.apps.travels.tracer.generator.ViaCircuitoFiller;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
@@ -83,8 +84,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
                 ViaCircuitoFiller filler = new ViaCircuitoFiller(delayData);
                 filler.create2_Q(db);       // hoja 2 de la planilla
                 filler.create2_T(db);       // hoja 1 de la planilla
-                runOnUiThread(() -> Toast.makeText(this,
-                        "Vias Temperley y Bosques creados con éxito", Toast.LENGTH_LONG).show());
+                runOnUiThread(() -> Toast.makeText(this, "Vias Temperley y Bosques creados con éxito", Toast.LENGTH_LONG).show());
             }
 
             // actualización 2: servicio la plata
@@ -94,9 +94,21 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
                 LaPlataFiller filler = new LaPlataFiller(delayData);
                 filler.createIda(db);
                 filler.createVuelta(db);
-                runOnUiThread(() -> Toast.makeText(this,
-                        "Ramal La Plata creado con éxito", Toast.LENGTH_LONG).show());
+                runOnUiThread(() -> Toast.makeText(this, "Ramal La Plata creado con éxito", Toast.LENGTH_LONG).show());
             }
+
+            // actualizacion 3: servicio glew / korn
+            count = db.servicioDao().getServicesCount("Glew");
+            if (count == 0){
+                DelayData delayData = new DelayData();
+                GlewFiller filler = new GlewFiller(delayData);
+                db.servicioDao().deleteHorariosSince(2244);
+                db.servicioDao().deleteServicesSince(2244);
+                filler.createIda(db);
+                filler.createVuelta(db);
+                runOnUiThread(() -> Toast.makeText(this, "Ramal Glew/Korn creado con éxito", Toast.LENGTH_LONG).show());
+            }
+
         }, "trenesDbUpdater");
 
         dbThread.start();

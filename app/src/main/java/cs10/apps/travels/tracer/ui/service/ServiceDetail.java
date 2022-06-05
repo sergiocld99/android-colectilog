@@ -79,7 +79,7 @@ public class ServiceDetail extends AppCompatActivity implements ServiceCallback 
                 else h.setService(0);
 
                 // CASO COMBINACIÓN VIA CIRCUITO > LA PLATA
-                for (Station s : new Station[]{Station.BERA, Station.EZPELETA}){
+                for (Station s : new Station[]{Station.BERA, Station.EZPELETA, Station.QUILMES, Station.BERNAL}){
                     if (h.getStation().equals(s.getNombre())){
                         if (start.equals(Station.LA_PLATA.getNombre())){
                             // El servicio mostrado arrancó en La Plata -> me interesa a Bosques

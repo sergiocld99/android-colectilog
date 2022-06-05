@@ -53,6 +53,15 @@ public class DelayData {
         add(Station.GONNET, Station.RINGUELET, 3);
         add(Station.RINGUELET, Station.TOLOSA, 4);
         add(Station.TOLOSA, Station.LA_PLATA, 3);
+
+        // ------------------- RAMAL GLEW / KORN --------------------------------
+        add(Station.KORN, Station.GUERNICA, 6);
+        add(Station.GUERNICA, Station.GLEW, 4);
+        add(Station.GLEW, Station.LONGCHAMPS, 4);
+        add(Station.LONGCHAMPS, Station.BURZACO, 6);
+        add(Station.BURZACO, Station.ADROGUE, 3);
+        add(Station.ADROGUE, Station.TEMPERLEY, 4);
+        add(Station.ADROGUE, Station.PLAZA, 26);
     }
 
     // add both sides
@@ -66,7 +75,9 @@ public class DelayData {
     }
 
     public int getDelay(int s1, int s2){
-        return DEMORA_MINUTOS[s1][s2];
+        int value = DEMORA_MINUTOS[s1][s2];
+        if (value == 0) throw new RuntimeException("Delay for [" + s1 + "," + s2 + "] is undefined");
+        return value;
     }
 
     public int getDelay(Station s1, Station s2){

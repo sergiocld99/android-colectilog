@@ -1,13 +1,11 @@
 package cs10.apps.travels.tracer.generator;
 
-import cs10.apps.common.android.CS_Time;
 import cs10.apps.travels.tracer.db.MiDB;
 
-public class LaPlataFiller {
-    private final LaPlataHelper helper;
+public class LaPlataFiller extends CircuitoFiller {
 
     public LaPlataFiller(DelayData delayData){
-        this.helper = new LaPlataHelper(delayData);
+        super(new LaPlataHelper(delayData));
     }
 
     public void createIda(MiDB db){
@@ -35,27 +33,5 @@ public class LaPlataFiller {
         String[] salidas = new String[]{"4:23", "4:42", "9:38", "9:59", "13:50", "14:22", "14:50", "15:22", "15:52",
                 "19:12", "19:35", "19:58", "20:22", "20:47", "21:53", "22:17"};
         createAux(Station.LA_PLATA, salidas, Station.PLAZA, false, db);
-    }
-
-    private void createAux(Station inicio, int hora, int minuto, int cantidad, int frecuencia,
-                           Station fin, boolean haciaAdelante, MiDB db){
-
-        CS_Time time = new CS_Time();
-        time.setHour(hora);
-        time.setMinute(minuto);
-
-        for (int i=0; i<cantidad; i++){
-            helper.create(inicio, time.getHour(), time.getMinute(), fin, haciaAdelante, db);
-            time.add(frecuencia);
-        }
-    }
-
-    private void createAux(Station inicio, String[] salidas, Station fin, boolean haciaAdelante, MiDB db){
-        CS_Time time = new CS_Time();
-
-        for (String s : salidas){
-            time.setFromString(s);
-            helper.create(inicio, time.getHour(), time.getMinute(), fin, haciaAdelante, db);
-        }
     }
 }

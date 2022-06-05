@@ -42,7 +42,7 @@ public enum Station {
     LONGCHAMPS("Estación Longchamps"),
     GLEW("Estación Glew"),
     GUERNICA("Estación Guernica"),
-    A_KORN("Estación Alejandro Korn");
+    KORN("Estación Alejandro Korn");
 
     private final String nombre;
 

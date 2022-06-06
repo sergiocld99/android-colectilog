@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +23,7 @@ import cs10.apps.travels.tracer.model.Parada;
 public class HomeFragment extends CS_Fragment {
     private FragmentHomeBinding binding;
     private HomeSliderAdapter sliderAdapter;
+    private double maxDistance;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
@@ -60,14 +60,12 @@ public class HomeFragment extends CS_Fragment {
             Utils.orderByProximity(favourites, location.getLatitude(), location.getLongitude());
             if (favourites.isEmpty()) return;
 
-            double maxDistance = favourites.get(favourites.size()-1).getDistance();
-            double relativeDistance = 1 - (favourites.get(0).getDistance() / maxDistance);
+            maxDistance = favourites.get(favourites.size()-1).getDistance();
 
             doInForeground(() -> {
                 binding.pbar.setVisibility(View.GONE);
                 sliderAdapter.setFavourites(favourites);
                 sliderAdapter.notifyDataSetChanged();
-                Toast.makeText(getContext(), Math.round(relativeDistance*100) + "% de cercanía", Toast.LENGTH_LONG).show();
             });
         }
     }
@@ -78,7 +76,7 @@ public class HomeFragment extends CS_Fragment {
         binding = null;
     }
 
-    private static class HomeSliderAdapter extends FragmentStateAdapter {
+    private class HomeSliderAdapter extends FragmentStateAdapter {
         private List<Parada> favourites;
 
         public HomeSliderAdapter(@NonNull Fragment fragment) {
@@ -89,11 +87,12 @@ public class HomeFragment extends CS_Fragment {
             this.favourites = favourites;
         }
 
-        @NonNull
-        @Override
+        @NonNull @Override
         public Fragment createFragment(int position) {
             StopArrivalsFragment fragment = new StopArrivalsFragment();
-            fragment.setStopName(favourites.get(position).getNombre());
+            Parada parada = favourites.get(position);
+            fragment.setStopName(parada.getNombre());
+            fragment.setProximity(1 - (parada.getDistance() / maxDistance));
             return fragment;
         }
 

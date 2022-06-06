@@ -10,6 +10,13 @@ public enum Station {
     BANFIELD("Estación Banfield"),
     LOMAS("Estación Lomas de Zamora"),
     TEMPERLEY("Estación Temperley"),
+    ADROGUE("Estación Adrogué"),
+    BURZACO("Estación Burzaco"),
+    LONGCHAMPS("Estación Longchamps"),
+    GLEW("Estación Glew"),
+    GUERNICA("Estación Guernica"),
+    KORN("Estación Alejandro Korn"),
+
     MARMOL("Estación José Mármol"),
     CALZADA("Estación Rafael Calzada"),
     CLAYPOLE("Estación Claypole"),
@@ -17,17 +24,19 @@ public enum Station {
     VARELA("Estación Varela"),
     ZEBALLOS("Estación Zeballos"),
     BOSQUES("Estación Bosques"),
-    SOURIGUES("Estación Sourigues"),
-    RANELAGH("Estación Ranelagh"),
-    VILLA_ESP("Estación Villa España"),
-    BERA("Estación Berazategui"),
-    EZPELETA("Estación Ezpeleta"),
-    QUILMES("Estación Quilmes"),
-    BERNAL("Estación Bernal"),
-    DON_BOSCO("Estación Don Bosco"),
-    WILDE("Estación Wilde"),
-    DOMINICO("Estación Villa Domínico"),
+
     SARANDI("Estación Sarandí"),
+    DOMINICO("Estación Villa Domínico"),
+    WILDE("Estación Wilde"),
+    DON_BOSCO("Estación Don Bosco"),
+    BERNAL("Estación Bernal"),
+    QUILMES("Estación Quilmes"),
+    EZPELETA("Estación Ezpeleta"),
+    BERA("Estación Berazategui"),
+    VILLA_ESP("Estación Villa España"),
+    RANELAGH("Estación Ranelagh"),
+    SOURIGUES("Estación Sourigues"),
+
     PLATANOS("Estación Plátanos"),
     HUDSON("Estación Hudson"),
     PEREYRA("Estación Pereyra"),
@@ -36,13 +45,7 @@ public enum Station {
     GONNET("Estación Gonnet"),
     RINGUELET("Estación Ringuelet"),
     TOLOSA("Estación Tolosa"),
-    LA_PLATA("Estación La Plata"),
-    ADROGUE("Estación Adrogué"),
-    BURZACO("Estación Burzaco"),
-    LONGCHAMPS("Estación Longchamps"),
-    GLEW("Estación Glew"),
-    GUERNICA("Estación Guernica"),
-    KORN("Estación Alejandro Korn");
+    LA_PLATA("Estación La Plata");
 
     private final String nombre;
 
@@ -56,5 +59,13 @@ public enum Station {
 
     public String getSimplified(){
         return nombre.replace("Estación","").trim();
+    }
+
+    public static Station findByNombre(String target){
+        for (Station s : values()){
+            if (s.getNombre().equals(target)) return s;
+        }
+
+        return null;
     }
 }

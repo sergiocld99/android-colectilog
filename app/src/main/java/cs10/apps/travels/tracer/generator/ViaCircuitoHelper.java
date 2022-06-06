@@ -42,12 +42,12 @@ public class ViaCircuitoHelper extends AdvancedHelper {
 
         if (fin == Station.BOSQUES){
             if (salteo == Salteo.DIRECTO) return "Bosques T (Directo)";
-            return "Bosques T";
+            return Ramal.BOSQUES_T.getNombre();
         }
 
         if (fin == Station.VARELA){
             if (salteo == Salteo.DIRECTO) return "Varela T (Directo)";
-            return "Varela T";
+            return Ramal.VARELA_T.getNombre();
         }
 
         return fin.getSimplified();

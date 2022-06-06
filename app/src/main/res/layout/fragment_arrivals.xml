@@ -11,10 +11,18 @@
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="@string/menu_home"
+        tools:text="@string/next_ones_in"
         android:textStyle="bold"
         android:paddingHorizontal="16dp"
         android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="97% de cercanía"
+        android:paddingHorizontal="16dp"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -22,6 +30,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/tv_title"
-        tools:listitem="@layout/item_stop" />
+        tools:listitem="@layout/item_arrival" />
 
 </LinearLayout>

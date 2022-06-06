@@ -28,6 +28,9 @@ public class HorarioTren {
     @Ignore
     private String combinationRamal;
 
+    @Ignore
+    private double tarifa;
+
     public String getStation() {
         return station;
     }
@@ -74,5 +77,13 @@ public class HorarioTren {
 
     public void setCombinationRamal(String combinationRamal) {
         this.combinationRamal = combinationRamal;
+    }
+
+    public double getTarifa() {
+        return tarifa;
+    }
+
+    public void setTarifa(double tarifa) {
+        this.tarifa = tarifa;
     }
 }

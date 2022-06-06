@@ -18,10 +18,12 @@ import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.adapter.ServiceAdapter;
 import cs10.apps.travels.tracer.adapter.ServiceCallback;
 import cs10.apps.travels.tracer.databinding.ActivityServiceDetailBinding;
+import cs10.apps.travels.tracer.db.DynamicQuery;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ServicioDao;
 import cs10.apps.travels.tracer.generator.Ramal;
 import cs10.apps.travels.tracer.generator.Station;
+import cs10.apps.travels.tracer.generator.TarifaData;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 
 public class ServiceDetail extends AppCompatActivity implements ServiceCallback {
@@ -59,10 +61,12 @@ public class ServiceDetail extends AppCompatActivity implements ServiceCallback 
         binding.tvTitle.setText(getString(R.string.service_title, id, ramal));
 
         new Thread(() -> {
+            TarifaData tarifaData = new TarifaData();
             ServicioDao dao = MiDB.getInstance(this).servicioDao();
             final List<HorarioTren> horarios = dao.getRecorrido(id);
             final String start = horarios.get(0).getStation();
             final String destination = horarios.get(horarios.size()-1).getStation();
+            final Station current = Station.findByNombre(stopName);
 
             // change colour according current station
             Calendar calendar = Calendar.getInstance();
@@ -78,20 +82,36 @@ public class ServiceDetail extends AppCompatActivity implements ServiceCallback 
                 if (h.getStation().equals(stopName)) h.setService(1);
                 else h.setService(0);
 
+                // TARIFA
+                h.setTarifa(tarifaData.getTarifa(current, h.getStation()));
+
                 // CASO COMBINACIÓN VIA CIRCUITO > LA PLATA
-                for (Station s : new Station[]{Station.BERA, Station.EZPELETA, Station.QUILMES, Station.BERNAL}){
-                    if (h.getStation().equals(s.getNombre())){
-                        if (start.equals(Station.LA_PLATA.getNombre())){
-                            // El servicio mostrado arrancó en La Plata -> me interesa a Bosques
-                            int target = h.getHour() * 60 + h.getMinute();
-                            HorarioTren comb = dao.getArrival(Ramal.BOSQUES_Q_TEMPERLEY.getNombre(), s.getNombre(), target);
-                            h.setCombinationRamal(Station.TEMPERLEY.getSimplified());
+                if (equals(h.getStation(), Station.BERA)){
+                    if (equals(start, Station.LA_PLATA)){
+                        // El servicio mostrado arrancó en La Plata -> me interesa a Bosques
+                        HorarioTren comb = DynamicQuery.findCombination(this, Ramal.BOSQUES_Q_TEMPERLEY.getNombre(), h);
+                        h.setCombinationRamal(Station.TEMPERLEY.getSimplified());
+                        h.setCombination(comb);
+                    } else if (destination.equals(start)){
+                        // El servicio mostrado es un via circuito -> me interesa a La Plata
+                        HorarioTren comb = DynamicQuery.findCombination(this, Station.LA_PLATA.getSimplified(), h);
+                        h.setCombinationRamal(Station.LA_PLATA.getSimplified());
+                        h.setCombination(comb);
+                    }
+                }
+
+                // CASO COMBINACIÓN TEMPERLEY (GLEW > VIA CIRCUITO)
+                for (Station s : new Station[]{Station.TEMPERLEY, Station.LOMAS}){
+                    if (equals(h.getStation(), s)){
+                        if (equals(start, Station.GLEW) || equals(start, Station.KORN)){
+                            // El servicio mostrado empezó en Glew o Korn -> me interesa a Bosques
+                            HorarioTren comb = DynamicQuery.findCombination(this, Ramal.BOSQUES_T.getNombre(), h);
+                            h.setCombinationRamal(Station.BOSQUES.getSimplified());
                             h.setCombination(comb);
-                        } else if (destination.equals(start)){
-                            // El servicio mostrado es un via circuito -> me interesa a La Plata
-                            int target = h.getHour() * 60 + h.getMinute();
-                            HorarioTren comb = dao.getArrival(Station.LA_PLATA.getSimplified(), s.getNombre(), target);
-                            h.setCombinationRamal(Station.LA_PLATA.getSimplified());
+                        } else if (destination.equals(start) || equals(start, Station.BOSQUES)){
+                            // El servicio mostrado es un via circuito -> me interesa a Korn
+                            HorarioTren comb = DynamicQuery.findCombination(this, Station.KORN.getSimplified(), h);
+                            h.setCombinationRamal("Korn");
                             h.setCombination(comb);
                         }
                     }
@@ -101,11 +121,16 @@ public class ServiceDetail extends AppCompatActivity implements ServiceCallback 
             }
 
             adapter.setHorarios(horarios);
+
             runOnUiThread(() -> {
                 adapter.notifyDataSetChanged();
                 new Handler().postDelayed(() -> llm.startSmoothScroll(scroller), 500);
             });
         }, "serviceDetail").start();
+    }
+
+    private boolean equals(String s1, Station s2){
+        return s1.equals(s2.getNombre());
     }
 
     @Override
@@ -116,6 +141,7 @@ public class ServiceDetail extends AppCompatActivity implements ServiceCallback 
     @Override
     public void onServiceSelected(long id, String ramal) {
         Intent intent = new Intent(this, ServiceDetail.class);
+        intent.putExtra("station", stopName);
         intent.putExtra("ramal", ramal);
         intent.putExtra("id", id);
         startActivity(intent);

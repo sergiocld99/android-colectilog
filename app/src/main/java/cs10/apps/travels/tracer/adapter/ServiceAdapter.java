@@ -44,10 +44,12 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ServiceH
         } else if (item.getService() == 0) holder.binding.getRoot().setBackground(null);
         else holder.binding.getRoot().setBackgroundColor(callback.getContext().getResources().getColor(R.color.bus));
 
-        if (item.getCombination() == null) holder.binding.tvCombination.setVisibility(View.GONE);
-        else {
+        if (item.getCombination() == null){
+            // holder.binding.tvCombination.setVisibility(View.GONE);
+            holder.binding.tvCombination.setText("Tarifa: " + Utils.priceFormat(item.getTarifa()));
+        } else {
             HorarioTren comb = item.getCombination();
-            holder.binding.tvCombination.setVisibility(View.VISIBLE);
+            // holder.binding.tvCombination.setVisibility(View.VISIBLE);
             holder.binding.tvCombination.setText(callback.getContext().getString(R.string.combination_info, item.getCombinationRamal(), Utils.hourFormat(comb.getHour(), comb.getMinute())));
             holder.binding.getRoot().setBackgroundColor(callback.getContext().getResources().getColor(R.color.bus_324));
         }

@@ -18,11 +18,11 @@ public class Utils {
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
     @NonNull
-    public static String twoDecimals(int value){
+    public static String twoDecimals(int value) {
         return value < 10 ? "0" + value : String.valueOf(value);
     }
 
-    public static String priceFormat(double value){
+    public static String priceFormat(double value) {
         return "$" + df.format(Math.round(value * 100) / 100d);
     }
 
@@ -52,6 +52,10 @@ public class Utils {
         }
 
         return true;
+    }
+
+    public static String simplify(String stationName){
+        return stationName.replace("Estación","").trim();
     }
 
     public static void orderByProximity(@NonNull List<Parada> list, Double latitude, Double longitude){

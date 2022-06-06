@@ -16,9 +16,11 @@ import java.util.List;
 
 import cs10.apps.common.android.CS_Fragment;
 import cs10.apps.travels.tracer.R;
+import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.adapter.LocatedArrivalsAdapter;
 import cs10.apps.travels.tracer.adapter.ServiceCallback;
 import cs10.apps.travels.tracer.databinding.FragmentArrivalsBinding;
+import cs10.apps.travels.tracer.db.DynamicQuery;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.roca.ArriboTren;
@@ -30,6 +32,7 @@ public class StopArrivalsFragment extends CS_Fragment implements ServiceCallback
     private FragmentArrivalsBinding binding;
     private LocatedArrivalsAdapter adapter;
     private String stopName;
+    private double proximity;
 
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -63,8 +66,8 @@ public class StopArrivalsFragment extends CS_Fragment implements ServiceCallback
             int m = calendar.get(Calendar.MINUTE);
             int now = hour * 60 + m;
 
-            List<Viaje> arrivals = miDB.viajesDao().getNextArrivals(stopName, hour, m);
-            List<RamalSchedule> trenes = miDB.servicioDao().getNextArrivals(stopName, hour, m);
+            List<Viaje> arrivals = DynamicQuery.getNextBusArrivals(getContext(), stopName);
+            List<RamalSchedule> trenes = DynamicQuery.getNextTrainArrivals(getContext(), stopName);
 
             for (RamalSchedule tren : trenes){
                 ArriboTren v = new ArriboTren();
@@ -76,7 +79,7 @@ public class StopArrivalsFragment extends CS_Fragment implements ServiceCallback
                 v.setStartHour(tren.getHour());
                 v.setStartMinute(tren.getMinute());
                 v.setServiceId(tren.getService());
-                v.setNombrePdaFin(end.getStation());
+                v.setNombrePdaFin(Utils.simplify(end.getStation()));
                 v.setNombrePdaInicio(tren.getCabecera());
                 v.setRecorrido(miDB.servicioDao().getRecorridoUntil(tren.getService(), now, target));
                 v.setRecorridoDestino(miDB.servicioDao().getRecorridoFrom(tren.getService(), target));
@@ -90,6 +93,7 @@ public class StopArrivalsFragment extends CS_Fragment implements ServiceCallback
 
             doInForeground(() -> {
                 binding.tvTitle.setText(getString(R.string.next_ones_in, stopName));
+                binding.tvSubtitle.setText(Math.round(proximity*100) + "% de cercanía");
                 adapter.setViajes(arrivals);
                 adapter.notifyDataSetChanged();
             });
@@ -103,5 +107,9 @@ public class StopArrivalsFragment extends CS_Fragment implements ServiceCallback
         intent.putExtra("ramal", ramal);
         intent.putExtra("id", id);
         startActivity(intent);
+    }
+
+    public void setProximity(double v) {
+        this.proximity = v;
     }
 }

@@ -34,9 +34,10 @@ public interface ServicioDao {
 
     @Query("SELECT HT.*, cabecera, ramal FROM HorarioTren HT " +
             "inner join ServicioTren ST on ST.id = HT.service " +
-            "WHERE station is :stopName AND ((hour = :hour and minute >= :minute) or hour > :hour) " +
-            "order by hour, minute limit 10")
-    List<RamalSchedule> getNextArrivals(String stopName, int hour, int minute);
+            "WHERE station is :stopName " +
+            "AND (HT.hour * 60 + HT.minute) between :target and (:target + :timelapse) " +
+            "order by HT.hour, HT.minute limit :cant")
+    List<RamalSchedule> getNextArrivals(String stopName, int target, int cant, int timelapse);
 
     @Query("SELECT * FROM HorarioTren WHERE service = :serviceId ORDER BY hour, minute")
     List<HorarioTren> getRecorrido(long serviceId);
@@ -58,9 +59,9 @@ public interface ServicioDao {
     @Query("SELECT HT.* FROM HorarioTren HT " +
             "inner join ServicioTren ST on HT.service = ST.id " +
             "WHERE ST.ramal = :targetRamal AND HT.station = :currentStation " +
-            "AND (HT.hour * 60 + HT.minute) BETWEEN :sinceTime AND (:sinceTime + 9) " +
+            "AND (HT.hour * 60 + HT.minute) BETWEEN :sinceTime AND (:sinceTime + :maxWait) " +
             "ORDER BY HT.hour, HT.minute limit 1")
-    HorarioTren getArrival(String targetRamal, String currentStation, int sinceTime);
+    HorarioTren getArrival(String targetRamal, String currentStation, int sinceTime, int maxWait);
 
     @Query("DELETE FROM HorarioTren")
     void dropHorarios();

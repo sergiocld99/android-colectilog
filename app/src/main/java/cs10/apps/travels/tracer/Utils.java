@@ -88,6 +88,9 @@ public class Utils {
             case 500:
             case 508:
                 return R.color.bus_500;
+            case 98:
+            case 148:
+                return R.color.bus_98;
             default:
                 return R.color.bus;
         }

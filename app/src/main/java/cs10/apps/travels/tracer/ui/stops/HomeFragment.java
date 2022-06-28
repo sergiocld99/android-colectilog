@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import java.util.Calendar;
 import java.util.List;
 
 import cs10.apps.common.android.CS_Fragment;
@@ -56,7 +57,11 @@ public class HomeFragment extends CS_Fragment {
             DatabaseCallback callback = (DatabaseCallback) getActivity();
             MiDB miDB = callback.getInstanceWhenFinished();
 
-            List<Parada> favourites = miDB.paradasDao().getFavouritesAndTrains();
+            // this month favorites
+            Calendar calendar = Calendar.getInstance();
+            int currentWeekDay = calendar.get(Calendar.DAY_OF_WEEK);
+
+            List<Parada> favourites = miDB.paradasDao().getFavouritesAndTrains(currentWeekDay);
             Utils.orderByProximity(favourites, location.getLatitude(), location.getLongitude());
             if (favourites.isEmpty()) return;
 

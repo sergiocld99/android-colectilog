@@ -163,6 +163,7 @@ public class TravelCreator extends AppCompatActivity {
             viaje.setYear(Integer.parseInt(dateParams[2]));
             viaje.setNombrePdaInicio(startPlace.getNombre());
             viaje.setNombrePdaFin(endPlace.getNombre());
+            Utils.setWeekDay(viaje);
             if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
             if (!ramal.isEmpty()) viaje.setRamal(ramal);
             if (line.isEmpty()) viaje.setTipo(1);

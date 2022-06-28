@@ -165,6 +165,7 @@ public class TravelEditor extends AppCompatActivity {
             viaje.setYear(Integer.parseInt(dateParams[2]));
             viaje.setNombrePdaInicio(startPlace.getNombre());
             viaje.setNombrePdaFin(endPlace.getNombre());
+            Utils.setWeekDay(viaje);
             if (!ramal.isEmpty()) viaje.setRamal(ramal);
             if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
             if (line.isEmpty()){

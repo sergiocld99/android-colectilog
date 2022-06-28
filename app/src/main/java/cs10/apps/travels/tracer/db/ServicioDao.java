@@ -35,9 +35,9 @@ public interface ServicioDao {
     @Query("SELECT HT.*, cabecera, ramal FROM HorarioTren HT " +
             "inner join ServicioTren ST on ST.id = HT.service " +
             "WHERE station is :stopName " +
-            "AND (HT.hour * 60 + HT.minute) between :target and (:target + :timelapse) " +
+            "AND (HT.hour * 60 + HT.minute) >= :target " +
             "order by HT.hour, HT.minute limit :cant")
-    List<RamalSchedule> getNextArrivals(String stopName, int target, int cant, int timelapse);
+    List<RamalSchedule> getNextArrivals(String stopName, int target, int cant);
 
     @Query("SELECT * FROM HorarioTren WHERE service = :serviceId ORDER BY hour, minute")
     List<HorarioTren> getRecorrido(long serviceId);

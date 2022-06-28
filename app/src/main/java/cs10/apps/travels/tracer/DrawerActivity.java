@@ -27,6 +27,7 @@ import cs10.apps.travels.tracer.generator.DelayData;
 import cs10.apps.travels.tracer.generator.GlewFiller;
 import cs10.apps.travels.tracer.generator.LaPlataFiller;
 import cs10.apps.travels.tracer.generator.ViaCircuitoFiller;
+import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
 import cs10.apps.travels.tracer.ui.travels.TravelCreator;
@@ -109,7 +110,13 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
                 runOnUiThread(() -> Toast.makeText(this, "Ramal Glew/Korn creado con éxito", Toast.LENGTH_LONG).show());
             }
 
-        }, "trenesDbUpdater");
+            // actualización 4: dias de la semana
+            for (Viaje v : db.viajesDao().getUndefinedWeekDays()){
+                Utils.setWeekDay(v);
+                db.viajesDao().update(v);
+            }
+
+        }, "dbUpdater");
 
         dbThread.start();
 

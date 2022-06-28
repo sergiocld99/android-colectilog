@@ -2,6 +2,7 @@ package cs10.apps.travels.tracer.model;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
@@ -36,12 +37,23 @@ public class Viaje implements Comparable<Viaje> {
 
     private double costo;
 
+    @ColumnInfo(name = "wd")
+    private int weekDay;
+
     public double getCosto() {
         return costo;
     }
 
     public void setCosto(double costo) {
         this.costo = costo;
+    }
+
+    public int getWeekDay() {
+        return weekDay;
+    }
+
+    public void setWeekDay(int weekDay) {
+        this.weekDay = weekDay;
     }
 
     public long getId() {

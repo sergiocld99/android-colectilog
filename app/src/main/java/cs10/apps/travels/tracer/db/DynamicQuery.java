@@ -38,9 +38,9 @@ public class DynamicQuery {
         int minute = calendar.get(Calendar.MINUTE);
         int target = hour * 60 + minute;
         int cant = getTrainsPrefs(context).getInt("maxArrivals", 10);
-        int timelapse = getTrainsPrefs(context).getInt("timelapse", 60);
+        //int timelapse = getTrainsPrefs(context).getInt("timelapse", 60);
 
-        return getDb(context).servicioDao().getNextArrivals(stopName, target, cant, timelapse);
+        return getDb(context).servicioDao().getNextArrivals(stopName, target, cant);
     }
 
     public static List<Viaje> getNextBusArrivals(Context context, String stopName){
@@ -49,8 +49,8 @@ public class DynamicQuery {
         int minute = calendar.get(Calendar.MINUTE);
         int target = hour * 60 + minute;
         int cant = getBusPrefs(context).getInt("maxArrivals", 6);
-        int timelapse = getBusPrefs(context).getInt("timelapse", 600);
+        //int timelapse = getBusPrefs(context).getInt("timelapse", 600);
 
-        return getDb(context).viajesDao().getNextArrivals(stopName, target, cant, timelapse);
+        return getDb(context).viajesDao().getNextArrivals(stopName, target, cant);
     }
 }

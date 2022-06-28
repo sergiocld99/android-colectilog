@@ -65,7 +65,10 @@ public interface ViajesDao {
     List<Integer> getAllBuses();
 
     @Query("SELECT * FROM Viaje where nombrePdaInicio = :stopName and linea is NOT NULL " +
-            "and (startHour * 60 + startMinute) between :target and (:target + :timelapse) " +
+            "and (startHour * 60 + startMinute) >= :target " +
             "order by startHour, startMinute limit :cant")
-    List<Viaje> getNextArrivals(String stopName, int target, int cant, int timelapse);
+    List<Viaje> getNextArrivals(String stopName, int target, int cant);
+
+    @Query("SELECT * FROM Viaje where wd = 0")
+    List<Viaje> getUndefinedWeekDays();
 }

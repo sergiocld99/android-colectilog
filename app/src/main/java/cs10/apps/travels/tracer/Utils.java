@@ -9,10 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 
 import cs10.apps.travels.tracer.model.Parada;
+import cs10.apps.travels.tracer.model.Viaje;
 
 public class Utils {
     private static final DecimalFormat df = new DecimalFormat("0.00");
@@ -102,5 +104,11 @@ public class Utils {
 
     public static CharSequence hourFormat(int hour, int minute) {
         return hour + ":" + twoDecimals(minute);
+    }
+
+    public static void setWeekDay(Viaje v){
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(v.getYear(), v.getMonth()-1, v.getDay());    // 0 es Enero en Calendar
+        v.setWeekDay(calendar.get(Calendar.DAY_OF_WEEK));
     }
 }

@@ -12,17 +12,17 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
-import cs10.apps.travels.tracer.adapter.EditStopCallback;
-import cs10.apps.travels.tracer.adapter.StopsToAdapter;
+import cs10.apps.travels.tracer.adapter.NextDestinationAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentStopsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.ScheduledParada;
 
-public class NextDestinationsFragment extends Fragment implements EditStopCallback {
+public class NextDestinationsFragment extends Fragment {
     private FragmentStopsBinding binding;
-    private StopsToAdapter adapter;
+    private NextDestinationAdapter adapter;
     private MiDB miDB;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -35,8 +35,10 @@ public class NextDestinationsFragment extends Fragment implements EditStopCallba
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new StopsToAdapter();
-        adapter.setCallback(this);
+        adapter = new NextDestinationAdapter(new LinkedList<>(), (scheduledParada -> {
+            onEditStop(scheduledParada.getNombre());
+            return null;
+        }));
 
         binding.recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recycler.setAdapter(adapter);
@@ -53,7 +55,7 @@ public class NextDestinationsFragment extends Fragment implements EditStopCallba
             miDB = MiDB.getInstance(getContext());
             List<ScheduledParada> paradas = miDB.paradasDao().getScheduledStopsTo(h, m);
             int originalSize = adapter.getItemCount();
-            adapter.setParadas(paradas);
+            adapter.setList(paradas);
 
             if (getActivity() != null){
                 if (originalSize == 0) getActivity().runOnUiThread(() ->
@@ -69,7 +71,6 @@ public class NextDestinationsFragment extends Fragment implements EditStopCallba
         binding = null;
     }
 
-    @Override
     public void onEditStop(String stopName) {
         Intent intent = new Intent(getActivity(), StopEditor.class);
         intent.putExtra("stopName", stopName);

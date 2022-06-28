@@ -67,4 +67,7 @@
     <string name="arrival_time">Hora %1$s</string>
     <string name="default_train_line">Roca</string>
     <string name="next_ones_in">Próximos en %1$s</string>
+    <string name="coords">%1$f, %2$f</string>
+    <string name="distance_km">Distancia: %1$s</string>
+    <string name="title_activity_test">TestActivity</string>
 </resources>

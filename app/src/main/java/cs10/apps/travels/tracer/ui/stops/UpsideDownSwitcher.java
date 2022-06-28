@@ -1,9 +1,7 @@
 package cs10.apps.travels.tracer.ui.stops;
 
-import android.content.Context;
 import android.os.Handler;
 import android.widget.TextSwitcher;
-
 
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.model.ScheduledParada;
@@ -11,13 +9,8 @@ import cs10.apps.travels.tracer.model.ScheduledParada;
 public class UpsideDownSwitcher {
     private TextSwitcher tvSwitcher;
     private ScheduledParada item;
-    private Context context;
     private Runnable r;
     private Handler h;
-
-    public void setContext(Context context) {
-        this.context = context;
-    }
 
     public void setTvSwitcher(TextSwitcher tvSwitcher) {
         this.tvSwitcher = tvSwitcher;
@@ -35,14 +28,14 @@ public class UpsideDownSwitcher {
             try {
                 if (item.switched) {
                     // Slide down
-                    tvSwitcher.setInAnimation(context, R.anim.slide_down_in);
-                    tvSwitcher.setOutAnimation(context, R.anim.slide_down_out);
-                    tvSwitcher.setText(context.getString(R.string.arrives_at, item.getNextArrival()));
+                    tvSwitcher.setInAnimation(tvSwitcher.getContext(), R.anim.slide_down_in);
+                    tvSwitcher.setOutAnimation(tvSwitcher.getContext(), R.anim.slide_down_out);
+                    tvSwitcher.setText(tvSwitcher.getContext().getString(R.string.arrives_at, item.getNextArrival()));
                 } else {
                     // Slide up
-                    tvSwitcher.setInAnimation(context, R.anim.slide_up_in);
-                    tvSwitcher.setOutAnimation(context, R.anim.slide_up_out);
-                    tvSwitcher.setText(context.getString(R.string.next_is, item.getTransportInfo()));
+                    tvSwitcher.setInAnimation(tvSwitcher.getContext(), R.anim.slide_up_in);
+                    tvSwitcher.setOutAnimation(tvSwitcher.getContext(), R.anim.slide_up_out);
+                    tvSwitcher.setText(tvSwitcher.getContext().getString(R.string.next_is, item.getTransportInfo()));
                 }
             } catch (Exception e){
                 stop();

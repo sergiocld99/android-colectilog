@@ -10,20 +10,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import cs10.apps.common.android.CS_Fragment;
 import cs10.apps.travels.tracer.DrawerActivity;
 import cs10.apps.travels.tracer.Utils;
-import cs10.apps.travels.tracer.adapter.EditStopCallback;
-import cs10.apps.travels.tracer.adapter.LocatedStopsAdapter;
+import cs10.apps.travels.tracer.adapter.LocatedStopAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentStopsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
 
-public class StopListFragment extends CS_Fragment implements EditStopCallback {
+public class StopListFragment extends CS_Fragment {
     private FragmentStopsBinding binding;
-    private LocatedStopsAdapter adapter;
+    private LocatedStopAdapter adapter;
     private MiDB miDB;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,8 +35,11 @@ public class StopListFragment extends CS_Fragment implements EditStopCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new LocatedStopsAdapter();
-        adapter.setCallback(this);
+        adapter = new LocatedStopAdapter(new LinkedList<>(), (parada) -> {
+            onEditStop(parada.getNombre());
+            return null;
+        });
+
         binding.recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recycler.setAdapter(adapter);
     }
@@ -56,7 +59,7 @@ public class StopListFragment extends CS_Fragment implements EditStopCallback {
                 Utils.orderByProximity(paradas, latitude, longitude);
 
                 int originalSize = adapter.getItemCount();
-                adapter.setParadas(paradas);
+                adapter.setParadasList(paradas);
 
                 if (originalSize == 0) doInForeground(() ->
                         adapter.notifyItemRangeInserted(0, paradas.size()));
@@ -71,8 +74,7 @@ public class StopListFragment extends CS_Fragment implements EditStopCallback {
         binding = null;
     }
 
-    @Override
-    public void onEditStop(String stopName) {
+    private void onEditStop(String stopName) {
         Intent intent = new Intent(getActivity(), StopEditor.class);
         intent.putExtra("stopName", stopName);
         startActivity(intent);

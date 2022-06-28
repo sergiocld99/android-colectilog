@@ -71,4 +71,7 @@ public interface ViajesDao {
 
     @Query("SELECT * FROM Viaje where wd = 0")
     List<Viaje> getUndefinedWeekDays();
+
+    @Query("SELECT DISTINCT ramal FROM Viaje where ramal like '___%' order by ramal")
+    List<String> getAllRamals();
 }

@@ -40,15 +40,10 @@ public interface ParadasDao {
             "order by startHour, startMinute) group by nombre order by startHour, startMinute")
     List<ScheduledParada> getScheduledStopsTo(int hour, int minute);
 
-    @Query("SELECT p.* FROM parada p inner join viaje v on v.nombrePdaInicio = p.nombre " +
-            "group by nombre order by count(*) desc limit 4")
-    List<Parada> getFavouriteStops();
-
     @Query("SELECT p.* FROM parada p " +
-            "inner join viaje v on v.nombrePdaInicio = p.nombre " +
-            "left join horariotren h on h.station = p.nombre where v.wd = :current " +
+            "inner join viaje v on v.nombrePdaInicio = p.nombre where v.wd = :current " +
             "group by nombre order by count(*) desc limit 8")
-    List<Parada> getFavouritesAndTrains(int current);
+    List<Parada> getFavouriteStops(int current);
 
     @Query("SELECT * FROM Parada WHERE nombre IN " +
             "(SELECT nombrePdaInicio FROM Viaje WHERE linea IS :busLine) OR nombre IN" +

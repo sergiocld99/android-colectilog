@@ -31,6 +31,7 @@ import cs10.apps.travels.tracer.ui.stops.StopCreator;
 public class TravelCreator extends AppCompatActivity {
     private ContentTravelCreatorBinding content;
     private ArrayAdapter<? extends Parada> startAdapter, endAdapter;
+    private ArrayAdapter<String> ramalAdapter;
     private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
     private FusedLocationProviderClient client;
     private List<Parada> paradas;
@@ -75,8 +76,26 @@ public class TravelCreator extends AppCompatActivity {
         content.etDate.setText(Utils.dateFormat(day, month, year));
         content.etStartHour.setText(Utils.hourFormat(hour, minute));
 
+        // hint values
+        autoFillRamals();
+
         client = LocationServices.getFusedLocationProviderClient(this);
         getLocation();
+    }
+
+    private void autoFillRamals() {
+        new Thread(() -> {
+            List<String> ramals = MiDB.getInstance(this).viajesDao().getAllRamals();
+
+            runOnUiThread(() -> {
+                String[] test = new String[]{
+                        "Canning", "Centenario", "Colón"
+                };
+
+                ramalAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ramals);
+                content.etRamal.setAdapter(ramalAdapter);
+            });
+        }).start();
     }
 
     private void getLocation() throws SecurityException {

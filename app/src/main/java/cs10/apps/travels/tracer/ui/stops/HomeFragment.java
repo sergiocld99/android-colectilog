@@ -61,7 +61,7 @@ public class HomeFragment extends CS_Fragment {
             Calendar calendar = Calendar.getInstance();
             int currentWeekDay = calendar.get(Calendar.DAY_OF_WEEK);
 
-            List<Parada> favourites = miDB.paradasDao().getFavouritesAndTrains(currentWeekDay);
+            List<Parada> favourites = miDB.paradasDao().getFavouriteStops(currentWeekDay);
             Utils.orderByProximity(favourites, location.getLatitude(), location.getLongitude());
             if (favourites.isEmpty()) return;
 

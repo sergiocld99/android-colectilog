@@ -34,7 +34,7 @@ public class NextArrivalsFragment extends CS_Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new NextArrivalAdapter(new LinkedList<>(), (scheduledParada) -> {
+        adapter = new NextArrivalAdapter(new LinkedList<>(), scheduledParada -> {
             onEditStop(scheduledParada.getNombre());
             return null;
         });

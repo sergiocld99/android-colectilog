@@ -8,17 +8,18 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import cs10.apps.common.android.CS_Fragment;
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
-import cs10.apps.travels.tracer.adapter.LocatedArrivalsAdapter;
-import cs10.apps.travels.tracer.adapter.ServiceCallback;
+import cs10.apps.travels.tracer.adapter.LocatedArrivalAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentArrivalsBinding;
 import cs10.apps.travels.tracer.db.DynamicQuery;
 import cs10.apps.travels.tracer.db.MiDB;
@@ -27,16 +28,37 @@ import cs10.apps.travels.tracer.model.roca.ArriboTren;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 import cs10.apps.travels.tracer.model.roca.RamalSchedule;
 import cs10.apps.travels.tracer.ui.service.ServiceDetail;
+import cs10.apps.travels.tracer.viewmodel.LocatedArrivalVM;
 
-public class StopArrivalsFragment extends CS_Fragment implements ServiceCallback {
+public class StopArrivalsFragment extends CS_Fragment {
     private FragmentArrivalsBinding binding;
-    private LocatedArrivalsAdapter adapter;
+    private LocatedArrivalAdapter adapter;
     private String stopName;
-    private double proximity;
+
+    // ViewModel
+    private LocatedArrivalVM locatedArrivalVM;
 
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentArrivalsBinding.inflate(inflater, container, false);
+        locatedArrivalVM = new ViewModelProvider(this).get(LocatedArrivalVM.class);
+
+        locatedArrivalVM.getStopName().observe(getViewLifecycleOwner(), s ->
+                binding.tvTitle.setText(getString(R.string.next_ones_in, s))
+        );
+
+        locatedArrivalVM.getProximity().observe(getViewLifecycleOwner(), proximity ->
+                binding.tvSubtitle.setText(getString(R.string.proximity_porcentage, Math.round(proximity*100)))
+        );
+
+        locatedArrivalVM.getArrivals().observe(getViewLifecycleOwner(), arrivals -> {
+            int ogSize = adapter.getItemCount();
+            adapter.setList(arrivals);
+
+            if (ogSize == 0) adapter.notifyItemRangeInserted(0, arrivals.size());
+            else adapter.notifyDataSetChanged();
+        });
+
         return binding.getRoot();
     }
 
@@ -44,15 +66,22 @@ public class StopArrivalsFragment extends CS_Fragment implements ServiceCallback
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new LocatedArrivalsAdapter();
-        adapter.setCallback(this);
+        adapter = new LocatedArrivalAdapter(new LinkedList<>(), locatedArrivalVM, arriboTren -> {
+            onServiceSelected(arriboTren.getServiceId(), arriboTren.getRamal());
+            return null;
+        });
 
         binding.recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recycler.setAdapter(adapter);
-    }
 
-    public void setStopName(String stopName) {
-        this.stopName = stopName;
+        // get arguments
+        Bundle args = getArguments();
+
+        if (args != null){
+            stopName = args.getString("stopName");
+            locatedArrivalVM.getStopName().postValue(stopName);
+            locatedArrivalVM.getProximity().postValue(args.getDouble("proximity"));
+        }
     }
 
     @Override
@@ -91,25 +120,15 @@ public class StopArrivalsFragment extends CS_Fragment implements ServiceCallback
 
             Collections.sort(arrivals);
 
-            doInForeground(() -> {
-                binding.tvTitle.setText(getString(R.string.next_ones_in, stopName));
-                binding.tvSubtitle.setText(Math.round(proximity*100) + "% de cercanía");
-                adapter.setViajes(arrivals);
-                adapter.notifyDataSetChanged();
-            });
+            doInForeground(() -> locatedArrivalVM.getArrivals().postValue(arrivals));
         });
     }
 
-    @Override
-    public void onServiceSelected(long id, String ramal) {
+    private void onServiceSelected(long id, String ramal) {
         Intent intent = new Intent(getActivity(), ServiceDetail.class);
         intent.putExtra("station", stopName);
         intent.putExtra("ramal", ramal);
         intent.putExtra("id", id);
         startActivity(intent);
-    }
-
-    public void setProximity(double v) {
-        this.proximity = v;
     }
 }

@@ -96,8 +96,12 @@ public class HomeFragment extends CS_Fragment {
         public Fragment createFragment(int position) {
             StopArrivalsFragment fragment = new StopArrivalsFragment();
             Parada parada = favourites.get(position);
-            fragment.setStopName(parada.getNombre());
-            fragment.setProximity(1 - (parada.getDistance() / maxDistance));
+
+            Bundle args = new Bundle();
+            args.putString("stopName", parada.getNombre());
+            args.putDouble("proximity", 1 - (parada.getDistance() / maxDistance));
+            fragment.setArguments(args);
+
             return fragment;
         }
 

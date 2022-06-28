@@ -11,19 +11,16 @@ import cs10.apps.travels.tracer.ui.stops.UpsideDownSwitcher
 
 open class NextEventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    val binding = ItemStopBinding.bind(view)
+    protected val binding = ItemStopBinding.bind(view)
     private val upsideDownSwitcher = UpsideDownSwitcher()
 
     open fun render(item: ScheduledParada, top : Boolean, onClickListener: (ScheduledParada) -> Unit) {
         binding.tvName.text = item.nombre
 
-        val icon = if (item.tipo == 0) {
-            AppCompatResources.getDrawable(binding.root.context, R.drawable.ic_bus)
-        } else {
-            AppCompatResources.getDrawable(binding.root.context, R.drawable.ic_train)
-        }
+        val icon = if (item.tipo == 0) R.drawable.ic_bus
+        else R.drawable.ic_train
 
-        binding.ivType.setImageDrawable(icon)
+        binding.ivType.setImageDrawable(AppCompatResources.getDrawable(binding.root.context, icon))
 
         binding.root.background = AppCompatResources.getDrawable(
             binding.root.context,

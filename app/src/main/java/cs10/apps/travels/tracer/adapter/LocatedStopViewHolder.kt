@@ -11,7 +11,7 @@ import cs10.apps.travels.tracer.model.Parada
 class LocatedStopViewHolder(view : View) : RecyclerView.ViewHolder(view) {
 
     // View Binding
-    val binding = ItemStopBinding.bind(view)
+    private val binding = ItemStopBinding.bind(view)
 
     // Función para pintar el layout de este item
     fun render(parada: Parada, onClickListener: (Parada) -> Unit){

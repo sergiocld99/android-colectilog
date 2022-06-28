@@ -49,8 +49,8 @@ public class ETA_Switcher {
                     }
 
                     // Slide down
-                    tvSwitcher.setInAnimation(callback.getContext(), R.anim.slide_down_in);
-                    tvSwitcher.setOutAnimation(callback.getContext(), R.anim.slide_down_out);
+                    tvSwitcher.setInAnimation(tvSwitcher.getContext(), R.anim.slide_down_in);
+                    tvSwitcher.setOutAnimation(tvSwitcher.getContext(), R.anim.slide_down_out);
                     if (diffM > 0) {
                         if (item.estaEnCabecera()) tvSwitcher.setText("Sale del andén en " + diffM + " minutos");
                         else tvSwitcher.setText("Llega al andén en " + diffM + " minutos");
@@ -64,8 +64,8 @@ public class ETA_Switcher {
                     HorarioTren horarioC = item.getRecorrido().get(item.getAux());
 
                     // Slide up
-                    tvSwitcher.setInAnimation(callback.getContext(), R.anim.slide_up_in);
-                    tvSwitcher.setOutAnimation(callback.getContext(), R.anim.slide_up_out);
+                    tvSwitcher.setInAnimation(tvSwitcher.getContext(), R.anim.slide_up_in);
+                    tvSwitcher.setOutAnimation(tvSwitcher.getContext(), R.anim.slide_up_out);
                     tvSwitcher.setText(Utils.hourFormat(horarioC.getHour(), horarioC.getMinute()) + " - " + horarioC.getStation());
                     times++;
                 }

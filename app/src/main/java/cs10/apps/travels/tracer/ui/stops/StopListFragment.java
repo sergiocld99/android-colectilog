@@ -35,7 +35,7 @@ public class StopListFragment extends CS_Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new LocatedStopAdapter(new LinkedList<>(), (parada) -> {
+        adapter = new LocatedStopAdapter(new LinkedList<>(), parada -> {
             onEditStop(parada.getNombre());
             return null;
         });

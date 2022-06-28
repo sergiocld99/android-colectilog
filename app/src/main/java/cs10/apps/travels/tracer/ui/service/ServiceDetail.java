@@ -1,22 +1,22 @@
 package cs10.apps.travels.tracer.ui.service;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 import cs10.apps.travels.tracer.R;
-import cs10.apps.travels.tracer.adapter.ServiceAdapter;
-import cs10.apps.travels.tracer.adapter.ServiceCallback;
+import cs10.apps.travels.tracer.adapter.TrainScheduleAdapter;
 import cs10.apps.travels.tracer.databinding.ActivityServiceDetailBinding;
 import cs10.apps.travels.tracer.db.DynamicQuery;
 import cs10.apps.travels.tracer.db.MiDB;
@@ -25,28 +25,33 @@ import cs10.apps.travels.tracer.generator.Ramal;
 import cs10.apps.travels.tracer.generator.Station;
 import cs10.apps.travels.tracer.generator.TarifaData;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
+import cs10.apps.travels.tracer.viewmodel.ServiceVM;
 
-public class ServiceDetail extends AppCompatActivity implements ServiceCallback {
+public class ServiceDetail extends AppCompatActivity {
     private LinearLayoutManager llm;
     private RecyclerView.SmoothScroller scroller;
-    private ServiceAdapter adapter;
+    private TrainScheduleAdapter adapter;
     private String stopName;
     private long id;
+
+    // ViewModel
+    private ActivityServiceDetailBinding binding;
+    private ServiceVM serviceVM;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        cs10.apps.travels.tracer.databinding.ActivityServiceDetailBinding binding = ActivityServiceDetailBinding.inflate(getLayoutInflater());
+        binding = ActivityServiceDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
 
-        adapter = new ServiceAdapter();
-        adapter.setCallback(this);
-
-        llm = new LinearLayoutManager(this);
-        binding.recycler.setAdapter(adapter);
-        binding.recycler.setLayoutManager(llm);
+        // adapter
+        adapter = new TrainScheduleAdapter(new LinkedList<>(), item -> {
+            if (item.getCombination() != null)
+                onServiceSelected(item.getCombination().getService(), item.getCombinationRamal());
+            return null;
+        });
 
         scroller = new LinearSmoothScroller(getApplicationContext()) {
             @Override
@@ -55,11 +60,32 @@ public class ServiceDetail extends AppCompatActivity implements ServiceCallback 
             }
         };
 
-        id = getIntent().getLongExtra("id", 0);
-        String ramal = getIntent().getStringExtra("ramal");
-        stopName = getIntent().getStringExtra("station");
-        binding.tvTitle.setText(getString(R.string.service_title, id, ramal));
+        llm = new LinearLayoutManager(this);
 
+        // view model
+        serviceVM = new ViewModelProvider(this).get(ServiceVM.class);
+
+        serviceVM.getService().observe(this, servicioTren -> {
+            binding.tvTitle.setText(getString(R.string.service_title, servicioTren.getId(), servicioTren.getRamal()));
+        });
+
+        serviceVM.getSchedules().observe(this, horarios -> {
+            int originalSize = adapter.getItemCount();
+            adapter.setList(horarios);
+            if (originalSize == 0) adapter.notifyItemRangeInserted(0, horarios.size());
+            else adapter.notifyDataSetChanged();
+            new Handler().postDelayed(() -> llm.startSmoothScroll(scroller), 1000);
+        });
+
+        // UI
+        binding.recycler.setAdapter(adapter);
+        binding.recycler.setLayoutManager(llm);
+
+        receiveExtras();
+        findService();
+    }
+
+    private void findService() {
         new Thread(() -> {
             TarifaData tarifaData = new TarifaData();
             ServicioDao dao = MiDB.getInstance(this).servicioDao();
@@ -120,26 +146,25 @@ public class ServiceDetail extends AppCompatActivity implements ServiceCallback 
                 index++;
             }
 
-            adapter.setHorarios(horarios);
+            runOnUiThread(() -> serviceVM.getSchedules().postValue(horarios));
+            // adapter.setList(horarios);
 
-            runOnUiThread(() -> {
-                adapter.notifyDataSetChanged();
-                new Handler().postDelayed(() -> llm.startSmoothScroll(scroller), 500);
-            });
         }, "serviceDetail").start();
+    }
+
+    private void receiveExtras() {
+        id = getIntent().getLongExtra("id", 0);
+        stopName = getIntent().getStringExtra("station");
+        String ramal = getIntent().getStringExtra("ramal");
+
+        serviceVM.setData(id, ramal, stopName);
     }
 
     private boolean equals(String s1, Station s2){
         return s1.equals(s2.getNombre());
     }
 
-    @Override
-    public Context getContext() {
-        return this;
-    }
-
-    @Override
-    public void onServiceSelected(long id, String ramal) {
+    private void onServiceSelected(long id, String ramal) {
         Intent intent = new Intent(this, ServiceDetail.class);
         intent.putExtra("station", stopName);
         intent.putExtra("ramal", ramal);

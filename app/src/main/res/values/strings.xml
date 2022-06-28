@@ -70,4 +70,6 @@
     <string name="coords">%1$f, %2$f</string>
     <string name="distance_km">Distancia: %1$s</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="train_price">Tarifa: %1$s</string>
+    <string name="proximity_porcentage">%1$d%% de cercania</string>
 </resources>

@@ -25,6 +25,8 @@
             android:layout_height="wrap_content"
             android:textSize="24sp"
             android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
             tools:text="Estación Temperley"
             android:textColor="@android:color/white"/>
 

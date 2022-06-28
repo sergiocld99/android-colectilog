@@ -35,10 +35,10 @@ public class NextDestinationsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new NextDestinationAdapter(new LinkedList<>(), (scheduledParada -> {
+        adapter = new NextDestinationAdapter(new LinkedList<>(), scheduledParada -> {
             onEditStop(scheduledParada.getNombre());
             return null;
-        }));
+        });
 
         binding.recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recycler.setAdapter(adapter);

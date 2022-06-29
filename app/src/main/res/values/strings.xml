@@ -61,7 +61,7 @@
     <string name="last_charge_info">Tu última recarga fue de $%1$d el día %2$s</string>
     <string name="current_money">Saldo: %1$s</string>
     <string name="porcentage_value">%d%%</string>
-    <string name="combination_info">Combinación: Ramal %1$s (%2$s)</string>
+    <string name="combination_info">Combina: Ramal %1$s (%2$s)</string>
     <string name="service_title">%1$d - %2$s</string>
     <string name="destination_full">A %1$s (%2$s)</string>
     <string name="arrival_time">Hora %1$s</string>
@@ -71,5 +71,5 @@
     <string name="distance_km">Distancia: %1$s</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="train_price">Tarifa: %1$s</string>
-    <string name="proximity_porcentage">%1$d%% de cercania</string>
+    <string name="proximity_porcentage">%1$.2f%% de cercania</string>
 </resources>

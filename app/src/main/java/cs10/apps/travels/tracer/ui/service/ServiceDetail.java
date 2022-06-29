@@ -3,6 +3,7 @@ package cs10.apps.travels.tracer.ui.service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -96,6 +97,9 @@ public class ServiceDetail extends AppCompatActivity {
 
         receiveExtras();
         findService();
+
+        // Keep device awake
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override

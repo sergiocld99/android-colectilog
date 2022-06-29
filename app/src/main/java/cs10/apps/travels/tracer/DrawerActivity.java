@@ -1,8 +1,10 @@
 package cs10.apps.travels.tracer;
 
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
+
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -11,14 +13,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.material.navigation.NavigationView;
 
 import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
@@ -31,14 +38,18 @@ import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
 import cs10.apps.travels.tracer.ui.travels.TravelCreator;
+import cs10.apps.travels.tracer.viewmodel.LocationVM;
 
 public class DrawerActivity extends AppCompatActivity implements DatabaseCallback {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityDrawerBinding binding;
     private FusedLocationProviderClient client;
-    private Double latitude, longitude;
 
     private Thread dbThread;
+    private LocationCallback locationCallback;
+
+    // ViewModel
+    private LocationVM locationVM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +79,11 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        client = LocationServices.getFusedLocationProviderClient(this);
+        client = getFusedLocationProviderClient(this);
         Utils.checkPermissions(this);
+
+        // ViewModel
+        locationVM = new ViewModelProvider(this).get(LocationVM.class);
 
         // Re-create Via Circuito if is needed
         dbThread = new Thread(() -> {
@@ -90,7 +104,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
 
             // actualización 2: servicio la plata
             count = db.servicioDao().getServicesCount("La Plata");
-            if (count == 0){
+            if (count == 0) {
                 DelayData delayData = new DelayData();
                 LaPlataFiller filler = new LaPlataFiller(delayData);
                 filler.createIda(db);
@@ -100,7 +114,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
 
             // actualizacion 3: servicio glew / korn
             count = db.servicioDao().getServicesCount("Glew");
-            if (count == 0){
+            if (count == 0) {
                 DelayData delayData = new DelayData();
                 GlewFiller filler = new GlewFiller(delayData);
                 db.servicioDao().deleteHorariosSince(2244);
@@ -111,7 +125,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
             }
 
             // actualización 4: dias de la semana
-            for (Viaje v : db.viajesDao().getUndefinedWeekDays()){
+            for (Viaje v : db.viajesDao().getUndefinedWeekDays()) {
                 Utils.setWeekDay(v);
                 db.viajesDao().update(v);
             }
@@ -119,6 +133,14 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         }, "dbUpdater");
 
         dbThread.start();
+
+        // Location
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                locationVM.getLocation().postValue(locationResult.getLastLocation());
+            }
+        };
 
         // Keep device awake
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -134,7 +156,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        if (item.getItemId() == R.id.action_coffee){
+        if (item.getItemId() == R.id.action_coffee) {
             startActivity(new Intent(this, CoffeeCreator.class));
             return true;
         } else return super.onOptionsItemSelected(item);
@@ -143,20 +165,36 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
     @Override
     protected void onResume() {
         super.onResume();
-        getCurrentLocation();
+        startLocationUpdates();
     }
 
-    public void getCurrentLocation() throws SecurityException {
-        if (Utils.checkPermissions(this)) client.getLastLocation().addOnSuccessListener(location -> {
-            if (location == null) return;
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
-        });
+    @Override
+    protected void onStop() {
+        super.onStop();
+        client.removeLocationUpdates(locationCallback);
     }
 
-    public Task<Location> requestCurrentLocation() throws SecurityException {
-        if (Utils.checkPermissions(this)) return client.getLastLocation();
-        return null;
+    // Trigger new location updates at interval
+    protected void startLocationUpdates() throws SecurityException {
+        if (!Utils.checkPermissions(this)) return;
+
+        // Create the location request to start receiving updates
+        LocationRequest mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(15000);
+        mLocationRequest.setFastestInterval(10000);
+
+        // Create LocationSettingsRequest object using location request
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        LocationSettingsRequest locationSettingsRequest = builder.build();
+
+        // Check whether location settings are satisfied
+        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
+        settingsClient.checkLocationSettings(locationSettingsRequest);
+
+        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
+        client.requestLocationUpdates(mLocationRequest, locationCallback, Looper.getMainLooper());
     }
 
     @Override
@@ -165,19 +203,11 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
     @Override
     public MiDB getInstanceWhenFinished() {
         try {
             if (dbThread != null) dbThread.join();
-        } catch (InterruptedException e){
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 

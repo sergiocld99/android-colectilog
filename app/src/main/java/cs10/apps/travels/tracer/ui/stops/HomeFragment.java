@@ -9,22 +9,29 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.Calendar;
 import java.util.List;
 
 import cs10.apps.common.android.CS_Fragment;
-import cs10.apps.travels.tracer.DrawerActivity;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.FragmentHomeBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
+import cs10.apps.travels.tracer.viewmodel.HomeVM;
+import cs10.apps.travels.tracer.viewmodel.LocationVM;
 
 public class HomeFragment extends CS_Fragment {
     private FragmentHomeBinding binding;
     private HomeSliderAdapter sliderAdapter;
-    private double maxDistance;
+
+    // ViewModel
+    private HomeVM homeVM;
+    private LocationVM locationVM;
+    private Observer<Location> firstLocationObserver;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
@@ -37,23 +44,29 @@ public class HomeFragment extends CS_Fragment {
 
         sliderAdapter = new HomeSliderAdapter(this);
         binding.viewPager.setAdapter(sliderAdapter);
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        binding.pbar.setVisibility(View.VISIBLE);
+        homeVM = new ViewModelProvider(requireActivity()).get(HomeVM.class);
+        locationVM = new ViewModelProvider(requireActivity()).get(LocationVM.class);
 
-        if (getActivity() instanceof DrawerActivity){
-            DrawerActivity activity = (DrawerActivity) getActivity();
-            activity.requestCurrentLocation().addOnSuccessListener(location -> {
-                if (location != null) doInBackground(() -> onBuildHome(location));
-            });
-        }
+        homeVM.getFavoriteStops().observe(getViewLifecycleOwner(), favoriteStops -> {
+            sliderAdapter.setFavourites(favoriteStops);
+            sliderAdapter.notifyDataSetChanged();
+            binding.pbar.setVisibility(View.GONE);
+        });
+
+        firstLocationObserver = location -> {
+            binding.pbar.setVisibility(View.VISIBLE);
+            onBuildHome(location);
+        };
+
+        locationVM.getLocation().observe(getViewLifecycleOwner(), firstLocationObserver);
     }
 
     public void onBuildHome(Location location){
-        if (getActivity() instanceof DatabaseCallback){
+        // avoid multiple calls
+        locationVM.getLocation().removeObserver(firstLocationObserver);
+
+        if (getActivity() instanceof DatabaseCallback) doInBackground(() -> {
             DatabaseCallback callback = (DatabaseCallback) getActivity();
             MiDB miDB = callback.getInstanceWhenFinished();
 
@@ -61,18 +74,14 @@ public class HomeFragment extends CS_Fragment {
             Calendar calendar = Calendar.getInstance();
             int currentWeekDay = calendar.get(Calendar.DAY_OF_WEEK);
 
-            List<Parada> favourites = miDB.paradasDao().getFavouriteStops(currentWeekDay);
-            Utils.orderByProximity(favourites, location.getLatitude(), location.getLongitude());
-            if (favourites.isEmpty()) return;
+            List<Parada> favoriteStops = miDB.paradasDao().getFavouriteStops(currentWeekDay);
+            Utils.orderByProximity(favoriteStops, location.getLatitude(), location.getLongitude());
 
-            maxDistance = favourites.get(favourites.size()-1).getDistance();
+            homeVM.getFavoriteStops().postValue(favoriteStops);
 
-            doInForeground(() -> {
-                binding.pbar.setVisibility(View.GONE);
-                sliderAdapter.setFavourites(favourites);
-                sliderAdapter.notifyDataSetChanged();
-            });
-        }
+            double maxDistance = favoriteStops.get(favoriteStops.size()-1).getDistance();
+            homeVM.getMaxDistance().postValue(maxDistance);
+        });
     }
 
     @Override
@@ -95,11 +104,9 @@ public class HomeFragment extends CS_Fragment {
         @NonNull @Override
         public Fragment createFragment(int position) {
             StopArrivalsFragment fragment = new StopArrivalsFragment();
-            Parada parada = favourites.get(position);
 
             Bundle args = new Bundle();
-            args.putString("stopName", parada.getNombre());
-            args.putDouble("proximity", 1 - (parada.getDistance() / maxDistance));
+            args.putInt("pos", position);
             fragment.setArguments(args);
 
             return fragment;

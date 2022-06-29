@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import cs10.apps.common.android.Clock;
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.adapter.TrainScheduleAdapter;
 import cs10.apps.travels.tracer.databinding.ActivityServiceDetailBinding;
@@ -37,6 +38,7 @@ public class ServiceDetail extends AppCompatActivity {
     // ViewModel
     private ActivityServiceDetailBinding binding;
     private ServiceVM serviceVM;
+    private Clock clock;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,7 +49,7 @@ public class ServiceDetail extends AppCompatActivity {
         setSupportActionBar(binding.toolbar);
 
         // adapter
-        adapter = new TrainScheduleAdapter(new LinkedList<>(), item -> {
+        adapter = new TrainScheduleAdapter(new LinkedList<>(), null, item -> {
             if (item.getCombination() != null)
                 onServiceSelected(item.getCombination().getService(), item.getCombinationRamal());
             return null;
@@ -74,8 +76,19 @@ public class ServiceDetail extends AppCompatActivity {
             adapter.setList(horarios);
             if (originalSize == 0) adapter.notifyItemRangeInserted(0, horarios.size());
             else adapter.notifyDataSetChanged();
+            new Handler().postDelayed(() -> clock.start(), 1000);
+        });
+
+        serviceVM.getCurrent().observe(this, value -> {
+            int target = (value / 3) * 3;
+            scroller.setTargetPosition(target);
+            adapter.setCurrent(value);
+            adapter.notifyDataSetChanged();
+
             new Handler().postDelayed(() -> llm.startSmoothScroll(scroller), 1000);
         });
+
+        clock = new Clock(serviceVM);
 
         // UI
         binding.recycler.setAdapter(adapter);
@@ -83,6 +96,11 @@ public class ServiceDetail extends AppCompatActivity {
 
         receiveExtras();
         findService();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private void findService() {
@@ -157,7 +175,7 @@ public class ServiceDetail extends AppCompatActivity {
         stopName = getIntent().getStringExtra("station");
         String ramal = getIntent().getStringExtra("ramal");
 
-        serviceVM.setData(id, ramal, stopName);
+        serviceVM.setData(id, ramal);
     }
 
     private boolean equals(String s1, Station s2){
@@ -170,5 +188,11 @@ public class ServiceDetail extends AppCompatActivity {
         intent.putExtra("ramal", ramal);
         intent.putExtra("id", id);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        clock.stop();
     }
 }

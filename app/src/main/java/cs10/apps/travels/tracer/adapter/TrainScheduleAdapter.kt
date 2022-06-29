@@ -8,7 +8,8 @@ import cs10.apps.travels.tracer.model.roca.HorarioTren
 
 class TrainScheduleAdapter(
     var list: List<HorarioTren>,
-    val onClickListener: (HorarioTren) -> Unit
+    var current: Int?,
+    private val onClickListener: (HorarioTren) -> Unit
 ) : RecyclerView.Adapter<TrainScheduleViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrainScheduleViewHolder {
@@ -17,12 +18,18 @@ class TrainScheduleAdapter(
     }
 
     override fun onBindViewHolder(holder: TrainScheduleViewHolder, position: Int) {
-        holder.render(list[position], position == 0 || position == itemCount-1, onClickListener)
+        val item = list[position]
+
+        holder.render(
+            item,
+            position == 0 || position == itemCount - 1,
+            position == current,
+            onClickListener
+        )
     }
 
     override fun getItemCount(): Int {
         return list.size
     }
-
 
 }

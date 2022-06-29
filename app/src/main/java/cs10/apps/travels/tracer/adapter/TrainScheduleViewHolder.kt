@@ -1,6 +1,7 @@
 package cs10.apps.travels.tracer.adapter
 
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
@@ -12,7 +13,7 @@ class TrainScheduleViewHolder(view : View) : RecyclerView.ViewHolder(view) {
 
     private val binding = ItemServiceBinding.bind(view)
 
-    fun render(item: HorarioTren, cabecera: Boolean, onClickListener: (HorarioTren) -> Unit){
+    fun render(item: HorarioTren, cabecera: Boolean, current: Boolean, onClickListener: (HorarioTren) -> Unit){
 
         binding.tvStation.text = item.station
         binding.tvArrivalTime.text = Utils.hourFormat(item.hour, item.minute)
@@ -22,16 +23,20 @@ class TrainScheduleViewHolder(view : View) : RecyclerView.ViewHolder(view) {
             binding.root.context.getString(R.string.combination_info, item.combinationRamal, Utils.hourFormat(item.combination.hour, item.combination.minute))
         }
 
-        val color = if (cabecera) {
-            R.color.purple_700
-        } else {
-            when {
-                item.combination != null -> R.color.bus_324
-                item.service == 0L -> android.R.color.transparent
-                else -> R.color.bus
-            }
+        // card background color
+        val color = when {
+            cabecera -> R.color.purple_700
+            current -> R.color.bus_159
+            item.combination != null -> R.color.bus_324
+            item.service == 0L -> android.R.color.transparent
+            else -> R.color.bus
         }
 
+        // train icon or not
+        val icon = if (current) AppCompatResources.getDrawable(binding.root.context, R.drawable.ic_train)
+        else null
+
+        binding.trainIcon.setImageDrawable(icon)
         binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
         binding.root.setOnClickListener { onClickListener(item) }
     }

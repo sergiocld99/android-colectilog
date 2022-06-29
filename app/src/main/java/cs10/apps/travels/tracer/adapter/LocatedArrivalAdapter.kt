@@ -8,11 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.roca.ArriboTren
-import cs10.apps.travels.tracer.viewmodel.LocatedArrivalVM
 
 class LocatedArrivalAdapter(
     var list: MutableList<Viaje>,
-    private val locatedArrivalVM: LocatedArrivalVM,
     private val onClickListener: (ArriboTren) -> Unit
 ) : RecyclerView.Adapter<LocatedArrivalViewHolder>() {
 

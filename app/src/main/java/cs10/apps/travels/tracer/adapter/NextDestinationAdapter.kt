@@ -8,7 +8,7 @@ import cs10.apps.travels.tracer.model.ScheduledParada
 
 class NextDestinationAdapter(
     var list: List<ScheduledParada>,
-    val onClickListener: (ScheduledParada) -> Unit
+    private val onClickListener: (ScheduledParada) -> Unit
 ) : RecyclerView.Adapter<NextDestinationViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NextDestinationViewHolder {

@@ -2,8 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cs10.apps.travels.tracer">
 
+    <!-- For Location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- For Picasso -->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -19,8 +23,11 @@
             android:name=".ui.coffee.CoffeeCreator"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity
-            android:name=".ui.travels.TravelCreator"
-            android:theme="@style/Theme.TravelTracer.NoActionBar" />
+            android:name=".ui.travels.BusTravelCreator"
+            android:theme="@style/Theme.TravelTracer.Buses" />
+        <activity
+            android:name=".ui.travels.TrainTravelCreator"
+            android:theme="@style/Theme.TravelTracer.Trains" />
         <activity
             android:name=".ui.travels.TravelEditor"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />

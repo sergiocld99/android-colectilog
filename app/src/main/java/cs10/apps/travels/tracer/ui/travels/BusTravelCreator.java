@@ -6,15 +6,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.Picasso;
 
-import java.util.Calendar;
 import java.util.List;
 
 import cs10.apps.travels.tracer.R;
@@ -28,7 +27,7 @@ import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.ui.stops.StopCreator;
 
-public class TravelCreator extends AppCompatActivity {
+public class BusTravelCreator extends CommonTravelCreator {
     private ContentTravelCreatorBinding content;
     private ArrayAdapter<? extends Parada> startAdapter, endAdapter;
     private ArrayAdapter<String> ramalAdapter;
@@ -37,15 +36,7 @@ public class TravelCreator extends AppCompatActivity {
     private List<Parada> paradas;
     private int startIndex, endIndex;
 
-    private final String[] messages = {
-            "Viaje creado con éxito",
-            "Por favor complete los campos para continuar",
-            "La parada inicial no puede coincidir con la parada final",
-            "Formato de hora incorrecto",
-            "Formato de fecha incorrecto",
-            "Error general de formato",
-            "No hay paradas guardadas"
-    };
+    private static final String url = "https://www.infoblancosobrenegro.com/uploads/noticias/5/2022/07/20220708100904_talp.jpg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,26 +46,18 @@ public class TravelCreator extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
+        Picasso.get().load(url).memoryPolicy(MemoryPolicy.NO_CACHE).into(binding.appbarImage);
+        binding.toolbarLayout.setTitle(getString(R.string.new_travel));
         content = binding.contentTravelCreator;
 
-        binding.fab.setOnClickListener(view -> performDone());
+        super.setDoneFabBehavior(binding.fab);
+        super.setCurrentTime(content.etDate, content.etStartHour);
+
         binding.fabStop.setOnClickListener(view -> startActivity(new Intent(this, StopCreator.class)));
-        content.tvTitle.setText(getString(R.string.new_travel));
+        //content.tvTitle.setText(getString(R.string.new_travel));
 
         onStartPlaceSelected = new OnStartPlaceSelected();
         onEndPlaceSelected = new OnEndPlaceSelected();
-
-        // set today values
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, -1);
-
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        int year = calendar.get(Calendar.YEAR);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
-        content.etDate.setText(Utils.dateFormat(day, month, year));
-        content.etStartHour.setText(Utils.hourFormat(hour, minute));
 
         // hint values
         autoFillRamals();
@@ -88,10 +71,6 @@ public class TravelCreator extends AppCompatActivity {
             List<String> ramals = MiDB.getInstance(this).viajesDao().getAllRamals();
 
             runOnUiThread(() -> {
-                String[] test = new String[]{
-                        "Canning", "Centenario", "Colón"
-                };
-
                 ramalAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ramals);
                 content.etRamal.setAdapter(ramalAdapter);
             });
@@ -99,27 +78,16 @@ public class TravelCreator extends AppCompatActivity {
     }
 
     private void getLocation() throws SecurityException {
-        if (Utils.checkPermissions(this)) client.getLastLocation().addOnSuccessListener(location -> {
-            if (location == null) loadStopsByDefault();
-            else loadStopsByProximity(location);
-        });
+        if (Utils.checkPermissions(this)) client.getLastLocation().addOnSuccessListener(this::loadStops);
     }
 
-    private void loadStopsByDefault() {
+    private void loadStops(Location location) {
         new Thread(() -> {
             ParadasDao dao = MiDB.getInstance(this).paradasDao();
             paradas = dao.getAll();
+            if (location != null) Utils.orderByProximity(paradas, location.getLatitude(), location.getLongitude());
             runOnUiThread(this::setSpinners);
-        }, "stopsByDefault").start();
-    }
-
-    private void loadStopsByProximity(Location location) {
-        new Thread(() -> {
-            ParadasDao dao = MiDB.getInstance(this).paradasDao();
-            paradas = dao.getAll();
-            Utils.orderByProximity(paradas, location.getLatitude(), location.getLongitude());
-            runOnUiThread(this::setSpinners);
-        }, "stopsByProximity").start();
+        }, "loadBusStops").start();
     }
 
     private void setSpinners(){
@@ -135,20 +103,8 @@ public class TravelCreator extends AppCompatActivity {
         content.selectorEndPlace.setOnItemSelectedListener(onEndPlaceSelected);
     }
 
-    private void performDone(){
-        Viaje viaje = new Viaje();
-        int result = onCheckEntries(viaje);
-
-        if (result == 0) new Thread(() -> {
-            ViajesDao dao = MiDB.getInstance(this).viajesDao();
-            dao.insert(viaje);
-            runOnUiThread(this::finish);
-        }, "onSaveViaje").start();
-
-        Toast.makeText(getApplicationContext(), messages[result], Toast.LENGTH_LONG).show();
-    }
-
-    private int onCheckEntries(@NonNull Viaje viaje){
+    @Override
+    protected int onCheckEntries(@NonNull Viaje viaje){
         if (paradas == null || paradas.isEmpty()) return 6;
 
         String line = content.etLine.getText().toString();
@@ -159,7 +115,7 @@ public class TravelCreator extends AppCompatActivity {
         Parada startPlace = paradas.get(startIndex);
         Parada endPlace = paradas.get(endIndex);
 
-        if (date.isEmpty() || startHour.isEmpty()) return 1;
+        if (date.isEmpty() || startHour.isEmpty() || line.isEmpty()) return 1;
         if (startPlace.equals(endPlace)) return 2;
 
         String[] hourParams = startHour.split(":");
@@ -183,10 +139,9 @@ public class TravelCreator extends AppCompatActivity {
             viaje.setNombrePdaInicio(startPlace.getNombre());
             viaje.setNombrePdaFin(endPlace.getNombre());
             Utils.setWeekDay(viaje);
+            viaje.setLinea(Integer.parseInt(line));
             if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
             if (!ramal.isEmpty()) viaje.setRamal(ramal);
-            if (line.isEmpty()) viaje.setTipo(1);
-            else viaje.setLinea(Integer.parseInt(line));
         } catch (Exception e){
             e.printStackTrace();
             return 5;

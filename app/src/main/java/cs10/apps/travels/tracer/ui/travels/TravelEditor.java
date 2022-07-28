@@ -52,7 +52,7 @@ public class TravelEditor extends AppCompatActivity {
 
         binding.fab.setOnClickListener(view -> performDone());
         binding.fabStop.setVisibility(View.GONE);
-        content.tvTitle.setText(getString(R.string.edit_travel));
+        binding.toolbarLayout.setTitle(getString(R.string.edit_travel));
 
         onStartPlaceSelected = new OnStartPlaceSelected();
         onEndPlaceSelected = new OnEndPlaceSelected();

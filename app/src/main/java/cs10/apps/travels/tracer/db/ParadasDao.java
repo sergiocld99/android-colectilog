@@ -54,10 +54,7 @@ public interface ParadasDao {
             "(SELECT nombrePdaInicio FROM Viaje WHERE linea IS :busLine) OR nombre IN" +
             "(SELECT nombrePdaFin FROM Viaje WHERE linea is :busLine)")
     List<Parada> getParadasWhereStops(int busLine);
-    
-    @Query("SELECT * FROM parada p " +
-            "order by (latitud - :x) * (latitud - :x) + (longitud - :y) * (longitud - :y) limit 1")
-    Parada getClosestParada(double x, double y);
 
-
+    @Query("SELECT * FROM parada where tipo = 1")
+    List<Parada> getCustomTrainStops();
 }

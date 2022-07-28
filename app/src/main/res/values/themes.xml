@@ -14,6 +14,18 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="Theme.TravelTracer.Buses" parent="Theme.TravelTracer.NoActionBar">
+        <item name="colorPrimary">@color/bus</item>
+        <item name="colorPrimaryVariant">#00769E</item>
+        <item name="colorSecondary">#00BCD4</item>
+    </style>
+
+    <style name="Theme.TravelTracer.Trains" parent="Theme.TravelTracer.NoActionBar">
+        <item name="colorPrimary">@color/train</item>
+        <item name="colorPrimaryVariant">#293EB3</item>
+        <item name="colorSecondary">#757EAF</item>
+    </style>
+
     <style name="Theme.TravelTracer.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

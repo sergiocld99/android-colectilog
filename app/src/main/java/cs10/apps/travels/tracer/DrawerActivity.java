@@ -41,7 +41,8 @@ import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
-import cs10.apps.travels.tracer.ui.travels.TravelCreator;
+import cs10.apps.travels.tracer.ui.travels.TrainTravelCreator;
+import cs10.apps.travels.tracer.ui.travels.BusTravelCreator;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
 
 public class DrawerActivity extends AppCompatActivity implements DatabaseCallback {
@@ -66,8 +67,8 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         @Override
         public Intent parseResult(int resultCode, @Nullable Intent intent) {
             switch (resultCode){
-                case 0: return new Intent(DrawerActivity.this, TravelCreator.class);
-                case 1: return new Intent(DrawerActivity.this, TravelCreator.class);
+                case 0: return new Intent(DrawerActivity.this, BusTravelCreator.class);
+                case 1: return new Intent(DrawerActivity.this, TrainTravelCreator.class);
                 default: return null;
             }
         }

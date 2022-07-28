@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.generator;
+package cs10.apps.travels.tracer.data.generator;
 
 public class DelayData {
     private final int[][] DEMORA_MINUTOS = new int[Station.values().length][Station.values().length];

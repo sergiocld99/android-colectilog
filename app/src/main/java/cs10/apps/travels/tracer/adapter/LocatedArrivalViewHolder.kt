@@ -3,11 +3,12 @@ package cs10.apps.travels.tracer.adapter
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ItemArrivalBinding
-import cs10.apps.travels.tracer.generator.Station
+import cs10.apps.travels.tracer.data.generator.Station
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.roca.ArriboTren
 import cs10.apps.travels.tracer.ui.stops.ETA_Switcher
@@ -43,7 +44,7 @@ class LocatedArrivalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         binding.ivType.setImageDrawable(AppCompatResources.getDrawable(binding.root.context, icon))
 
         // bg color
-        val color = if (viaje.tipo == 1 && viaje.ramal != null && viaje.ramal!!.contains("Directo")) R.color.bus_159
+        val color = if (viaje.tipo == 1 && !viaje.ramal.isNullOrEmpty() && viaje.ramal!!.contains("Directo")) R.color.bus_159
         else Utils.colorFor(viaje.linea)
         binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
 
@@ -58,8 +59,8 @@ class LocatedArrivalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             etaSwitcher.setCallback(onDepartCallback)
             etaSwitcher.startAnimation()
 
-            binding.tvSwitcher.visibility = View.VISIBLE
-            binding.tvLocation.visibility = View.GONE
+            binding.tvSwitcher.isVisible = true
+            binding.tvLocation.isVisible = false
         } else {
             etaSwitcher.stop()
             binding.tvLocation.text = binding.root.context.getString(
@@ -67,8 +68,8 @@ class LocatedArrivalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
                 Utils.hourFormat(viaje.startHour, viaje.startMinute)
             )
 
-            binding.tvLocation.visibility = View.VISIBLE
-            binding.tvSwitcher.visibility = View.GONE
+            binding.tvLocation.isVisible = true
+            binding.tvSwitcher.isVisible = false
         }
 
         // click listener for this item

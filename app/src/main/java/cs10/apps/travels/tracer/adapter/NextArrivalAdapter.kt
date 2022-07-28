@@ -20,7 +20,5 @@ class NextArrivalAdapter (
         holder.render(list[position], position < 3, onClickListener)
     }
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
+    override fun getItemCount() = list.size
 }

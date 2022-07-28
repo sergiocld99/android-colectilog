@@ -29,8 +29,5 @@ class LocatedArrivalAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
-
+    override fun getItemCount() = list.size
 }

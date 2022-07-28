@@ -61,14 +61,16 @@ public class Utils {
     }
 
     public static void orderByProximity(@NonNull List<Parada> list, Double latitude, Double longitude){
-        for (Parada p : list){
-            p.setDeltaX(p.getLatitud() - latitude);
-            p.setDeltaY(p.getLongitud() - longitude);
-        }
+        for (Parada p : list) p.updateDistance(latitude, longitude);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             list.sort(Comparator.comparingDouble(Parada::getDistance));
         }
+    }
+
+    public static long bestRound(Double value){
+        if (Math.abs(value) > 0.01) return Math.round(value * 100) * 10;
+        else return Math.round(value * 1000);
     }
 
     public static int colorFor(Integer bus){

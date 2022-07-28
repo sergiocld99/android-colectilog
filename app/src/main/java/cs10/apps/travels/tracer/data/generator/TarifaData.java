@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.generator;
+package cs10.apps.travels.tracer.data.generator;
 
 public class TarifaData {
     private final int[][] SECCION_DATA = new int[Station.values().length][Station.values().length];

@@ -2,7 +2,7 @@ package cs10.apps.travels.tracer.model.roca;
 
 import java.util.List;
 
-import cs10.apps.travels.tracer.generator.Station;
+import cs10.apps.travels.tracer.data.generator.Station;
 import cs10.apps.travels.tracer.model.Viaje;
 
 public class ArriboTren extends Viaje {

@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.generator;
+package cs10.apps.travels.tracer.data.generator;
 
 // Más sencillo que Via Circuito, no hay estaciones a saltear
 public class LaPlataHelper extends CircuitoHelper {

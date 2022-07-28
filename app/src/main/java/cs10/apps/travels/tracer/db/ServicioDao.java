@@ -63,6 +63,14 @@ public interface ServicioDao {
             "ORDER BY HT.hour, HT.minute limit 1")
     HorarioTren getArrival(String targetRamal, String currentStation, int sinceTime, int maxWait);
 
+    @Query("SELECT * FROM ServicioTren " +
+            "where cabecera = :station and (hora * 60 + minuto) >= :sinceTime " +
+            "order by hora, minuto limit 1")
+    ServicioTren getNextServiceFrom(String station, int sinceTime);
+
+    @Query("SELECT * FROM ServicioTren where cabecera = :station order by hora, minuto limit 1")
+    ServicioTren getFirstServiceFrom(String station);
+
     @Query("DELETE FROM HorarioTren")
     void dropHorarios();
 

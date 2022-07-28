@@ -1,7 +1,6 @@
 package cs10.apps.travels.tracer.ui.stops;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -68,6 +66,8 @@ public class StopArrivalsFragment extends CS_Fragment {
         homeVM = new ViewModelProvider(requireActivity()).get(HomeVM.class);
 
         locatedArrivalVM.getStop().observe(getViewLifecycleOwner(), parada -> {
+            // binding.pbar.setVisibility(View.VISIBLE);
+            homeVM.isLoading().postValue(true);
             binding.tvTitle.setText(getString(R.string.next_ones_in, parada.getNombre()));
             locatedArrivalVM.recalculate(locationVM, homeVM);
             fillData(parada);
@@ -78,8 +78,7 @@ public class StopArrivalsFragment extends CS_Fragment {
         });
 
         locatedArrivalVM.getGoingTo().observe(getViewLifecycleOwner(), goingTo -> {
-            Drawable icon = goingTo ? AppCompatResources.getDrawable(binding.getRoot().getContext(), R.drawable.ic_follow_the_signs) : null;
-            binding.walkingIcon.setImageDrawable(icon);
+            binding.walkingIcon.setVisibility(goingTo ? View.VISIBLE : View.GONE);
         });
 
         locatedArrivalVM.getArrivals().observe(getViewLifecycleOwner(), arrivals -> {
@@ -87,7 +86,11 @@ public class StopArrivalsFragment extends CS_Fragment {
             adapter.setList(arrivals);
 
             if (ogSize == 0) adapter.notifyItemRangeInserted(0, arrivals.size());
+            else if (ogSize == adapter.getItemCount()) adapter.notifyItemRangeChanged(0, arrivals.size());
             else adapter.notifyDataSetChanged();
+
+            // binding.pbar.setVisibility(View.GONE);
+            homeVM.isLoading().postValue(false);
         });
 
         locationVM.getLocation().observe(getViewLifecycleOwner(), location -> {

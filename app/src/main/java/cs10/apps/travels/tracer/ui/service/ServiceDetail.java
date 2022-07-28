@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.ui.service;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,10 +24,11 @@ import cs10.apps.travels.tracer.databinding.ActivityServiceDetailBinding;
 import cs10.apps.travels.tracer.db.DynamicQuery;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ServicioDao;
-import cs10.apps.travels.tracer.generator.Ramal;
-import cs10.apps.travels.tracer.generator.Station;
-import cs10.apps.travels.tracer.generator.TarifaData;
+import cs10.apps.travels.tracer.data.generator.Ramal;
+import cs10.apps.travels.tracer.data.generator.Station;
+import cs10.apps.travels.tracer.data.generator.TarifaData;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
+import cs10.apps.travels.tracer.model.roca.ServicioTren;
 import cs10.apps.travels.tracer.viewmodel.ServiceVM;
 
 public class ServiceDetail extends AppCompatActivity {
@@ -68,28 +70,43 @@ public class ServiceDetail extends AppCompatActivity {
         // view model
         serviceVM = new ViewModelProvider(this).get(ServiceVM.class);
 
-        serviceVM.getService().observe(this, servicioTren -> {
-            binding.tvTitle.setText(getString(R.string.service_title, servicioTren.getId(), servicioTren.getRamal()));
-        });
+        serviceVM.getService().observe(this, servicioTren -> binding.tvTitle.setText(getString(
+                R.string.service_title,
+                servicioTren.getId(),
+                servicioTren.getRamal()
+        )));
 
         serviceVM.getSchedules().observe(this, horarios -> {
             int originalSize = adapter.getItemCount();
             adapter.setList(horarios);
             if (originalSize == 0) adapter.notifyItemRangeInserted(0, horarios.size());
-            else adapter.notifyDataSetChanged();
-            new Handler().postDelayed(() -> clock.start(), 1000);
+            else adapter.notifyItemRangeChanged(0, horarios.size());
+            // new Handler().postDelayed(() -> clock.start(), 1000);
         });
 
         serviceVM.getCurrent().observe(this, value -> {
             int target = (value / 3) * 3;
             scroller.setTargetPosition(target);
             adapter.setCurrent(value);
-            adapter.notifyDataSetChanged();
+
+            // necesito actualizar hasta la posición value, paso value+1 porque se cuenta al 0
+            adapter.notifyItemRangeChanged(0, value+1);
 
             new Handler().postDelayed(() -> llm.startSmoothScroll(scroller), 1000);
         });
 
-        clock = new Clock(serviceVM);
+        serviceVM.isEnded().observe(this, ended -> {
+            if (ended) showEndedMessage();
+        });
+
+        serviceVM.getNext().observe(this, next -> onServiceSelected(next.getId(), next.getRamal()));
+
+        clock = new Clock(() -> {
+            Calendar calendar = Calendar.getInstance();
+            int h = calendar.get(Calendar.HOUR_OF_DAY);
+            int m = calendar.get(Calendar.MINUTE);
+            serviceVM.setCurrentTime(h, m);
+        }, 10000);
 
         // UI
         binding.recycler.setAdapter(adapter);
@@ -102,9 +119,48 @@ public class ServiceDetail extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
+    private void showEndedMessage() {
+        new AlertDialog.Builder(this)
+                .setTitle("Servicio Finalizado")
+                .setMessage("Este servicio ya alcanzó el final del recorrido. ¿Te interesa " +
+                        "ver el próximo que inicie desde alli?")
+                .setCancelable(true)
+                .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
+                .setPositiveButton("Si", (dialogInterface, i) -> {
+                    openNextService();
+                    dialogInterface.dismiss();
+                }).create().show();
+    }
+
+    private void showNoNextService(String fromStation) {
+        new AlertDialog.Builder(this)
+                .setTitle("Error de búsqueda")
+                .setMessage("Lamentablemente, no se encontró otro servicio que inicie en " + fromStation)
+                .setCancelable(true)
+                .setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
+                .create().show();
+    }
+
+    private void openNextService() {
+        final HorarioTren end = serviceVM.getFinalStation();
+
+        if (end != null) {
+            new Thread(() -> {
+                int sinceTime = end.getHour() * 60 + end.getMinute();
+                ServicioDao dao = MiDB.getInstance(this).servicioDao();
+
+                ServicioTren next = dao.getNextServiceFrom(end.getStation(), sinceTime);
+                if (next == null) next = dao.getFirstServiceFrom(end.getStation());
+                if (next != null) serviceVM.getNext().postValue(next);
+                else runOnUiThread(() -> showNoNextService(end.getStation()));
+            }).start();
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        new Handler().postDelayed(() -> clock.start(), 1000);
     }
 
     private void findService() {
@@ -113,34 +169,21 @@ public class ServiceDetail extends AppCompatActivity {
             ServicioDao dao = MiDB.getInstance(this).servicioDao();
             final List<HorarioTren> horarios = dao.getRecorrido(id);
             final String start = horarios.get(0).getStation();
-            final String destination = horarios.get(horarios.size()-1).getStation();
+            final String destination = horarios.get(horarios.size() - 1).getStation();
             final Station current = Station.findByNombre(stopName);
 
-            // change colour according current station
-            Calendar calendar = Calendar.getInstance();
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            int m = calendar.get(Calendar.MINUTE);
-            int index = 0;
-
-            scroller.setTargetPosition(0);
-
-            for (HorarioTren h : horarios){
-                if (h.getHour() == hour && h.getMinute() <= m) scroller.setTargetPosition(index);
-
-                if (h.getStation().equals(stopName)) h.setService(1);
-                else h.setService(0);
-
-                // TARIFA
+            for (HorarioTren h : horarios) {
+                h.setService(h.getStation().equals(stopName) ? 1 : 0);
                 h.setTarifa(tarifaData.getTarifa(current, h.getStation()));
 
                 // CASO COMBINACIÓN VIA CIRCUITO > LA PLATA
-                if (equals(h.getStation(), Station.BERA)){
-                    if (equals(start, Station.LA_PLATA)){
+                if (equals(h.getStation(), Station.BERA)) {
+                    if (equals(start, Station.LA_PLATA)) {
                         // El servicio mostrado arrancó en La Plata -> me interesa a Bosques
                         HorarioTren comb = DynamicQuery.findCombination(this, Ramal.BOSQUES_Q_TEMPERLEY.getNombre(), h);
                         h.setCombinationRamal(Station.TEMPERLEY.getSimplified());
                         h.setCombination(comb);
-                    } else if (destination.equals(start)){
+                    } else if (destination.equals(start)) {
                         // El servicio mostrado es un via circuito -> me interesa a La Plata
                         HorarioTren comb = DynamicQuery.findCombination(this, Station.LA_PLATA.getSimplified(), h);
                         h.setCombinationRamal(Station.LA_PLATA.getSimplified());
@@ -149,14 +192,14 @@ public class ServiceDetail extends AppCompatActivity {
                 }
 
                 // CASO COMBINACIÓN TEMPERLEY (GLEW > VIA CIRCUITO)
-                for (Station s : new Station[]{Station.TEMPERLEY, Station.LOMAS}){
-                    if (equals(h.getStation(), s)){
-                        if (equals(start, Station.GLEW) || equals(start, Station.KORN)){
+                for (Station s : new Station[]{Station.TEMPERLEY, Station.LOMAS}) {
+                    if (equals(h.getStation(), s)) {
+                        if (equals(start, Station.GLEW) || equals(start, Station.KORN)) {
                             // El servicio mostrado empezó en Glew o Korn -> me interesa a Bosques
                             HorarioTren comb = DynamicQuery.findCombination(this, Ramal.BOSQUES_T.getNombre(), h);
                             h.setCombinationRamal(Station.BOSQUES.getSimplified());
                             h.setCombination(comb);
-                        } else if (destination.equals(start) || equals(start, Station.BOSQUES)){
+                        } else if (destination.equals(start) || equals(start, Station.BOSQUES)) {
                             // El servicio mostrado es un via circuito -> me interesa a Korn
                             HorarioTren comb = DynamicQuery.findCombination(this, Station.KORN.getSimplified(), h);
                             h.setCombinationRamal("Korn");
@@ -165,12 +208,9 @@ public class ServiceDetail extends AppCompatActivity {
                     }
                 }
 
-                index++;
             }
 
-            runOnUiThread(() -> serviceVM.getSchedules().postValue(horarios));
-            // adapter.setList(horarios);
-
+            serviceVM.getSchedules().postValue(horarios);
         }, "serviceDetail").start();
     }
 
@@ -182,7 +222,7 @@ public class ServiceDetail extends AppCompatActivity {
         serviceVM.setData(id, ramal);
     }
 
-    private boolean equals(String s1, Station s2){
+    private boolean equals(String s1, Station s2) {
         return s1.equals(s2.getNombre());
     }
 

@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.generator;
+package cs10.apps.travels.tracer.data.generator;
 
 import cs10.apps.travels.tracer.db.MiDB;
 

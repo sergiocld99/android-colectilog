@@ -10,6 +10,7 @@ import java.util.List;
 import cs10.apps.travels.tracer.model.LineInfo;
 import cs10.apps.travels.tracer.model.PriceSum;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.model.location.TravelDistance;
 
 @Dao
 public interface ViajesDao {
@@ -74,4 +75,10 @@ public interface ViajesDao {
 
     @Query("SELECT DISTINCT ramal FROM Viaje where ramal like '___%' order by ramal")
     List<String> getAllRamals();
+
+    @Query("SELECT v.id, (p1.latitud - p2.latitud) as xDiff, (p1.longitud - p2.longitud) as yDiff " +
+            "FROM Viaje v " +
+            "inner join Parada p1 on v.nombrePdaInicio = p1.nombre " +
+            "inner join Parada p2 on v.nombrePdaFin = p2.nombre")
+    List<TravelDistance> getTravelDistances();
 }

@@ -14,7 +14,7 @@ class LocatedArrivalVM : ViewModel() {
     }
 
     val arrivals: MutableLiveData<MutableList<Viaje>> by lazy {
-        MutableLiveData<MutableList<Viaje>>().also { listOf<Viaje>() }
+        MutableLiveData<MutableList<Viaje>>().also { emptyList<Viaje>() }
     }
 
     val proximity = MutableLiveData<Double>()
@@ -45,7 +45,7 @@ class LocatedArrivalVM : ViewModel() {
         proximity.postValue(max(prox, 0.0))
 
         if (prev != null){
-            goingTo.postValue(prox > prev && prox > 0.5)
+            goingTo.postValue(prox > prev && prox > 0.9)
         }
     }
 }

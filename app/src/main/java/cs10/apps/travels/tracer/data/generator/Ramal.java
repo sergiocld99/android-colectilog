@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.generator;
+package cs10.apps.travels.tracer.data.generator;
 
 public enum Ramal {
     BOSQUES_T_QUILMES("Bosques T > Quilmes"),

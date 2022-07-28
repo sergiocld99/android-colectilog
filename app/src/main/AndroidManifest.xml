@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TravelTracer">
         <activity
+            android:name=".SelectTravelType"
+            android:label="Seleccione el tipo de viaje" />
+        <activity
             android:name=".ui.coffee.CoffeeCreator"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity
@@ -32,9 +35,12 @@
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity
             android:name=".DrawerActivity"
-            android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.TravelTracer.NoActionBar">
+            android:theme="@style/Theme.TravelTracer.NoActionBar" />
+        <activity
+            android:name=".ui.LauncherActivity"
+            android:exported="true"
+            android:theme="@style/SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

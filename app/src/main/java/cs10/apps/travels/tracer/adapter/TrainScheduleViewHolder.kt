@@ -1,8 +1,8 @@
 package cs10.apps.travels.tracer.adapter
 
 import android.view.View
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
@@ -32,11 +32,7 @@ class TrainScheduleViewHolder(view : View) : RecyclerView.ViewHolder(view) {
             else -> R.color.bus
         }
 
-        // train icon or not
-        val icon = if (current) AppCompatResources.getDrawable(binding.root.context, R.drawable.ic_train)
-        else null
-
-        binding.trainIcon.setImageDrawable(icon)
+        binding.trainIcon.isVisible = current
         binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
         binding.root.setOnClickListener { onClickListener(item) }
     }

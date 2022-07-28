@@ -72,4 +72,6 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="train_price">Tarifa: %1$s</string>
     <string name="proximity_porcentage">%1$.2f%% de cercania</string>
+    <string name="bus">Colectivo</string>
+    <string name="train">Tren</string>
 </resources>

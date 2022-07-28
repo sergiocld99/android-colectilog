@@ -18,10 +18,8 @@ class LocatedStopAdapter (
 
     override fun onBindViewHolder(holder: LocatedStopViewHolder, position: Int) {
         val item = paradasList[position]
-        holder.render(item, onClickListener)
+        holder.render(item, position == 0, onClickListener)
     }
 
-    override fun getItemCount(): Int {
-        return paradasList.size
-    }
+    override fun getItemCount() = paradasList.size
 }

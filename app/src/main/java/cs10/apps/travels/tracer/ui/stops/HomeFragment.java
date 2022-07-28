@@ -51,11 +51,13 @@ public class HomeFragment extends CS_Fragment {
         homeVM.getFavoriteStops().observe(getViewLifecycleOwner(), favoriteStops -> {
             sliderAdapter.setFavourites(favoriteStops);
             sliderAdapter.notifyDataSetChanged();
-            binding.pbar.setVisibility(View.GONE);
+            homeVM.isLoading().postValue(false);
         });
 
+        homeVM.isLoading().observe(getViewLifecycleOwner(), loading -> binding.pbar.setVisibility(loading ? View.VISIBLE : View.GONE));
+
         firstLocationObserver = location -> {
-            binding.pbar.setVisibility(View.VISIBLE);
+            homeVM.isLoading().postValue(true);
             onBuildHome(location);
         };
 
@@ -75,12 +77,12 @@ public class HomeFragment extends CS_Fragment {
             int currentWeekDay = calendar.get(Calendar.DAY_OF_WEEK);
 
             List<Parada> favoriteStops = miDB.paradasDao().getFavouriteStops(currentWeekDay);
+            if (favoriteStops.isEmpty()) favoriteStops = miDB.paradasDao().getGeneralFavouriteStops();
+
             Utils.orderByProximity(favoriteStops, location.getLatitude(), location.getLongitude());
 
             homeVM.getFavoriteStops().postValue(favoriteStops);
-
-            double maxDistance = favoriteStops.get(favoriteStops.size()-1).getDistance();
-            homeVM.getMaxDistance().postValue(maxDistance);
+            homeVM.updateMaxDistance(miDB);
         });
     }
 
@@ -90,7 +92,7 @@ public class HomeFragment extends CS_Fragment {
         binding = null;
     }
 
-    private class HomeSliderAdapter extends FragmentStateAdapter {
+    private static class HomeSliderAdapter extends FragmentStateAdapter {
         private List<Parada> favourites;
 
         public HomeSliderAdapter(@NonNull Fragment fragment) {

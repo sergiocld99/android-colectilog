@@ -2,6 +2,7 @@ package cs10.apps.travels.tracer;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
@@ -10,7 +11,10 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
@@ -28,12 +32,12 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.material.navigation.NavigationView;
 
+import cs10.apps.travels.tracer.data.generator.DelayData;
+import cs10.apps.travels.tracer.data.generator.GlewFiller;
+import cs10.apps.travels.tracer.data.generator.LaPlataFiller;
+import cs10.apps.travels.tracer.data.generator.ViaCircuitoFiller;
 import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
 import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.generator.DelayData;
-import cs10.apps.travels.tracer.generator.GlewFiller;
-import cs10.apps.travels.tracer.generator.LaPlataFiller;
-import cs10.apps.travels.tracer.generator.ViaCircuitoFiller;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
@@ -51,6 +55,26 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
     // ViewModel
     private LocationVM locationVM;
 
+    // Results
+    ActivityResultLauncher<Object> fabLauncher = registerForActivityResult(new ActivityResultContract<Object, Intent>() {
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, Object input) {
+            return new Intent(context, SelectTravelType.class);
+        }
+
+        @Override
+        public Intent parseResult(int resultCode, @Nullable Intent intent) {
+            switch (resultCode){
+                case 0: return new Intent(DrawerActivity.this, TravelCreator.class);
+                case 1: return new Intent(DrawerActivity.this, TravelCreator.class);
+                default: return null;
+            }
+        }
+    }, result -> {
+        if (result != null) startActivity(result);
+    });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +85,10 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
 
         // FAB
         binding.appBarDrawer.fab.setOnClickListener(view -> {
-            Intent intent = new Intent(DrawerActivity.this, TravelCreator.class);
-            startActivity(intent);
+            // Intent intent = new Intent(DrawerActivity.this, SelectTravelType.class);
+            // startActivity(intent);
+
+            fabLauncher.launch(null);
         });
 
         DrawerLayout drawer = binding.drawerLayout;

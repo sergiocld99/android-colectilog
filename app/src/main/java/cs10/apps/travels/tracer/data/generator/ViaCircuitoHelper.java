@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.generator;
+package cs10.apps.travels.tracer.data.generator;
 
 /*
     Esta clase pretende ser una versión mejorada de la primera (ViaCircuitoFiller), para

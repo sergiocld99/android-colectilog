@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,7 +31,6 @@ public class StopListFragment extends CS_Fragment {
 
     // ViewModel
     private LocationVM locationVM;
-    private Observer<Location> firstLocationObserver;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentStopsBinding.inflate(inflater, container, false);
@@ -51,11 +50,20 @@ public class StopListFragment extends CS_Fragment {
         binding.recycler.setAdapter(adapter);
 
         locationVM = new ViewModelProvider(requireActivity()).get(LocationVM.class);
-        firstLocationObserver = this::fillData;
+    }
+
+    private void recalc(Location location){
+        if (adapter.getItemCount() == 0) fillData(location);
+        else {
+            for (Parada p : adapter.getParadasList()) p.updateDistance(location);
+            Collections.sort(adapter.getParadasList());
+            //Utils.orderByProximity(adapter.getParadasList(), location.getLatitude(), location.getLongitude());
+            doInForeground(adapter::notifyDataSetChanged);
+        }
     }
 
     private void fillData(Location location) {
-        locationVM.getLocation().removeObserver(firstLocationObserver);
+        // locationVM.getLocation().removeObserver(firstLocationObserver);
 
         if (location != null){
             doInBackground(() -> {
@@ -63,12 +71,9 @@ public class StopListFragment extends CS_Fragment {
                 List<Parada> paradas = miDB.paradasDao().getAll();
                 Utils.orderByProximity(paradas, location.getLatitude(), location.getLongitude());
 
-                int originalSize = adapter.getItemCount();
-
                 doInForeground(() -> {
                     adapter.setParadasList(paradas);
-                    if (originalSize == 0) adapter.notifyItemRangeInserted(0, paradas.size());
-                    else adapter.notifyDataSetChanged();
+                    adapter.notifyItemRangeInserted(0, paradas.size());
                 });
             });
         }
@@ -78,7 +83,7 @@ public class StopListFragment extends CS_Fragment {
     public void onResume() {
         super.onResume();
 
-        locationVM.getLocation().observe(getViewLifecycleOwner(), firstLocationObserver);
+        locationVM.getLocation().observe(getViewLifecycleOwner(), this::recalc);
     }
 
     @Override

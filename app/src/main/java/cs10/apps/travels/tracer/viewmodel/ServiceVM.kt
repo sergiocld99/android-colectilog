@@ -12,10 +12,12 @@ class ServiceVM : ViewModel() {
     }
 
     val schedules: MutableLiveData<List<HorarioTren>> by lazy {
-        MutableLiveData<List<HorarioTren>>().also { listOf<HorarioTren>() }
+        MutableLiveData<List<HorarioTren>>().also { emptyList<HorarioTren>() }
     }
 
     val current = MutableLiveData<Int>()
+    val isEnded = MutableLiveData(false)
+    val next = MutableLiveData<ServicioTren>()
 
     fun setData(id: Long, ramal: String){
         val aux = ServicioTren()
@@ -25,16 +27,28 @@ class ServiceVM : ViewModel() {
         service.postValue(aux)
     }
 
+    private fun alreadyEnded(): Boolean{
+        return isEnded.value ?: false
+    }
+
     fun setCurrentTime(hour: Int, minute: Int){
-        if (schedules.value == null) return
+        val list = schedules.value ?: emptyList()
 
-        val list = schedules.value!!
-        val max = hour * 60 + minute
-        var aux = list.size-1
+        if (!list.isNullOrEmpty()){
+            val max = hour * 60 + minute
+            var aux = list.size-1
 
-        if (list.isEmpty()) return
-        while (aux > 0 && (list[aux].hour * 60 + list[aux].minute) > max) aux--
-        
-        if (current.value == null || current.value!! != aux) current.postValue(aux)
+            while (aux > 0 && (list[aux].hour * 60 + list[aux].minute) > max) aux--
+            if (current.value ?: -1 != aux) current.postValue(aux)
+
+            if (!alreadyEnded() && aux == list.size-1) isEnded.postValue(true)
+        }
+
+    }
+
+    fun getFinalStation(): HorarioTren? {
+        return if (!schedules.value.isNullOrEmpty()){
+            schedules.value!!.last()
+        } else null
     }
 }

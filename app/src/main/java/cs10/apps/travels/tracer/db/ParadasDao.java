@@ -41,6 +41,11 @@ public interface ParadasDao {
     List<ScheduledParada> getScheduledStopsTo(int hour, int minute);
 
     @Query("SELECT p.* FROM parada p " +
+            "inner join viaje v on v.nombrePdaInicio = p.nombre " +
+            "group by nombre order by count(*) desc limit 8")
+    List<Parada> getGeneralFavouriteStops();
+
+    @Query("SELECT p.* FROM parada p " +
             "inner join viaje v on v.nombrePdaInicio = p.nombre where v.wd = :current " +
             "group by nombre order by count(*) desc limit 8")
     List<Parada> getFavouriteStops(int current);
@@ -53,4 +58,6 @@ public interface ParadasDao {
     @Query("SELECT * FROM parada p " +
             "order by (latitud - :x) * (latitud - :x) + (longitud - :y) * (longitud - :y) limit 1")
     Parada getClosestParada(double x, double y);
+
+
 }

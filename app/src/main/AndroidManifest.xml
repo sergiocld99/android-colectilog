@@ -30,7 +30,7 @@
             android:theme="@style/Theme.TravelTracer.Trains" />
         <activity
             android:name=".ui.travels.TravelEditor"
-            android:theme="@style/Theme.TravelTracer.NoActionBar" />
+            android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
             android:name=".ui.stops.StopCreator"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
@@ -39,7 +39,7 @@
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity
             android:name=".ui.service.ServiceDetail"
-            android:theme="@style/Theme.TravelTracer.NoActionBar" />
+            android:theme="@style/Theme.TravelTracer.Trains" />
         <activity
             android:name=".DrawerActivity"
             android:screenOrientation="portrait"

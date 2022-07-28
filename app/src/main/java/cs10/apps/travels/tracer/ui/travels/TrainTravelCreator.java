@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -33,10 +31,6 @@ public class TrainTravelCreator extends CommonTravelCreator {
     private List<Parada> paradas;
     private int startIndex, endIndex;
 
-    // Appbar Image
-    private static final String url = "https://www.el1digital.com.ar/wp-content/uploads/2021/12/b1-51.jpg";
-    private static final String url2 = "https://cdn.quotesgram.com/img/97/30/1404605569-Train-Tracks-facebook-covers-2600.jpeg";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +39,8 @@ public class TrainTravelCreator extends CommonTravelCreator {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
+        Utils.loadTrainBanner(binding.appbarImage);
         binding.toolbarLayout.setTitle(getString(R.string.new_train_travel));
-        Picasso.get().load(url).memoryPolicy(MemoryPolicy.NO_CACHE).into(binding.appbarImage);
 
         super.setDoneFabBehavior(binding.fab);
         super.setCurrentTime(binding.content.etDate, binding.content.etStartHour);

@@ -48,6 +48,8 @@ public class TravelEditor extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
+        Utils.loadBusBanner(binding.appbarImage);
+        binding.toolbarLayout.setTitle(getString(R.string.new_travel));
         content = binding.contentTravelCreator;
 
         binding.fab.setOnClickListener(view -> performDone());

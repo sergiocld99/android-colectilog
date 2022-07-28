@@ -4,9 +4,13 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
@@ -26,13 +30,6 @@ public class Utils {
 
     public static String priceFormat(double value) {
         return "$" + df.format(Math.round(value * 100) / 100d);
-    }
-
-    @NonNull
-    public static String removeParentheses(@NonNull String str) {
-        String updated = str.replaceAll("\\([^()]*\\)", "");
-        if (updated.contains("(")) updated = removeParentheses(updated);
-        return updated.trim();
     }
 
     public static boolean checkPermissions(Activity activity) {
@@ -112,5 +109,15 @@ public class Utils {
         Calendar calendar = Calendar.getInstance();
         calendar.set(v.getYear(), v.getMonth()-1, v.getDay());    // 0 es Enero en Calendar
         v.setWeekDay(calendar.get(Calendar.DAY_OF_WEEK));
+    }
+
+    public static void loadTrainBanner(ImageView iv){
+        Picasso.get().load("https://www.el1digital.com.ar/wp-content/uploads/2021/12/b1-51.jpg")
+                .memoryPolicy(MemoryPolicy.NO_CACHE).into(iv);
+    }
+
+    public static void loadBusBanner(ImageView iv){
+        Picasso.get().load("https://www.infoblancosobrenegro.com/uploads/noticias/5/2022/07/20220708100904_talp.jpg")
+                .memoryPolicy(MemoryPolicy.NO_CACHE).into(iv);
     }
 }

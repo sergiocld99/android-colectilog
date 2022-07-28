@@ -18,15 +18,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cs10.apps.common.android.Clock;
-import cs10.apps.travels.tracer.R;
+import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.adapter.TrainScheduleAdapter;
+import cs10.apps.travels.tracer.data.generator.Ramal;
+import cs10.apps.travels.tracer.data.generator.Station;
+import cs10.apps.travels.tracer.data.generator.TarifaData;
 import cs10.apps.travels.tracer.databinding.ActivityServiceDetailBinding;
 import cs10.apps.travels.tracer.db.DynamicQuery;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ServicioDao;
-import cs10.apps.travels.tracer.data.generator.Ramal;
-import cs10.apps.travels.tracer.data.generator.Station;
-import cs10.apps.travels.tracer.data.generator.TarifaData;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 import cs10.apps.travels.tracer.model.roca.ServicioTren;
 import cs10.apps.travels.tracer.viewmodel.ServiceVM;
@@ -50,6 +50,7 @@ public class ServiceDetail extends AppCompatActivity {
         binding = ActivityServiceDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
+        Utils.loadTrainBanner(binding.appbarImage);
 
         // adapter
         adapter = new TrainScheduleAdapter(new LinkedList<>(), null, item -> {
@@ -70,11 +71,10 @@ public class ServiceDetail extends AppCompatActivity {
         // view model
         serviceVM = new ViewModelProvider(this).get(ServiceVM.class);
 
-        serviceVM.getService().observe(this, servicioTren -> binding.tvTitle.setText(getString(
-                R.string.service_title,
-                servicioTren.getId(),
-                servicioTren.getRamal()
-        )));
+        serviceVM.getService().observe(this, servicioTren -> {
+            binding.toolbarLayout.setTitle(servicioTren.getRamal());
+            // binding.tvTitle.setText(getString(R.string.service_title, servicioTren.getId(), servicioTren.getRamal()));
+        });
 
         serviceVM.getSchedules().observe(this, horarios -> {
             int originalSize = adapter.getItemCount();
@@ -87,10 +87,10 @@ public class ServiceDetail extends AppCompatActivity {
         serviceVM.getCurrent().observe(this, value -> {
             int target = (value / 3) * 3;
             scroller.setTargetPosition(target);
-            adapter.setCurrent(value);
+            adapter.updateCurrent(value);
 
             // necesito actualizar hasta la posición value, paso value+1 porque se cuenta al 0
-            adapter.notifyItemRangeChanged(0, value+1);
+            // adapter.notifyItemRangeChanged(0, value+1);
 
             new Handler().postDelayed(() -> llm.startSmoothScroll(scroller), 1000);
         });

@@ -11,8 +11,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -36,8 +34,6 @@ public class BusTravelCreator extends CommonTravelCreator {
     private List<Parada> paradas;
     private int startIndex, endIndex;
 
-    private static final String url = "https://www.infoblancosobrenegro.com/uploads/noticias/5/2022/07/20220708100904_talp.jpg";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +42,7 @@ public class BusTravelCreator extends CommonTravelCreator {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
-        Picasso.get().load(url).memoryPolicy(MemoryPolicy.NO_CACHE).into(binding.appbarImage);
+        Utils.loadBusBanner(binding.appbarImage);
         binding.toolbarLayout.setTitle(getString(R.string.new_travel));
         content = binding.contentTravelCreator;
 

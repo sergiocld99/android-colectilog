@@ -29,4 +29,12 @@ class TrainScheduleAdapter(
     }
 
     override fun getItemCount() = list.size
+
+    fun updateCurrent(value: Int){
+        val prev = current
+        current = value
+
+        if (prev != null) notifyItemChanged(prev)
+        notifyItemChanged(value)
+    }
 }

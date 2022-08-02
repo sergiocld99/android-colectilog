@@ -7,6 +7,8 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import java.util.Calendar;
+
 import cs10.apps.travels.tracer.Utils;
 
 @Entity(foreignKeys = {
@@ -50,6 +52,19 @@ public class Viaje implements Comparable<Viaje> {
 
     public int getWeekDay() {
         return weekDay;
+    }
+
+    public String getWeekDayString() {
+        switch (weekDay) {
+            case Calendar.SUNDAY: return "Dom ";
+            case Calendar.MONDAY: return "Lun ";
+            case Calendar.TUESDAY: return "Mar ";
+            case Calendar.WEDNESDAY: return "Mie ";
+            case Calendar.THURSDAY: return "Jue ";
+            case Calendar.FRIDAY: return "Vie ";
+            case Calendar.SATURDAY: return "Sab ";
+            default: return "";
+        }
     }
 
     public void setWeekDay(int weekDay) {
@@ -166,11 +181,12 @@ public class Viaje implements Comparable<Viaje> {
         this.nombrePdaFin = nombrePdaFin;
     }
 
-    public String getTime() {
-        return getDay() + "/" + getMonth() + " - " + getStartHour() + ":" + Utils.twoDecimals(getStartMinute());
+    public String getStartTimeString() {
+        return getWeekDayString() + getDay() + "/" + getMonth() + " - " +
+                getStartHour() + ":" + Utils.twoDecimals(getStartMinute());
     }
 
-    public String getStartAndEnd(){
+    public String getStartAndEnd() {
         return getNombrePdaInicio() + " - " + getNombrePdaFin();
     }
 

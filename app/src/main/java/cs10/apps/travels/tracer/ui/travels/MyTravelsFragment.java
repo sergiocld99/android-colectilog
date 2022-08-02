@@ -22,7 +22,7 @@ import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.model.Viaje;
 
-public class TravelsFragment extends CS_Fragment implements EditTravelCallback {
+public class MyTravelsFragment extends CS_Fragment implements EditTravelCallback {
     private FragmentTrainsBinding binding;
     private TravelsAdapter adapter;
 

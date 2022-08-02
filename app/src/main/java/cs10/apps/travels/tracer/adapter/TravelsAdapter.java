@@ -43,7 +43,7 @@ public class TravelsAdapter extends RecyclerView.Adapter<TravelsAdapter.TravelVi
     @Override
     public void onBindViewHolder(@NonNull TravelViewHolder holder, int position) {
         Viaje item = viajes.get(position);
-        holder.binding.tvDatetime.setText(item.getTime());
+        holder.binding.tvDatetime.setText(item.getStartTimeString());
         holder.binding.tvStartPlace.setText(item.getStartAndEnd());
         holder.binding.tvLine.setText(item.getLineInfoAndPrice());
         Drawable icon, bg;

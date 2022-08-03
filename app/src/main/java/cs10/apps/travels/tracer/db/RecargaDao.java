@@ -12,9 +12,12 @@ public interface RecargaDao {
     @Insert
     void insert(Recarga recarga);
 
-    @Query("SELECT SUM(mount) FROM Recarga WHERE month >= :month")
-    double getTotalChargedSince(int month);
+    @Query("SELECT SUM(mount) FROM Recarga WHERE id > :id")
+    double getTotalChargedSince(long id);
 
     @Query("SELECT * FROM Recarga ORDER BY id DESC LIMIT 1")
     Recarga getLastInserted();
+
+    @Query("SELECT MAX(id) FROM Recarga")
+    Long getLastId();
 }

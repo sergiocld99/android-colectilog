@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.ui.stats
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.FragmentBusesBinding
 import cs10.apps.travels.tracer.databinding.ViewCircularPbWithLegendBinding
 import cs10.apps.travels.tracer.databinding.ViewLineIndicatorBinding
+import cs10.apps.travels.tracer.ui.balance.EditBalanceActivity
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import cs10.apps.travels.tracer.viewmodel.stats.LineStat
 import cs10.apps.travels.tracer.viewmodel.stats.Stat
@@ -27,7 +29,7 @@ class MonthSummaryFragment : CS_Fragment() {
         binding = FragmentBusesBinding.inflate(inflater, container, false)
 
         statsVM = ViewModelProvider(this)[StatsVM::class.java]
-        statsVM.currency.observe(viewLifecycleOwner) { updateCurrency(it) }
+        statsVM.balance.observe(viewLifecycleOwner) { updateCurrency(it) }
         statsVM.busStat.observe(viewLifecycleOwner) { updateTypeStat(it, binding.busPb) }
         statsVM.trainStat.observe(viewLifecycleOwner) { updateTypeStat(it, binding.trainsPb) }
         statsVM.coffeeStat.observe(viewLifecycleOwner) { updateTypeStat(it, binding.coffeePb) }
@@ -63,15 +65,15 @@ class MonthSummaryFragment : CS_Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.busPb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_bus)
         binding.trainsPb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_bus)
+        binding.bus2Pb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_yellow)
+        binding.bus3Pb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_green)
 
-        // test scope
         rootVM.enableLoading()
         statsVM.fillData(rootVM)
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        // binding = null
+        binding.ivEdit.setOnClickListener {
+            startActivity(Intent(context, EditBalanceActivity::class.java))
+        }
     }
 
     companion object {

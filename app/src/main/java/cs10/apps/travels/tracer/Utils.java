@@ -12,6 +12,8 @@ import androidx.core.app.ActivityCompat;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -119,5 +121,10 @@ public class Utils {
     public static void loadBusBanner(ImageView iv){
         Picasso.get().load("https://www.infoblancosobrenegro.com/uploads/noticias/5/2022/07/20220708100904_talp.jpg")
                 .memoryPolicy(MemoryPolicy.NO_CACHE).into(iv);
+    }
+
+    public static void loadSubeBanner(@NotNull ImageView appbarImage) {
+        Picasso.get().load("https://media.ambito.com/p/5fa4f0e7d7842a07e938f45577916a2d/adjuntos/239/imagenes/039/693/0039693734/subejpg.jpg")
+                .memoryPolicy(MemoryPolicy.NO_CACHE).into(appbarImage);
     }
 }

@@ -75,4 +75,5 @@
     <string name="bus">Colectivo</string>
     <string name="train">Tren</string>
     <string name="new_train_travel">Nuevo viaje en Tren</string>
+    <string name="ingrese_nuevo_valor">Ingrese el nuevo valor</string>
 </resources>

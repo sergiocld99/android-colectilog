@@ -1,21 +1,29 @@
 package cs10.apps.travels.tracer.viewmodel.stats
 
 import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.PriceSum
-import cs10.apps.travels.tracer.ui.stats.MonthSummaryFragment
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import kotlinx.coroutines.*
 import java.util.*
 import kotlin.math.max
 
 class StatsVM(application: Application) : AndroidViewModel(application) {
-    private val database: MiDB = MiDB.getInstance(getApplication<Application>().applicationContext)
+    private val database: MiDB
+    private val prefs : SharedPreferences
 
-    val currency = MutableLiveData<Double>()
+    init {
+        val context = getApplication<Application>().applicationContext
+        database = MiDB.getInstance(context)
+        prefs = context.getSharedPreferences("balance", Context.MODE_PRIVATE)
+    }
+
+    val balance = MutableLiveData<Double>()
     val busStat = MutableLiveData<Stat>()
     val trainStat = MutableLiveData<Stat>()
     val coffeeStat = MutableLiveData<Stat>()
@@ -48,23 +56,29 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
                 if (sums.size > 2) setBus3Stat(sums[2], b)
             }
 
-            val currencyStat = async {
-                val sinceBuses = database.viajesDao().getSpentInBusesSince(MonthSummaryFragment.VIAJE_PARA_SALDO.toLong())
-                val sinceTrains = database.viajesDao().getSpentInTrainsSince(MonthSummaryFragment.VIAJE_PARA_SALDO.toLong())
-                val charges = database.recargaDao().getTotalChargedSince(0)
+            val balanceStat = async {
+                val travelId = prefs.getLong("travelId", 0)
+                val coffeeId = prefs.getLong("coffeeId", 0)
+                val chargeId = prefs.getLong("chargeId", 0)
+                val savedBalance = prefs.getFloat("balance", 0f)
 
-                val money = MonthSummaryFragment.SALDO_TEST - sinceBuses - sinceTrains - coffee.await() + charges
-                setCurrency(money)
+                val sinceBuses = database.viajesDao().getSpentInBusesSince(travelId)
+                val sinceTrains = database.viajesDao().getSpentInTrainsSince(travelId)
+                val sinceCoffee = database.coffeeDao().getSpentSince(coffeeId)
+                val charges = database.recargaDao().getTotalChargedSince(chargeId)
+
+                val money = savedBalance - sinceBuses - sinceTrains - sinceCoffee + charges
+                setBalance(money)
             }
 
             delay(1000)
-            awaitAll(genStats, busesStats, currencyStat)
+            awaitAll(genStats, busesStats, balanceStat)
             rootVM.disableLoading()
         }
     }
 
-    private fun setCurrency(value: Double){
-        currency.postValue(value)
+    private fun setBalance(value: Double){
+        balance.postValue(value)
     }
 
     private fun setBus1Stat(priceSum: PriceSum, total: Double){

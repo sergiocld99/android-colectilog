@@ -14,4 +14,10 @@ public interface CoffeeDao {
 
     @Query("SELECT SUM(price) FROM coffee WHERE month is :month")
     double getTotalSpent(int month);
+
+    @Query("SELECT MAX(id) FROM coffee")
+    Long getLastId();
+
+    @Query("SELECT SUM(price) FROM coffee where id > :coffeeId")
+    double getSpentSince(long coffeeId);
 }

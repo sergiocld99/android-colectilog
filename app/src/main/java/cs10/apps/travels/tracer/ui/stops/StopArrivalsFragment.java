@@ -32,6 +32,7 @@ import cs10.apps.travels.tracer.ui.service.ServiceDetail;
 import cs10.apps.travels.tracer.viewmodel.HomeVM;
 import cs10.apps.travels.tracer.viewmodel.LocatedArrivalVM;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
+import cs10.apps.travels.tracer.viewmodel.RootVM;
 
 public class StopArrivalsFragment extends CS_Fragment {
     private FragmentArrivalsBinding binding;
@@ -41,6 +42,7 @@ public class StopArrivalsFragment extends CS_Fragment {
     private LocatedArrivalVM locatedArrivalVM;
     private LocationVM locationVM;
     private HomeVM homeVM;
+    private RootVM rootVM;
 
     @Nullable
     @Override
@@ -64,10 +66,10 @@ public class StopArrivalsFragment extends CS_Fragment {
         locatedArrivalVM = new ViewModelProvider(this).get(LocatedArrivalVM.class);
         locationVM = new ViewModelProvider(requireActivity()).get(LocationVM.class);
         homeVM = new ViewModelProvider(requireActivity()).get(HomeVM.class);
+        rootVM = new ViewModelProvider(requireActivity()).get(RootVM.class);
 
         locatedArrivalVM.getStop().observe(getViewLifecycleOwner(), parada -> {
             // binding.pbar.setVisibility(View.VISIBLE);
-            homeVM.isLoading().postValue(true);
             binding.tvTitle.setText(getString(R.string.next_ones_in, parada.getNombre()));
             locatedArrivalVM.recalculate(locationVM, homeVM);
             fillData(parada);
@@ -90,7 +92,7 @@ public class StopArrivalsFragment extends CS_Fragment {
             else adapter.notifyDataSetChanged();
 
             // binding.pbar.setVisibility(View.GONE);
-            homeVM.isLoading().postValue(false);
+            rootVM.disableLoading();
         });
 
         locationVM.getLocation().observe(getViewLifecycleOwner(), location -> {

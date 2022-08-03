@@ -9,7 +9,6 @@ class HomeVM : ViewModel() {
 
     val maxDistance = MutableLiveData<Double>()
     val favoriteStops = MutableLiveData<List<Parada>>()
-    val isLoading = MutableLiveData(false)
 
     fun getStop(pos: Int) : Parada {
         if (favoriteStops.value == null) return Parada()

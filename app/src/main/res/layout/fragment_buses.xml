@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:background="@color/cardview_dark_background"
-    tools:context=".ui.stats.StatsFragment">
+    tools:context=".ui.stats.MonthSummaryFragment">
 
     <TextView
         android:id="@+id/title"
@@ -100,6 +100,7 @@
             android:id="@+id/vli1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="@id/bus1_pb"
             app:layout_constraintEnd_toEndOf="@id/bus1_pb"
@@ -109,6 +110,7 @@
             android:id="@+id/vli2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="@id/bus2_pb"
             app:layout_constraintEnd_toEndOf="@id/bus2_pb"
@@ -118,6 +120,7 @@
             android:id="@+id/vli3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="@id/bus3_pb"
             app:layout_constraintEnd_toEndOf="@id/bus3_pb"
@@ -129,6 +132,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="16dp"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/vli1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/bus2_pb"/>
@@ -138,6 +142,7 @@
             layout="@layout/view_circular_pb_with_legend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="@id/bus1_pb"
             app:layout_constraintStart_toEndOf="@id/bus1_pb"
             app:layout_constraintEnd_toStartOf="@id/bus3_pb"/>
@@ -147,6 +152,7 @@
             layout="@layout/view_circular_pb_with_legend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="@id/bus1_pb"
             app:layout_constraintStart_toEndOf="@id/bus2_pb"
             app:layout_constraintEnd_toEndOf="parent"/>

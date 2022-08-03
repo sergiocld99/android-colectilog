@@ -200,6 +200,7 @@ public abstract class MiDB extends RoomDatabase {
         }
     };
 
+    // DAO made in Java
     public abstract ParadasDao paradasDao();
     public abstract ViajesDao viajesDao();
     public abstract CoffeeDao coffeeDao();

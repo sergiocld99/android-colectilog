@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.stops;
+package cs10.apps.travels.tracer.ui.home;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -21,8 +21,11 @@ import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.FragmentHomeBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
+import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
+import cs10.apps.travels.tracer.ui.stops.StopArrivalsFragment;
 import cs10.apps.travels.tracer.viewmodel.HomeVM;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
+import cs10.apps.travels.tracer.viewmodel.RootVM;
 
 public class HomeFragment extends CS_Fragment {
     private FragmentHomeBinding binding;
@@ -31,6 +34,7 @@ public class HomeFragment extends CS_Fragment {
     // ViewModel
     private HomeVM homeVM;
     private LocationVM locationVM;
+    private RootVM rootVM;
     private Observer<Location> firstLocationObserver;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,17 +51,16 @@ public class HomeFragment extends CS_Fragment {
 
         homeVM = new ViewModelProvider(requireActivity()).get(HomeVM.class);
         locationVM = new ViewModelProvider(requireActivity()).get(LocationVM.class);
+        rootVM = new ViewModelProvider(requireActivity()).get(RootVM.class);
 
         homeVM.getFavoriteStops().observe(getViewLifecycleOwner(), favoriteStops -> {
             sliderAdapter.setFavourites(favoriteStops);
             sliderAdapter.notifyDataSetChanged();
-            homeVM.isLoading().postValue(false);
+            rootVM.disableLoading();
         });
 
-        homeVM.isLoading().observe(getViewLifecycleOwner(), loading -> binding.pbar.setVisibility(loading ? View.VISIBLE : View.GONE));
-
         firstLocationObserver = location -> {
-            homeVM.isLoading().postValue(true);
+            rootVM.enableLoading();
             onBuildHome(location);
         };
 

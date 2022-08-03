@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -16,9 +17,10 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.core.view.GravityCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -30,7 +32,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.material.navigation.NavigationView;
 
 import cs10.apps.travels.tracer.data.generator.DelayData;
 import cs10.apps.travels.tracer.data.generator.GlewFiller;
@@ -41,9 +42,10 @@ import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
-import cs10.apps.travels.tracer.ui.travels.TrainTravelCreator;
 import cs10.apps.travels.tracer.ui.travels.BusTravelCreator;
+import cs10.apps.travels.tracer.ui.travels.TrainTravelCreator;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
+import cs10.apps.travels.tracer.viewmodel.RootVM;
 
 public class DrawerActivity extends AppCompatActivity implements DatabaseCallback {
     private AppBarConfiguration mAppBarConfiguration;
@@ -55,6 +57,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
 
     // ViewModel
     private LocationVM locationVM;
+    private RootVM rootVM;
 
     // Results
     ActivityResultLauncher<Object> fabLauncher = registerForActivityResult(new ActivityResultContract<Object, Intent>() {
@@ -84,27 +87,35 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         setContentView(binding.getRoot());
         setSupportActionBar(binding.appBarDrawer.toolbar);
 
-        // FAB
-        binding.appBarDrawer.fab.setOnClickListener(view -> {
-            // Intent intent = new Intent(DrawerActivity.this, SelectTravelType.class);
-            // startActivity(intent);
-
-            fabLauncher.launch(null);
+        // View Model
+        rootVM = new ViewModelProvider(this).get(RootVM.class);
+        rootVM.getLoading().observe(this, value -> {
+            if (value) binding.appBarDrawer.pbar.setVisibility(View.VISIBLE);
+            else binding.appBarDrawer.pbar.setVisibility(View.GONE);
         });
 
-        DrawerLayout drawer = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
+        // FAB
+        binding.appBarDrawer.fab.setOnClickListener(view -> fabLauncher.launch(null));
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_colectivos,
                 R.id.nav_trenes, R.id.nav_proximos, R.id.nav_prox_destinos, R.id.nav_paradas)
-                .setOpenableLayout(drawer)
+                .setOpenableLayout(binding.drawerLayout)
                 .build();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_drawer);
+
+        // setup drawer layout
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
+        NavigationUI.setupWithNavController(binding.navView, navController);
+
+        NavOptions options = new NavOptions.Builder()
+                .setEnterAnim(androidx.navigation.ui.R.anim.nav_default_enter_anim)
+                .setExitAnim(androidx.navigation.ui.R.anim.nav_default_exit_anim)
+                .setPopEnterAnim(androidx.navigation.ui.R.anim.nav_default_pop_enter_anim)
+                .setPopExitAnim(androidx.navigation.ui.R.anim.nav_default_pop_exit_anim)
+                .build();
 
         client = getFusedLocationProviderClient(this);
         Utils.checkPermissions(this);
@@ -158,7 +169,6 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
             }
 
         }, "dbUpdater");
-
         dbThread.start();
 
         // Location
@@ -171,6 +181,12 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
 
         // Keep device awake
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_drawer);
+        return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 
     @Override
@@ -193,6 +209,13 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
     protected void onResume() {
         super.onResume();
         startLocationUpdates();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START))
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        else super.onBackPressed();
     }
 
     @Override
@@ -222,12 +245,6 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
 
         // new Google API SDK v11 uses getFusedLocationProviderClient(this)
         client.requestLocationUpdates(mLocationRequest, locationCallback, Looper.getMainLooper());
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_drawer);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 
     @Override

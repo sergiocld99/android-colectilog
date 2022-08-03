@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="cs10.apps.travels.tracer.ui.stops.HomeFragment"
+        android:name="cs10.apps.travels.tracer.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_colectivos"
-        android:name="cs10.apps.travels.tracer.ui.stats.StatsFragment"
+        android:name="cs10.apps.travels.tracer.ui.stats.MonthSummaryFragment"
         android:label="@string/this_month_balance"
         tools:layout="@layout/fragment_buses" />
 

@@ -9,25 +9,29 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 import cs10.apps.common.android.CS_Fragment;
-import cs10.apps.travels.tracer.adapter.EditTravelCallback;
-import cs10.apps.travels.tracer.adapter.TravelsAdapter;
-import cs10.apps.travels.tracer.databinding.FragmentTrainsBinding;
+import cs10.apps.travels.tracer.adapter.TravelAdapter;
+import cs10.apps.travels.tracer.databinding.FragmentTravelsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.viewmodel.RootVM;
 
-public class MyTravelsFragment extends CS_Fragment implements EditTravelCallback {
-    private FragmentTrainsBinding binding;
-    private TravelsAdapter adapter;
+public class MyTravelsFragment extends CS_Fragment {
+    private FragmentTravelsBinding binding;
+    private TravelAdapter adapter;
+
+    private RootVM rootVM;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentTrainsBinding.inflate(inflater, container, false);
+        binding = FragmentTravelsBinding.inflate(inflater, container, false);
+        rootVM = new ViewModelProvider(requireActivity()).get(RootVM.class);
         return binding.getRoot();
     }
 
@@ -35,8 +39,15 @@ public class MyTravelsFragment extends CS_Fragment implements EditTravelCallback
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new TravelsAdapter();
-        adapter.setCallback(this);
+        adapter = new TravelAdapter(viaje -> {
+            onEditTravel(viaje);
+            return null;
+        }, (viaje, pos) -> {
+            onDeleteTravel(viaje, pos);
+            return null;
+        });
+
+        // adapter.setCallback(this);
 
         RecyclerView rv = binding.recycler;
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -48,10 +59,12 @@ public class MyTravelsFragment extends CS_Fragment implements EditTravelCallback
         super.onResume();
 
         doInBackground(() -> {
+            rootVM.enableLoading();
             ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
             List<Viaje> viajes = dao.getAll();
-            adapter.setViajes(viajes);
+            adapter.setList(viajes);
             doInForeground(adapter::notifyDataSetChanged);
+            rootVM.disableLoading();
         });
     }
 
@@ -61,14 +74,13 @@ public class MyTravelsFragment extends CS_Fragment implements EditTravelCallback
         binding = null;
     }
 
-    @Override
-    public void onDeleteTravel(long travelId, int pos) {
+    public void onDeleteTravel(@NonNull Viaje viaje, int pos) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(adapter.getViajes().get(pos).getStartAndEnd());
+        builder.setTitle(viaje.getStartAndEnd());
         builder.setMessage("¿Quieres eliminar este viaje de tu historial?");
         builder.setPositiveButton("Si", (dialogInterface, i) -> doInBackground(() -> {
             ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
-            dao.delete(travelId);
+            dao.delete(viaje.getId());
             doInForeground(() -> adapter.notifyItemRemoved(pos));
         }));
 
@@ -76,10 +88,9 @@ public class MyTravelsFragment extends CS_Fragment implements EditTravelCallback
         builder.create().show();
     }
 
-    @Override
-    public void onEditTravel(long id) {
-        Intent intent = new Intent(getActivity(), TravelEditor.class);
-        intent.putExtra("travelId", id);
+    public void onEditTravel(Viaje viaje) {
+        Intent intent = new Intent(getActivity(), viaje.getTipo() == 0 ? TravelEditor.class : TrainTravelEditor.class);
+        intent.putExtra("travelId", viaje.getId());
         startActivity(intent);
     }
 }

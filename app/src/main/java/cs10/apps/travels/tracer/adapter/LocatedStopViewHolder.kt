@@ -1,8 +1,6 @@
 package cs10.apps.travels.tracer.adapter
 
-import android.graphics.drawable.Drawable
 import android.view.View
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
@@ -31,7 +29,6 @@ class LocatedStopViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         } else binding.tvLocation.text = binding.root.context.getString(R.string.coords, parada.latitud, parada.longitud)
 
         // Colocar icono y color que corresponda
-        val icon : Drawable?
         val color : Int
 
         if (parada.tipo == 0){
@@ -41,7 +38,6 @@ class LocatedStopViewHolder(view : View) : RecyclerView.ViewHolder(view) {
                 else -> R.color.bus
             }
 
-            icon = AppCompatResources.getDrawable(binding.root.context, R.drawable.ic_bus)
             binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
         } else {
             color = when {
@@ -50,11 +46,11 @@ class LocatedStopViewHolder(view : View) : RecyclerView.ViewHolder(view) {
                 else -> R.color.train
             }
 
-            icon = AppCompatResources.getDrawable(binding.root.context, R.drawable.ic_train)
             binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
         }
 
-        binding.ivType.setImageDrawable(icon)
+        // Icono según tipo de parada
+        binding.ivType.setImageDrawable(Utils.getTypeDrawable(parada.tipo, binding.root.context))
 
         // Establecer listener para el item actual
         binding.root.setOnClickListener { onClickListener(parada) }

@@ -34,6 +34,9 @@
             android:name=".ui.travels.TravelEditor"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
+            android:name=".ui.travels.TrainTravelEditor"
+            android:theme="@style/Theme.TravelTracer.Trains" />
+        <activity
             android:name=".ui.stops.StopCreator"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity

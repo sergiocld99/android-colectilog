@@ -202,6 +202,11 @@ public class Viaje implements Comparable<Viaje> {
         return li + " (" + Utils.priceFormat(getCosto()) + ")";
     }
 
+    public String getRamalAndPrice(){
+        if (getRamal() == null) return Utils.priceFormat(getCosto());
+        else return getRamal() + " (" + Utils.priceFormat(getCosto()) + ")";
+    }
+
     @Override
     public int compareTo(Viaje viaje) {
         int r = Integer.compare(this.startHour, viaje.startHour);

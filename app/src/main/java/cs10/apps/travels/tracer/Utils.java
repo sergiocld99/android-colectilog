@@ -2,12 +2,15 @@ package cs10.apps.travels.tracer;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
@@ -111,6 +114,10 @@ public class Utils {
         Calendar calendar = Calendar.getInstance();
         calendar.set(v.getYear(), v.getMonth()-1, v.getDay());    // 0 es Enero en Calendar
         v.setWeekDay(calendar.get(Calendar.DAY_OF_WEEK));
+    }
+
+    public static Drawable getTypeDrawable(int type, Context context){
+        return ContextCompat.getDrawable(context, type == 0 ? R.drawable.ic_bus : R.drawable.ic_train);
     }
 
     public static void loadTrainBanner(ImageView iv){

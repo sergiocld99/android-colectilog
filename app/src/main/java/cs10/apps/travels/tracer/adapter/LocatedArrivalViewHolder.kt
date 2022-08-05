@@ -1,14 +1,13 @@
 package cs10.apps.travels.tracer.adapter
 
 import android.view.View
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
-import cs10.apps.travels.tracer.databinding.ItemArrivalBinding
 import cs10.apps.travels.tracer.data.generator.Station
+import cs10.apps.travels.tracer.databinding.ItemArrivalBinding
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.roca.ArriboTren
 import cs10.apps.travels.tracer.ui.stops.ETA_Switcher
@@ -39,9 +38,7 @@ class LocatedArrivalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         // icon
-        val icon = if (viaje.tipo == 0) R.drawable.ic_bus
-        else R.drawable.ic_train
-        binding.ivType.setImageDrawable(AppCompatResources.getDrawable(binding.root.context, icon))
+        binding.ivType.setImageDrawable(Utils.getTypeDrawable(viaje.tipo, binding.root.context))
 
         // bg color
         val color = if (viaje.tipo == 1 && !viaje.ramal.isNullOrEmpty() && viaje.ramal!!.contains("Directo")) R.color.bus_159

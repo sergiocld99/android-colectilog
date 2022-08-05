@@ -6,15 +6,19 @@ import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
-import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding;
-import cs10.apps.travels.tracer.databinding.ContentTravelCreatorBinding;
+import cs10.apps.travels.tracer.databinding.ActivityTrainTravelCreatorBinding;
+import cs10.apps.travels.tracer.databinding.ContentTrainTravelCreatorBinding;
+import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
+import kotlin.jvm.functions.Function1;
 
-public class TravelEditor extends CommonTravelEditor {
-    private ContentTravelCreatorBinding content;
+public class TrainTravelEditor extends CommonTravelEditor {
+    private ContentTrainTravelCreatorBinding myContent;
     private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
     private int startIndex, endIndex;
 
@@ -22,43 +26,40 @@ public class TravelEditor extends CommonTravelEditor {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityTravelCreatorBinding binding = ActivityTravelCreatorBinding.inflate(getLayoutInflater());
+        ActivityTrainTravelCreatorBinding binding = ActivityTrainTravelCreatorBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
 
-        content = binding.contentTravelCreator;
+        myContent = binding.content;
         onStartPlaceSelected = new OnStartPlaceSelected();
         onEndPlaceSelected = new OnEndPlaceSelected();
 
-        super.prepare(db -> db.paradasDao().getAll());
+        super.prepare(db -> db.paradasDao().getCustomTrainStops());
         super.setFabBehavior(binding.fab);
 
-        Utils.loadBusBanner(binding.appbarImage);
-        binding.fabStop.setVisibility(View.GONE);
+        Utils.loadTrainBanner(binding.appbarImage);
         binding.toolbarLayout.setTitle(getString(R.string.edit_travel));
     }
 
     @Override
     public void setSpinners() {
-        content.selectorStartPlace.setAdapter(startAdapter);
-        content.selectorEndPlace.setAdapter(endAdapter);
-        content.selectorStartPlace.setOnItemSelectedListener(onStartPlaceSelected);
-        content.selectorEndPlace.setOnItemSelectedListener(onEndPlaceSelected);
+        myContent.selectorStartPlace.setAdapter(startAdapter);
+        myContent.selectorEndPlace.setAdapter(endAdapter);
+        myContent.selectorStartPlace.setOnItemSelectedListener(onStartPlaceSelected);
+        myContent.selectorEndPlace.setOnItemSelectedListener(onEndPlaceSelected);
     }
 
     @Override
     public void retrieve() {
-        if (viaje.getLinea() != null) content.etLine.setText(String.valueOf(viaje.getLinea()));
-        if (viaje.getRamal() != null) content.etRamal.setText(viaje.getRamal());
-        if (viaje.getCosto() != 0) content.etPrice.setText(String.valueOf(viaje.getCosto()));
-        content.etDate.setText(Utils.dateFormat(viaje.getDay(), viaje.getMonth(), viaje.getYear()));
-        content.etStartHour.setText(Utils.hourFormat(viaje.getStartHour(), viaje.getStartMinute()));
+        if (viaje.getCosto() != 0) myContent.etPrice.setText(String.valueOf(viaje.getCosto()));
+        myContent.etDate.setText(Utils.dateFormat(viaje.getDay(), viaje.getMonth(), viaje.getYear()));
+        myContent.etStartHour.setText(Utils.hourFormat(viaje.getStartHour(), viaje.getStartMinute()));
 
         startIndex = getPosFor(viaje.getNombrePdaInicio());
         endIndex = getPosFor(viaje.getNombrePdaFin());
 
-        content.selectorStartPlace.setSelection(startIndex);
-        content.selectorEndPlace.setSelection(endIndex);
+        myContent.selectorStartPlace.setSelection(startIndex);
+        myContent.selectorEndPlace.setSelection(endIndex);
     }
 
     private int getPosFor(String stopName){
@@ -76,11 +77,9 @@ public class TravelEditor extends CommonTravelEditor {
     public int onCheckEntries(@NonNull Viaje viaje){
         if (getParadas().isEmpty()) return 6;
 
-        String line = content.etLine.getText().toString();
-        String ramal = content.etRamal.getText().toString().trim();
-        String date = content.etDate.getText().toString();
-        String startHour = content.etStartHour.getText().toString();
-        String price = content.etPrice.getText().toString();
+        String date = myContent.etDate.getText().toString();
+        String startHour = myContent.etStartHour.getText().toString();
+        String price = myContent.etPrice.getText().toString();
         Parada startPlace = getParadas().get(startIndex);
         Parada endPlace = getParadas().get(endIndex);
 
@@ -89,13 +88,13 @@ public class TravelEditor extends CommonTravelEditor {
 
         String[] hourParams = startHour.split(":");
         if (hourParams.length != 2){
-            content.etStartHour.setError("Ingrese una hora válida");
+            myContent.etStartHour.setError("Ingrese una hora válida");
             return 3;
         }
 
         String[] dateParams = date.split("/");
         if (dateParams.length != 3){
-            content.etDate.setError("Ingrese una fecha válida");
+            myContent.etDate.setError("Ingrese una fecha válida");
             return 4;
         }
 
@@ -108,15 +107,11 @@ public class TravelEditor extends CommonTravelEditor {
             viaje.setNombrePdaInicio(startPlace.getNombre());
             viaje.setNombrePdaFin(endPlace.getNombre());
             Utils.setWeekDay(viaje);
-            if (!ramal.isEmpty()) viaje.setRamal(ramal);
             if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
-            if (line.isEmpty()){
-                viaje.setTipo(1);
-                viaje.setLinea(null);
-            } else {
-                viaje.setTipo(0);
-                viaje.setLinea(Integer.parseInt(line));
-            }
+
+            // train type
+            viaje.setTipo(1);
+            viaje.setLinea(null);
         } catch (Exception e){
             e.printStackTrace();
             return 5;

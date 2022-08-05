@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.ui.travels;
 
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding;
 
 public abstract class CommonTravelCreator extends AppCompatActivity {
 
@@ -31,7 +33,21 @@ public abstract class CommonTravelCreator extends AppCompatActivity {
         fab.setOnClickListener(view -> performDone());
     }
 
-    protected void setCurrentTime(@NonNull EditText etDate, @NonNull EditText etStartHour){
+    protected void updateRedSubeHeader(ModuleRedSubeBinding moduleRedSubeBinding, int count){
+        if (count == 0) {
+            moduleRedSubeBinding.getRoot().setVisibility(View.GONE);
+            return;
+        }
+
+        moduleRedSubeBinding.getRoot().setVisibility(View.VISIBLE);
+        moduleRedSubeBinding.title.setText("Descuento del " + (count == 1 ? "50%" : "25%"));
+        moduleRedSubeBinding.description.setText(count == 1 ?
+            "Se realizó 1 viaje en las últimas 2 horas" :
+            "Se realizaron 2 viajes en las últimas 2 horas"
+        );
+    }
+
+    protected void setCurrentTime(@NonNull EditText etDate, @NonNull EditText etStartHour, ModuleRedSubeBinding subeHeader){
         // set today values
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, -1);
@@ -43,6 +59,12 @@ public abstract class CommonTravelCreator extends AppCompatActivity {
         int minute = calendar.get(Calendar.MINUTE);
         etDate.setText(Utils.dateFormat(day, month, year));
         etStartHour.setText(Utils.hourFormat(hour, minute));
+
+        // sube header
+        new Thread(() -> {
+            int count = MiDB.getInstance(this).viajesDao().last2HoursQuantity(year, month, day, hour, minute);
+            runOnUiThread(() -> updateRedSubeHeader(subeHeader, count));
+        }).start();
     }
 
     protected String getMessage(int index){

@@ -30,7 +30,7 @@ public class TravelEditor extends CommonTravelEditor {
         onStartPlaceSelected = new OnStartPlaceSelected();
         onEndPlaceSelected = new OnEndPlaceSelected();
 
-        super.prepare(db -> db.paradasDao().getAll());
+        super.prepare(db -> db.paradasDao().getAll(), content.redSubeHeader);
         super.setFabBehavior(binding.fab);
 
         Utils.loadBusBanner(binding.appbarImage);

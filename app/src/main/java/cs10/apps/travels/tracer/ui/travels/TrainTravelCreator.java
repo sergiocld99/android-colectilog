@@ -43,7 +43,7 @@ public class TrainTravelCreator extends CommonTravelCreator {
         binding.toolbarLayout.setTitle(getString(R.string.new_train_travel));
 
         super.setDoneFabBehavior(binding.fab);
-        super.setCurrentTime(binding.content.etDate, binding.content.etStartHour);
+        super.setCurrentTime(binding.content.etDate, binding.content.etStartHour, binding.content.redSubeHeader);
 
         // binding.content.tvTitle.setText(getString(R.string.new_train_travel));
         onStartPlaceSelected = new OnStartPlaceSelected();

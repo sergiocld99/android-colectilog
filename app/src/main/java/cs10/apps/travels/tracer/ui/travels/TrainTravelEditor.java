@@ -6,16 +6,12 @@ import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 
-import java.util.List;
-
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ActivityTrainTravelCreatorBinding;
 import cs10.apps.travels.tracer.databinding.ContentTrainTravelCreatorBinding;
-import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
-import kotlin.jvm.functions.Function1;
 
 public class TrainTravelEditor extends CommonTravelEditor {
     private ContentTrainTravelCreatorBinding myContent;
@@ -34,7 +30,7 @@ public class TrainTravelEditor extends CommonTravelEditor {
         onStartPlaceSelected = new OnStartPlaceSelected();
         onEndPlaceSelected = new OnEndPlaceSelected();
 
-        super.prepare(db -> db.paradasDao().getCustomTrainStops());
+        super.prepare(db -> db.paradasDao().getCustomTrainStops(), myContent.redSubeHeader);
         super.setFabBehavior(binding.fab);
 
         Utils.loadTrainBanner(binding.appbarImage);

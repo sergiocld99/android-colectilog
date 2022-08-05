@@ -86,6 +86,6 @@ public interface ViajesDao {
     Long getLastTravelId();
 
     @Query("SELECT COUNT(*) from viaje where year = :year and month = :month and day = :day " +
-            "and (startHour + startMinute * 60 > :hour + :minute * 60)")
+            "and (startHour * 60 + startMinute between ((:hour - 2) * 60 + :minute) and :hour * 60 + :minute - 1)")
     int last2HoursQuantity(int year, int month, int day, int hour, int minute);
 }

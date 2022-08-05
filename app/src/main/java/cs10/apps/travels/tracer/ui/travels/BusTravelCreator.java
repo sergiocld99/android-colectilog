@@ -47,7 +47,7 @@ public class BusTravelCreator extends CommonTravelCreator {
         content = binding.contentTravelCreator;
 
         super.setDoneFabBehavior(binding.fab);
-        super.setCurrentTime(content.etDate, content.etStartHour);
+        super.setCurrentTime(content.etDate, content.etStartHour, content.redSubeHeader);
 
         binding.fabStop.setOnClickListener(view -> startActivity(new Intent(this, StopCreator.class)));
         //content.tvTitle.setText(getString(R.string.new_travel));

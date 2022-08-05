@@ -15,6 +15,11 @@
         app:layout_constraintTop_toTopOf="parent"
         android:orientation="vertical">
 
+        <include
+            android:id="@+id/red_sube_header"
+            layout="@layout/module_red_sube"
+            android:visibility="gone" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

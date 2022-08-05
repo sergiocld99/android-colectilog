@@ -3,14 +3,14 @@ package cs10.apps.travels.tracer.ui.travels
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import cs10.apps.travels.tracer.modules.RedSube
+import kotlinx.coroutines.*
 
 abstract class CommonTravelEditor : AppCompatActivity() {
 
@@ -29,7 +29,7 @@ abstract class CommonTravelEditor : AppCompatActivity() {
         "No hay paradas guardadas"
     )
 
-    protected fun prepare(onGetParadas: (MiDB) -> List<Parada>){
+    protected fun prepare(onGetParadas: (MiDB) -> List<Parada>, moduleRedSubeBinding: ModuleRedSubeBinding){
 
         // extra
         val travelId = intent.getLongExtra("travelId", -1)
@@ -49,7 +49,13 @@ abstract class CommonTravelEditor : AppCompatActivity() {
             }
 
             viaje = db.viajesDao().getById(travelId)
-            a.await()
+
+            val b = async {
+                val count = RedSube(applicationContext).getLast2HoursQuantity(viaje)
+                CoroutineScope(Dispatchers.Main).launch{ updateRedSubeHeader(count, moduleRedSubeBinding) }
+            }
+
+            awaitAll(a)
 
             CoroutineScope(Dispatchers.Main).launch {
                 setSpinners()
@@ -63,6 +69,21 @@ abstract class CommonTravelEditor : AppCompatActivity() {
     abstract fun onCheckEntries(viaje: Viaje) : Int
 
     protected fun setFabBehavior(fab: FloatingActionButton) = fab.setOnClickListener { performDone() }
+
+    private fun updateRedSubeHeader(count: Int, moduleRedSubeBinding: ModuleRedSubeBinding){
+        moduleRedSubeBinding.root.isVisible = count > 0
+        if (count == 0) return
+
+        moduleRedSubeBinding.title.text = when (count) {
+            1 -> "Descuento del 50%"
+            else -> "Descuento del 25%"
+        }
+
+        moduleRedSubeBinding.description.text = when(count){
+            1 -> "Se realizó 1 viaje en las últimas 2 horas"
+            else -> "Se realizaron 2 viajes en las últimas 2 horas"
+        }
+    }
 
     private fun performDone(){
         val result = onCheckEntries(viaje)

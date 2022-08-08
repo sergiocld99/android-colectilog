@@ -1,4 +1,4 @@
-# Android App - Travel Traver
+# Android App - Travel Tracer
 Esta es una aplicación de uso personal para registrar viajes tanto en colectivo como en trenes. Me permite tener un seguimiento más al día del saldo en la Sube y obtener estadísticas de cuáles son las líneas en la que más gasto, por si tengo que ajustar jajaja
 
 ## Motivación

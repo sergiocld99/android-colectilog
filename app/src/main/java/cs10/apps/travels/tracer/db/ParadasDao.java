@@ -50,6 +50,13 @@ public interface ParadasDao {
             "group by nombre order by count(*) desc limit 8")
     List<Parada> getFavouriteStops(int current);
 
+    @Query("SELECT COUNT(*) + 1 " +
+            "FROM (select * from viaje group by nombrePdaInicio having count(*) > :travelsInCurrent)")
+    int getRank(int travelsInCurrent);
+
+    @Query("SELECT COUNT(*) FROM viaje where nombrePdaInicio = :stopName")
+    int getTravelCount(String stopName);
+
     @Query("SELECT * FROM Parada WHERE nombre IN " +
             "(SELECT nombrePdaInicio FROM Viaje WHERE linea IS :busLine) OR nombre IN" +
             "(SELECT nombrePdaFin FROM Viaje WHERE linea is :busLine)")

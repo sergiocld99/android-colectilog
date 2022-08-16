@@ -51,10 +51,18 @@ public class StopEditor extends AppCompatActivity implements AdapterView.OnItemS
         new Thread(() -> {
             dao = MiDB.getInstance(getApplicationContext()).paradasDao();
             Parada parada = dao.getByName(originalName);
+
+            // rank
+            int travelCount = dao.getTravelCount(originalName);
+            int rank = dao.getRank(travelCount);
+
             runOnUiThread(() -> {
                 content.etLatitude.setText(String.valueOf(parada.getLatitud()));
                 content.etLongitude.setText(String.valueOf(parada.getLongitud()));
                 content.selectorType.setSelection(parada.getTipo());
+                content.stopSummary.travelCount.setText(travelCount + " viajes realizados");
+                content.stopSummary.stopRank.setText("#" + rank + " en tu ranking");
+                content.stopSummary.getRoot().setVisibility(View.VISIBLE);
             });
         }).start();
 

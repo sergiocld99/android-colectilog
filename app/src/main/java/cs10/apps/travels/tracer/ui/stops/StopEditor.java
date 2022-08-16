@@ -60,8 +60,8 @@ public class StopEditor extends AppCompatActivity implements AdapterView.OnItemS
                 content.etLatitude.setText(String.valueOf(parada.getLatitud()));
                 content.etLongitude.setText(String.valueOf(parada.getLongitud()));
                 content.selectorType.setSelection(parada.getTipo());
-                content.stopSummary.travelCount.setText(travelCount + " viajes realizados");
-                content.stopSummary.stopRank.setText("#" + rank + " en tu ranking");
+                content.stopSummary.travelCount.setText(getString(R.string.x_travels_done, travelCount));
+                content.stopSummary.stopRank.setText(getString(R.string.number_x_in_ranking, rank));
                 content.stopSummary.getRoot().setVisibility(View.VISIBLE);
             });
         }).start();

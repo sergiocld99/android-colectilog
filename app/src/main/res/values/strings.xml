@@ -76,4 +76,6 @@
     <string name="train">Tren</string>
     <string name="new_train_travel">Nuevo viaje en Tren</string>
     <string name="ingrese_nuevo_valor">Ingrese el nuevo valor</string>
+    <string name="x_travels_done">%1$d viajes realizados</string>
+    <string name="number_x_in_ranking">#%1$d en tu ranking</string>
 </resources>

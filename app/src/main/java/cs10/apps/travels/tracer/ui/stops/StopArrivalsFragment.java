@@ -95,6 +95,12 @@ public class StopArrivalsFragment extends CS_Fragment {
             rootVM.disableLoading();
         });
 
+        locatedArrivalVM.getSummary().observe(getViewLifecycleOwner(), data -> {
+            binding.stopSummary.travelCount.setText(getString(R.string.x_travels_done, data.component1()));
+            binding.stopSummary.stopRank.setText(getString(R.string.number_x_in_ranking, data.component2()));
+            binding.stopSummary.getRoot().setVisibility(View.VISIBLE);
+        });
+
         locationVM.getLocation().observe(getViewLifecycleOwner(), location -> {
             Double maxD = homeVM.getMaxDistance().getValue();
             if (maxD != null) locatedArrivalVM.recalculate(location, maxD);
@@ -151,6 +157,11 @@ public class StopArrivalsFragment extends CS_Fragment {
             Collections.sort(arrivals);
 
             doInForeground(() -> locatedArrivalVM.getArrivals().postValue(arrivals));
+
+            int travelCount = miDB.paradasDao().getTravelCount(stopName);
+            int rank = miDB.paradasDao().getRank(travelCount);
+
+            locatedArrivalVM.setSummary(travelCount, rank);
         });
     }
 

@@ -19,6 +19,7 @@ class LocatedArrivalVM : ViewModel() {
 
     val proximity = MutableLiveData<Double>()
     val goingTo = MutableLiveData(false)
+    val summary = MutableLiveData<Pair<Int, Int>>()
 
     fun recalculate(locationVM: LocationVM, homeVM: HomeVM) {
         if (locationVM.location.value != null && homeVM.maxDistance.value != null){
@@ -47,5 +48,9 @@ class LocatedArrivalVM : ViewModel() {
         if (prev != null){
             goingTo.postValue(prox > prev && prox > 0.9)
         }
+    }
+
+    fun setSummary(travelCount: Int, rank: Int) {
+        summary.postValue(Pair(travelCount, rank))
     }
 }

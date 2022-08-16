@@ -45,7 +45,7 @@
     <string name="edit_travel">Editando Viaje</string>
     <string name="next_ones">Próximos Arribos</string>
     <string name="next_ones_to">Próximos Destinos</string>
-    <string name="next_is">Siguiente es %1$s</string>
+    <string name="next_is">Siguiente es el %1$s</string>
     <string name="next_to">Llega el %1$s a las %2$s</string>
     <string name="take_in">Tomar en %1$s</string>
     <string name="arrives_at">Llega a las %1$s</string>

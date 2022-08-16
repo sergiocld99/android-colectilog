@@ -6,19 +6,20 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
-import cs10.apps.travels.tracer.databinding.ItemStopBinding
+import cs10.apps.travels.tracer.databinding.ItemArrivalBinding
 import cs10.apps.travels.tracer.model.ScheduledParada
 import cs10.apps.travels.tracer.ui.stops.UpsideDownSwitcher
 
 open class NextEventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    protected val binding = ItemStopBinding.bind(view)
+    protected val binding = ItemArrivalBinding.bind(view)
     private val upsideDownSwitcher = UpsideDownSwitcher()
 
     open fun render(item: ScheduledParada, top : Boolean, onClickListener: (ScheduledParada) -> Unit) {
         binding.tvName.text = item.nombre
 
         binding.ivType.setImageDrawable(Utils.getTypeDrawable(item.tipo, binding.root.context))
+        binding.tvLine.text = item.lineaAsString
 
         binding.root.background = AppCompatResources.getDrawable(
             binding.root.context,
@@ -34,7 +35,7 @@ open class NextEventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             binding.tvLocation.isVisible = false
         } else {
             upsideDownSwitcher.stop()
-            binding.tvLocation.text = binding.root.context.getString(R.string.next_to, item.lineaAsString, item.nextArrival)
+            binding.tvLocation.text = binding.root.context.getString(R.string.arrives_at, item.nextArrival)
 
             binding.tvLocation.isVisible = true
             binding.tvSwitcher.isVisible = false

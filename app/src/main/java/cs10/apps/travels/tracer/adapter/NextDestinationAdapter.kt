@@ -13,7 +13,7 @@ class NextDestinationAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NextDestinationViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return NextDestinationViewHolder(layoutInflater.inflate(R.layout.item_stop, parent, false))
+        return NextDestinationViewHolder(layoutInflater.inflate(R.layout.item_arrival, parent, false))
     }
 
     override fun onBindViewHolder(holder: NextDestinationViewHolder, position: Int) {

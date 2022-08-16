@@ -35,7 +35,7 @@ public class UpsideDownSwitcher {
                     // Slide up
                     tvSwitcher.setInAnimation(tvSwitcher.getContext(), R.anim.slide_up_in);
                     tvSwitcher.setOutAnimation(tvSwitcher.getContext(), R.anim.slide_up_out);
-                    tvSwitcher.setText(tvSwitcher.getContext().getString(R.string.next_is, item.getTransportInfo()));
+                    tvSwitcher.setText(tvSwitcher.getContext().getString(R.string.next_is, item.getRamal()));
                 }
             } catch (Exception e){
                 stop();

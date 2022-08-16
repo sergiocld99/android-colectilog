@@ -13,7 +13,7 @@ class NextArrivalAdapter (
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NextArrivalViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return NextArrivalViewHolder(layoutInflater.inflate(R.layout.item_stop, parent, false))
+        return NextArrivalViewHolder(layoutInflater.inflate(R.layout.item_arrival, parent, false))
     }
 
     override fun onBindViewHolder(holder: NextArrivalViewHolder, position: Int) {

@@ -18,7 +18,8 @@ open class NextEventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     open fun render(item: ScheduledParada, top : Boolean, onClickListener: (ScheduledParada) -> Unit) {
         binding.tvName.text = item.nombre
 
-        binding.ivType.setImageDrawable(Utils.getTypeDrawable(item.tipo, binding.root.context))
+        val type = if (item.linea == null) 1 else 0
+        binding.ivType.setImageDrawable(Utils.getTypeDrawable(type, binding.root.context))
         binding.tvLine.text = item.lineaAsString
 
         binding.root.background = AppCompatResources.getDrawable(

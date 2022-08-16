@@ -23,7 +23,7 @@
             android:label="Seleccione el tipo de viaje" />
         <activity
             android:name=".ui.coffee.CoffeeCreator"
-            android:theme="@style/Theme.TravelTracer.NoActionBar" />
+            android:theme="@style/Theme.TravelTracer.Coffee" />
         <activity
             android:name=".ui.travels.BusTravelCreator"
             android:theme="@style/Theme.TravelTracer.Buses" />

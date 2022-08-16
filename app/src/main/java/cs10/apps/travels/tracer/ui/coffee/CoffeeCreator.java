@@ -35,6 +35,7 @@ public class CoffeeCreator extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
         content = binding.contentCoffeeCreator;
+        binding.toolbarLayout.setTitle("Registrar Café");
 
         binding.fab.setOnClickListener(view -> performDone());
 
@@ -49,6 +50,8 @@ public class CoffeeCreator extends AppCompatActivity {
         int minute = calendar.get(Calendar.MINUTE);
         content.etDate.setText(Utils.dateFormat(day, month, year));
         content.etHour.setText(Utils.hourFormat(hour, minute));
+
+        Utils.loadCoffeeBanner(binding.appbarImage);
     }
 
     private void performDone(){

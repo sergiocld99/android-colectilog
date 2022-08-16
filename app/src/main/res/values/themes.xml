@@ -26,6 +26,12 @@
         <item name="colorSecondary">#757EAF</item>
     </style>
 
+    <style name="Theme.TravelTracer.Coffee" parent="Theme.TravelTracer.NoActionBar">
+        <item name="colorPrimary">#B5643F</item>
+        <item name="colorPrimaryVariant">#B37529</item>
+        <item name="colorSecondary">#AF9075</item>
+    </style>
+
     <style name="Theme.TravelTracer.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

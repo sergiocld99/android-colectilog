@@ -134,4 +134,9 @@ public class Utils {
         Picasso.get().load("https://media.ambito.com/p/5fa4f0e7d7842a07e938f45577916a2d/adjuntos/239/imagenes/039/693/0039693734/subejpg.jpg")
                 .memoryPolicy(MemoryPolicy.NO_CACHE).into(appbarImage);
     }
+
+    public static void loadCoffeeBanner(@NonNull ImageView view) {
+        Picasso.get().load("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.computerhoy.com%2Fsites%2Fnavi.axelspringer.es%2Fpublic%2Fstyles%2F480%2Fpublic%2Fmedia%2Fimage%2F2018%2F03%2F294127-tazas-cafe-recomendables-dia.jpg%3Fitok%3DdbraWqYX&f=1&nofb=1")
+                .memoryPolicy(MemoryPolicy.NO_CACHE).into(view);
+    }
 }

@@ -23,6 +23,7 @@ import cs10.apps.travels.tracer.db.ParadasDao;
 import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.modules.RedSube;
 import cs10.apps.travels.tracer.ui.stops.StopCreator;
 
 public class BusTravelCreator extends CommonTravelCreator {
@@ -150,9 +151,12 @@ public class BusTravelCreator extends CommonTravelCreator {
         if (paradas != null && !paradas.isEmpty()) new Thread(() -> {
             ViajesDao dao = MiDB.getInstance(getApplicationContext()).viajesDao();
             Double maxP = dao.getMaxPrice(paradas.get(startIndex).getNombre(), paradas.get(endIndex).getNombre());
+
             runOnUiThread(() -> {
-                if (maxP != null) content.etPrice.setText(String.valueOf(maxP));
-                else content.etPrice.setText(null);
+                if (maxP != null) {
+                    final double price = maxP * RedSube.Companion.getPercentageToPay(redSubeCount) / 100;
+                    content.etPrice.setText(String.valueOf(price));
+                } else content.etPrice.setText(null);
             });
         }).start();
     }

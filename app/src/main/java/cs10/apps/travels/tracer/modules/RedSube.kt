@@ -15,4 +15,15 @@ class RedSube(context: Context) {
         val dao = db.viajesDao()
         return dao.last2HoursQuantity(year, month, day, hour, minute)
     }
+
+    // Static methods
+    companion object {
+        fun getPercentageToPay(travelCount: Int) : Int {
+            return when (travelCount) {
+                0 -> 100
+                1 -> 50
+                else -> 25
+            }
+        }
+    }
 }

@@ -75,6 +75,10 @@ public class Utils {
         else return Math.round(value * 1000);
     }
 
+    public static int colorFor(Integer bus, Context context){
+        return ContextCompat.getColor(context, colorFor(bus));
+    }
+
     public static int colorFor(Integer bus){
         if (bus == null) return R.color.train;
 

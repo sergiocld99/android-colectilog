@@ -10,6 +10,11 @@
             android:icon="@drawable/ic_home"/>
 
         <item
+            android:id="@+id/nav_live"
+            android:title="@string/live"
+            android:icon="@drawable/ic_wifi_tethering"/>
+
+        <item
             android:id="@+id/nav_colectivos"
             android:title="@string/this_month_balance"
             android:icon="@drawable/ic_show_chart"/>

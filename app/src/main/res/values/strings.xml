@@ -78,4 +78,9 @@
     <string name="ingrese_nuevo_valor">Ingrese el nuevo valor</string>
     <string name="x_travels_done">%1$d viajes realizados</string>
     <string name="number_x_in_ranking">#%1$d en tu ranking</string>
+
+    <!-- live-a1-0 -->
+    <string name="traveling_now">En viaje</string>
+    <string name="live">En vivo</string>
+    <string name="path">Recorrido</string>
 </resources>

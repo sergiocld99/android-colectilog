@@ -82,6 +82,9 @@ public interface ViajesDao {
             "inner join Parada p2 on v.nombrePdaFin = p2.nombre")
     List<TravelDistance> getTravelDistances();
 
+    @Query("SELECT * from viaje order by id desc limit 1")
+    Viaje getLastTravel();
+
     @Query("SELECT MAX(id) from viaje")
     Long getLastTravelId();
 

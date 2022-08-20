@@ -12,6 +12,12 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
+        android:id="@+id/nav_live"
+        android:name="cs10.apps.travels.tracer.ui.live.LiveTravelFragment"
+        android:label="@string/live"
+        tools:layout="@layout/fragment_live_travel" />
+
+    <fragment
         android:id="@+id/nav_colectivos"
         android:name="cs10.apps.travels.tracer.ui.stats.MonthSummaryFragment"
         android:label="@string/this_month_balance"

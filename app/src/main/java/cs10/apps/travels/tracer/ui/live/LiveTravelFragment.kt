@@ -43,7 +43,7 @@ class LiveTravelFragment : Fragment() {
         }
 
         liveVM.minutesFromStart.observe(viewLifecycleOwner) {
-            binding.startedMinAgo.text = "Inició hace $it minutos"
+            if (it > 0) binding.startedMinAgo.text = "Inició hace $it minutos"
         }
 
         liveVM.speed.observe(viewLifecycleOwner) {
@@ -60,11 +60,14 @@ class LiveTravelFragment : Fragment() {
             }
 
             binding.etaInfo.text = "Llegarías a las " + Utils.hourFormat(eta)
+
+            // show finish button
+            binding.finishBtn.visibility = View.VISIBLE
             rootVM.disableLoading()
         }
 
         locationVM.location.observe(viewLifecycleOwner) {
-            liveVM.recalculateDistances(rootVM.database, it)
+            liveVM.recalculateDistances(rootVM.database, it) { rootVM.disableLoading() }
         }
 
         return binding.root
@@ -84,6 +87,6 @@ class LiveTravelFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        liveVM.findLastTravel(rootVM.database, locationVM)
+        liveVM.findLastTravel(rootVM.database, locationVM) { rootVM.disableLoading() }
     }
 }

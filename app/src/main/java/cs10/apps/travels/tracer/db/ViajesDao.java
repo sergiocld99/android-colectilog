@@ -82,6 +82,10 @@ public interface ViajesDao {
             "inner join Parada p2 on v.nombrePdaFin = p2.nombre")
     List<TravelDistance> getTravelDistances();
 
+    @Query("SELECT * FROM Viaje where endHour is null " +
+            "and (startHour * 60 + startMinute) < :currentTs order by id desc limit 1")
+    Viaje getLastStartedTravel(int currentTs);
+
     @Query("SELECT * from viaje order by id desc limit 1")
     Viaje getLastTravel();
 

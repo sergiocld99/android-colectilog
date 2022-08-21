@@ -147,4 +147,9 @@ public class Utils {
         Picasso.get().load("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.computerhoy.com%2Fsites%2Fnavi.axelspringer.es%2Fpublic%2Fstyles%2F480%2Fpublic%2Fmedia%2Fimage%2F2018%2F03%2F294127-tazas-cafe-recomendables-dia.jpg%3Fitok%3DdbraWqYX&f=1&nofb=1")
                 .memoryPolicy(MemoryPolicy.NO_CACHE).into(view);
     }
+
+    public static int getCurrentTs(){
+        Calendar calendar = Calendar.getInstance();
+        return calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+    }
 }

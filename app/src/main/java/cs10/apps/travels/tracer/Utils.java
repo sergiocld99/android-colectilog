@@ -110,6 +110,10 @@ public class Utils {
         return day + "/" + month + "/" + year;
     }
 
+    public static CharSequence hourFormat(Calendar calendar){
+        return hourFormat(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+    }
+
     public static CharSequence hourFormat(int hour, int minute) {
         return hour + ":" + twoDecimals(minute);
     }

@@ -74,6 +74,11 @@ class LiveTravelFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         rootVM.enableLoading()
+
+        // on finish travel
+        binding.finishBtn.setOnClickListener {
+            liveVM.finishTravel(Calendar.getInstance(), rootVM.database)
+        }
     }
 
     override fun onResume() {

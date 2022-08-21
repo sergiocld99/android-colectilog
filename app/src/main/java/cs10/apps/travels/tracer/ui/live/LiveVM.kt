@@ -91,4 +91,12 @@ class LiveVM : ViewModel() {
             }
         }
     }
+
+    fun finishTravel(cal: Calendar, db:MiDB) {
+        travel.value?.let {
+            it.endHour = cal.get(Calendar.HOUR_OF_DAY)
+            it.endMinute = cal.get(Calendar.MINUTE)
+            viewModelScope.launch(Dispatchers.IO){ db.viajesDao().update(it) }
+        }
+    }
 }

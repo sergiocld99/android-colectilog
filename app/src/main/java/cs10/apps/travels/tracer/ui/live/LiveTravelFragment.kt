@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import cs10.apps.travels.tracer.Utils
@@ -26,15 +27,13 @@ class LiveTravelFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         binding = FragmentLiveTravelBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+        // view model observers
         rootVM = ViewModelProvider(requireActivity())[RootVM::class.java]
         liveVM = ViewModelProvider(requireActivity())[LiveVM::class.java]
         locationVM = ViewModelProvider(requireActivity())[LocationVM::class.java]
+
+        rootVM.loading.observe(requireActivity()) { binding.root.isVisible = !it }
 
         liveVM.travel.observe(viewLifecycleOwner) {
             binding.buttonCard.setCardBackgroundColor(Utils.colorFor(it.linea, context))
@@ -61,11 +60,20 @@ class LiveTravelFragment : Fragment() {
             }
 
             binding.etaInfo.text = "Llegarías a las " + Utils.hourFormat(eta)
+            rootVM.disableLoading()
         }
 
         locationVM.location.observe(viewLifecycleOwner) {
             liveVM.recalculateDistances(rootVM.database, it)
         }
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        rootVM.enableLoading()
     }
 
     override fun onResume() {

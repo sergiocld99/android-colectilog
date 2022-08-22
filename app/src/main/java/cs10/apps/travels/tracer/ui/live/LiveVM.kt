@@ -84,7 +84,8 @@ class LiveVM : ViewModel() {
                     if (it > 0){
                         val hours = it / 60.0
                         val speed = (startStop.distance * 10 / hours).roundToInt() / 10.0
-                        this@LiveVM.speed.postValue(speed)
+                        val correctedSpeed = (speed + 25) / 2
+                        this@LiveVM.speed.postValue(correctedSpeed)
                     } else {
                         // should create a new travel
                         this.launch(Dispatchers.Main){ newTravelRunnable.run() }

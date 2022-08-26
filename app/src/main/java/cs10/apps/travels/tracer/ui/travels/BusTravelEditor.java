@@ -13,7 +13,7 @@ import cs10.apps.travels.tracer.databinding.ContentTravelCreatorBinding;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
 
-public class TravelEditor extends CommonTravelEditor {
+public class BusTravelEditor extends CommonTravelEditor {
     private ContentTravelCreatorBinding content;
     private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
     private int startIndex, endIndex;
@@ -51,6 +51,10 @@ public class TravelEditor extends CommonTravelEditor {
         if (viaje.getLinea() != null) content.etLine.setText(String.valueOf(viaje.getLinea()));
         if (viaje.getRamal() != null) content.etRamal.setText(viaje.getRamal());
         if (viaje.getCosto() != 0) content.etPrice.setText(String.valueOf(viaje.getCosto()));
+        if (viaje.getEndHour() != null && viaje.getEndMinute() != null)
+            content.etEndHour.setText(Utils.hourFormat(viaje.getEndHour(), viaje.getEndMinute()));
+
+        // mandatory
         content.etDate.setText(Utils.dateFormat(viaje.getDay(), viaje.getMonth(), viaje.getYear()));
         content.etStartHour.setText(Utils.hourFormat(viaje.getStartHour(), viaje.getStartMinute()));
 
@@ -76,11 +80,12 @@ public class TravelEditor extends CommonTravelEditor {
     public int onCheckEntries(@NonNull Viaje viaje){
         if (getParadas().isEmpty()) return 6;
 
-        String line = content.etLine.getText().toString();
+        String line = content.etLine.getText().toString().trim();
         String ramal = content.etRamal.getText().toString().trim();
-        String date = content.etDate.getText().toString();
-        String startHour = content.etStartHour.getText().toString();
-        String price = content.etPrice.getText().toString();
+        String date = content.etDate.getText().toString().trim();
+        String startHour = content.etStartHour.getText().toString().trim();
+        String endHour = content.etEndHour.getText().toString().trim();
+        String price = content.etPrice.getText().toString().trim();
         Parada startPlace = getParadas().get(startIndex);
         Parada endPlace = getParadas().get(endIndex);
 
@@ -97,6 +102,26 @@ public class TravelEditor extends CommonTravelEditor {
         if (dateParams.length != 3){
             content.etDate.setError("Ingrese una fecha válida");
             return 4;
+        }
+
+        // end hour and minute
+        if (endHour.isEmpty()){
+            viaje.setEndHour(null);
+            viaje.setEndMinute(null);
+        } else {
+            String[] endHourParams = endHour.split(":");
+            if (endHourParams.length != 2){
+                content.etEndHour.setError("Ingrese una hora válida");
+                return 3;
+            }
+
+            try {
+                viaje.setEndHour(Integer.parseInt(endHourParams[0]));
+                viaje.setEndMinute(Integer.parseInt(endHourParams[1]));
+            } catch (NumberFormatException e){
+                e.printStackTrace();
+                return 5;
+            }
         }
 
         try {

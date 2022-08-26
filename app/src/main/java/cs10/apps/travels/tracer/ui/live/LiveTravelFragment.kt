@@ -1,14 +1,19 @@
 package cs10.apps.travels.tracer.ui.live
 
+import android.app.AlertDialog
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
+import cs10.apps.travels.tracer.databinding.SimpleImageBinding
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import java.util.*
@@ -25,7 +30,11 @@ class LiveTravelFragment : Fragment() {
     private lateinit var binding: FragmentLiveTravelBinding
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentLiveTravelBinding.inflate(inflater, container, false)
 
@@ -37,10 +46,13 @@ class LiveTravelFragment : Fragment() {
         rootVM.loading.observe(requireActivity()) { binding.root.isVisible = !it }
 
         liveVM.travel.observe(viewLifecycleOwner) {
-            binding.buttonCard.setCardBackgroundColor(Utils.colorFor(it.linea, context))
-            binding.lineSubtitle.text = it.linea.toString()
-            binding.travelFrom.text = "Desde: " + it.nombrePdaInicio
-            binding.travelTo.text = "Hasta: " + it.nombrePdaFin
+            if (it == null) resetViews()
+            else {
+                binding.buttonCard.setCardBackgroundColor(Utils.colorFor(it.linea, context))
+                binding.lineSubtitle.text = it.linea.toString()
+                binding.travelFrom.text = "Desde: " + it.nombrePdaInicio
+                binding.travelTo.text = "Hasta: " + it.nombrePdaFin
+            }
         }
 
         liveVM.minutesFromStart.observe(viewLifecycleOwner) {
@@ -56,15 +68,16 @@ class LiveTravelFragment : Fragment() {
             binding.minutesLeft.text = "$it'"
             binding.pb.progress = ((120 - it) * 100 / 120)
 
-            val eta = Calendar.getInstance().apply {
-                add(Calendar.MINUTE, it)
-            }
+            val eta = Calendar.getInstance().apply { add(Calendar.MINUTE, it) }
 
             binding.etaInfo.text = "Llegarías a las " + Utils.hourFormat(eta)
 
             // show finish button
-            binding.finishBtn.visibility = View.VISIBLE
+            binding.finishBtn.isVisible = it < 10
             rootVM.disableLoading()
+
+            // auto-finish
+            if (it == 0) finishCurrentTravel()
         }
 
         locationVM.location.observe(viewLifecycleOwner) {
@@ -80,14 +93,52 @@ class LiveTravelFragment : Fragment() {
         rootVM.enableLoading()
 
         // on finish travel
-        binding.finishBtn.setOnClickListener {
-            liveVM.finishTravel(Calendar.getInstance(), rootVM.database)
-        }
+        binding.finishBtn.setOnClickListener { finishCurrentTravel() }
     }
 
     override fun onResume() {
         super.onResume()
 
         liveVM.findLastTravel(rootVM.database, locationVM) { rootVM.disableLoading() }
+    }
+
+
+    // ------------------------------- DONE -------------------------------
+
+    private fun resetViews() {
+        binding.finishBtn.isVisible = false
+        binding.etaInfo.text = null
+        binding.averageSpeed.text = null
+        binding.minutesLeft.text = null
+        binding.startedMinAgo.text = null
+        binding.travelTo.text = null
+        binding.travelFrom.text = null
+        binding.lineSubtitle.text = null
+        rootVM.disableLoading()
+    }
+
+    private fun finishCurrentTravel() {
+        liveVM.finishTravel(Calendar.getInstance(), rootVM.database)
+        showDoneAnimation()
+    }
+
+    private fun showDoneAnimation() {
+
+        val iv2 = SimpleImageBinding.inflate(layoutInflater, null, false)
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setView(iv2.root)
+
+        Glide.with(requireActivity())
+            .load("https://media.geeksforgeeks.org/wp-content/uploads/20201129221326/abc.gif")
+            .into(iv2.iv)
+
+        val dialog = builder.create()
+        dialog.show()
+
+        // dismiss dialog and clear views
+        Handler(Looper.getMainLooper()).postDelayed({
+            dialog.cancel()
+            resetViews()
+        }, 2000)
     }
 }

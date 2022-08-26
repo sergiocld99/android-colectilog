@@ -86,6 +86,12 @@ public interface ViajesDao {
             "and (startHour * 60 + startMinute) < :currentTs order by id desc limit 1")
     Viaje getLastStartedTravel(int currentTs);
 
+    // Comentario: solo se devuelve UN viaje INCOMPLETO empezado HOY, se verifica hora y minuto
+    @Query("SELECT * FROM Viaje where endHour is null and year = :y and month = :m and day = :d " +
+            "and (startHour*60+startMinute) < :currentTs " +
+            "order by startHour desc, startMinute desc limit 1")
+    Viaje getCurrentTravel(int y, int m, int d, int currentTs);
+
     @Query("SELECT * from viaje order by id desc limit 1")
     Viaje getLastTravel();
 

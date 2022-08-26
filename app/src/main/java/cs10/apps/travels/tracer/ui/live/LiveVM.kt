@@ -16,7 +16,7 @@ import java.util.*
 
 class LiveVM : ViewModel() {
 
-    val travel = MutableLiveData<Viaje>()
+    val travel = MutableLiveData<Viaje?>()
 
     // distances in metres
     private val startDistance = MutableLiveData<Double>()
@@ -37,12 +37,18 @@ class LiveVM : ViewModel() {
         }
     }, 30000)
 
-    fun findLastTravel(db: MiDB, locationVM: LocationVM, cancelRunnable: Runnable){
-        val currentTs = Utils.getCurrentTs()
+    fun findLastTravel(db: MiDB, locationVM: LocationVM, cancelRunnable: Runnable) {
+        val calendar = Calendar.getInstance()
 
-        viewModelScope.launch(Dispatchers.IO){
-            val t = db.viajesDao().getLastStartedTravel(currentTs)
-            if (t == null || t.tipo != 0) this.launch(Dispatchers.Main) { cancelRunnable.run() }
+        viewModelScope.launch(Dispatchers.IO) {
+            val t = db.viajesDao().getCurrentTravel(
+                calendar[Calendar.YEAR],
+                calendar[Calendar.MONTH],
+                calendar[Calendar.DAY_OF_MONTH],
+                Utils.getCurrentTs()
+            )
+
+            if (t == null || t.tipo != 0) travel.postValue(null)
             else {
                 travel.postValue(t)
                 delay(500)
@@ -56,7 +62,7 @@ class LiveVM : ViewModel() {
         }
     }
 
-    fun calculateETA(speed: Double){
+    private fun calculateETA(speed: Double) {
         endDistance.value?.let {
             // distance is already in km
             val timeHours = it / speed
@@ -64,9 +70,9 @@ class LiveVM : ViewModel() {
         }
     }
 
-    fun recalculateDistances(db:MiDB, location: Location, newTravelRunnable: Runnable){
+    fun recalculateDistances(db: MiDB, location: Location, newTravelRunnable: Runnable) {
         travel.value?.let {
-            viewModelScope.launch(Dispatchers.IO){
+            viewModelScope.launch(Dispatchers.IO) {
                 val startStop = db.paradasDao().getByName(it.nombrePdaInicio)
                 val endStop = db.paradasDao().getByName(it.nombrePdaFin)
 
@@ -80,7 +86,7 @@ class LiveVM : ViewModel() {
 
                 // calculate speed
                 minutesFromStart.value?.let {
-                    if (it > 0){
+                    if (it > 0) {
                         val hours = it / 60.0
                         val speed = startStop.distance / hours
                         val correctedSpeed = (speed + 25) / 2
@@ -88,18 +94,19 @@ class LiveVM : ViewModel() {
                         calculateETA(correctedSpeed)
                     } else {
                         // should create a new travel
-                        this.launch(Dispatchers.Main){ newTravelRunnable.run() }
+                        this.launch(Dispatchers.Main) { newTravelRunnable.run() }
                     }
                 }
             }
         }
     }
 
-    fun finishTravel(cal: Calendar, db:MiDB) {
+    fun finishTravel(cal: Calendar, db: MiDB) {
         travel.value?.let {
             it.endHour = cal.get(Calendar.HOUR_OF_DAY)
             it.endMinute = cal.get(Calendar.MINUTE)
-            viewModelScope.launch(Dispatchers.IO){ db.viajesDao().update(it) }
+            viewModelScope.launch(Dispatchers.IO) { db.viajesDao().update(it) }
+            travel.postValue(null)
         }
     }
 }

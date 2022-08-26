@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.live
+package cs10.apps.travels.tracer.viewmodel
 
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
@@ -8,7 +8,6 @@ import cs10.apps.common.android.Clock
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Viaje
-import cs10.apps.travels.tracer.viewmodel.LocationVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

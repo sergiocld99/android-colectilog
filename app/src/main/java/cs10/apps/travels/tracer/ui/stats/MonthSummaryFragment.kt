@@ -75,9 +75,4 @@ class MonthSummaryFragment : CS_Fragment() {
             startActivity(Intent(context, EditBalanceActivity::class.java))
         }
     }
-
-    companion object {
-        const val VIAJE_PARA_SALDO = 64
-        const val SALDO_TEST = 887.47
-    }
 }

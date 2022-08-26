@@ -16,8 +16,11 @@ import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding;
+import cs10.apps.travels.tracer.modules.RedSube;
 
 public abstract class CommonTravelCreator extends AppCompatActivity {
+
+    protected int redSubeCount = 0;
 
     private final String[] messages = {
             "Viaje creado con éxito",
@@ -39,12 +42,18 @@ public abstract class CommonTravelCreator extends AppCompatActivity {
             return;
         }
 
+        redSubeCount = count;
+        int ptp = RedSube.Companion.getPercentageToPay(count);
         moduleRedSubeBinding.getRoot().setVisibility(View.VISIBLE);
-        moduleRedSubeBinding.title.setText("Descuento del " + (count == 1 ? "50%" : "25%"));
+        moduleRedSubeBinding.title.setText("Descuento del " + ptp + "%");
         moduleRedSubeBinding.description.setText(count == 1 ?
             "Se realizó 1 viaje en las últimas 2 horas" :
-            "Se realizaron 2 viajes en las últimas 2 horas"
+            "Se realizaron " + count + " viajes en las últimas 2 horas"
         );
+    }
+
+    public static Integer dummy(){
+        return 1;
     }
 
     protected void setCurrentTime(@NonNull EditText etDate, @NonNull EditText etStartHour, ModuleRedSubeBinding subeHeader){

@@ -79,6 +79,20 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@string/end_hour"
+            android:layout_marginTop="16dp"
+            android:textSize="20sp"/>
+
+        <EditText
+            android:id="@+id/et_end_hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="time"
+            android:autofillHints="time"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/select_start_place"
             android:layout_marginTop="16dp"
             android:textSize="20sp"/>

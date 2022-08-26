@@ -75,6 +75,10 @@ public class Utils {
         else return Math.round(value * 1000);
     }
 
+    public static int colorFor(Integer bus, Context context){
+        return ContextCompat.getColor(context, colorFor(bus));
+    }
+
     public static int colorFor(Integer bus){
         if (bus == null) return R.color.train;
 
@@ -104,6 +108,10 @@ public class Utils {
 
     public static String dateFormat(int day, int month, int year) {
         return day + "/" + month + "/" + year;
+    }
+
+    public static CharSequence hourFormat(Calendar calendar){
+        return hourFormat(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
     }
 
     public static CharSequence hourFormat(int hour, int minute) {
@@ -138,5 +146,10 @@ public class Utils {
     public static void loadCoffeeBanner(@NonNull ImageView view) {
         Picasso.get().load("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.computerhoy.com%2Fsites%2Fnavi.axelspringer.es%2Fpublic%2Fstyles%2F480%2Fpublic%2Fmedia%2Fimage%2F2018%2F03%2F294127-tazas-cafe-recomendables-dia.jpg%3Fitok%3DdbraWqYX&f=1&nofb=1")
                 .memoryPolicy(MemoryPolicy.NO_CACHE).into(view);
+    }
+
+    public static int getCurrentTs(){
+        Calendar calendar = Calendar.getInstance();
+        return calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
     }
 }

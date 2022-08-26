@@ -89,7 +89,7 @@ public class MyTravelsFragment extends CS_Fragment {
     }
 
     public void onEditTravel(Viaje viaje) {
-        Intent intent = new Intent(getActivity(), viaje.getTipo() == 0 ? TravelEditor.class : TrainTravelEditor.class);
+        Intent intent = new Intent(getActivity(), viaje.getTipo() == 0 ? BusTravelEditor.class : TrainTravelEditor.class);
         intent.putExtra("travelId", viaje.getId());
         startActivity(intent);
     }

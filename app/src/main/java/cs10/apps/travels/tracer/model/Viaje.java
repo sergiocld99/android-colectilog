@@ -182,8 +182,11 @@ public class Viaje implements Comparable<Viaje> {
     }
 
     public String getStartTimeString() {
-        return getWeekDayString() + getDay() + "/" + getMonth() + " - " +
-                getStartHour() + ":" + Utils.twoDecimals(getStartMinute());
+        String day = getWeekDayString() + getDay() + "/" + getMonth();
+        CharSequence start = Utils.hourFormat(getStartHour(), getStartMinute());
+        CharSequence end = getEndHour() != null ? Utils.hourFormat(getEndHour(), getEndMinute()) : null;
+
+        return day + " - " + start + (end != null ? " / " + end : "");
     }
 
     public String getStartAndEnd() {

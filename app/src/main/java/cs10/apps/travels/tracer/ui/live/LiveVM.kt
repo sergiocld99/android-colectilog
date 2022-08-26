@@ -13,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.math.roundToInt
 
 class LiveVM : ViewModel() {
 
@@ -83,9 +82,10 @@ class LiveVM : ViewModel() {
                 minutesFromStart.value?.let {
                     if (it > 0){
                         val hours = it / 60.0
-                        val speed = (startStop.distance * 10 / hours).roundToInt() / 10.0
+                        val speed = startStop.distance / hours
                         val correctedSpeed = (speed + 25) / 2
                         this@LiveVM.speed.postValue(correctedSpeed)
+                        calculateETA(correctedSpeed)
                     } else {
                         // should create a new travel
                         this.launch(Dispatchers.Main){ newTravelRunnable.run() }

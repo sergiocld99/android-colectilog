@@ -12,6 +12,7 @@ import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import java.util.*
+import kotlin.math.roundToInt
 
 class LiveTravelFragment : Fragment() {
 
@@ -47,8 +48,8 @@ class LiveTravelFragment : Fragment() {
         }
 
         liveVM.speed.observe(viewLifecycleOwner) {
-            binding.averageSpeed.text = "Velocidad: $it km/h"
-            liveVM.calculateETA(it)
+            val formated = (it * 10).roundToInt() / 10.0
+            binding.averageSpeed.text = "Velocidad: $formated km/h"
         }
 
         liveVM.minutesToEnd.observe(viewLifecycleOwner) {

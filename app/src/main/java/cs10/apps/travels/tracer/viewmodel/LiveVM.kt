@@ -47,7 +47,8 @@ class LiveVM : ViewModel() {
                 Utils.getCurrentTs()
             )
 
-            if (t == null || t.tipo != 0) travel.postValue(null)
+            // Aceptamos buses y trenes
+            if (t == null) travel.postValue(null)
             else {
                 travel.postValue(t)
                 delay(500)

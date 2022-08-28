@@ -53,6 +53,7 @@ class LiveTravelFragment : Fragment() {
                 binding.lineSubtitle.text = it.linea.toString()
                 binding.travelFrom.text = "Desde: " + it.nombrePdaInicio
                 binding.travelTo.text = "Hasta: " + it.nombrePdaFin
+                binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(it.tipo, binding.root.context))
             }
         }
 

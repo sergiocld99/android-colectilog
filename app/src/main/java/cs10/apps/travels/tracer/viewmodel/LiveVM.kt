@@ -4,6 +4,7 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Clock
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.db.MiDB
@@ -37,15 +38,10 @@ class LiveVM : ViewModel() {
     }, 30000)
 
     fun findLastTravel(db: MiDB, locationVM: LocationVM, cancelRunnable: Runnable) {
-        val calendar = Calendar.getInstance()
+        val (y,m,d) = Calendar2.getDate()
 
         viewModelScope.launch(Dispatchers.IO) {
-            val t = db.viajesDao().getCurrentTravel(
-                calendar[Calendar.YEAR],
-                calendar[Calendar.MONTH],
-                calendar[Calendar.DAY_OF_MONTH],
-                Utils.getCurrentTs()
-            )
+            val t = db.viajesDao().getCurrentTravel(y, m, d, Utils.getCurrentTs())
 
             // Aceptamos buses y trenes
             if (t == null) travel.postValue(null)

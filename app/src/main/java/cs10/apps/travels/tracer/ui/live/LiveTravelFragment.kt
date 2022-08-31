@@ -61,6 +61,10 @@ class LiveTravelFragment : Fragment() {
             if (it > 0) binding.startedMinAgo.text = "Inició hace $it minutos"
         }
 
+        liveVM.averageDuration.observe(viewLifecycleOwner) {
+            binding.averageDuration.text = "Duración promedio: $it minutos"
+        }
+
         liveVM.speed.observe(viewLifecycleOwner) {
             val formated = (it * 10).roundToInt() / 10.0
             binding.averageSpeed.text = "Velocidad: $formated km/h"
@@ -116,6 +120,7 @@ class LiveTravelFragment : Fragment() {
         binding.travelTo.text = null
         binding.travelFrom.text = null
         binding.lineSubtitle.text = null
+        binding.averageDuration.text = null
         rootVM.disableLoading()
     }
 

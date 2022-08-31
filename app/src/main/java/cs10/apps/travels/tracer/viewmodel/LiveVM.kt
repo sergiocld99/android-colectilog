@@ -25,6 +25,7 @@ class LiveVM : ViewModel() {
     // time in minutes
     val minutesFromStart = MutableLiveData<Int>()
     val minutesToEnd = MutableLiveData<Int>()
+    val averageDuration = MutableLiveData<Int>()
 
     // speed in km/h
     val speed = MutableLiveData<Double>()
@@ -46,6 +47,11 @@ class LiveVM : ViewModel() {
             // Aceptamos buses y trenes
             if (t == null) travel.postValue(null)
             else {
+                t.linea?.let {
+                    val avgDuration = db.viajesDao().getAverageTravelDuration(it, t.nombrePdaInicio, t.nombrePdaFin)
+                    averageDuration.postValue(avgDuration)
+                }
+
                 travel.postValue(t)
                 delay(500)
                 clock.start()
@@ -59,10 +65,19 @@ class LiveVM : ViewModel() {
     }
 
     private fun calculateETA(speed: Double) {
-        endDistance.value?.let {
+        endDistance.value?.let { dist ->
             // distance is already in km
-            val timeHours = it / speed
-            minutesToEnd.postValue((timeHours * 60).toInt())
+            val currentDiff = (dist / speed) * 60
+            var averageDiff = currentDiff.toInt()
+
+            if (averageDuration.value != null && minutesFromStart.value != null){
+                val aux = averageDuration.value!! - minutesFromStart.value!!
+                if (aux > 0) averageDiff = aux
+            }
+
+            val correctedDiff = (currentDiff * 0.3 + averageDiff * 0.7)
+
+            minutesToEnd.postValue(correctedDiff.toInt())
         }
     }
 
@@ -85,9 +100,8 @@ class LiveVM : ViewModel() {
                     if (it > 0) {
                         val hours = it / 60.0
                         val speed = startStop.distance / hours
-                        val correctedSpeed = (speed + 25) / 2
-                        this@LiveVM.speed.postValue(correctedSpeed)
-                        calculateETA(correctedSpeed)
+                        this@LiveVM.speed.postValue(speed)
+                        calculateETA(speed)
                     } else {
                         // should create a new travel
                         this.launch(Dispatchers.Main) { newTravelRunnable.run() }

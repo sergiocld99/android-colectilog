@@ -86,11 +86,7 @@ public interface ViajesDao {
             "and (startHour * 60 + startMinute) < :currentTs order by id desc limit 1")
     Viaje getLastStartedTravel(int currentTs);
 
-    // Comentario: solo se devuelve UN viaje INCOMPLETO empezado HOY, se verifica hora y minuto
-    @Query("SELECT * FROM Viaje where endHour is null and year = :y and month = :m and day = :d " +
-            "and (startHour*60+startMinute) < :currentTs " +
-            "order by startHour desc, startMinute desc limit 1")
-    Viaje getCurrentTravel(int y, int m, int d, int currentTs);
+
 
     @Query("SELECT * from viaje order by id desc limit 1")
     Viaje getLastTravel();
@@ -101,4 +97,16 @@ public interface ViajesDao {
     @Query("SELECT COUNT(*) from viaje where year = :year and month = :month and day = :day " +
             "and (startHour * 60 + startMinute between ((:hour - 2) * 60 + :minute) and :hour * 60 + :minute - 1)")
     int last2HoursQuantity(int year, int month, int day, int hour, int minute);
+
+    // ------------------------------- LIVE --------------------------------------------
+
+    // Comentario: solo se devuelve UN viaje INCOMPLETO empezado HOY, se verifica hora y minuto
+    @Query("SELECT * FROM Viaje where endHour is null and year = :y and month = :m and day = :d " +
+            "and (startHour*60+startMinute) < :currentTs " +
+            "order by startHour desc, startMinute desc limit 1")
+    Viaje getCurrentTravel(int y, int m, int d, int currentTs);
+
+    @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
+            "where linea = :line and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
+    int getAverageTravelDuration(int line, String startStop, String endStop);
 }

@@ -50,11 +50,19 @@ class LiveTravelFragment : Fragment() {
             if (it == null) resetViews()
             else {
                 binding.buttonCard.setCardBackgroundColor(Utils.colorFor(it.linea, context))
-                binding.lineSubtitle.text = it.lineSimplified
                 binding.travelFrom.text = "Desde: " + it.nombrePdaInicio
                 binding.travelTo.text = "Hasta: " + it.nombrePdaFin
                 binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(it.tipo, binding.root.context))
                 rootVM.disableLoading()
+            }
+        }
+
+        liveVM.toggle.observe(viewLifecycleOwner) {
+            liveVM.travel.value?.let { t ->
+                if (it && t.ramal != null) binding.lineSubtitle.text = t.ramal
+                else binding.lineSubtitle.text = t.lineSimplified
+
+                binding.lineSubtitle.isSelected = true
             }
         }
 

@@ -17,6 +17,7 @@ import java.util.*
 class LiveVM : ViewModel() {
 
     val travel = MutableLiveData<Viaje?>()
+    val toggle = MutableLiveData(false)
 
     // distances in metres
     private val startDistance = MutableLiveData<Double?>()
@@ -33,13 +34,18 @@ class LiveVM : ViewModel() {
     // progress (between 0 and 1)
     val progress = MutableLiveData<Double?>()
 
-    // timer
-    private val clock = Clock({
+    // timer 1: update minutes from start every 30 seconds
+    private val minuteClock = Clock({
         travel.value?.let { t ->
             val startTs = t.startHour * 60 + t.startMinute
             minutesFromStart.postValue(Utils.getCurrentTs() - startTs)
         }
     }, 30000)
+
+    // timer 2: toggle a boolean every 8 seconds (ramal - line)
+    private val toggleClock = Clock({
+        toggle.value?.let { v -> toggle.postValue(!v) }
+    }, 8000)
 
     fun findLastTravel(db: MiDB, locationVM: LocationVM, cancelRunnable: Runnable) {
         val (y,m,d) = Calendar2.getDate()
@@ -58,7 +64,10 @@ class LiveVM : ViewModel() {
 
                 travel.postValue(t)
                 delay(500)
-                clock.start()
+
+                // start clocks
+                minuteClock.start()
+                toggleClock.start()
 
                 delay(500)
 
@@ -83,7 +92,7 @@ class LiveVM : ViewModel() {
             var averageDiff = currentDiff.toInt()
             var currentWeight = 1.0
 
-            progress.value?.let { currentWeight = 1 - it }
+            progress.value?.let { currentWeight = it }
 
             if (averageDuration.value != null && minutesFromStart.value != null){
                 val aux = averageDuration.value!! - minutesFromStart.value!!
@@ -116,7 +125,7 @@ class LiveVM : ViewModel() {
                 minutesFromStart.value?.let {
                     if (it > 0) {
                         val hours = it / 60.0
-                        val speed = startStop.distance / hours
+                        val speed = 0.5 * (startStop.distance / hours) + 12.5
                         this@LiveVM.speed.postValue(speed)
                         calculateETA(speed)
                     } else {

@@ -7,10 +7,12 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
@@ -59,10 +61,15 @@ class LiveTravelFragment : Fragment() {
 
         liveVM.toggle.observe(viewLifecycleOwner) {
             liveVM.travel.value?.let { t ->
-                if (it && t.ramal != null) binding.lineSubtitle.text = t.ramal
-                else binding.lineSubtitle.text = t.lineSimplified
-
-                binding.lineSubtitle.isSelected = true
+                if (it && t.ramal != null) {
+                    binding.lineSubtitle.textSize = 24f
+                    binding.lineSubtitle.text = t.ramal
+                    binding.lineSubtitle.setTextColor(ContextCompat.getColor(binding.root.context, R.color.yellow))
+                } else {
+                    binding.lineSubtitle.text = t.lineSimplified
+                    binding.lineSubtitle.textSize = 30f
+                    binding.lineSubtitle.setTextColor(ContextCompat.getColor(binding.root.context, R.color.white))
+                }
             }
         }
 

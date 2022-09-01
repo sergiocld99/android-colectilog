@@ -42,10 +42,10 @@ class LiveVM : ViewModel() {
         }
     }, 30000)
 
-    // timer 2: toggle a boolean every 8 seconds (ramal - line)
+    // timer 2: toggle a boolean every 5 seconds (ramal - line)
     private val toggleClock = Clock({
         toggle.value?.let { v -> toggle.postValue(!v) }
-    }, 8000)
+    }, 5000)
 
     fun findLastTravel(db: MiDB, locationVM: LocationVM, cancelRunnable: Runnable) {
         val (y,m,d) = Calendar2.getDate()
@@ -69,41 +69,36 @@ class LiveVM : ViewModel() {
                 minuteClock.start()
                 toggleClock.start()
 
-                delay(500)
+                // delay(500)
 
                 // force get location
-                locationVM.location.value?.let { recalculateDistances(db, it, cancelRunnable) }
+                // locationVM.location.value?.let { recalculateDistances(db, it, cancelRunnable) }
             }
         }
     }
 
     // CALCULA EL PORCENTAJE A PARTIR DE LA DISTANCIA AL INICIO y AL FIN
-    private fun calculateProgress(){
-        if (startDistance.value != null && endDistance.value != null){
-            val total = startDistance.value!! + endDistance.value!!
-            progress.postValue(startDistance.value!! / total)
-        } else progress.postValue(null)
+    private fun calculateProgress(startDist: Double, endDist: Double) : Double {
+        val total = startDist + endDist
+        val result = startDist / total
+        progress.postValue(result)
+        return result
     }
 
-    private fun calculateETA(speed: Double) {
-        endDistance.value?.let { dist ->
-            // distance is already in km
-            val currentDiff = (dist / speed) * 60
-            var averageDiff = currentDiff.toInt()
-            var currentWeight = 1.0
+    private fun calculateETA(speed: Double, prog: Double, endDist: Double) {
+        // distance is already in km
+        val currentDiff = (endDist / speed) * 60
+        var averageDiff = currentDiff.toInt()
 
-            progress.value?.let { currentWeight = it }
-
-            if (averageDuration.value != null && minutesFromStart.value != null){
-                val aux = averageDuration.value!! - minutesFromStart.value!!
-                if (aux > 0) averageDiff = aux
-            }
-
-            val averageWeight = 1 - currentWeight
-            val correctedDiff = (currentDiff * currentWeight + averageDiff * averageWeight)
-
-            minutesToEnd.postValue(correctedDiff.toInt())
+        if (averageDuration.value != null && minutesFromStart.value != null) {
+            val aux = averageDuration.value!! - minutesFromStart.value!!
+            if (aux > 0) averageDiff = aux
         }
+
+        val averageWeight = 1 - prog
+        val correctedDiff = (currentDiff * prog + averageDiff * averageWeight)
+
+        minutesToEnd.postValue(correctedDiff.toInt())
     }
 
     fun recalculateDistances(db: MiDB, location: Location, newTravelRunnable: Runnable) {
@@ -119,7 +114,7 @@ class LiveVM : ViewModel() {
                 // update values for UI
                 startDistance.postValue(startStop.distance)
                 endDistance.postValue(endStop.distance)
-                calculateProgress()
+                val prog = calculateProgress(startStop.distance, endStop.distance)
 
                 // calculate speed
                 minutesFromStart.value?.let {
@@ -127,7 +122,7 @@ class LiveVM : ViewModel() {
                         val hours = it / 60.0
                         val speed = 0.5 * (startStop.distance / hours) + 12.5
                         this@LiveVM.speed.postValue(speed)
-                        calculateETA(speed)
+                        calculateETA(speed, prog, endStop.distance)
                     } else {
                         // should create a new travel
                         this.launch(Dispatchers.Main) { newTravelRunnable.run() }

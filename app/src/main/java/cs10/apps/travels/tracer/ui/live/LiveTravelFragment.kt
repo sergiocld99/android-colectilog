@@ -50,40 +50,49 @@ class LiveTravelFragment : Fragment() {
             if (it == null) resetViews()
             else {
                 binding.buttonCard.setCardBackgroundColor(Utils.colorFor(it.linea, context))
-                binding.lineSubtitle.text = it.linea.toString()
+                binding.lineSubtitle.text = it.lineSimplified
                 binding.travelFrom.text = "Desde: " + it.nombrePdaInicio
                 binding.travelTo.text = "Hasta: " + it.nombrePdaFin
                 binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(it.tipo, binding.root.context))
+                rootVM.disableLoading()
             }
         }
 
         liveVM.minutesFromStart.observe(viewLifecycleOwner) {
-            if (it > 0) binding.startedMinAgo.text = "Inició hace $it minutos"
+            if (it == null || it == 0) binding.startedMinAgo.text = null
+            else binding.startedMinAgo.text = "Inició hace $it minutos"
         }
 
         liveVM.averageDuration.observe(viewLifecycleOwner) {
-            binding.averageDuration.text = "Duración promedio: $it minutos"
+            if (it == null || it == 0) binding.averageDuration.text = null
+            else binding.averageDuration.text = "Duración promedio: $it minutos"
         }
 
         liveVM.speed.observe(viewLifecycleOwner) {
-            val formated = (it * 10).roundToInt() / 10.0
-            binding.averageSpeed.text = "Velocidad: $formated km/h"
+            if (it == null) binding.averageSpeed.text = null
+            else {
+                val formated = (it * 10).roundToInt() / 10.0
+                binding.averageSpeed.text = "Velocidad: $formated km/h"
+            }
+        }
+
+        liveVM.progress.observe(viewLifecycleOwner) {
+            when {
+                it == null -> binding.pb.progress = 0
+                it > 0.95 -> finishCurrentTravel()
+                else -> binding.pb.progress = (it * 100).roundToInt()
+            }
         }
 
         liveVM.minutesToEnd.observe(viewLifecycleOwner) {
-            binding.minutesLeft.text = "$it'"
-            binding.pb.progress = ((120 - it) * 100 / 120)
+            if (it == null) binding.minutesLeft.text = null
+            else {
+                val eta = Calendar.getInstance().apply { add(Calendar.MINUTE, it) }
 
-            val eta = Calendar.getInstance().apply { add(Calendar.MINUTE, it) }
-
-            binding.etaInfo.text = "Llegarías a las " + Utils.hourFormat(eta)
-
-            // show finish button
-            binding.finishBtn.isVisible = it < 10
-            rootVM.disableLoading()
-
-            // auto-finish
-            if (it == 0) finishCurrentTravel()
+                binding.minutesLeft.text = "$it'"
+                binding.etaInfo.text = "Llegarías a las " + Utils.hourFormat(eta)
+                binding.finishBtn.isVisible = it < 10
+            }
         }
 
         locationVM.location.observe(viewLifecycleOwner) {
@@ -105,6 +114,7 @@ class LiveTravelFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
+        resetViews()
         liveVM.findLastTravel(rootVM.database, locationVM) { rootVM.disableLoading() }
     }
 
@@ -115,12 +125,12 @@ class LiveTravelFragment : Fragment() {
         binding.finishBtn.isVisible = false
         binding.etaInfo.text = null
         binding.averageSpeed.text = null
-        binding.minutesLeft.text = null
-        binding.startedMinAgo.text = null
         binding.travelTo.text = null
         binding.travelFrom.text = null
         binding.lineSubtitle.text = null
         binding.averageDuration.text = null
+        binding.minutesLeft.text = "..."
+        binding.pb.progress = 0
         rootVM.disableLoading()
     }
 

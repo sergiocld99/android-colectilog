@@ -198,6 +198,11 @@ public class Viaje implements Comparable<Viaje> {
         return "Línea " + getLinea() + (getRamal() != null ? " - " + getRamal() : "");
     }
 
+    public String getLineSimplified(){
+        if (getLinea() == null) return "Roca";
+        else return String.valueOf(getLinea());
+    }
+
     public String getLineInfoAndPrice() {
         String li = getLineInformation();
         if (getCosto() == 0) return li;

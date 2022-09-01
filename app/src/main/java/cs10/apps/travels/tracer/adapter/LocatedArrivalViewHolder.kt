@@ -46,8 +46,7 @@ class LocatedArrivalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
 
         // line sublabel
-        binding.tvLine.text = if (viaje.linea == null) "Roca"
-        else viaje.linea.toString()
+        binding.tvLine.text = viaje.lineSimplified
 
         // ETA animation
         if (top && viaje is ArriboTren){

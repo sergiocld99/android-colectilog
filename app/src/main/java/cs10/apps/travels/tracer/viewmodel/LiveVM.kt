@@ -19,16 +19,19 @@ class LiveVM : ViewModel() {
     val travel = MutableLiveData<Viaje?>()
 
     // distances in metres
-    private val startDistance = MutableLiveData<Double>()
-    private val endDistance = MutableLiveData<Double>()
+    private val startDistance = MutableLiveData<Double?>()
+    private val endDistance = MutableLiveData<Double?>()
 
     // time in minutes
-    val minutesFromStart = MutableLiveData<Int>()
-    val minutesToEnd = MutableLiveData<Int>()
-    val averageDuration = MutableLiveData<Int>()
+    val minutesFromStart = MutableLiveData<Int?>()
+    val minutesToEnd = MutableLiveData<Int?>()
+    val averageDuration = MutableLiveData<Int?>()
 
     // speed in km/h
-    val speed = MutableLiveData<Double>()
+    val speed = MutableLiveData<Double?>()
+
+    // progress (between 0 and 1)
+    val progress = MutableLiveData<Double?>()
 
     // timer
     private val clock = Clock({
@@ -45,11 +48,12 @@ class LiveVM : ViewModel() {
             val t = db.viajesDao().getCurrentTravel(y, m, d, Utils.getCurrentTs())
 
             // Aceptamos buses y trenes
-            if (t == null) travel.postValue(null)
+            if (t == null) resetEverything()
             else {
                 t.linea?.let {
                     val avgDuration = db.viajesDao().getAverageTravelDuration(it, t.nombrePdaInicio, t.nombrePdaFin)
-                    averageDuration.postValue(avgDuration)
+                    if (avgDuration > 0) averageDuration.postValue(avgDuration)
+                    else averageDuration.postValue(null)
                 }
 
                 travel.postValue(t)
@@ -64,18 +68,30 @@ class LiveVM : ViewModel() {
         }
     }
 
+    // CALCULA EL PORCENTAJE A PARTIR DE LA DISTANCIA AL INICIO y AL FIN
+    private fun calculateProgress(){
+        if (startDistance.value != null && endDistance.value != null){
+            val total = startDistance.value!! + endDistance.value!!
+            progress.postValue(startDistance.value!! / total)
+        } else progress.postValue(null)
+    }
+
     private fun calculateETA(speed: Double) {
         endDistance.value?.let { dist ->
             // distance is already in km
             val currentDiff = (dist / speed) * 60
             var averageDiff = currentDiff.toInt()
+            var currentWeight = 1.0
+
+            progress.value?.let { currentWeight = 1 - it }
 
             if (averageDuration.value != null && minutesFromStart.value != null){
                 val aux = averageDuration.value!! - minutesFromStart.value!!
                 if (aux > 0) averageDiff = aux
             }
 
-            val correctedDiff = (currentDiff * 0.3 + averageDiff * 0.7)
+            val averageWeight = 1 - currentWeight
+            val correctedDiff = (currentDiff * currentWeight + averageDiff * averageWeight)
 
             minutesToEnd.postValue(correctedDiff.toInt())
         }
@@ -94,6 +110,7 @@ class LiveVM : ViewModel() {
                 // update values for UI
                 startDistance.postValue(startStop.distance)
                 endDistance.postValue(endStop.distance)
+                calculateProgress()
 
                 // calculate speed
                 minutesFromStart.value?.let {
@@ -116,7 +133,18 @@ class LiveVM : ViewModel() {
             it.endHour = cal.get(Calendar.HOUR_OF_DAY)
             it.endMinute = cal.get(Calendar.MINUTE)
             viewModelScope.launch(Dispatchers.IO) { db.viajesDao().update(it) }
-            travel.postValue(null)
+            resetEverything()
         }
+    }
+
+    private fun resetEverything(){
+        travel.postValue(null)
+        startDistance.postValue(null)
+        endDistance.postValue(null)
+        minutesFromStart.postValue(null)
+        minutesToEnd.postValue(null)
+        averageDuration.postValue(null)
+        progress.postValue(null)
+        speed.postValue(null)
     }
 }

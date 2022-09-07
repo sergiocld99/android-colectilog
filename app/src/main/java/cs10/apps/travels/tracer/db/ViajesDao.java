@@ -48,6 +48,10 @@ public interface ViajesDao {
     @Query("SELECT MAX(costo) FROM viaje where nombrePdaInicio is :inicio and nombrePdaFin is :fin")
     Double getMaxPrice(String inicio, String fin);
 
+    @Query("SELECT costo FROM viaje " +
+            "where nombrePdaInicio is :inicio and nombrePdaFin is :fin order by id desc")
+    Double getLastPrice(String inicio, String fin);
+
     @Query("SELECT linea, SUM(costo) as suma FROM viaje " +
             "where linea is not null and month is :month group by linea order by 2 desc limit 3")
     List<PriceSum> getMostExpensiveBus(int month);

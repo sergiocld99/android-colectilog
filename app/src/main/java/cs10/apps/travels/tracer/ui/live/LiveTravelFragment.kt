@@ -94,7 +94,7 @@ class LiveTravelFragment : Fragment() {
         liveVM.progress.observe(viewLifecycleOwner) {
             when {
                 it == null -> binding.pb.progress = 0
-                it > 0.95 -> finishCurrentTravel()
+                it > 0.985 -> finishCurrentTravel()
                 else -> binding.pb.progress = (it * 100).roundToInt()
             }
         }

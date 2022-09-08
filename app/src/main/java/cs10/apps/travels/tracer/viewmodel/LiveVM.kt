@@ -134,6 +134,11 @@ class LiveVM : ViewModel() {
 
     fun finishTravel(cal: Calendar, db: MiDB) {
         travel.value?.let {
+            // Sumar tiempo que faltaba para terminar 
+            minutesToEnd.value?.let { minutes ->
+              cal.add(Calendar.MINUTE, minutes)
+            }
+
             it.endHour = cal.get(Calendar.HOUR_OF_DAY)
             it.endMinute = cal.get(Calendar.MINUTE)
             viewModelScope.launch(Dispatchers.IO) { db.viajesDao().update(it) }

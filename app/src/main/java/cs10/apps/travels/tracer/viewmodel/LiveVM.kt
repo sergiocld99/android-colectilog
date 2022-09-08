@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.math.pow
 
 class LiveVM : ViewModel() {
 
@@ -122,7 +123,7 @@ class LiveVM : ViewModel() {
                         val hours = it / 60.0
                         val speed = 0.5 * (startStop.distance / hours) + 12.5
                         this@LiveVM.speed.postValue(speed)
-                        calculateETA(speed, prog, endStop.distance)
+                        calculateETA(speed, prog.pow(2), endStop.distance)
                     } else {
                         // should create a new travel
                         this.launch(Dispatchers.Main) { newTravelRunnable.run() }

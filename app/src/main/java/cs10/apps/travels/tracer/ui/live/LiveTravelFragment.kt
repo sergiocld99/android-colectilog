@@ -70,6 +70,9 @@ class LiveTravelFragment : Fragment() {
                     binding.lineSubtitle.textSize = 30f
                     binding.lineSubtitle.setTextColor(ContextCompat.getColor(binding.root.context, R.color.white))
                 }
+
+                if (it) liveVM.progress.value?.let { prog -> binding.minutesLeft.text = prog.times(100).roundToInt().toString() + "%" }
+                else liveVM.minutesToEnd.value?.let { minutes -> binding.minutesLeft.text = "$minutes'" }
             }
         }
 
@@ -94,7 +97,7 @@ class LiveTravelFragment : Fragment() {
         liveVM.progress.observe(viewLifecycleOwner) {
             when {
                 it == null -> binding.pb.progress = 0
-                it > 0.985 -> finishCurrentTravel()
+                it > 0.97 -> finishCurrentTravel()
                 else -> binding.pb.progress = (it * 100).roundToInt()
             }
         }

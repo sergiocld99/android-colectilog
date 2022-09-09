@@ -19,6 +19,7 @@ class LiveVM : ViewModel() {
 
     val travel = MutableLiveData<Viaje?>()
     val toggle = MutableLiveData(false)
+    val nextTravel = MutableLiveData<Viaje?>()
 
     // distances in metres
     private val startDistance = MutableLiveData<Double?>()
@@ -48,7 +49,7 @@ class LiveVM : ViewModel() {
         toggle.value?.let { v -> toggle.postValue(!v) }
     }, 5000)
 
-    fun findLastTravel(db: MiDB, locationVM: LocationVM, cancelRunnable: Runnable) {
+    fun findLastTravel(db: MiDB) {
         val (y,m,d) = Calendar2.getDate()
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -81,9 +82,7 @@ class LiveVM : ViewModel() {
     // CALCULA EL PORCENTAJE A PARTIR DE LA DISTANCIA AL INICIO y AL FIN
     private fun calculateProgress(startDist: Double, endDist: Double) : Double {
         val total = startDist + endDist
-        val result = startDist / total
-        progress.postValue(result)
-        return result
+        return startDist / total
     }
 
     private fun calculateETA(speed: Double, prog: Double, endDist: Double) {
@@ -100,6 +99,10 @@ class LiveVM : ViewModel() {
         val correctedDiff = (currentDiff * prog + averageDiff * averageWeight)
 
         minutesToEnd.postValue(correctedDiff.toInt())
+        endDistance.postValue(endDist)
+        progress.postValue(prog)
+        this.speed.postValue(speed)
+
     }
 
     fun recalculateDistances(db: MiDB, location: Location, newTravelRunnable: Runnable) {
@@ -114,7 +117,6 @@ class LiveVM : ViewModel() {
 
                 // update values for UI
                 startDistance.postValue(startStop.distance)
-                endDistance.postValue(endStop.distance)
                 val prog = calculateProgress(startStop.distance, endStop.distance)
 
                 // calculate speed
@@ -122,12 +124,17 @@ class LiveVM : ViewModel() {
                     if (it > 0) {
                         val hours = it / 60.0
                         val speed = 0.5 * (startStop.distance / hours) + 12.5
-                        this@LiveVM.speed.postValue(speed)
                         calculateETA(speed, prog.pow(2), endStop.distance)
                     } else {
                         // should create a new travel
                         this.launch(Dispatchers.Main) { newTravelRunnable.run() }
                     }
+                }
+
+                // secondary action: search travel from next destination
+                if (nextTravel.value == null) db.viajesDao().getCompletedTravelFrom(
+                        endStop.nombre, startStop.nombre, it.linea)?.let { nextT ->
+                    nextTravel.postValue(nextT)
                 }
             }
         }
@@ -142,7 +149,7 @@ class LiveVM : ViewModel() {
         }
     }
 
-    private fun resetEverything(){
+    fun resetEverything(){
         travel.postValue(null)
         startDistance.postValue(null)
         endDistance.postValue(null)
@@ -151,5 +158,14 @@ class LiveVM : ViewModel() {
         averageDuration.postValue(null)
         progress.postValue(null)
         speed.postValue(null)
+        nextTravel.postValue(null)
+    }
+
+    fun getCurrentETA(): Calendar {
+        minutesToEnd.value?.let {
+            return Calendar2.getETA(it)
+        }
+
+        return Calendar.getInstance()
     }
 }

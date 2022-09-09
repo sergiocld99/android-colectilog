@@ -220,4 +220,16 @@ public class Viaje implements Comparable<Viaje> {
         int r = Integer.compare(this.startHour, viaje.startHour);
         return r == 0 ? Integer.compare(this.startMinute, viaje.startMinute) : r;
     }
+
+    // ---------------------------- LIVE ----------------------
+
+    public int getDuration(){
+        if (endHour != null && endMinute != null) {
+            int end = endHour * 60 + endMinute;
+            int start = startHour * 60 + startMinute;
+            return end - start;
+        }
+
+        return 0;
+    }
 }

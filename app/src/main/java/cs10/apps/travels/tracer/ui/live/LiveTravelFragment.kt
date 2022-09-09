@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import cs10.apps.common.android.Calendar2
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
@@ -33,11 +34,7 @@ class LiveTravelFragment : Fragment() {
     private lateinit var binding: FragmentLiveTravelBinding
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         binding = FragmentLiveTravelBinding.inflate(inflater, container, false)
 
@@ -84,6 +81,15 @@ class LiveTravelFragment : Fragment() {
         liveVM.averageDuration.observe(viewLifecycleOwner) {
             if (it == null || it == 0) binding.averageDuration.text = null
             else binding.averageDuration.text = "Duración promedio: $it minutos"
+        }
+
+        liveVM.nextTravel.observe(viewLifecycleOwner) {
+            if (it == null) binding.nextTravelInfo.text = null
+            else {
+                val etaCurrent = liveVM.getCurrentETA()
+                val etaNext = Calendar2.getETA(etaCurrent, it.duration + 15)
+                binding.nextTravelInfo.text = "Combinación a ${it.nombrePdaFin} (${Utils.hourFormat(etaNext)})"
+            }
         }
 
         liveVM.speed.observe(viewLifecycleOwner) {
@@ -133,7 +139,13 @@ class LiveTravelFragment : Fragment() {
         super.onResume()
 
         resetViews()
-        liveVM.findLastTravel(rootVM.database, locationVM) { rootVM.disableLoading() }
+        liveVM.findLastTravel(rootVM.database)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        liveVM.resetEverything()
     }
 
 

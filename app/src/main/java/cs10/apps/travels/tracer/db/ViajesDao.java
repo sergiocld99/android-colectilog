@@ -113,4 +113,9 @@ public interface ViajesDao {
     @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
             "where linea = :line and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
     int getAverageTravelDuration(int line, String startStop, String endStop);
+
+    @Query("SELECT * FROM Viaje where endHour is not null and linea is not :excludedLine and " +
+            "nombrePdaInicio = :startStop and nombrePdaFin is not :excludedEndStop " +
+            "order by RANDOM() limit 1")
+    Viaje getCompletedTravelFrom(String startStop, String excludedEndStop, Integer excludedLine);
 }

@@ -124,7 +124,8 @@ class LiveVM : ViewModel() {
                     if (it > 0) {
                         val hours = it / 60.0
                         val speed = 0.5 * (startStop.distance / hours) + 12.5
-                        calculateETA(speed, prog.pow(2), endStop.distance)
+                        val correctedProg = 4 * prog.pow(3) - 6 * prog.pow(2) + 3 * prog
+                        calculateETA(speed, correctedProg, endStop.distance)
                     } else {
                         // should create a new travel
                         this.launch(Dispatchers.Main) { newTravelRunnable.run() }

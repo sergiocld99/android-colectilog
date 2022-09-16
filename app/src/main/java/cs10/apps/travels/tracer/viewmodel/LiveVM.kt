@@ -68,8 +68,8 @@ class LiveVM : ViewModel() {
                 delay(500)
 
                 // start clocks
-                minuteClock.start()
-                toggleClock.start()
+                minuteClock.restart()
+                toggleClock.restart()
 
                 // delay(500)
 

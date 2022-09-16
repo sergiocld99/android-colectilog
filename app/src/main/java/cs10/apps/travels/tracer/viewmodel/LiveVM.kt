@@ -166,11 +166,11 @@ class LiveVM : ViewModel() {
         nextTravel.postValue(null)
     }
 
-    fun getCurrentETA(): Calendar {
+    fun getCurrentETA(): Calendar? {
         minutesToEnd.value?.let {
             return Calendar2.getETA(it)
         }
 
-        return Calendar.getInstance()
+        return null
     }
 }

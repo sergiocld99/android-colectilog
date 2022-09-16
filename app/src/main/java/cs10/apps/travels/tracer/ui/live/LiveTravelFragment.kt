@@ -84,12 +84,15 @@ class LiveTravelFragment : Fragment() {
         }
 
         liveVM.nextTravel.observe(viewLifecycleOwner) {
+            /*
             if (it == null) binding.nextTravelInfo.text = null
             else {
-                val etaCurrent = liveVM.getCurrentETA()
-                val etaNext = Calendar2.getETA(etaCurrent, it.duration + 15)
-                binding.nextTravelInfo.text = "Combinación a ${it.nombrePdaFin} (${Utils.hourFormat(etaNext)})"
+                liveVM.getCurrentETA()?.let { etaCurrent ->
+
+                }
             }
+
+             */
         }
 
         liveVM.speed.observe(viewLifecycleOwner) {
@@ -116,6 +119,12 @@ class LiveTravelFragment : Fragment() {
                 binding.minutesLeft.text = "$it'"
                 binding.etaInfo.text = "Llegarías a las " + Utils.hourFormat(eta)
                 binding.finishBtn.isVisible = it < 10
+
+                // next combination
+                liveVM.nextTravel.value?.let { nextT ->
+                    val etaNext = Calendar2.getETA(eta, nextT.duration + 15)
+                    binding.nextTravelInfo.text = "Combinación a ${nextT.nombrePdaFin} (${Utils.hourFormat(etaNext)})"
+                }
             }
         }
 

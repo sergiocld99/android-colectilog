@@ -101,7 +101,7 @@ class LiveVM : ViewModel() {
 
         if (averageDuration.value != null && minutesFromStart.value != null) {
             val aux = averageDuration.value!! - minutesFromStart.value!!
-            if (aux > 0) averageDiff = aux
+            if (aux > -1) averageDiff = aux
         }
 
         val averageWeight = 1 - prog

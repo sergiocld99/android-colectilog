@@ -37,17 +37,10 @@ class LiveVM : ViewModel() {
     val progress = MutableLiveData<Double?>()
 
     // timer 1: update minutes from start every 30 seconds
-    private val minuteClock = Clock({
-        travel.value?.let { t ->
-            val startTs = t.startHour * 60 + t.startMinute
-            minutesFromStart.postValue(Utils.getCurrentTs() - startTs)
-        }
-    }, 30000)
+    private var minuteClock : Clock? = null
 
     // timer 2: toggle a boolean every 5 seconds (ramal - line)
-    private val toggleClock = Clock({
-        toggle.value?.let { v -> toggle.postValue(!v) }
-    }, 5000)
+    private var toggleClock : Clock? = null
 
     fun findLastTravel(db: MiDB) {
         val (y,m,d) = Calendar2.getDate()
@@ -68,8 +61,24 @@ class LiveVM : ViewModel() {
                 delay(500)
 
                 // start clocks
-                minuteClock.restart()
-                toggleClock.restart()
+                minuteClock?.apply { stop() }
+                toggleClock?.apply { stop() }
+
+                // start minutes ago clock
+                minuteClock = Clock({
+                    travel.value?.let { t ->
+                        val startTs = t.startHour * 60 + t.startMinute
+                        minutesFromStart.postValue(Utils.getCurrentTs() - startTs)
+                    }
+                }, 30000)
+
+                // start toggle clock
+                toggleClock = Clock({
+                    toggle.value?.let { v -> toggle.postValue(!v) }
+                }, 5000)
+
+                minuteClock?.apply { start() }
+                toggleClock?.apply { start() }
 
                 // delay(500)
 
@@ -167,11 +176,4 @@ class LiveVM : ViewModel() {
         nextTravel.postValue(null)
     }
 
-    fun getCurrentETA(): Calendar? {
-        minutesToEnd.value?.let {
-            return Calendar2.getETA(it)
-        }
-
-        return null
-    }
 }

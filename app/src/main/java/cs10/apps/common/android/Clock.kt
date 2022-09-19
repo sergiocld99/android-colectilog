@@ -21,7 +21,10 @@ class Clock(private val runnable: Runnable, private val sleepTime: Long) {
     }
 
     fun restart(){
-        if (thread != null) stop()
+        thread?.let {
+            it.interrupt()
+            stop()
+        }
 
         // start when thread is destroyed
         start()

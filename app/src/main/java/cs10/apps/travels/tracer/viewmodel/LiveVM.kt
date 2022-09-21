@@ -1,21 +1,27 @@
 package cs10.apps.travels.tracer.viewmodel
 
+import android.app.Application
 import android.location.Location
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Clock
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.db.MiDB
+import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 import java.util.*
+import kotlin.math.max
 import kotlin.math.pow
 
-class LiveVM : ViewModel() {
+class LiveVM(application: Application) : AndroidViewModel(application) {
 
     val travel = MutableLiveData<Viaje?>()
     val toggle = MutableLiveData(false)
@@ -101,7 +107,7 @@ class LiveVM : ViewModel() {
 
         if (averageDuration.value != null && minutesFromStart.value != null) {
             val aux = averageDuration.value!! - minutesFromStart.value!!
-            if (aux > -1) averageDiff = aux
+            averageDiff = max(aux, 0)
         }
 
         val averageWeight = 1 - prog
@@ -111,14 +117,13 @@ class LiveVM : ViewModel() {
         endDistance.postValue(endDist)
         progress.postValue(prog)
         this.speed.postValue(speed)
-
     }
 
     fun recalculateDistances(db: MiDB, location: Location, newTravelRunnable: Runnable) {
-        travel.value?.let {
+        travel.value?.let { t ->
             viewModelScope.launch(Dispatchers.IO) {
-                val startStop = db.paradasDao().getByName(it.nombrePdaInicio)
-                val endStop = db.paradasDao().getByName(it.nombrePdaFin)
+                val startStop = db.paradasDao().getByName(t.nombrePdaInicio)
+                val endStop = db.paradasDao().getByName(t.nombrePdaFin)
 
                 // calc distances internally
                 startStop.updateDistance(location)
@@ -135,6 +140,9 @@ class LiveVM : ViewModel() {
                         val speed = 0.5 * (startStop.distance / hours) + 12.5
                         val correctedProg = 4 * prog.pow(3) - 6 * prog.pow(2) + 3 * prog
                         calculateETA(speed, correctedProg, endStop.distance)
+
+                        // guardar para analisis posterior
+                        saveDebugData(t, it, prog, location, startStop, endStop)
                     } else {
                         // should create a new travel
                         this.launch(Dispatchers.Main) { newTravelRunnable.run() }
@@ -143,11 +151,36 @@ class LiveVM : ViewModel() {
 
                 // secondary action: search travel from next destination
                 if (nextTravel.value == null) db.viajesDao().getCompletedTravelFrom(
-                        endStop.nombre, startStop.nombre, it.linea)?.let { nextT ->
+                        endStop.nombre, startStop.nombre, t.linea)?.let { nextT ->
                     nextTravel.postValue(nextT)
                 }
+
             }
         }
+    }
+
+    // guarda datos del live actual en un .log
+    private fun saveDebugData(t: Viaje, minutesFromStart: Int, prog: Double,
+                              location: Location, startStop: Parada, endStop: Parada) {
+
+        val context = getApplication<Application>().applicationContext
+        val file0 = File(context.filesDir, "${t.id}.log")
+        if (!file0.exists()) file0.createNewFile()
+
+        try {
+            val file = FileOutputStream(file0, true)
+            val os = OutputStreamWriter(file)
+            os.write("$minutesFromStart, $prog, ${location.latitude}, ${location.longitude}, ${startStop.distance}, ${endStop.distance}")
+            os.write("\n")
+            os.close()
+            file.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun calculateDirectionToDestination(){
+        
     }
 
     fun finishTravel(cal: Calendar, db: MiDB) {

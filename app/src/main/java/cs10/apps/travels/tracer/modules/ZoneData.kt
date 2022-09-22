@@ -16,21 +16,31 @@ class ZoneData {
             return normalized.toInt() / 4
         }
 
-        fun getZoneUppercase(location: Location) : String? = getZone(location)?.uppercase()
+        fun getZoneUppercase(location: Location) : String = getZone(location).uppercase()
 
-        private fun getZone(location: Location) : String? {
-            return getZone(getXCode(location.latitude), getYCode(location.longitude))
+        private fun getZone(location: Location) : String {
+            val xCode = getXCode(location.latitude)
+            val yCode = getYCode(location.longitude)
+
+            return getZone(xCode, yCode) ?: "Zona ($xCode; $yCode)"
         }
 
         private fun getZone(x_code: Int, y_code: Int) : String? {
 
             when (x_code) {
                 19 -> if (y_code == 31) return "Cruce Varela"
-                20 -> if (y_code == 30) return "El Ombú"
+                20 -> {
+                    return when(y_code){
+                        32 -> "Arco de San Jorge"
+                        31 -> "Varela"
+                        30 -> "Bosques"
+                        else -> null
+                    }
+                }
                 21 -> {
                     return when(y_code){
                         29 -> "Alpargatas"
-                        28 -> "Vucetich"
+                        28 -> "Pereyra"
                         27 -> "Villa Elisa"
                         26 -> "City Bell"
                         else -> null
@@ -39,8 +49,9 @@ class ZoneData {
 
                 22 -> {
                     return when(y_code){
-                        25 -> "Hospital Gonnet"
+                        25 -> "Gonnet"
                         24 -> "La Plata"
+                        23 -> "Facultades"
                         else -> null
                     }
                 }

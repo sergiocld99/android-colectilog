@@ -138,7 +138,8 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                     if (it > 0) {
                         val hours = it / 60.0
                         val speed = 0.5 * (startStop.distance / hours) + 12.5
-                        val correctedProg = 4 * prog.pow(3) - 6 * prog.pow(2) + 3 * prog
+                        //val correctedProg = 4 * prog.pow(3) - 6 * prog.pow(2) + 3 * prog
+                        val correctedProg = 2 * prog.pow(3) - 2.76 * prog.pow(2) + 1.76 * prog
                         calculateETA(speed, correctedProg, endStop.distance)
 
                         // guardar para analisis posterior

@@ -1,6 +1,7 @@
 package cs10.apps.travels.tracer.ui.live
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,15 +14,18 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import cs10.apps.common.android.Calendar2
+import cs10.apps.common.android.Emoji
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
+import cs10.apps.travels.tracer.modules.ZoneData
 import cs10.apps.travels.tracer.viewmodel.LiveVM
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import java.util.*
 import kotlin.math.roundToInt
+
 
 class LiveTravelFragment : Fragment() {
 
@@ -83,18 +87,6 @@ class LiveTravelFragment : Fragment() {
             else binding.averageDuration.text = "Duración promedio: $it minutos"
         }
 
-        liveVM.nextTravel.observe(viewLifecycleOwner) {
-            /*
-            if (it == null) binding.nextTravelInfo.text = null
-            else {
-                liveVM.getCurrentETA()?.let { etaCurrent ->
-
-                }
-            }
-
-             */
-        }
-
         liveVM.speed.observe(viewLifecycleOwner) {
             if (it == null) binding.averageSpeed.text = null
             else {
@@ -112,6 +104,8 @@ class LiveTravelFragment : Fragment() {
         }
 
         liveVM.minutesToEnd.observe(viewLifecycleOwner) {
+            binding.shareBtn.isVisible = it != null
+
             if (it == null) binding.minutesLeft.text = null
             else {
                 val eta = Calendar.getInstance().apply { add(Calendar.MINUTE, it) }
@@ -130,6 +124,9 @@ class LiveTravelFragment : Fragment() {
 
         locationVM.location.observe(viewLifecycleOwner) {
             liveVM.recalculateDistances(rootVM.database, it) { rootVM.disableLoading() }
+
+            val zone = ZoneData.getZoneUppercase(it)
+            binding.zoneInfo.text = zone
         }
 
         return binding.root
@@ -139,6 +136,9 @@ class LiveTravelFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         rootVM.enableLoading()
+
+        // on share travel
+        binding.shareBtn.setOnClickListener { shareCurrentTravel() }
 
         // on finish travel
         binding.finishBtn.setOnClickListener { finishCurrentTravel() }
@@ -173,6 +173,34 @@ class LiveTravelFragment : Fragment() {
         rootVM.disableLoading()
     }
 
+    private fun shareCurrentTravel() {
+
+        liveVM.minutesToEnd.value?.let {
+            val line = liveVM.travel.value?.linea
+            val destination = liveVM.travel.value?.nombrePdaFin
+
+            /*This will be the actual content you wish you share.*/
+            val shareBody = "Hola! ${Emoji.getHandEmoji()} \n" +
+                    "${Emoji.getBusEmoji()} Estoy viajando en un $line \n" +
+                    "${Emoji.getGlobeEmoji()} Destino: $destination \n" +
+                    "${Emoji.getClockEmoji()} Llego a las ${getETA(it)} \n\n" +
+                    "*Enviado desde Mi App*"
+
+            /*Create an ACTION_SEND Intent*/
+            val intent = Intent(Intent.ACTION_SEND)
+
+            /*The type of the content is text, obviously.*/
+            intent.type = "text/plain"
+
+            /*Applying information Subject and Body.*/
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Travel Tracer")
+            intent.putExtra(Intent.EXTRA_TEXT, shareBody)
+
+            /*Fire!*/
+            startActivity(Intent.createChooser(intent, "Compartir via..."))
+        }
+    }
+
     private fun finishCurrentTravel() {
         liveVM.finishTravel(Calendar.getInstance(), rootVM.database)
         showDoneAnimation()
@@ -196,5 +224,10 @@ class LiveTravelFragment : Fragment() {
             dialog.cancel()
             resetViews()
         }, 2000)
+    }
+
+    private fun getETA(minutesToEnd: Int) : CharSequence {
+        val eta = Calendar.getInstance().apply { add(Calendar.MINUTE, minutesToEnd) }
+        return Utils.hourFormat(eta)
     }
 }

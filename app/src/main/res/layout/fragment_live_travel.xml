@@ -7,32 +7,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.live.LiveTravelFragment">
 
-    <TextView
-        android:id="@+id/title"
-        style="@style/TextAppearance.AppCompat.Large"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/finish_btn"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="16dp"
-        android:textSize="32sp"
-        android:text="@string/traveling_now" />
-
     <Button
         android:id="@+id/finish_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Finalizar"
+        android:text="Finish"
         android:textColor="@color/white"
-        app:layout_constraintTop_toTopOf="@id/title"
-        app:layout_constraintBottom_toBottomOf="@id/title"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/share_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="16dp"
         android:visibility="gone"
         tools:visibility="visible"
         android:backgroundTint="@color/bus_414"/>
+
+    <Button
+        android:id="@+id/share_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Share"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/finish_btn"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:backgroundTint="@color/bus"/>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/button_card"
@@ -43,7 +44,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/info_container"
         android:layout_marginTop="30dp"
-        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/share_btn"
         tools:cardBackgroundColor="@color/bus">
 
         <ImageView
@@ -75,7 +76,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/share_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/button_card">
 
@@ -147,14 +148,14 @@
         app:layout_constraintTop_toBottomOf="@id/average_duration"
         android:gravity="center"
         android:textSize="18sp"
-        tools:text="Duración promedio: 160 minutos"/>
+        tools:text="Combinación a otro lugar (23:55)"/>
 
     <ProgressBar
         android:id="@+id/pb"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:indeterminateOnly="false"
-        android:progressDrawable="@drawable/circle_bus"
+        android:progressDrawable="@drawable/circle"
         tools:progress="60"
         app:layout_constraintTop_toBottomOf="@id/next_travel_info"
         app:layout_constraintStart_toStartOf="parent"
@@ -179,10 +180,23 @@
         android:layout_height="wrap_content"
         tools:text="Llegarías a las 20:59"
         style="@style/TextAppearance.AppCompat.Large"
-        android:layout_marginBottom="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/pb"
+        app:layout_constraintBottom_toTopOf="@id/zone_info"/>
+
+    <TextView
+        android:id="@+id/zone_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="ZONA VILLA ELISA"
+        android:textColor="@color/yellow"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:layout_marginBottom="24dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/eta_info"
         app:layout_constraintBottom_toBottomOf="parent"/>
     
 </androidx.constraintlayout.widget.ConstraintLayout>

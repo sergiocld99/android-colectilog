@@ -12,11 +12,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Emoji
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
+import cs10.apps.travels.tracer.adapter.NearStopAdapter
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
 import cs10.apps.travels.tracer.modules.ZoneData
@@ -36,6 +38,9 @@ class LiveTravelFragment : Fragment() {
 
     // View Binding
     private lateinit var binding: FragmentLiveTravelBinding
+
+    // adapters
+    private val nearStopAdapter = NearStopAdapter(mutableListOf())
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -103,6 +108,12 @@ class LiveTravelFragment : Fragment() {
             }
         }
 
+        liveVM.nearArrivals.observe(viewLifecycleOwner) {
+            binding.nearBoxInfo.isVisible = it.isNotEmpty()
+            nearStopAdapter.list = it
+            nearStopAdapter.notifyDataSetChanged()
+        }
+
         liveVM.minutesToEnd.observe(viewLifecycleOwner) {
             binding.shareBtn.isVisible = it != null
 
@@ -127,6 +138,10 @@ class LiveTravelFragment : Fragment() {
 
             val zone = ZoneData.getZoneUppercase(it)
             binding.zoneInfo.text = zone
+
+            // updating animation
+            binding.updatingView.root.isVisible = true
+            Handler(Looper.getMainLooper()).postDelayed({ binding.updatingView.root.isVisible = false}, 3000)
         }
 
         return binding.root
@@ -142,6 +157,10 @@ class LiveTravelFragment : Fragment() {
 
         // on finish travel
         binding.finishBtn.setOnClickListener { finishCurrentTravel() }
+
+        // near stops adapter
+        binding.nearStopsRecycler.adapter = nearStopAdapter
+        binding.nearStopsRecycler.layoutManager = LinearLayoutManager(requireActivity())
     }
 
     override fun onResume() {

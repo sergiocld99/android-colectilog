@@ -36,6 +36,13 @@ public interface ServicioDao {
             "inner join ServicioTren ST on ST.id = HT.service " +
             "WHERE station is :stopName " +
             "AND (HT.hour * 60 + HT.minute) >= :target " +
+            "order by HT.hour, HT.minute limit 1")
+    RamalSchedule getNextArrival(String stopName, int target);
+
+    @Query("SELECT HT.*, cabecera, ramal FROM HorarioTren HT " +
+            "inner join ServicioTren ST on ST.id = HT.service " +
+            "WHERE station is :stopName " +
+            "AND (HT.hour * 60 + HT.minute) >= :target " +
             "order by HT.hour, HT.minute limit :cant")
     List<RamalSchedule> getNextArrivals(String stopName, int target, int cant);
 

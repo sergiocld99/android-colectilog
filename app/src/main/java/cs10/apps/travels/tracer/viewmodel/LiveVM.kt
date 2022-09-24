@@ -8,9 +8,12 @@ import androidx.lifecycle.viewModelScope
 import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Clock
 import cs10.apps.travels.tracer.Utils
+import cs10.apps.travels.tracer.data.generator.Station
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.model.roca.RamalSchedule
+import cs10.apps.travels.tracer.modules.ZoneData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -18,14 +21,15 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import java.util.*
-import kotlin.math.max
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class LiveVM(application: Application) : AndroidViewModel(application) {
 
     val travel = MutableLiveData<Viaje?>()
     val toggle = MutableLiveData(false)
     val nextTravel = MutableLiveData<Viaje?>()
+    val nearArrivals = MutableLiveData<MutableList<RamalSchedule>>()
 
     // distances in metres
     private val startDistance = MutableLiveData<Double?>()
@@ -100,23 +104,9 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         return startDist / total
     }
 
-    private fun calculateETA(speed: Double, prog: Double, endDist: Double) {
-        // distance is already in km
-        val currentDiff = (endDist / speed) * 60
-        var averageDiff = currentDiff.toInt()
-
-        if (averageDuration.value != null && minutesFromStart.value != null) {
-            val aux = averageDuration.value!! - minutesFromStart.value!!
-            averageDiff = max(aux, 0)
-        }
-
-        val averageWeight = 1 - prog
-        val correctedDiff = (currentDiff * prog + averageDiff * averageWeight)
-
-        minutesToEnd.postValue(correctedDiff.toInt())
-        endDistance.postValue(endDist)
-        progress.postValue(prog)
-        this.speed.postValue(speed)
+    private fun calculateMinutesLeft(speed: Double, prog: Double, endDist: Double) : Double {
+        return if (averageDuration.value == null) (endDist / speed) * 60
+        else (1-prog) * averageDuration.value!!
     }
 
     fun recalculateDistances(db: MiDB, location: Location, newTravelRunnable: Runnable) {
@@ -138,9 +128,21 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                     if (it > 0) {
                         val hours = it / 60.0
                         val speed = 0.5 * (startStop.distance / hours) + 12.5
-                        //val correctedProg = 4 * prog.pow(3) - 6 * prog.pow(2) + 3 * prog
-                        val correctedProg = 2 * prog.pow(3) - 2.76 * prog.pow(2) + 1.76 * prog
-                        calculateETA(speed, correctedProg, endStop.distance)
+
+                        // calc direction and apply correction to progress
+                        val correctedProg = when(Utils.getDirection(startStop, endStop)){
+                            Utils.Direction.SOUTH_EAST -> 2 * prog.pow(3) - 2.76 * prog.pow(2) + 1.76 * prog
+                            Utils.Direction.NORTH_WEST -> 0.25 * prog.pow(3) - 1.05 * prog.pow(2) + 1.8 * prog
+                            else -> prog
+                        }
+
+                        val minutesLeft = calculateMinutesLeft(speed, correctedProg, endStop.distance)
+
+                        // postear para ui
+                        minutesToEnd.postValue(minutesLeft.roundToInt())
+                        endDistance.postValue(endStop.distance)
+                        progress.postValue(correctedProg)
+                        this@LiveVM.speed.postValue(speed)
 
                         // guardar para analisis posterior
                         saveDebugData(t, it, prog, location, startStop, endStop)
@@ -155,8 +157,13 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         endStop.nombre, startStop.nombre, t.linea)?.let { nextT ->
                     nextTravel.postValue(nextT)
                 }
-
             }
+        }
+
+        // third action: search near arrivals
+        viewModelScope.launch(Dispatchers.IO) {
+            val zone = ZoneData.getCodes(location)
+            findNearArrivals(db, zone.first, zone.second)
         }
     }
 
@@ -171,7 +178,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         try {
             val file = FileOutputStream(file0, true)
             val os = OutputStreamWriter(file)
-            os.write("$minutesFromStart, $prog, ${location.latitude}, ${location.longitude}, ${startStop.distance}, ${endStop.distance}")
+            os.write("$minutesFromStart; $prog; ${location.latitude}; ${location.longitude}; ${startStop.distance}; ${endStop.distance}")
             os.write("\n")
             os.close()
             file.close()
@@ -180,8 +187,20 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun calculateDirectionToDestination(){
-        
+    // busca trenes llegando en la zona
+    private fun findNearArrivals(db: MiDB, xCode: Int, yCode: Int){
+        val nearStations = Station.findStationsAtZone(xCode, yCode, 2)
+        val currentTime = Utils.getCurrentTs()
+        val arrivals = mutableListOf<RamalSchedule>()
+
+        nearStations.forEach { s ->
+            // search 2 if there is only one station, search 1 if there's two stations
+            val queryResult = db.servicioDao().getNextArrivals(s.nombre, currentTime, 2 / nearStations.size)
+            queryResult.forEach { arrivals.add(it) }
+        }
+
+        arrivals.sort()
+        nearArrivals.postValue(arrivals)
     }
 
     fun finishTravel(cal: Calendar, db: MiDB) {

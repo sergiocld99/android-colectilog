@@ -6,12 +6,16 @@ class ZoneData {
 
     companion object {
 
-        private fun getXCode(latitude: Double) : Int {
+        fun getCodes(location: Location) : Pair<Int, Int> {
+            return Pair(getXCode(location.latitude), getYCode(location.longitude))
+        }
+
+        fun getXCode(latitude: Double) : Int {
             val normalized = (-latitude - 34) * 100
             return normalized.toInt() / 4
         }
 
-        private fun getYCode(longitude: Double) : Int {
+        fun getYCode(longitude: Double) : Int {
             val normalized = (-longitude - 57) * 100
             return normalized.toInt() / 4
         }
@@ -39,17 +43,18 @@ class ZoneData {
                 }
                 21 -> {
                     return when(y_code){
-                        29 -> "Alpargatas"
-                        28 -> "Pereyra"
-                        27 -> "Villa Elisa"
-                        26 -> "City Bell"
+                        30 -> "La Rotonda"          // -58.20
+                        29 -> "Alpargatas"          // -58.16
+                        28 -> "Pereyra"                 // -58.12
+                        27 -> "Villa Elisa"                 // -58.08
+                        26 -> "Transradio / City Bell"           // -58.04
                         else -> null
                     }
                 }
-
                 22 -> {
                     return when(y_code){
-                        25 -> "Gonnet"
+                        26 -> "City Bell (467 - 476)"       // -58.04
+                        25 -> "Gonnet"                  // -58.00
                         24 -> "La Plata"
                         23 -> "Facultades"
                         else -> null

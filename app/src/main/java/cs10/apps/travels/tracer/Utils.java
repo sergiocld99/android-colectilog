@@ -152,4 +152,22 @@ public class Utils {
         Calendar calendar = Calendar.getInstance();
         return calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
     }
+
+    public static Direction getDirection(@NonNull Parada start, @NonNull Parada end){
+        double diff_x = end.getLatitud() - start.getLatitud();
+        double diff_y = end.getLongitud() - start.getLongitud();
+
+        // va hacia el norte
+        if (diff_x > 0){
+            if (diff_y > 0) return Direction.NORTH_EAST;
+            else return Direction.NORTH_WEST;
+        } else {
+            if (diff_y > 0) return Direction.SOUTH_EAST;
+            else return Direction.SOUTH_WEST;
+        }
+    }
+
+    public enum Direction {
+        NORTH_EAST, NORTH_WEST, SOUTH_EAST, SOUTH_WEST
+    }
 }

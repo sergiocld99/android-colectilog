@@ -21,11 +21,7 @@ open class NextEventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val type = if (item.linea == null) 1 else 0
         binding.ivType.setImageDrawable(Utils.getTypeDrawable(type, binding.root.context))
         binding.tvLine.text = item.lineaAsString
-
-        binding.root.background = AppCompatResources.getDrawable(
-            binding.root.context,
-            Utils.colorFor(item.linea)
-        )
+        binding.root.background = AppCompatResources.getDrawable(binding.root.context, Utils.colorFor(item.linea))
 
         if (top && !item.ramal.isNullOrBlank()){
             upsideDownSwitcher.setTvSwitcher(binding.tvSwitcher)

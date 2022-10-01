@@ -153,6 +153,14 @@ public class Utils {
         return calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
     }
 
+    public static double getRealCurrentTs(){
+        Calendar calendar = Calendar.getInstance();
+        int currentSeconds = calendar.get(Calendar.HOUR_OF_DAY) * 3600 +
+                calendar.get(Calendar.MINUTE) * 60 + calendar.get(Calendar.SECOND);
+
+        return currentSeconds / 60d;
+    }
+
     public static Direction getDirection(@NonNull Parada start, @NonNull Parada end){
         double diff_x = end.getLatitud() - start.getLatitud();
         double diff_y = end.getLongitud() - start.getLongitud();

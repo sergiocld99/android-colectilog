@@ -38,12 +38,13 @@ class ZoneData {
                         32 -> "Arco de San Jorge"
                         31 -> "Varela"
                         30 -> "Bosques"
+                        29 -> "Gutiérrez"
                         else -> null
                     }
                 }
                 21 -> {
                     return when(y_code){
-                        30 -> "La Rotonda"          // -58.20
+                        30 -> "Ingeniero Allan"          // -58.20
                         29 -> "Alpargatas"          // -58.16
                         28 -> "Pereyra"                 // -58.12
                         27 -> "Villa Elisa"                 // -58.08

@@ -1,5 +1,8 @@
 package cs10.apps.travels.tracer.data.generator;
 
+import android.util.Pair;
+
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,9 +25,9 @@ public enum Station {
     GUERNICA("Estación Guernica"),
     KORN("Estación Alejandro Korn"),
 
-    MARMOL("Estación José Mármol"),
-    CALZADA("Estación Rafael Calzada"),
-    CLAYPOLE("Estación Claypole"),
+    MARMOL("Estación José Mármol", -34.79, -58.38),
+    CALZADA("Estación Rafael Calzada", -34.79, -58.35),
+    CLAYPOLE("Estación Claypole", -34.80, -58.33),
     ARDIGO("Km 26", -34.80, -58.30),
     VARELA("Estación Varela", -34.81, -58.27),
     ZEBALLOS("Estación Zeballos", -34.81, -58.25),
@@ -37,12 +40,12 @@ public enum Station {
     BERNAL("Estación Bernal"),
     QUILMES("Estación Quilmes"),
     EZPELETA("Estación Ezpeleta"),
-    BERA("Estación Berazategui"),
-    VILLA_ESP("Estación Villa España"),
-    RANELAGH("Estación Ranelagh"),
-    SOURIGUES("Estación Sourigues"),
+    BERA("Estación Berazategui", -34.76, -58.20),
+    VILLA_ESP("Estación Villa España", -34.77, -58.19),
+    RANELAGH("Estación Ranelagh", -34.78, -58.20),
+    SOURIGUES("Estación Sourigues", -34.80, -58.21),
 
-    PLATANOS("Estación Plátanos"),
+    PLATANOS("Estación Plátanos", -34.78, -58.17),
     HUDSON("Estación Hudson", -34.79, -58.15),
     PEREYRA("Estación Pereyra", -34.83, -58.09),
     VILLA_ELISA("Estación Villa Elisa", -34.84, -58.07),
@@ -92,20 +95,38 @@ public enum Station {
 
     public static List<Station> findStationsAtZone(int xCode, int yCode, int limit){
         List<Station> result = new LinkedList<>();
+        List<CandidateStation> candidates = new LinkedList<>();
 
         for (Station s : values()){
             if (s.latitude == 0) continue;     // evito procesamiento innecesario
+            int diffX, diffY;
 
-            int s_xcode = ZoneData.Companion.getXCode(s.latitude);
-            int s_ycode = ZoneData.Companion.getYCode(s.longitude);
+            if ((diffX = Math.abs(ZoneData.Companion.getXCode(s.latitude) - xCode)) > 1) continue;
+            if ((diffY = Math.abs(ZoneData.Companion.getYCode(s.longitude) - yCode)) > 1) continue;
 
-            // se permite errar en alguno de los pares hasta en 1 unidad
-            if (Math.abs(xCode - s_xcode) + Math.abs(yCode - s_ycode) < 2){
-                result.add(s);
-                if (result.size() == limit) break;
-            }
+            candidates.add(new CandidateStation(s, diffX + diffY));
+        }
+
+        // sort candidates by "distance"
+        Collections.sort(candidates);
+
+        // pick best candidates (first ones)
+        for (int i=0; i<Math.min(candidates.size(), limit); i++){
+            result.add(candidates.get(i).first);
         }
 
         return result;
+    }
+
+    private static class CandidateStation extends Pair<Station, Integer> implements Comparable<CandidateStation> {
+
+        public CandidateStation(Station first, Integer second) {
+            super(first, second);
+        }
+
+        @Override
+        public int compareTo(CandidateStation candidateStation) {
+            return Integer.compare(this.second, candidateStation.second);
+        }
     }
 }

@@ -12,8 +12,8 @@ class NearStopViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val binding = ItemNearStopBinding.bind(view)
 
     fun render(item: RamalSchedule) {
-        binding.title.text = item.station.replace("Estación", "").trim()
-        binding.description.text = "${Utils.hourFormat(item.hour, item.minute)} - ${item.ramal}"
+        binding.title.text = "${Utils.hourFormat(item.hour, item.minute)} - ${item.station.replace("Estación", "").trim()}"
+        binding.description.text = item.ramal
         binding.description.isSelected = true
     }
 

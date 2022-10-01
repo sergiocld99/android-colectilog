@@ -83,8 +83,8 @@ class LiveTravelFragment : Fragment() {
         }
 
         liveVM.minutesFromStart.observe(viewLifecycleOwner) {
-            if (it == null || it == 0) binding.startedMinAgo.text = null
-            else binding.startedMinAgo.text = "Inició hace $it minutos"
+            if (it == null || it <= 0.0) binding.startedMinAgo.text = null
+            else binding.startedMinAgo.text = "Inició hace ${it.roundToInt()} minutos"
         }
 
         liveVM.averageDuration.observe(viewLifecycleOwner) {

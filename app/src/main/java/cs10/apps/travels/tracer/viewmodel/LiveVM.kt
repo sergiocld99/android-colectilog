@@ -36,7 +36,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     private val endDistance = MutableLiveData<Double?>()
 
     // time in minutes
-    val minutesFromStart = MutableLiveData<Int?>()
+    val minutesFromStart = MutableLiveData<Double?>()
     val minutesToEnd = MutableLiveData<Int?>()
     val averageDuration = MutableLiveData<Int?>()
 
@@ -77,8 +77,9 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 // start minutes ago clock
                 minuteClock = Clock({
                     travel.value?.let { t ->
-                        val startTs = t.startHour * 60 + t.startMinute
-                        minutesFromStart.postValue(Utils.getCurrentTs() - startTs)
+                        val startTs = t.startHour + t.startMinute
+                        val currentTs = Utils.getRealCurrentTs()
+                        minutesFromStart.postValue(currentTs - startTs)
                     }
                 }, 30000)
 
@@ -168,7 +169,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     }
 
     // guarda datos del live actual en un .log
-    private fun saveDebugData(t: Viaje, minutesFromStart: Int, prog: Double,
+    private fun saveDebugData(t: Viaje, minutesFromStart: Double, prog: Double,
                               location: Location, startStop: Parada, endStop: Parada) {
 
         val context = getApplication<Application>().applicationContext

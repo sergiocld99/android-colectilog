@@ -118,4 +118,12 @@ public interface ViajesDao {
             "nombrePdaInicio = :startStop and nombrePdaFin is not :excludedEndStop " +
             "order by RANDOM() limit 1")
     Viaje getCompletedTravelFrom(String startStop, String excludedEndStop, Integer excludedLine);
+
+    // ------------------------------ ON SELECT TYPE -------------------------------------
+
+    // Atajo: busca el viaje más probable a realizar desde la ubicación actual
+    @Query("SELECT * FROM Viaje where nombrePdaInicio = :targetStart " +
+            "group by linea, ramal, nombrePdaInicio, nombrePdaFin having count(*) > 2 " +
+            "order by COUNT(*) desc limit 1")
+    Viaje getLikelyTravelFrom(String targetStart);
 }

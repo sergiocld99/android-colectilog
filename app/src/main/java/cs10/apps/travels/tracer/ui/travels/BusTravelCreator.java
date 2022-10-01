@@ -19,7 +19,6 @@ import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding;
 import cs10.apps.travels.tracer.databinding.ContentTravelCreatorBinding;
 import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.db.ParadasDao;
 import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
@@ -80,11 +79,33 @@ public class BusTravelCreator extends CommonTravelCreator {
 
     private void loadStops(Location location) {
         new Thread(() -> {
-            ParadasDao dao = MiDB.getInstance(this).paradasDao();
-            paradas = dao.getAll();
+            MiDB db = MiDB.getInstance(this);
+            paradas = db.paradasDao().getAll();
             if (location != null) Utils.orderByProximity(paradas, location.getLatitude(), location.getLongitude());
             runOnUiThread(this::setSpinners);
+
+            // part 2: autocomplete likely travel
+            if (!paradas.isEmpty()){
+                Viaje viaje = db.viajesDao().getLikelyTravelFrom(paradas.get(0).getNombre());
+                if (viaje != null) runOnUiThread(() -> autoFillLikelyTravel(viaje));
+            }
+
         }, "loadBusStops").start();
+    }
+
+    private void autoFillLikelyTravel(@NonNull Viaje viaje){
+        if (viaje.getLinea() != null) content.etLine.setText(String.valueOf(viaje.getLinea()));
+        if (viaje.getRamal() != null) content.etRamal.setText(viaje.getRamal());
+
+        // find end index
+        int endIndex = 0;
+
+        for (Parada p : paradas){
+            if (p.getNombre().equals(viaje.getNombrePdaFin())) break;
+            else endIndex++;
+        }
+
+        content.selectorEndPlace.setSelection(endIndex, true);
     }
 
     private void setSpinners(){

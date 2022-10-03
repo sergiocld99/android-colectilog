@@ -77,7 +77,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 // start minutes ago clock
                 minuteClock = Clock({
                     travel.value?.let { t ->
-                        val startTs = t.startHour + t.startMinute
+                        val startTs = t.startHour * 60 + t.startMinute
                         val currentTs = Utils.getRealCurrentTs()
                         minutesFromStart.postValue(currentTs - startTs)
                     }

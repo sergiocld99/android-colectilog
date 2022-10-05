@@ -75,17 +75,28 @@ public class TrainTravelEditor extends CommonTravelEditor {
 
         String date = myContent.etDate.getText().toString();
         String startHour = myContent.etStartHour.getText().toString();
+        String endHour = myContent.etEndHour.getText().toString();
         String price = myContent.etPrice.getText().toString();
         Parada startPlace = getParadas().get(startIndex);
         Parada endPlace = getParadas().get(endIndex);
 
+        String[] hourParams, endHourParams = null;
+
         if (date.isEmpty() || startHour.isEmpty()) return 1;
         if (startPlace.equals(endPlace)) return 2;
 
-        String[] hourParams = startHour.split(":");
+        hourParams = startHour.split(":");
         if (hourParams.length != 2){
             myContent.etStartHour.setError("Ingrese una hora válida");
             return 3;
+        }
+
+        if (!endHour.isEmpty()){
+            endHourParams = endHour.split(":");
+            if (endHourParams.length != 2){
+                myContent.etEndHour.setError("Ingrese una hora válida");
+                return 3;
+            }
         }
 
         String[] dateParams = date.split("/");
@@ -104,6 +115,11 @@ public class TrainTravelEditor extends CommonTravelEditor {
             viaje.setNombrePdaFin(endPlace.getNombre());
             Utils.setWeekDay(viaje);
             if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
+
+            if (endHourParams != null) {
+                viaje.setEndHour(Integer.parseInt(endHourParams[0]));
+                viaje.setEndMinute(Integer.parseInt(endHourParams[1]));
+            }
 
             // train type
             viaje.setTipo(1);

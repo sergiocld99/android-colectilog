@@ -42,6 +42,9 @@ public class Viaje implements Comparable<Viaje> {
     @ColumnInfo(name = "wd")
     private int weekDay;
 
+    // October 5th, 2022
+    private Integer rate;
+
     public double getCosto() {
         return costo;
     }
@@ -233,5 +236,13 @@ public class Viaje implements Comparable<Viaje> {
         return 0;
     }
 
+    // ---------------------------- OCTOBER 5TH, 2022 -------------------
 
+    public Integer getRate() {
+        return rate;
+    }
+
+    public void setRate(Integer rate) {
+        this.rate = rate;
+    }
 }

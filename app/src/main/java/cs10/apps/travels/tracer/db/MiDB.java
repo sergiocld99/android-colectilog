@@ -26,7 +26,7 @@ import cs10.apps.travels.tracer.model.roca.ServicioTren;
 
 @Database(entities = {Circuito.class, Comunicacion.class, Estacion.class, FormacionCircuito.class,
         Tren.class, Horario.class, Parada.class, Viaje.class, TarifaBus.class, TarifaTren.class,
-        Coffee.class, Recarga.class, ServicioTren.class, HorarioTren.class}, version = 18)
+        Coffee.class, Recarga.class, ServicioTren.class, HorarioTren.class}, version = 19)
 public abstract class MiDB extends RoomDatabase {
     private static MiDB instance;
 
@@ -37,7 +37,7 @@ public abstract class MiDB extends RoomDatabase {
                     COSTO_TARIFA_MIGRATION, ADD_FIXED_VIAJES_MIGRATION, TARIFA_BUS_MIGRATION,
                     ADD_COSTO_TO_VIAJE, CREATE_COFFEE_TABLE, CREATE_RECARGA_TABLE,
                     CREATE_ROCA_TABLES, FIX_HORARIOS_TABLE, ADD_RAMAL_COLUMN_TO_SERVICIOS,
-                    ADD_WEEK_DAY_COLUMN_TO_TRAVELS
+                    ADD_WEEK_DAY_COLUMN_TO_TRAVELS, ADD_RATE_COLUMN_TO_TRAVELS
             };
 
             instance = Room.databaseBuilder(context.getApplicationContext(), MiDB.class,
@@ -197,6 +197,13 @@ public abstract class MiDB extends RoomDatabase {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE Viaje ADD COLUMN wd integer not null default 0");
+        }
+    };
+
+    private static final Migration ADD_RATE_COLUMN_TO_TRAVELS = new Migration(18,19) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE Viaje ADD COLUMN rate INTEGER");
         }
     };
 

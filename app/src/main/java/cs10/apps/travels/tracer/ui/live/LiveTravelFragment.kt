@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Emoji
+import cs10.apps.rater.HappyRater
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.adapter.NearStopAdapter
@@ -134,14 +135,14 @@ class LiveTravelFragment : Fragment() {
         }
 
         locationVM.location.observe(viewLifecycleOwner) {
+            // updating animation
+            binding.updatingView.root.isVisible = true
+            Handler(Looper.getMainLooper()).postDelayed({ binding.updatingView.root.isVisible = false}, 3000)
+
             liveVM.recalculateDistances(rootVM.database, it) { rootVM.disableLoading() }
 
             val zone = ZoneData.getZoneUppercase(it)
             binding.zoneInfo.text = zone
-
-            // updating animation
-            binding.updatingView.root.isVisible = true
-            Handler(Looper.getMainLooper()).postDelayed({ binding.updatingView.root.isVisible = false}, 3000)
         }
 
         return binding.root
@@ -161,6 +162,9 @@ class LiveTravelFragment : Fragment() {
         // near stops adapter
         binding.nearStopsRecycler.adapter = nearStopAdapter
         binding.nearStopsRecycler.layoutManager = LinearLayoutManager(requireActivity())
+
+        // TODO: rater test
+        HappyRater().create(requireContext(), layoutInflater)
     }
 
     override fun onResume() {

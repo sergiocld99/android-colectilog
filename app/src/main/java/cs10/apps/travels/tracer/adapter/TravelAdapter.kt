@@ -26,4 +26,10 @@ class TravelAdapter(
         return list.size
     }
 
+    // deletes item from adapter list and updates recycler
+    fun remove(pos: Int) {
+        list.removeAt(pos)
+        notifyItemRemoved(pos)
+    }
+
 }

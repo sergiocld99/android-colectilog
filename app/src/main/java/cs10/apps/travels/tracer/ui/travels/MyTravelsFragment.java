@@ -81,7 +81,7 @@ public class MyTravelsFragment extends CS_Fragment {
         builder.setPositiveButton("Si", (dialogInterface, i) -> doInBackground(() -> {
             ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
             dao.delete(viaje.getId());
-            doInForeground(() -> adapter.notifyItemRemoved(pos));
+            doInForeground(() -> adapter.remove(pos));
         }));
 
         builder.setNeutralButton("Volver", (dialogInterface, i) -> dialogInterface.cancel());

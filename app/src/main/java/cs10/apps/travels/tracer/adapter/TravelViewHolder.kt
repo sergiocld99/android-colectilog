@@ -28,7 +28,7 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         binding.root.setOnClickListener { onClickListener(viaje) }
 
         binding.root.setOnLongClickListener {
-            onLongClickListener(viaje, position)
+            onLongClickListener(viaje, adapterPosition)
             true
         }
     }

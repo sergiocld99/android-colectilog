@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:text="¿Cómo estuvo el viaje?"
         android:gravity="center"
-        android:textSize="28sp"
+        android:textSize="24sp"
         android:textStyle="bold"/>
 
     <ImageView

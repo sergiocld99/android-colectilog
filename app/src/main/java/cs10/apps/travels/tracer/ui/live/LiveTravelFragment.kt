@@ -163,8 +163,6 @@ class LiveTravelFragment : Fragment() {
         binding.nearStopsRecycler.adapter = nearStopAdapter
         binding.nearStopsRecycler.layoutManager = LinearLayoutManager(requireActivity())
 
-        // TODO: rater test
-        HappyRater().create(requireContext(), layoutInflater)
     }
 
     override fun onResume() {
@@ -177,7 +175,7 @@ class LiveTravelFragment : Fragment() {
     override fun onStop() {
         super.onStop()
 
-        liveVM.resetEverything()
+        liveVM.resetAllButTravel()
     }
 
 
@@ -191,6 +189,7 @@ class LiveTravelFragment : Fragment() {
         binding.travelFrom.text = null
         binding.lineSubtitle.text = null
         binding.averageDuration.text = null
+        binding.nextTravelInfo.text = null
         binding.minutesLeft.text = "..."
         binding.pb.progress = 0
         rootVM.disableLoading()
@@ -245,8 +244,16 @@ class LiveTravelFragment : Fragment() {
         // dismiss dialog and clear views
         Handler(Looper.getMainLooper()).postDelayed({
             dialog.cancel()
+            showRateDialog()
             resetViews()
         }, 2000)
+    }
+
+    private fun showRateDialog() {
+        val rater = HappyRater()
+        rater.doneCallback = { rate -> liveVM.saveRating(rate, rootVM.database) }
+        rater.cancelCallback = { liveVM.eraseAll() }
+        rater.create(requireContext(), layoutInflater)
     }
 
     private fun getETA(minutesToEnd: Int) : CharSequence {

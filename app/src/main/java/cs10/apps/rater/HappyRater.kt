@@ -9,15 +9,17 @@ import cs10.apps.travels.tracer.databinding.SimpleRateBinding
 import kotlin.math.roundToInt
 
 class HappyRater {
-    var integerRate = -1
+    var doneCallback: (Int) -> Unit = {}
+    var cancelCallback: () -> Unit = {}
+    private var integerRate = -1
 
     fun create(context: Context, layoutInflater: LayoutInflater) {
         val view = SimpleRateBinding.inflate(layoutInflater, null, false)
 
         AlertDialog.Builder(context).let { b ->
             b.setView(view.root)
-            b.setPositiveButton("Done!", null)
-            b.setNeutralButton("Cancel", null)
+            b.setPositiveButton("Done!") { dialogInterface, i -> doneCallback(integerRate) }
+            b.setNeutralButton("Cancel") { dialogInterface, i -> cancelCallback() }
             b.create().show()
         }
 

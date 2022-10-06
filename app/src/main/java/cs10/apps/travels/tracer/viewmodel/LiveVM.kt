@@ -2,6 +2,7 @@ package cs10.apps.travels.tracer.viewmodel
 
 import android.app.Application
 import android.location.Location
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -59,7 +60,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             val t = db.viajesDao().getCurrentTravel(y, m, d, Utils.getCurrentTs())
 
             // Aceptamos buses y trenes
-            if (t == null) resetEverything()
+            if (t == null) resetAllButTravel()
             else {
                 t.linea?.let {
                     val avgDuration = db.viajesDao().getAverageTravelDuration(it, t.nombrePdaInicio, t.nombrePdaFin)
@@ -112,6 +113,9 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
 
     fun recalculateDistances(db: MiDB, location: Location, newTravelRunnable: Runnable) {
         travel.value?.let { t ->
+            // do not continue if travel is already finished
+            if (t.endHour != null) return
+
             viewModelScope.launch(Dispatchers.IO) {
                 val startStop = db.paradasDao().getByName(t.nombrePdaInicio)
                 val endStop = db.paradasDao().getByName(t.nombrePdaFin)
@@ -214,20 +218,39 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             it.endHour = cal.get(Calendar.HOUR_OF_DAY)
             it.endMinute = cal.get(Calendar.MINUTE)
             viewModelScope.launch(Dispatchers.IO) { db.viajesDao().update(it) }
-            resetEverything()
+            resetAllButTravel()
         }
     }
 
-    fun resetEverything(){
-        travel.postValue(null)
+    fun resetAllButTravel(){
         startDistance.postValue(null)
         endDistance.postValue(null)
-        minutesFromStart.postValue(null)
         minutesToEnd.postValue(null)
         averageDuration.postValue(null)
         progress.postValue(null)
         speed.postValue(null)
         nextTravel.postValue(null)
+    }
+
+    fun eraseAll(){
+        travel.postValue(null)
+        minutesFromStart.postValue(null)
+        resetAllButTravel()
+    }
+
+    fun saveRating(rate: Int, db: MiDB) {
+        travel.value?.let { t ->
+            t.rate = rate
+            viewModelScope.launch(Dispatchers.IO){ db.viajesDao().update(t) }
+            showToastInMainThread("Viaje calificado con éxito")
+            eraseAll()
+        }
+    }
+
+    private fun showToastInMainThread(message: String) {
+        viewModelScope.launch(Dispatchers.Main){
+            Toast.makeText(getApplication(), message, Toast.LENGTH_LONG).show()
+        }
     }
 
 }

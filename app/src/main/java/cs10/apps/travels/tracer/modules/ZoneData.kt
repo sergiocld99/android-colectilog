@@ -48,7 +48,8 @@ class ZoneData {
                         29 -> "Alpargatas"          // -58.16
                         28 -> "Pereyra"                 // -58.12
                         27 -> "Villa Elisa"                 // -58.08
-                        26 -> "Transradio / City Bell"           // -58.04
+                        26 -> "Transradio / City Bell"   
+                        25 -> "Batallón 601"
                         else -> null
                     }
                 }

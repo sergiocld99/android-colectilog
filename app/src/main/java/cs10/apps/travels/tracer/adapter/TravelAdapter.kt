@@ -19,7 +19,7 @@ class TravelAdapter(
     }
 
     override fun onBindViewHolder(holder: TravelViewHolder, position: Int) {
-        holder.render(list[position], position, onClickListener, onLongClickListener)
+        holder.render(list[position], onClickListener, onLongClickListener)
     }
 
     override fun getItemCount(): Int {

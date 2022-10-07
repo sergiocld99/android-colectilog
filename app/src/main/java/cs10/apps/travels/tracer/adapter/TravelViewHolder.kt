@@ -11,14 +11,14 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     private val binding = ItemTravelBinding.bind(view)
 
-    fun render(viaje: Viaje, position: Int, onClickListener: (Viaje) -> Unit, onLongClickListener: (Viaje, Int) -> Unit) {
+    fun render(viaje: Viaje, onClickListener: (Viaje) -> Unit, onLongClickListener: (Viaje, Int) -> Unit) {
         binding.ivType.setImageDrawable(Utils.getTypeDrawable(viaje.tipo, binding.root.context))
         binding.tvDatetime.text = viaje.startTimeString
         binding.tvLine.text = viaje.ramalAndPrice
 
         // start and end
         binding.tvStartPlace.text = viaje.startAndEnd
-        binding.tvStartPlace.isSelected = position == 0
+        binding.tvStartPlace.isSelected = adapterPosition == 0
 
         // line sublabel
         binding.tvLineNumber.text = if (viaje.linea == null) "Roca"

@@ -23,6 +23,8 @@ import cs10.apps.travels.tracer.adapter.NearStopAdapter
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
 import cs10.apps.travels.tracer.modules.ZoneData
+import cs10.apps.travels.tracer.ui.travels.BusTravelEditor
+import cs10.apps.travels.tracer.ui.travels.TrainTravelEditor
 import cs10.apps.travels.tracer.viewmodel.LiveVM
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
@@ -117,6 +119,7 @@ class LiveTravelFragment : Fragment() {
 
         liveVM.minutesToEnd.observe(viewLifecycleOwner) {
             binding.shareBtn.isVisible = it != null
+            binding.editBtn.isVisible = it != null
 
             if (it == null) binding.minutesLeft.text = null
             else {
@@ -156,8 +159,11 @@ class LiveTravelFragment : Fragment() {
         // on share travel
         binding.shareBtn.setOnClickListener { shareCurrentTravel() }
 
-        // on finish travel
+        // on finish travel (by user)
         binding.finishBtn.setOnClickListener { finishCurrentTravel() }
+
+        // on edit travel
+        binding.editBtn.setOnClickListener { editCurrentTravel() }
 
         // near stops adapter
         binding.nearStopsRecycler.adapter = nearStopAdapter
@@ -174,8 +180,7 @@ class LiveTravelFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
-
-        liveVM.resetAllButTravel()
+        liveVM.eraseAll()
     }
 
 
@@ -259,5 +264,18 @@ class LiveTravelFragment : Fragment() {
     private fun getETA(minutesToEnd: Int) : CharSequence {
         val eta = Calendar.getInstance().apply { add(Calendar.MINUTE, minutesToEnd) }
         return Utils.hourFormat(eta)
+    }
+
+    // ------------------------ EDIT -------------------------------
+
+    private fun editCurrentTravel() {
+        liveVM.travel.value?.let { viaje ->
+            val intent = Intent(activity,
+                if (viaje.tipo == 0) BusTravelEditor::class.java else TrainTravelEditor::class.java
+            )
+
+            intent.putExtra("travelId", viaje.id)
+            startActivity(intent)
+        }
     }
 }

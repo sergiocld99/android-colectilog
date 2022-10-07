@@ -15,7 +15,7 @@
         android:textColor="@color/white"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/share_btn"
+        app:layout_constraintStart_toEndOf="@id/edit_btn"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone"
         tools:visibility="visible"
@@ -29,11 +29,25 @@
         android:textColor="@color/white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/finish_btn"
+        app:layout_constraintEnd_toStartOf="@id/edit_btn"
         android:layout_marginTop="8dp"
         android:visibility="gone"
         tools:visibility="visible"
         android:backgroundTint="@color/bus"/>
+
+    <Button
+        android:id="@+id/edit_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/share_btn"
+        app:layout_constraintEnd_toStartOf="@id/finish_btn"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:backgroundTint="@color/bus_500"/>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/button_card"

@@ -33,6 +33,7 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         // rate
         binding.rateBox.isVisible = viaje.preciseRate != null
+        binding.root.alpha = 1f
 
         viaje.preciseRate?.let {
             val drawable = if (it < 4) R.drawable.ic_star_half else R.drawable.ic_star

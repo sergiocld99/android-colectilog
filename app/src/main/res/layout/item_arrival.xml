@@ -97,4 +97,24 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/rate_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/rate_text"
+            android:textColor="@color/white"
+            android:layout_marginStart="4dp"
+            tools:text="5.0"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:drawableStartCompat="@drawable/ic_star" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

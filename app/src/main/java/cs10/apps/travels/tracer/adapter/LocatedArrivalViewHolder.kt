@@ -48,6 +48,21 @@ class LocatedArrivalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         // line sublabel
         binding.tvLine.text = viaje.lineSimplified
 
+        // rate based on duration (COPIED FROM TRAVEL VIEW HOLDER)
+        binding.rateBox.isVisible = viaje.preciseRate != null
+        binding.root.alpha = 1f
+
+        viaje.preciseRate?.let {
+            val drawable = if (it < 4) R.drawable.ic_star_half else R.drawable.ic_star
+            val alpha = if (it < 3.5) 0.5f else 1f
+
+            binding.rateText.setCompoundDrawablesWithIntrinsicBounds(
+                ContextCompat.getDrawable(binding.root.context, drawable), null, null, null
+            )
+
+            binding.root.alpha = alpha
+            binding.rateText.text = Utils.rateFormat(it)
+        }
         // ETA animation
         if (top && viaje is ArriboTren){
             etaSwitcher.setItem(viaje)

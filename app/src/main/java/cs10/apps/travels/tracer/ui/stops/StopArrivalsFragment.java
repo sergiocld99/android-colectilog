@@ -134,6 +134,18 @@ public class StopArrivalsFragment extends CS_Fragment {
             List<Viaje> arrivals = DynamicQuery.getNextBusArrivals(getContext(), stopName);
             List<RamalSchedule> trenes = DynamicQuery.getNextTrainArrivals(getContext(), stopName);
 
+            // PROCESAMIENTO DE BUSES
+            // Oct 15: calculate rate based on duration (COPIED FROM MY TRAVELS FRAGMENT)
+            for (Viaje v : arrivals){
+                if (v.getLinea() == null || v.getEndHour() == null) continue;
+                int minDuration = miDB.viajesDao().getMinTravelDuration(v.getLinea(), v.getNombrePdaInicio(), v.getNombrePdaFin());
+                double rate = 5.0 * minDuration / v.getDuration();
+
+                // overrite rate saved by user
+                v.setPreciseRate(rate);
+            }
+
+            // PROCESAMIENTO DE TRENES
             for (RamalSchedule tren : trenes) {
                 ArriboTren v = new ArriboTren();
                 int target = tren.getHour() * 60 + tren.getMinute();

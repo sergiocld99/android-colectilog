@@ -27,10 +27,15 @@ import cs10.apps.travels.tracer.model.Viaje;
 
 public class Utils {
     private static final DecimalFormat df = new DecimalFormat("0.00");
+    private static final DecimalFormat rf = new DecimalFormat("0.0");
 
     @NonNull
     public static String twoDecimals(int value) {
         return value < 10 ? "0" + value : String.valueOf(value);
+    }
+
+    public static String rateFormat(double rate){
+        return rf.format(rate);
     }
 
     public static String priceFormat(double value) {

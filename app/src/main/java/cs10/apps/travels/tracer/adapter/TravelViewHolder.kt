@@ -2,7 +2,10 @@ package cs10.apps.travels.tracer.adapter
 
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ItemTravelBinding
 import cs10.apps.travels.tracer.model.Viaje
@@ -11,7 +14,11 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     private val binding = ItemTravelBinding.bind(view)
 
-    fun render(viaje: Viaje, onClickListener: (Viaje) -> Unit, onLongClickListener: (Viaje, Int) -> Unit) {
+    fun render(
+        viaje: Viaje,
+        onClickListener: (Viaje) -> Unit,
+        onLongClickListener: (Viaje, Int) -> Unit
+    ) {
         binding.ivType.setImageDrawable(Utils.getTypeDrawable(viaje.tipo, binding.root.context))
         binding.tvDatetime.text = viaje.startTimeString
         binding.tvLine.text = viaje.ramalAndPrice
@@ -24,7 +31,23 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         binding.tvLineNumber.text = if (viaje.linea == null) "Roca"
         else viaje.linea.toString()
 
-        binding.root.background = AppCompatResources.getDrawable(binding.root.context, Utils.colorFor(viaje.linea))
+        // rate
+        binding.rateBox.isVisible = viaje.preciseRate != null
+
+        viaje.preciseRate?.let {
+            val drawable = if (it < 4) R.drawable.ic_star_half else R.drawable.ic_star
+            val alpha = if (it < 3.5) 0.5f else 1f
+
+            binding.rateText.setCompoundDrawablesWithIntrinsicBounds(
+                ContextCompat.getDrawable(binding.root.context, drawable), null, null, null
+            )
+
+            binding.root.alpha = alpha
+            binding.rateText.text = Utils.rateFormat(it)
+        }
+
+        binding.root.background =
+            AppCompatResources.getDrawable(binding.root.context, Utils.colorFor(viaje.linea))
         binding.root.setOnClickListener { onClickListener(viaje) }
 
         binding.root.setOnLongClickListener {

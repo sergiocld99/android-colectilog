@@ -110,20 +110,30 @@ public interface ViajesDao {
             "order by startHour desc, startMinute desc limit 1")
     Viaje getCurrentTravel(int y, int m, int d, int currentTs);
 
-    @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
-            "where linea = :line and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
-    int getAverageTravelDuration(int line, String startStop, String endStop);
-
     @Query("SELECT * FROM Viaje where endHour is not null and linea is not :excludedLine and " +
             "nombrePdaInicio = :startStop and nombrePdaFin is not :excludedEndStop " +
             "order by RANDOM() limit 1")
     Viaje getCompletedTravelFrom(String startStop, String excludedEndStop, Integer excludedLine);
 
-    // ------------------------------ ON SELECT TYPE -------------------------------------
+    // ------------------------------ AUTOCOMPLETE CREATION -------------------------------------
 
     // Atajo: busca el viaje más probable a realizar desde la ubicación actual
     @Query("SELECT * FROM Viaje where nombrePdaInicio = :targetStart " +
             "group by linea, ramal, nombrePdaInicio, nombrePdaFin having count(*) > 2 " +
             "order by COUNT(*) desc limit 1")
     Viaje getLikelyTravelFrom(String targetStart);
+
+    // ------------------------------ TRAVEL STATS -----------------------------------
+
+    @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
+            "where linea = :line and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
+    int getAverageTravelDuration(int line, String startStop, String endStop);
+
+    @Query("SELECT MAX((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
+            "where linea = :line and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
+    Integer getMaxTravelDuration(int line, String startStop, String endStop);
+
+    @Query("SELECT MIN((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
+            "where linea = :line and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
+    Integer getMinTravelDuration(int line, String startStop, String endStop);
 }

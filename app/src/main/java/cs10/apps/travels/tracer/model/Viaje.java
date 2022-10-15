@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.Calendar;
@@ -44,6 +45,10 @@ public class Viaje implements Comparable<Viaje> {
 
     // October 5th, 2022
     private Integer rate;
+
+    // based on duration
+    @Ignore
+    private Double preciseRate;
 
     public double getCosto() {
         return costo;
@@ -226,6 +231,10 @@ public class Viaje implements Comparable<Viaje> {
 
     // ---------------------------- LIVE ----------------------
 
+    /**
+     * Calculates travel duration using end and start parameters
+     * @return total duration in minutes, 0 if it's not defined
+     */
     public int getDuration(){
         if (endHour != null && endMinute != null) {
             int end = endHour * 60 + endMinute;
@@ -244,5 +253,13 @@ public class Viaje implements Comparable<Viaje> {
 
     public void setRate(Integer rate) {
         this.rate = rate;
+    }
+
+    public Double getPreciseRate() {
+        return preciseRate;
+    }
+
+    public void setPreciseRate(Double preciseRate) {
+        this.preciseRate = preciseRate;
     }
 }

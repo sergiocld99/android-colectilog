@@ -62,6 +62,17 @@ public class MyTravelsFragment extends CS_Fragment {
             rootVM.enableLoading();
             ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
             List<Viaje> viajes = dao.getAll();
+
+            // Oct 15: calculate rate based on duration
+            for (Viaje v : viajes){
+                if (v.getLinea() == null || v.getEndHour() == null) continue;
+                int minDuration = dao.getMinTravelDuration(v.getLinea(), v.getNombrePdaInicio(), v.getNombrePdaFin());
+                double rate = 5.0 * minDuration / v.getDuration();
+
+                // overrite rate saved by user
+                v.setPreciseRate(rate);
+            }
+
             adapter.setList(viajes);
             doInForeground(adapter::notifyDataSetChanged);
             rootVM.disableLoading();

@@ -47,9 +47,9 @@
             android:id="@+id/tv_datetime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold"
-            tools:text="20/4 - 18:56"
+            tools:text="Sab 15/10 - 18:56 / 20:14"
             android:textColor="@android:color/white"/>
 
         <TextView
@@ -67,7 +67,7 @@
             android:id="@+id/tv_line"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Línea 338 - Centenario"
+            tools:text="Centenario ($30.50)"
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="18sp"

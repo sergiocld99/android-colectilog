@@ -4,10 +4,10 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Calendar;
 
+import cs10.apps.common.android.CSActivity;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ActivityCoffeeCreatorBinding;
 import cs10.apps.travels.tracer.databinding.ContentCoffeeCreatorBinding;
@@ -15,7 +15,7 @@ import cs10.apps.travels.tracer.db.CoffeeDao;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Coffee;
 
-public class CoffeeCreator extends AppCompatActivity {
+public class CoffeeCreator extends CSActivity {
     private ContentCoffeeCreatorBinding content;
 
     private final String[] messages = {
@@ -39,6 +39,11 @@ public class CoffeeCreator extends AppCompatActivity {
 
         binding.fab.setOnClickListener(view -> performDone());
 
+        autoComplete();
+        Utils.loadCoffeeBanner(binding.appbarImage);
+    }
+
+    private void autoComplete(){
         // set today values
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, -1);
@@ -51,18 +56,23 @@ public class CoffeeCreator extends AppCompatActivity {
         content.etDate.setText(Utils.dateFormat(day, month, year));
         content.etHour.setText(Utils.hourFormat(hour, minute));
 
-        Utils.loadCoffeeBanner(binding.appbarImage);
+        // search last price
+        doInBackground(() -> {
+            CoffeeDao dao = MiDB.getInstance(this).coffeeDao();
+            Double price = dao.getLastPrice();
+            doInForeground(() -> content.etPrice.setText(Utils.priceFormat(price)));
+        });
     }
 
     private void performDone(){
         Coffee coffee = new Coffee();
         int result = onCheckEntries(coffee);
 
-        if (result == 0) new Thread(() -> {
+        if (result == 0) doInBackground(() -> {
             CoffeeDao dao = MiDB.getInstance(this).coffeeDao();
             dao.insert(coffee);
-            runOnUiThread(this::finish);
-        }, "onSaveCoffee").start();
+            doInForeground(this::finish);
+        });
 
         Toast.makeText(getApplicationContext(), messages[result], Toast.LENGTH_LONG).show();
     }
@@ -70,7 +80,7 @@ public class CoffeeCreator extends AppCompatActivity {
     private int onCheckEntries(@NonNull Coffee coffee){
         String date = content.etDate.getText().toString();
         String startHour = content.etHour.getText().toString();
-        String price = content.etPrice.getText().toString();
+        String price = content.etPrice.getText().toString().replace("$","");
 
         if (date.isEmpty() || startHour.isEmpty() || price.isEmpty()) return 1;
 

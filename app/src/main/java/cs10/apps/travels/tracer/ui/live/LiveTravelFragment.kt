@@ -137,14 +137,14 @@ class LiveTravelFragment : Fragment() {
             }
         }
 
-        locationVM.location.observe(viewLifecycleOwner) {
+        locationVM.getLiveData().observe(viewLifecycleOwner) {
             // updating animation
             binding.updatingView.root.isVisible = true
             Handler(Looper.getMainLooper()).postDelayed({ binding.updatingView.root.isVisible = false}, 3000)
 
-            liveVM.recalculateDistances(rootVM.database, it) { rootVM.disableLoading() }
+            liveVM.recalculateDistances(rootVM.database, it.location) { rootVM.disableLoading() }
 
-            val zone = ZoneData.getZoneUppercase(it)
+            val zone = ZoneData.getZoneUppercase(it.location)
             binding.zoneInfo.text = zone
         }
 
@@ -175,7 +175,7 @@ class LiveTravelFragment : Fragment() {
         super.onResume()
 
         resetViews()
-        liveVM.findLastTravel(rootVM.database)
+        liveVM.findLastTravel(rootVM.database, locationVM) { rootVM.disableLoading() }
     }
 
     override fun onStop() {

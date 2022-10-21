@@ -108,9 +108,9 @@ public class StopArrivalsFragment extends CS_Fragment {
             binding.stopSummary.getRoot().setVisibility(View.VISIBLE);
         });
 
-        locationVM.getLocation().observe(getViewLifecycleOwner(), location -> {
+        locationVM.getLiveData().observe(getViewLifecycleOwner(), location -> {
             Double maxD = homeVM.getMaxDistance().getValue();
-            if (maxD != null) locatedArrivalVM.recalculate(location, maxD);
+            if (maxD != null) locatedArrivalVM.recalculate(location.getLocation(), maxD);
         });
 
         // OCT 2022

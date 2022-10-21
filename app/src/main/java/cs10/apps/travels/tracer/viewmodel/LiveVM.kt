@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Clock
+import cs10.apps.common.android.TimedLocation
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.data.generator.Station
 import cs10.apps.travels.tracer.db.MiDB
@@ -53,7 +54,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     // timer 2: toggle a boolean every 5 seconds (ramal - line)
     private var toggleClock : Clock? = null
 
-    fun findLastTravel(db: MiDB) {
+    fun findLastTravel(db: MiDB, locationVM: LocationVM, newTravelRunnable: Runnable) {
         val (y,m,d) = Calendar2.getDate()
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -92,10 +93,12 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 minuteClock?.apply { start() }
                 toggleClock?.apply { start() }
 
-                // delay(500)
+                delay(500)
 
                 // force get location
-                // locationVM.location.value?.let { recalculateDistances(db, it, cancelRunnable) }
+                locationVM.getLiveData().value?.let {
+                    if (TimedLocation.isStillValid(it)) recalculateDistances(db, it.location, newTravelRunnable)
+                }
             }
         }
     }

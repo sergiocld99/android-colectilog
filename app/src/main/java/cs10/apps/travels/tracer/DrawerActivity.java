@@ -33,6 +33,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
 
+import cs10.apps.common.android.TimedLocation;
 import cs10.apps.travels.tracer.data.generator.DelayData;
 import cs10.apps.travels.tracer.data.generator.GlewFiller;
 import cs10.apps.travels.tracer.data.generator.LaPlataFiller;
@@ -175,7 +176,8 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
-                locationVM.getLocation().postValue(locationResult.getLastLocation());
+                TimedLocation l = TimedLocation.Companion.createCurrentObject(locationResult.getLastLocation());
+                locationVM.getLiveData().postValue(l);
             }
         };
 

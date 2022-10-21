@@ -22,8 +22,10 @@ class LocatedArrivalVM : ViewModel() {
     val summary = MutableLiveData<Pair<Int, Int>>()
 
     fun recalculate(locationVM: LocationVM, homeVM: HomeVM) {
-        if (locationVM.location.value != null && homeVM.maxDistance.value != null){
-            recalculate(locationVM.location.value!!, homeVM.maxDistance.value!!)
+        locationVM.getLiveData().value?.let { timedLocation ->
+            homeVM.maxDistance.value?.let { maxDistance ->
+                recalculate(timedLocation.location, maxDistance)
+            }
         }
     }
 

@@ -22,7 +22,7 @@ import cs10.apps.travels.tracer.databinding.FragmentHomeBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
-import cs10.apps.travels.tracer.ui.stops.StopArrivalsFragment;
+import cs10.apps.travels.tracer.ui.arrivals.StopArrivalsFragment;
 import cs10.apps.travels.tracer.viewmodel.HomeVM;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
 import cs10.apps.travels.tracer.viewmodel.RootVM;

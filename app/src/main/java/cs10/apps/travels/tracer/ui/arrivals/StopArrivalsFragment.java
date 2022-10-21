@@ -1,10 +1,13 @@
-package cs10.apps.travels.tracer.ui.stops;
+package cs10.apps.travels.tracer.ui.arrivals;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -88,11 +91,15 @@ public class StopArrivalsFragment extends CS_Fragment {
             adapter.setList(arrivals);
 
             if (ogSize == 0) adapter.notifyItemRangeInserted(0, arrivals.size());
-            else if (ogSize == adapter.getItemCount()) adapter.notifyItemRangeChanged(0, arrivals.size());
+            //else if (ogSize == adapter.getItemCount()) adapter.notifyItemRangeChanged(0, arrivals.size());
             else adapter.notifyDataSetChanged();
 
             // binding.pbar.setVisibility(View.GONE);
             rootVM.disableLoading();
+
+            // OCT 2022: swipe
+            new Handler(Looper.getMainLooper()).postDelayed(() -> binding.swipe.setRefreshing(false), 800);
+
         });
 
         locatedArrivalVM.getSummary().observe(getViewLifecycleOwner(), data -> {
@@ -105,19 +112,30 @@ public class StopArrivalsFragment extends CS_Fragment {
             Double maxD = homeVM.getMaxDistance().getValue();
             if (maxD != null) locatedArrivalVM.recalculate(location, maxD);
         });
+
+        // OCT 2022
+        binding.swipe.setOnRefreshListener(() ->
+                new Handler(Looper.getMainLooper()).postDelayed(() -> reload(true), 800)
+        );
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        reload(false);
+    }
 
+    private void reload(boolean force){
         // get arguments
         Bundle args = getArguments();
 
         if (args != null) {
             int pos = args.getInt("pos");
             Parada parada = homeVM.getStop(pos);
-            locatedArrivalVM.setStop(parada);
+            locatedArrivalVM.setStop(parada, force);
+        } else {
+            Toast.makeText(requireContext(), "No se puede recargar", Toast.LENGTH_SHORT).show();
+            binding.swipe.setRefreshing(false);
         }
     }
 

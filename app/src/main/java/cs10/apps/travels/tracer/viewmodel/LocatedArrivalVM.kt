@@ -41,6 +41,10 @@ class LocatedArrivalVM : ViewModel() {
         if (stop.value != parada) stop.postValue(parada)
     }
 
+    fun setStop(parada: Parada, forceSet: Boolean){
+        if (forceSet) stop.postValue(parada) else setStop(parada)
+    }
+
     private fun setProximity(prox: Double){
         val prev = proximity.value
         proximity.postValue(max(prox, 0.0))

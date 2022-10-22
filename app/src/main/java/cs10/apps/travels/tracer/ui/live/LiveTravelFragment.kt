@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Emoji
+import cs10.apps.common.android.NumberUtils
 import cs10.apps.rater.HappyRater
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
@@ -148,6 +149,11 @@ class LiveTravelFragment : Fragment() {
             binding.zoneInfo.text = zone
         }
 
+        // OCT 2022
+        locationVM.setSpeedObserver(viewLifecycleOwner) { speedKmH ->
+            binding.speedometerText.text = NumberUtils.roundWithPresicion(speedKmH, 5).toString()
+        }
+
         return binding.root
     }
 
@@ -196,6 +202,7 @@ class LiveTravelFragment : Fragment() {
         binding.averageDuration.text = null
         binding.nextTravelInfo.text = null
         binding.minutesLeft.text = "..."
+        binding.speedometerText.text = "--"
         binding.pb.progress = 0
         rootVM.disableLoading()
     }

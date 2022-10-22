@@ -8,6 +8,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import cs10.apps.common.android.DoubleHistory;
+import cs10.apps.common.android.NumberUtils;
 
 @Entity
 public class Parada implements Comparable<Parada> {
@@ -92,7 +93,8 @@ public class Parada implements Comparable<Parada> {
     }
 
     public double getDistance(){
-        return Math.sqrt(deltaX * deltaX + deltaY * deltaY) * 91.97;
+        double hyp = NumberUtils.Companion.hyp(deltaX, deltaY);
+        return NumberUtils.Companion.coordsDistanceToKm(hyp);
     }
 
     public String getDistanceInKm(){

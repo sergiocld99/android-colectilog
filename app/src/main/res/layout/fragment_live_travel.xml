@@ -190,6 +190,35 @@
         android:textSize="30sp"
         tools:text="150'" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/speedometer_box"
+        app:layout_constraintBottom_toBottomOf="@id/pb"
+        app:layout_constraintEnd_toEndOf="@id/pb"
+        android:layout_margin="8dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp">
+
+        <View
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/speedometer_bg"/>
+
+        <TextView
+            android:id="@+id/speedometer_text"
+            tools:text="120"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <LinearLayout
         android:id="@+id/near_box_info"
         android:layout_width="0dp"

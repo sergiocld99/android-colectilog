@@ -69,8 +69,8 @@ public class MyTravelsFragment extends CS_Fragment {
                 int minDuration = dao.getMinTravelDuration(v.getLinea(), v.getNombrePdaInicio(), v.getNombrePdaFin());
                 double rate = 5.0 * minDuration / v.getDuration();
 
-                // overrite rate saved by user
-                v.setPreciseRate(rate);
+                // add to rate saved by user
+                v.addPreciseRate(rate);
             }
 
             adapter.setList(viajes);

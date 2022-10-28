@@ -21,6 +21,7 @@ import cs10.apps.travels.tracer.databinding.FragmentTravelsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.modules.AutoRater;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
 
 public class MyTravelsFragment extends CS_Fragment {
@@ -64,14 +65,7 @@ public class MyTravelsFragment extends CS_Fragment {
             List<Viaje> viajes = dao.getAll();
 
             // Oct 15: calculate rate based on duration
-            for (Viaje v : viajes){
-                if (v.getLinea() == null || v.getEndHour() == null) continue;
-                int minDuration = dao.getMinTravelDuration(v.getLinea(), v.getNombrePdaInicio(), v.getNombrePdaFin());
-                double rate = 5.0 * minDuration / v.getDuration();
-
-                // add to rate saved by user
-                v.addPreciseRate(rate);
-            }
+            AutoRater.Companion.calculateRate(viajes, dao);
 
             adapter.setList(viajes);
             doInForeground(adapter::notifyDataSetChanged);

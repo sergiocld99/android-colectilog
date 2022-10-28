@@ -151,7 +151,8 @@ class LiveTravelFragment : Fragment() {
 
         // OCT 2022
         locationVM.setSpeedObserver(viewLifecycleOwner) { speedKmH ->
-            binding.speedometerText.text = NumberUtils.roundWithPresicion(speedKmH, 5).toString()
+            if (speedKmH > 100) binding.speedometerText.text = "-.-"
+            else binding.speedometerText.text = NumberUtils.roundWithPresicion(speedKmH, 5).toString()
         }
 
         return binding.root

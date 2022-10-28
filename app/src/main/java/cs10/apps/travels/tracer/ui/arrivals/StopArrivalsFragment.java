@@ -31,6 +31,7 @@ import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.roca.ArriboTren;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 import cs10.apps.travels.tracer.model.roca.RamalSchedule;
+import cs10.apps.travels.tracer.modules.AutoRater;
 import cs10.apps.travels.tracer.ui.service.ServiceDetail;
 import cs10.apps.travels.tracer.viewmodel.HomeVM;
 import cs10.apps.travels.tracer.viewmodel.LocatedArrivalVM;
@@ -115,7 +116,7 @@ public class StopArrivalsFragment extends CS_Fragment {
 
         // OCT 2022
         binding.swipe.setOnRefreshListener(() ->
-                new Handler(Looper.getMainLooper()).postDelayed(() -> reload(true), 800)
+            new Handler(Looper.getMainLooper()).postDelayed(() -> reload(true), 800)
         );
     }
 
@@ -153,15 +154,8 @@ public class StopArrivalsFragment extends CS_Fragment {
             List<RamalSchedule> trenes = DynamicQuery.getNextTrainArrivals(getContext(), stopName);
 
             // PROCESAMIENTO DE BUSES
-            // Oct 15: calculate rate based on duration (COPIED FROM MY TRAVELS FRAGMENT)
-            for (Viaje v : arrivals){
-                if (v.getLinea() == null || v.getEndHour() == null) continue;
-                int minDuration = miDB.viajesDao().getMinTravelDuration(v.getLinea(), v.getNombrePdaInicio(), v.getNombrePdaFin());
-                double rate = 5.0 * minDuration / v.getDuration();
-
-                // overrite rate saved by user
-                v.setPreciseRate(rate);
-            }
+            // Oct 15: calculate rate based on duration
+            AutoRater.Companion.calculateRate(arrivals, miDB.viajesDao());
 
             // PROCESAMIENTO DE TRENES
             for (RamalSchedule tren : trenes) {

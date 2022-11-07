@@ -212,14 +212,13 @@ class LiveTravelFragment : Fragment() {
 
         liveVM.minutesToEnd.value?.let {
             val line = liveVM.travel.value?.linea
+            val ramal = liveVM.travel.value?.ramal
             val destination = liveVM.travel.value?.nombrePdaFin
 
             /*This will be the actual content you wish you share.*/
-            val shareBody = "Hola! ${Emoji.getHandEmoji()} \n\n" +
-                    "${Emoji.getBusEmoji()} Estoy viajando en un $line \n" +
+            val shareBody = "${Emoji.getBusEmoji()} Linea $line \n - $ramal" +
                     "${Emoji.getGlobeEmoji()} Destino: $destination \n" +
-                    "${Emoji.getClockEmoji()} Llego a las ${getETA(it)} \n\n" +
-                    "*Enviado desde Mi App*"
+                    "${Emoji.getClockEmoji()} Llego a las ${getETA(it)}"
 
             /*Create an ACTION_SEND Intent*/
             val intent = Intent(Intent.ACTION_SEND)

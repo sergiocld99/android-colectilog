@@ -64,7 +64,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             if (t == null) resetAllButTravel()
             else {
                 t.linea?.let {
-                    val avgDuration = db.viajesDao().getAverageTravelDuration(it, t.nombrePdaInicio, t.nombrePdaFin)
+                    val avgDuration = db.viajesDao().getAverageTravelDuration(it, t.nombrePdaInicio, t.nombrePdaFin, t.ramal)
                     if (avgDuration > 0) averageDuration.postValue(avgDuration)
                     else averageDuration.postValue(null)
                 }

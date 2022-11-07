@@ -126,8 +126,9 @@ public interface ViajesDao {
     // ------------------------------ TRAVEL STATS -----------------------------------
 
     @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
-            "where linea = :line and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
-    int getAverageTravelDuration(int line, String startStop, String endStop);
+            "where linea = :line and ramal = :ramal " +
+            "and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
+    int getAverageTravelDuration(int line, String startStop, String endStop, String ramal);
 
     @Query("SELECT MAX((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
             "where linea = :line and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")

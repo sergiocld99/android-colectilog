@@ -216,7 +216,7 @@ class LiveTravelFragment : Fragment() {
             val destination = liveVM.travel.value?.nombrePdaFin
 
             /*This will be the actual content you wish you share.*/
-            val shareBody = "${Emoji.getBusEmoji()} Linea $line \n - $ramal" +
+            val shareBody = "${Emoji.getBusEmoji()} Linea $line - $ramal \n" +
                     "${Emoji.getGlobeEmoji()} Destino: $destination \n" +
                     "${Emoji.getClockEmoji()} Llego a las ${getETA(it)}"
 

@@ -25,6 +25,7 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
                 }
             }
 
+            lines.sort()
             myLines.postValue(lines)
         }
     }

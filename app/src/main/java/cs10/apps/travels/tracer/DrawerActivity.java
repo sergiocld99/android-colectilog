@@ -100,7 +100,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_live, R.id.nav_colectivos,
-                R.id.nav_trenes, R.id.nav_proximos, R.id.nav_prox_destinos, R.id.nav_paradas)
+                R.id.nav_lines, R.id.nav_trenes, R.id.nav_proximos, R.id.nav_prox_destinos, R.id.nav_paradas)
                 .setOpenableLayout(binding.drawerLayout)
                 .build();
 

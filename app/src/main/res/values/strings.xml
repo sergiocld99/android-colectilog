@@ -85,4 +85,5 @@
     <string name="path">Recorrido</string>
     <string name="progress">Progreso</string>
     <string name="end_hour">Hora de bajada</string>
+    <string name="manage_lines">Administrar lineas</string>
 </resources>

@@ -20,6 +20,11 @@
             android:icon="@drawable/ic_show_chart"/>
 
         <item
+            android:id="@+id/nav_lines"
+            android:title="@string/manage_lines"
+            android:icon="@drawable/ic_bus"/>
+
+        <item
             android:id="@+id/nav_trenes"
             android:title="@string/travels"
             android:icon="@drawable/ic_calendar_month"/>

@@ -24,6 +24,12 @@
         tools:layout="@layout/fragment_buses" />
 
     <fragment
+        android:id="@+id/nav_lines"
+        android:name="cs10.apps.travels.tracer.ui.lines.LineManagerFragment"
+        android:label="@string/manage_lines"
+        tools:layout="@layout/fragment_manage_lines"/>
+
+    <fragment
         android:id="@+id/nav_trenes"
         android:name="cs10.apps.travels.tracer.ui.travels.MyTravelsFragment"
         android:label="@string/travels"

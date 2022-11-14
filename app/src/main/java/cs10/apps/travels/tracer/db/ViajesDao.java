@@ -137,4 +137,8 @@ public interface ViajesDao {
     @Query("SELECT MIN((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
             "where linea = :line and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
     Integer getMinTravelDuration(int line, String startStop, String endStop);
+
+    @Query("SELECT MIN((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
+            "where nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
+    Integer getTrainMinTravelDuration(String startStop, String endStop);
 }

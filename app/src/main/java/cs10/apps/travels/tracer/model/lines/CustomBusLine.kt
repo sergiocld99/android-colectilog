@@ -8,7 +8,7 @@ data class CustomBusLine(
     @PrimaryKey(autoGenerate = true) val id: Int,
     val number: Int?,
     val name: String?,
-    val color: Int
+    var color: Int
 ) : Comparable<CustomBusLine> {
 
     override fun compareTo(other: CustomBusLine): Int {

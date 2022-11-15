@@ -34,8 +34,8 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     val nearArrivals = MutableLiveData<MutableList<RamalSchedule>>()
 
     // distances in metres
-    private val startDistance = MutableLiveData<Double?>()
-    private val endDistance = MutableLiveData<Double?>()
+    val startDistance = MutableLiveData<Double?>()
+    val endDistance = MutableLiveData<Double?>()
 
     // time in minutes
     val minutesFromStart = MutableLiveData<Double?>()

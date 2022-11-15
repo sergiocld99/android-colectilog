@@ -77,4 +77,7 @@ dependencies {
 
     // OCT 2022: SWIPE V1
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    // NOV 2022: COLOR PICKER
+    implementation 'com.jaredrummler:colorpicker:1.1.0'
 }

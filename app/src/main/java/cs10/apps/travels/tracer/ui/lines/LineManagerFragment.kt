@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import cs10.apps.common.android.CS_Fragment
 import cs10.apps.travels.tracer.adapter.LineManagerAdapter
 import cs10.apps.travels.tracer.databinding.FragmentManageLinesBinding
+import cs10.apps.travels.tracer.model.lines.CustomBusLine
 import cs10.apps.travels.tracer.viewmodel.LineManagerVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
 
@@ -16,6 +19,8 @@ class LineManagerFragment : CS_Fragment() {
     private lateinit var binding: FragmentManageLinesBinding
     private lateinit var rootVM: RootVM
     private lateinit var lineManagerVM: LineManagerVM
+
+    private lateinit var editingLine: CustomBusLine
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +39,7 @@ class LineManagerFragment : CS_Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = LineManagerAdapter(listOf())
+        val adapter = LineManagerAdapter(listOf()) { line -> onLineClick(line) }
         binding.recycler.adapter = adapter
         binding.recycler.layoutManager = LinearLayoutManager(requireContext())
 
@@ -42,14 +47,24 @@ class LineManagerFragment : CS_Fragment() {
             adapter.list = list
             adapter.notifyDataSetChanged()
         }
+
+        rootVM.loading.observe(viewLifecycleOwner) {
+            binding.root.isVisible = !it
+        }
     }
 
     override fun onResume() {
         super.onResume()
 
         // reload
-        lineManagerVM.load(rootVM.database.linesDao())
+        lineManagerVM.load(rootVM.database.linesDao(), rootVM)
     }
 
+    private fun onLineClick(customBusLine: CustomBusLine){
+        lineManagerVM.selectEditing(customBusLine)
+
+        val dialog = ColorPickerDialog.newBuilder()
+        dialog.show(activity)
+    }
 
 }

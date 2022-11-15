@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +33,7 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
+import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 
 import cs10.apps.travels.tracer.data.generator.DelayData;
 import cs10.apps.travels.tracer.data.generator.GlewFiller;
@@ -44,10 +46,11 @@ import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
 import cs10.apps.travels.tracer.ui.travels.BusTravelCreator;
 import cs10.apps.travels.tracer.ui.travels.TrainTravelCreator;
+import cs10.apps.travels.tracer.viewmodel.LineManagerVM;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
 
-public class DrawerActivity extends AppCompatActivity implements DatabaseCallback {
+public class DrawerActivity extends AppCompatActivity implements DatabaseCallback, ColorPickerDialogListener {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityDrawerBinding binding;
     private FusedLocationProviderClient client;
@@ -56,6 +59,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
     private LocationCallback locationCallback;
 
     // ViewModel
+    private LineManagerVM lineManagerVM;
     private LocationVM locationVM;
     private RootVM rootVM;
 
@@ -121,6 +125,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         Utils.checkPermissions(this);
 
         // ViewModel
+        lineManagerVM = new ViewModelProvider(this).get(LineManagerVM.class);
         locationVM = new ViewModelProvider(this).get(LocationVM.class);
 
         // Re-create Via Circuito if is needed
@@ -256,5 +261,16 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         }
 
         return MiDB.getInstance(this);
+    }
+
+    @Override
+    public void onColorSelected(int dialogId, int color) {
+        lineManagerVM.updateColor(rootVM.getDatabase().linesDao(), color, rootVM);
+        Log.i("COLOR PICKER", "Color selected");
+    }
+
+    @Override
+    public void onDialogDismissed(int dialogId) {
+
     }
 }

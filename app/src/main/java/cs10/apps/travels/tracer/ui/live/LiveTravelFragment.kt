@@ -30,6 +30,7 @@ import cs10.apps.travels.tracer.viewmodel.LiveVM
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
@@ -104,12 +105,27 @@ class LiveTravelFragment : Fragment() {
             }
         }
 
-        liveVM.progress.observe(viewLifecycleOwner) {
-            when {
-                it == null -> binding.pb.progress = 0
-                it > 0.97 -> finishCurrentTravel()
-                else -> binding.pb.progress = (it * 100).roundToInt()
+        liveVM.progress.observe(viewLifecycleOwner) { prog ->
+            when (prog) {
+                null -> binding.pb.progress = 0
+                // prog > 0.97 -> finishCurrentTravel()
+                else -> binding.pb.progress = (prog * 100).roundToInt()
             }
+
+            val avgD = liveVM.averageDuration.value
+            val currentTime = liveVM.minutesFromStart.value
+
+            if (prog != null && avgD != null && currentTime != null){
+                val estimation = avgD * prog
+                val error = abs(currentTime - estimation).roundToInt()
+
+                binding.estimationError.isVisible = error > 3
+                binding.estimationError.text = "Estimación con error de $error minutos"
+            } else binding.estimationError.isVisible = false
+        }
+
+        liveVM.endDistance.observe(viewLifecycleOwner) {
+            if (it != null && it < 0.3) finishCurrentTravel()
         }
 
         liveVM.nearArrivals.observe(viewLifecycleOwner) {

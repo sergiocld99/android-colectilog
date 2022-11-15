@@ -6,7 +6,10 @@ import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
 
-class LineManagerAdapter(var list: List<CustomBusLine>) : RecyclerView.Adapter<LineViewHolder>() {
+class LineManagerAdapter(
+    var list: List<CustomBusLine>,
+    private val onLineClick: (CustomBusLine) -> Unit
+) : RecyclerView.Adapter<LineViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LineViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -14,7 +17,7 @@ class LineManagerAdapter(var list: List<CustomBusLine>) : RecyclerView.Adapter<L
     }
 
     override fun onBindViewHolder(holder: LineViewHolder, position: Int) {
-        holder.render(list[position])
+        holder.render(list[position], onLineClick)
     }
 
     override fun getItemCount() = list.size

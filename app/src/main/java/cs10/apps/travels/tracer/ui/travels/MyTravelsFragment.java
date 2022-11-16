@@ -21,6 +21,7 @@ import cs10.apps.travels.tracer.databinding.FragmentTravelsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.model.joins.ColoredTravel;
 import cs10.apps.travels.tracer.modules.AutoRater;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
 
@@ -48,7 +49,11 @@ public class MyTravelsFragment extends CS_Fragment {
             return null;
         });
 
-        // adapter.setCallback(this);
+        // View Model
+        rootVM.getLoading().observe(getViewLifecycleOwner(), it -> {
+            if (it) binding.getRoot().setVisibility(View.GONE);
+            else binding.getRoot().setVisibility(View.VISIBLE);
+        });
 
         RecyclerView rv = binding.recycler;
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -62,7 +67,7 @@ public class MyTravelsFragment extends CS_Fragment {
         doInBackground(() -> {
             rootVM.enableLoading();
             ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
-            List<Viaje> viajes = dao.getAll();
+            List<ColoredTravel> viajes = dao.getAllPlusColors();
 
             // Oct 15: calculate rate based on duration
             AutoRater.Companion.calculateRate(viajes, dao);

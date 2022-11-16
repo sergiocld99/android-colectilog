@@ -125,7 +125,7 @@ class LiveTravelFragment : Fragment() {
         }
 
         liveVM.endDistance.observe(viewLifecycleOwner) {
-            if (it != null && it < 0.3) finishCurrentTravel()
+            if (it != null && it < 0.8) finishCurrentTravel()
         }
 
         liveVM.nearArrivals.observe(viewLifecycleOwner) {

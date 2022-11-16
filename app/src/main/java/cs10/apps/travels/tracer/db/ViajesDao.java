@@ -10,6 +10,7 @@ import java.util.List;
 import cs10.apps.travels.tracer.model.LineInfo;
 import cs10.apps.travels.tracer.model.PriceSum;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.model.joins.ColoredTravel;
 import cs10.apps.travels.tracer.model.location.TravelDistance;
 
 @Dao
@@ -26,6 +27,10 @@ public interface ViajesDao {
 
     @Query("SELECT * FROM viaje ORDER BY year desc, month desc, day desc, startHour desc, startMinute desc")
     List<Viaje> getAll();
+
+    @Query("SELECT V.*, L.color FROM viaje V LEFT JOIN lines L ON V.linea = L.number " +
+            "ORDER BY year desc, month desc, day desc, startHour desc, startMinute desc")
+    List<ColoredTravel> getAllPlusColors();
 
     @Query("SELECT * FROM viaje where id is :travelId LIMIT 1")
     Viaje getById(long travelId);
@@ -89,8 +94,6 @@ public interface ViajesDao {
     @Query("SELECT * FROM Viaje where endHour is null " +
             "and (startHour * 60 + startMinute) < :currentTs order by id desc limit 1")
     Viaje getLastStartedTravel(int currentTs);
-
-
 
     @Query("SELECT * from viaje order by id desc limit 1")
     Viaje getLastTravel();

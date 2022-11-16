@@ -5,13 +5,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.model.joins.ColoredTravel
 
 class TravelAdapter(
     private val onClickListener: (Viaje) -> Unit,
     private val onLongClickListener: (Viaje, Int) -> Unit
 ) : RecyclerView.Adapter<TravelViewHolder>() {
 
-    var list = mutableListOf<Viaje>()
+    var list = mutableListOf<ColoredTravel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TravelViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)

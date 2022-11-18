@@ -32,35 +32,37 @@ class ZoneData {
         private fun getZone(x_code: Int, y_code: Int) : String? {
 
             when (x_code) {
-                19 -> if (y_code == 31) return "Cruce Varela"
-                20 -> {
-                    return when(y_code){
-                        32 -> "Arco de San Jorge"
-                        31 -> "Varela"
-                        30 -> "Bosques"
-                        29 -> "Gutiérrez"
-                        else -> null
-                    }
+                19 -> return when(y_code){
+                    34 -> "Adrogué"
+                    31 -> "Cruce Varela"
+                    30 -> "Berazategui"
+                    29 -> "Plátanos"
+                    28 -> "Hudson"
+                    else -> null
                 }
-                21 -> {
-                    return when(y_code){
-                        30 -> "Ingeniero Allan"          // -58.20
-                        29 -> "Alpargatas"          // -58.16
-                        28 -> "Pereyra"                 // -58.12
-                        27 -> "Villa Elisa"                 // -58.08
-                        26 -> "Transradio / City Bell"   
-                        25 -> "Batallón 601"
-                        else -> null
-                    }
+                20 -> return when(y_code){
+                    32 -> "Arco de San Jorge"
+                    31 -> "Varela"
+                    30 -> "Bosques"
+                    29 -> "Gutiérrez"
+                    else -> null
                 }
-                22 -> {
-                    return when(y_code){
-                        26 -> "City Bell (467 - 476)"       // -58.04
-                        25 -> "Gonnet"                  // -58.00
-                        24 -> "La Plata"
-                        23 -> "Facultades"
-                        else -> null
-                    }
+                21 -> return when(y_code){
+                    30 -> "Ingeniero Allan"          // -58.20
+                    29 -> "Alpargatas"          // -58.16
+                    28 -> "Pereyra"                 // -58.12
+                    27 -> "Villa Elisa"                 // -58.08
+                    26 -> "Transradio / City Bell"
+                    25 -> "Batallón 601"
+                    24 -> "Ringuelet"
+                    else -> null
+                }
+                22 -> return when(y_code){
+                    26 -> "City Bell (467 - 476)"       // -58.04
+                    25 -> "Gonnet"                  // -58.00
+                    24 -> "La Plata"
+                    23 -> "Facultades"
+                    else -> null
                 }
             }
 

@@ -89,7 +89,7 @@ public class BusTravelEditor extends CommonTravelEditor {
         Parada startPlace = getParadas().get(startIndex);
         Parada endPlace = getParadas().get(endIndex);
 
-        if (date.isEmpty() || startHour.isEmpty()) return 1;
+        if (line.isEmpty() || date.isEmpty() || startHour.isEmpty()) return 1;
         if (startPlace.equals(endPlace)) return 2;
 
         String[] hourParams = startHour.split(":");

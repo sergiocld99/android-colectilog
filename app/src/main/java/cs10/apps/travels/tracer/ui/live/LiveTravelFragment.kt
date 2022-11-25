@@ -96,7 +96,10 @@ class LiveTravelFragment : Fragment() {
 
         liveVM.averageDuration.observe(viewLifecycleOwner) {
             if (it == null || it.totalMinutes == 0) binding.averageDuration.text = null
-            else binding.averageDuration.text = "Duración habitual: ${it.totalMinutes} min. (${it.speed} km/h)"
+            else {
+                if (it.fromAverage) binding.averageDuration.text = "Duración promedio: ${it.totalMinutes} min. (${it.speed} km/h)"
+                else binding.averageDuration.text = "Duración esperada: ${it.totalMinutes} min. (${it.speed} km/h)"
+            }
         }
 
         liveVM.speed.observe(viewLifecycleOwner) {

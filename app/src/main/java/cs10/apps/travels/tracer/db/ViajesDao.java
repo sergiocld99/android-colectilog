@@ -123,6 +123,14 @@ public interface ViajesDao {
             "where v.id = :id ")
     TravelDistance getTravelDistanceFromId(long id);
 
+    @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
+            "where ramal is null and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
+    int getAverageTravelDuration(String startStop, String endStop);
+
+    @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
+            "where ramal = :ramal and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
+    int getAverageTravelDurationWithRamal(String startStop, String endStop, String ramal);
+
     @Query("SELECT * FROM Viaje where endHour is not null and linea is not :excludedLine and " +
             "nombrePdaInicio = :startStop and nombrePdaFin is not :excludedEndStop " +
             "order by RANDOM() limit 1")
@@ -135,8 +143,18 @@ public interface ViajesDao {
             "FROM Viaje V " +
             "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
             "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
-            "where linea = :linea and endHour is not null")
+            "where linea = :linea and endHour is not null order by RANDOM() limit 1")
     RandomTravelStats getRandomFinishedTravelFromLine(int linea);
+
+    @Query("SELECT P1.latitud as start_x, P1.longitud as start_y, " +
+            "P2.latitud as end_x, P2.longitud as end_y, " +
+            "(V.startHour * 60 + V.startMinute) as start_time," +
+            "(V.endHour * 60 + V.endMinute) as end_time " +
+            "FROM Viaje V " +
+            "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
+            "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
+            "where linea is null and endHour is not null order by RANDOM() limit 1")
+    RandomTravelStats getRandomFinishedTrainTravel();
 
     // ------------------------------ AUTOCOMPLETE CREATION -------------------------------------
 
@@ -147,11 +165,6 @@ public interface ViajesDao {
     Viaje getLikelyTravelFrom(String targetStart, int sinceHour);
 
     // ------------------------------ TRAVEL STATS -----------------------------------
-
-    @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
-            "where ramal = :ramal " +
-            "and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
-    int getAverageTravelDuration(String startStop, String endStop, String ramal);
 
     @Query("SELECT MAX((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
             "where linea = :line and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")

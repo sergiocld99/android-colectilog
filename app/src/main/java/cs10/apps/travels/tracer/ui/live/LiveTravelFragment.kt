@@ -62,7 +62,8 @@ class LiveTravelFragment : Fragment() {
         liveVM.travel.observe(viewLifecycleOwner) {
             if (it == null) resetViews()
             else {
-                binding.buttonCard.setCardBackgroundColor(Utils.colorFor(it.linea, context))
+                val bgColor = it.color?: Utils.colorFor(it.linea, context)
+                binding.buttonCard.setCardBackgroundColor(bgColor)
                 binding.travelFrom.text = "Desde: " + it.nombrePdaInicio
                 binding.travelTo.text = "Hasta: " + it.nombrePdaFin
                 binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(it.tipo, binding.root.context))
@@ -73,6 +74,7 @@ class LiveTravelFragment : Fragment() {
         liveVM.toggle.observe(viewLifecycleOwner) {
             liveVM.travel.value?.let { t ->
                 if (it && t.ramal != null) {
+                    if (binding.lineSubtitle.text.toString().length < 7) binding.lineSubtitle.isSelected = true
                     binding.lineSubtitle.textSize = 24f
                     binding.lineSubtitle.text = t.ramal
                     binding.lineSubtitle.setTextColor(ContextCompat.getColor(binding.root.context, R.color.yellow))
@@ -156,8 +158,10 @@ class LiveTravelFragment : Fragment() {
 
         locationVM.getLiveData().observe(viewLifecycleOwner) {
             // updating animation
-            binding.updatingView.root.isVisible = true
-            Handler(Looper.getMainLooper()).postDelayed({ binding.updatingView.root.isVisible = false}, 3000)
+            if (binding.lineSubtitle.text.length < 7){
+                binding.updatingView.root.isVisible = true
+                Handler(Looper.getMainLooper()).postDelayed({ binding.updatingView.root.isVisible = false}, 3000)
+            }
 
             liveVM.recalculateDistances(rootVM.database, it.location) { rootVM.disableLoading() }
 
@@ -167,7 +171,7 @@ class LiveTravelFragment : Fragment() {
 
         // OCT 2022
         locationVM.setSpeedObserver(viewLifecycleOwner) { speedKmH ->
-            if (speedKmH > 100) binding.speedometerText.text = "-.-"
+            if (speedKmH > 100) binding.speedometerText.text = "--"
             else binding.speedometerText.text = NumberUtils.roundWithPresicion(speedKmH, 5).toString()
         }
 

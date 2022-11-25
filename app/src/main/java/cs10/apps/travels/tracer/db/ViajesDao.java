@@ -109,10 +109,11 @@ public interface ViajesDao {
     // ------------------------------- LIVE --------------------------------------------
 
     // Comentario: solo se devuelve UN viaje INCOMPLETO empezado HOY, se verifica hora y minuto
-    @Query("SELECT * FROM Viaje where endHour is null and year = :y and month = :m and day = :d " +
+    @Query("SELECT V.*, L.color FROM viaje V LEFT JOIN lines L ON V.linea = L.number " +
+            "where endHour is null and year = :y and month = :m and day = :d " +
             "and (startHour*60+startMinute) < :currentTs " +
             "order by startHour desc, startMinute desc limit 1")
-    Viaje getCurrentTravel(int y, int m, int d, int currentTs);
+    ColoredTravel getCurrentTravel(int y, int m, int d, int currentTs);
 
     @Query("SELECT * FROM Viaje where endHour is not null and linea is not :excludedLine and " +
             "nombrePdaInicio = :startStop and nombrePdaFin is not :excludedEndStop " +

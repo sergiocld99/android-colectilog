@@ -14,6 +14,7 @@ import cs10.apps.travels.tracer.data.generator.Station
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.RamalSchedule
 import cs10.apps.travels.tracer.modules.ZoneData
 import kotlinx.coroutines.Dispatchers
@@ -28,8 +29,8 @@ import kotlin.math.roundToInt
 
 class LiveVM(application: Application) : AndroidViewModel(application) {
 
-    val travel = MutableLiveData<Viaje?>()
-    val toggle = MutableLiveData(false)
+    val travel = MutableLiveData<ColoredTravel?>()
+    val toggle = MutableLiveData(true)
     val nextTravel = MutableLiveData<Viaje?>()
     val nearArrivals = MutableLiveData<MutableList<RamalSchedule>>()
 
@@ -58,7 +59,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         val (y,m,d) = Calendar2.getDate()
 
         viewModelScope.launch(Dispatchers.IO) {
-            val t = db.viajesDao().getCurrentTravel(y, m, d, Utils.getCurrentTs())
+            val t:ColoredTravel? = db.viajesDao().getCurrentTravel(y, m, d, Utils.getCurrentTs())
 
             // Aceptamos buses y trenes
             if (t == null) resetAllButTravel()
@@ -88,7 +89,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 // start toggle clock
                 toggleClock = Clock({
                     toggle.value?.let { v -> toggle.postValue(!v) }
-                }, 5000)
+                }, 7000)
 
                 minuteClock?.apply { start() }
                 toggleClock?.apply { start() }

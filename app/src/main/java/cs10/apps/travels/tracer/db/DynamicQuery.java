@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import java.util.Calendar;
 import java.util.List;
 
-import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.model.joins.ColoredTravel;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 import cs10.apps.travels.tracer.model.roca.RamalSchedule;
 
@@ -43,7 +43,7 @@ public class DynamicQuery {
         return getDb(context).servicioDao().getNextArrivals(stopName, target, cant);
     }
 
-    public static List<Viaje> getNextBusArrivals(Context context, String stopName){
+    public static List<ColoredTravel> getNextBusArrivals(Context context, String stopName){
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);

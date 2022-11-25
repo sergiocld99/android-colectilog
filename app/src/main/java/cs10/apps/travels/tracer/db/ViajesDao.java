@@ -74,10 +74,11 @@ public interface ViajesDao {
             "GROUP BY linea ORDER BY COUNT(id) DESC")
     List<Integer> getAllBuses();
 
-    @Query("SELECT * FROM Viaje where nombrePdaInicio = :stopName and linea is NOT NULL " +
+    @Query("SELECT V.*, L.color FROM viaje V LEFT JOIN lines L ON V.linea = L.number " +
+            "where nombrePdaInicio = :stopName and linea is NOT NULL " +
             "and (startHour * 60 + startMinute) >= :target " +
             "order by startHour, startMinute limit :cant")
-    List<Viaje> getNextArrivals(String stopName, int target, int cant);
+    List<ColoredTravel> getNextArrivals(String stopName, int target, int cant);
 
     @Query("SELECT * FROM Viaje where wd = 0")
     List<Viaje> getUndefinedWeekDays();

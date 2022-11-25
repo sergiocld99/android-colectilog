@@ -28,6 +28,7 @@ import cs10.apps.travels.tracer.db.DynamicQuery;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.model.joins.ColoredTravel;
 import cs10.apps.travels.tracer.model.roca.ArriboTren;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 import cs10.apps.travels.tracer.model.roca.RamalSchedule;
@@ -150,7 +151,7 @@ public class StopArrivalsFragment extends CS_Fragment {
             int now = hour * 60 + m;
 
             String stopName = parada.getNombre();
-            List<Viaje> arrivals = DynamicQuery.getNextBusArrivals(getContext(), stopName);
+            List<ColoredTravel> arrivals = DynamicQuery.getNextBusArrivals(getContext(), stopName);
             List<RamalSchedule> trenes = DynamicQuery.getNextTrainArrivals(getContext(), stopName);
 
             // PROCESAMIENTO DE BUSES

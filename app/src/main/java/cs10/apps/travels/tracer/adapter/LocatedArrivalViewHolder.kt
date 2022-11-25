@@ -9,6 +9,7 @@ import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.data.generator.Station
 import cs10.apps.travels.tracer.databinding.ItemArrivalBinding
 import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.ArriboTren
 import cs10.apps.travels.tracer.ui.stops.ETA_Switcher
 
@@ -17,7 +18,7 @@ class LocatedArrivalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val binding = ItemArrivalBinding.bind(view)
     private val etaSwitcher = ETA_Switcher()
 
-    fun render(viaje: Viaje, top: Boolean, onClickListener: (ArriboTren) -> Unit, onDepartCallback: (Viaje) -> Unit) {
+    fun render(viaje: ColoredTravel, top: Boolean, onClickListener: (ArriboTren) -> Unit, onDepartCallback: (Viaje) -> Unit) {
 
         // ramal
         if (viaje is ArriboTren) renderRamal(viaje)
@@ -41,9 +42,14 @@ class LocatedArrivalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         binding.ivType.setImageDrawable(Utils.getTypeDrawable(viaje.tipo, binding.root.context))
 
         // bg color
-        val color = if (viaje.tipo == 1 && !viaje.ramal.isNullOrEmpty() && viaje.ramal!!.contains("Directo")) R.color.bus_159
-        else Utils.colorFor(viaje.linea)
-        binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
+        if (viaje.color != null){
+            binding.root.setBackgroundColor(viaje.color)
+        } else {
+            // old method
+            val color = if (viaje.tipo == 1 && !viaje.ramal.isNullOrEmpty() && viaje.ramal!!.contains("Directo")) R.color.bus_159
+            else Utils.colorFor(viaje.linea)
+            binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
+        }
 
         // line sublabel
         binding.tvLine.text = viaje.lineSimplified

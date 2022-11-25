@@ -11,6 +11,7 @@ import cs10.apps.travels.tracer.model.LineInfo;
 import cs10.apps.travels.tracer.model.PriceSum;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.joins.ColoredTravel;
+import cs10.apps.travels.tracer.model.joins.RandomTravelStats;
 import cs10.apps.travels.tracer.model.location.TravelDistance;
 
 @Dao
@@ -115,25 +116,42 @@ public interface ViajesDao {
             "order by startHour desc, startMinute desc limit 1")
     ColoredTravel getCurrentTravel(int y, int m, int d, int currentTs);
 
+    @Query("SELECT v.id, (p1.latitud - p2.latitud) as xDiff, (p1.longitud - p2.longitud) as yDiff " +
+            "FROM Viaje v " +
+            "inner join Parada p1 on v.nombrePdaInicio = p1.nombre " +
+            "inner join Parada p2 on v.nombrePdaFin = p2.nombre " +
+            "where v.id = :id ")
+    TravelDistance getTravelDistanceFromId(long id);
+
     @Query("SELECT * FROM Viaje where endHour is not null and linea is not :excludedLine and " +
             "nombrePdaInicio = :startStop and nombrePdaFin is not :excludedEndStop " +
             "order by RANDOM() limit 1")
     Viaje getCompletedTravelFrom(String startStop, String excludedEndStop, Integer excludedLine);
 
+    @Query("SELECT P1.latitud as start_x, P1.longitud as start_y, " +
+            "P2.latitud as end_x, P2.longitud as end_y, " +
+            "(V.startHour * 60 + V.startMinute) as start_time," +
+            "(V.endHour * 60 + V.endMinute) as end_time " +
+            "FROM Viaje V " +
+            "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
+            "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
+            "where linea = :linea and endHour is not null")
+    RandomTravelStats getRandomFinishedTravelFromLine(int linea);
+
     // ------------------------------ AUTOCOMPLETE CREATION -------------------------------------
 
     // Atajo: busca el viaje más probable a realizar desde la ubicación actual
-    @Query("SELECT * FROM Viaje where nombrePdaInicio = :targetStart " +
+    @Query("SELECT * FROM Viaje where nombrePdaInicio = :targetStart and startHour >= :sinceHour " +
             "group by linea, ramal, nombrePdaInicio, nombrePdaFin having count(*) > 2 " +
             "order by COUNT(*) desc limit 1")
-    Viaje getLikelyTravelFrom(String targetStart);
+    Viaje getLikelyTravelFrom(String targetStart, int sinceHour);
 
     // ------------------------------ TRAVEL STATS -----------------------------------
 
     @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
-            "where linea = :line and ramal = :ramal " +
+            "where ramal = :ramal " +
             "and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
-    int getAverageTravelDuration(int line, String startStop, String endStop, String ramal);
+    int getAverageTravelDuration(String startStop, String endStop, String ramal);
 
     @Query("SELECT MAX((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
             "where linea = :line and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")

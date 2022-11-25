@@ -133,8 +133,9 @@ public class BusTravelEditor extends CommonTravelEditor {
             viaje.setNombrePdaInicio(startPlace.getNombre());
             viaje.setNombrePdaFin(endPlace.getNombre());
             Utils.setWeekDay(viaje);
-            if (!ramal.isEmpty()) viaje.setRamal(ramal);
-            if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
+            viaje.setRamal(ramal.isEmpty() ? null : ramal);
+            viaje.setCosto(price.isEmpty() ? 0 : Double.parseDouble(price));
+
             if (line.isEmpty()){
                 viaje.setTipo(1);
                 viaje.setLinea(null);

@@ -38,6 +38,8 @@ import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import cs10.apps.travels.tracer.data.generator.DelayData;
 import cs10.apps.travels.tracer.data.generator.GlewFiller;
 import cs10.apps.travels.tracer.data.generator.LaPlataFiller;
+import cs10.apps.travels.tracer.data.generator.Station;
+import cs10.apps.travels.tracer.data.generator.UniversitarioFiller;
 import cs10.apps.travels.tracer.data.generator.ViaCircuitoFiller;
 import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
 import cs10.apps.travels.tracer.db.MiDB;
@@ -171,6 +173,15 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
             for (Viaje v : db.viajesDao().getUndefinedWeekDays()) {
                 Utils.setWeekDay(v);
                 db.viajesDao().update(v);
+            }
+
+            // actualización 5: tren universitario
+            if (db.servicioDao().getServicesCount(Station.POLICLINICO.getSimplified()) == 0){
+                DelayData delayData = new DelayData();
+                UniversitarioFiller filler = new UniversitarioFiller(delayData);
+                filler.createIda(db);
+                filler.createVuelta(db);
+                runOnUiThread(() -> Toast.makeText(this, "Tren Universitario creado con éxito", Toast.LENGTH_LONG).show());
             }
 
         }, "dbUpdater");

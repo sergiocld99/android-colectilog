@@ -208,6 +208,21 @@ public class ServiceDetail extends AppCompatActivity {
                     }
                 }
 
+                // CASO LA PLATA
+                if (equals(h.getStation(), Station.LA_PLATA)){
+                    // Empezó en policlinico
+                    if (equals(start, Station.POLICLINICO)){
+                        HorarioTren comb = DynamicQuery.findCombination(this, Station.PLAZA.getSimplified(), h);
+                        h.setCombinationRamal("Plaza C");
+                        h.setCombination(comb);
+                    } else if (equals(start, Station.PLAZA)){
+                        // Caso desde Plaza C > Uni
+                        HorarioTren comb = DynamicQuery.findCombination(this, "Policlínico (Universitario)", h);
+                        h.setCombinationRamal("Universitario");
+                        h.setCombination(comb);
+                    }
+                }
+
             }
 
             serviceVM.getSchedules().postValue(horarios);

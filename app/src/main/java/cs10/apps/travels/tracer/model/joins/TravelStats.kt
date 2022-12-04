@@ -1,6 +1,6 @@
 package cs10.apps.travels.tracer.model.joins
 
-data class RandomTravelStats(
+data class TravelStats(
     val start_x: Double,
     val start_y: Double,
     val end_x: Double,

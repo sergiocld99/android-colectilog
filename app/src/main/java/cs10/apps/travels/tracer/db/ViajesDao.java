@@ -11,7 +11,7 @@ import cs10.apps.travels.tracer.model.LineInfo;
 import cs10.apps.travels.tracer.model.PriceSum;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.joins.ColoredTravel;
-import cs10.apps.travels.tracer.model.joins.RandomTravelStats;
+import cs10.apps.travels.tracer.model.joins.TravelStats;
 import cs10.apps.travels.tracer.model.location.TravelDistance;
 
 @Dao
@@ -143,8 +143,8 @@ public interface ViajesDao {
             "FROM Viaje V " +
             "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
             "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
-            "where linea = :linea and endHour is not null order by RANDOM() limit 1")
-    RandomTravelStats getRandomFinishedTravelFromLine(int linea);
+            "where linea = :linea and endHour is not null order by V.id DESC limit 1")
+    TravelStats getLastFinishedTravelFromLine(int linea);
 
     @Query("SELECT P1.latitud as start_x, P1.longitud as start_y, " +
             "P2.latitud as end_x, P2.longitud as end_y, " +
@@ -153,8 +153,8 @@ public interface ViajesDao {
             "FROM Viaje V " +
             "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
             "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
-            "where linea is null and endHour is not null order by RANDOM() limit 1")
-    RandomTravelStats getRandomFinishedTrainTravel();
+            "where linea is null and endHour is not null order by V.id DESC limit 1")
+    TravelStats getLastFinishedTrainTravel();
 
     // ------------------------------ AUTOCOMPLETE CREATION -------------------------------------
 

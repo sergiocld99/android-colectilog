@@ -6,11 +6,20 @@ class Speedometer {
     private var currentLocation : TimedLocation? = null
     private var previousLocation : TimedLocation? = null
     private var currentSpeedInKmH : Double? = null
+    private var previousSpeed : Double? = null
 
     fun update(currentLocation: TimedLocation) : Double? {
         updateVariables(currentLocation)
-        currentSpeedInKmH = calculateSpeedInKmH()
-        return currentSpeedInKmH
+
+        calculateSpeedInKmH()?.let { immediateSpeed ->
+            currentSpeedInKmH = if (previousSpeed == null) immediateSpeed
+            else (immediateSpeed + previousSpeed!!) / 2.0
+
+            previousSpeed = immediateSpeed
+            return currentSpeedInKmH
+        }
+
+        return null
     }
 
     private fun updateVariables(currentLocation: TimedLocation){

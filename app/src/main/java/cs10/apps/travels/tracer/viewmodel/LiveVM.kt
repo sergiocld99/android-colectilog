@@ -123,8 +123,8 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         } else {
             // en trenes: segundo buscar cualquier viaje realizado antes (todos son del Roca)
             // en colectivos: segundo buscar para cualquier viaje de la misma linea
-            val aPreviousTravel = if (t.linea == null) db.viajesDao().randomFinishedTrainTravel
-            else db.viajesDao().getRandomFinishedTravelFromLine(t.linea!!)
+            val aPreviousTravel = if (t.linea == null) db.viajesDao().lastFinishedTrainTravel
+            else db.viajesDao().getLastFinishedTravelFromLine(t.linea!!)
 
             aPreviousTravel?.let { randomTravel ->
                 val coordsDistance = NumberUtils.hyp(

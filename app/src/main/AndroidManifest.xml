@@ -49,6 +49,9 @@
             android:name=".ui.service.ServiceDetail"
             android:theme="@style/Theme.TravelTracer.Trains" />
         <activity
+            android:name=".ui.lines.LineDetail"
+            android:theme="@style/Theme.TravelTracer.Buses" />
+        <activity
             android:name=".DrawerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />

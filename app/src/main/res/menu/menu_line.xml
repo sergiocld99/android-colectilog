@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="cs10.apps.travels.tracer.MainActivity">
+
+    <item
+        android:id="@+id/action_change_name"
+        android:orderInCategory="100"
+        android:title="@string/action_change_name"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_palette"
+        android:orderInCategory="101"
+        android:title="@string/choose_color"
+        android:icon="@drawable/ic_palette"
+        app:showAsAction="ifRoom" />
+
+</menu>

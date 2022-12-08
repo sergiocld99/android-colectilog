@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +32,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
-import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 
 import cs10.apps.travels.tracer.data.generator.DelayData;
 import cs10.apps.travels.tracer.data.generator.GlewFiller;
@@ -51,7 +49,7 @@ import cs10.apps.travels.tracer.viewmodel.LineManagerVM;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
 
-public class DrawerActivity extends AppCompatActivity implements DatabaseCallback, ColorPickerDialogListener {
+public class DrawerActivity extends AppCompatActivity implements DatabaseCallback {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityDrawerBinding binding;
     private FusedLocationProviderClient client;
@@ -275,14 +273,4 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         return MiDB.getInstance(this);
     }
 
-    @Override
-    public void onColorSelected(int dialogId, int color) {
-        lineManagerVM.updateColor(rootVM.getDatabase().linesDao(), color, rootVM);
-        Log.i("COLOR PICKER", "Color selected");
-    }
-
-    @Override
-    public void onDialogDismissed(int dialogId) {
-
-    }
 }

@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.ui.lines
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +8,6 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import cs10.apps.common.android.CS_Fragment
 import cs10.apps.travels.tracer.adapter.LineManagerAdapter
 import cs10.apps.travels.tracer.databinding.FragmentManageLinesBinding
@@ -61,8 +61,9 @@ class LineManagerFragment : CS_Fragment() {
     private fun onLineClick(customBusLine: CustomBusLine){
         lineManagerVM.selectEditing(customBusLine)
 
-        val dialog = ColorPickerDialog.newBuilder()
-        dialog.show(activity)
+        val intent = Intent(requireActivity(), LineDetail::class.java)
+        intent.putExtra("number", customBusLine.number)
+        startActivity(intent)
     }
 
 }

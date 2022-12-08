@@ -1,21 +1,24 @@
 package cs10.apps.travels.tracer.ui.travels;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Calendar;
 
 import cs10.apps.travels.tracer.Utils;
+import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.model.Viaje;
-import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding;
 import cs10.apps.travels.tracer.modules.RedSube;
 
 public abstract class CommonTravelCreator extends AppCompatActivity {
@@ -31,6 +34,13 @@ public abstract class CommonTravelCreator extends AppCompatActivity {
             "Error general de formato",
             "No hay paradas guardadas"
     };
+
+    @Override
+    public void setSupportActionBar(@Nullable Toolbar toolbar) {
+        super.setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
     protected void setDoneFabBehavior(@NonNull FloatingActionButton fab){
         fab.setOnClickListener(view -> performDone());
@@ -94,4 +104,17 @@ public abstract class CommonTravelCreator extends AppCompatActivity {
     }
 
     abstract int onCheckEntries(Viaje viaje);
+
+    // -------------------------- TOP MENU --------------------------
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }

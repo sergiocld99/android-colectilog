@@ -10,10 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import cs10.apps.common.android.CS_Fragment
 import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Emoji
 import cs10.apps.common.android.NumberUtils
@@ -35,7 +35,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
-class LiveTravelFragment : Fragment() {
+class LiveTravelFragment : CS_Fragment() {
 
     // View Models
     private lateinit var rootVM: RootVM
@@ -245,23 +245,33 @@ class LiveTravelFragment : Fragment() {
             val ramal = liveVM.travel.value?.ramal
             val destination = liveVM.travel.value?.nombrePdaFin
 
-            /*This will be the actual content you wish you share.*/
-            val shareBody = "${Emoji.getBusEmoji()} Linea $line - $ramal \n" +
-                    "${Emoji.getGlobeEmoji()} Destino: $destination \n" +
-                    "${Emoji.getClockEmoji()} Llego a las ${getETA(it)}"
+            doInBackground {
+                val sb = StringBuilder("${Emoji.getBusEmoji()} ")
 
-            /*Create an ACTION_SEND Intent*/
-            val intent = Intent(Intent.ACTION_SEND)
+                if (line != null){
+                    val lineDetails = rootVM.database.linesDao().getByNumber(line)
 
-            /*The type of the content is text, obviously.*/
-            intent.type = "text/plain"
+                    if (!lineDetails?.name.isNullOrEmpty()) sb.append("${lineDetails?.name}")
+                    else sb.append("Linea $line")
+                } else sb.append("Tren Roca")
 
-            /*Applying information Subject and Body.*/
-            intent.putExtra(Intent.EXTRA_SUBJECT, "Travel Tracer")
-            intent.putExtra(Intent.EXTRA_TEXT, shareBody)
+                if (ramal != null) sb.append(" - $ramal \n")
+                else sb.append("\n")
 
-            /*Fire!*/
-            startActivity(Intent.createChooser(intent, "Compartir via..."))
+                sb.append("${Emoji.getGlobeEmoji()} Destino: $destination \n")
+                sb.append("${Emoji.getClockEmoji()} Llego a las ${getETA(it)}")
+
+                val shareBody = sb.toString().trim()
+                val intent = Intent(Intent.ACTION_SEND)
+
+                intent.type = "text/plain"
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Travel Tracer")
+                intent.putExtra(Intent.EXTRA_TEXT, shareBody)
+
+                doInForeground {
+                    startActivity(Intent.createChooser(intent, "Compartir via..."))
+                }
+            }
         }
     }
 

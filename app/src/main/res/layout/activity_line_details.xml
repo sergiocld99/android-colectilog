@@ -62,7 +62,6 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/fab_margin"
             android:text="@string/alternative_name"
-            android:layout_marginTop="16dp"
             android:textSize="20sp"/>
 
         <EditText
@@ -84,9 +83,19 @@
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             tools:listitem="@layout/item_line"/>
 
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="@string/done"
+        app:srcCompat="@drawable/ic_done" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

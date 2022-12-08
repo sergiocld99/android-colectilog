@@ -1,10 +1,14 @@
 package cs10.apps.travels.tracer.ui.travels
 
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import cs10.apps.common.android.CSActivity
+import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Parada
@@ -12,12 +16,13 @@ import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.modules.RedSube
 import kotlinx.coroutines.*
 
-abstract class CommonTravelEditor : AppCompatActivity() {
+abstract class CommonTravelEditor : CSActivity() {
 
     protected lateinit var viaje: Viaje
     protected var paradas: List<Parada> = mutableListOf()
     protected lateinit var startAdapter: ArrayAdapter<Parada>
     protected lateinit var endAdapter: ArrayAdapter<Parada>
+    private var travelId: Long = -1
 
     private val messages = arrayOf (
         "Viaje actualizado con éxito",
@@ -29,10 +34,15 @@ abstract class CommonTravelEditor : AppCompatActivity() {
         "No hay paradas guardadas"
     )
 
+    override fun setSupportActionBar(toolbar: Toolbar?) {
+        super.setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
     protected fun prepare(onGetParadas: (MiDB) -> List<Parada>, moduleRedSubeBinding: ModuleRedSubeBinding){
 
         // extra
-        val travelId = intent.getLongExtra("travelId", -1)
+        travelId = intent.getLongExtra("travelId", -1)
         if (travelId < 0) return
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -95,5 +105,36 @@ abstract class CommonTravelEditor : AppCompatActivity() {
         }
 
         Toast.makeText(applicationContext, messages[result], Toast.LENGTH_LONG).show()
+    }
+
+    // -------------------------- TOP MENU ------------------
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_travel_editor, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            R.id.action_delete -> {
+                doInBackground {
+                    val db = MiDB.getInstance(this)
+                    db.viajesDao().delete(travelId)
+
+                    doInForeground {
+                        Toast.makeText(this, "Viaje eliminado con éxito", Toast.LENGTH_LONG).show()
+                        finish()
+                    }
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
+
     }
 }

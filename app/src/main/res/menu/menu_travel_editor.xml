@@ -4,10 +4,10 @@
     tools:context="cs10.apps.travels.tracer.MainActivity">
 
     <item
-        android:id="@+id/action_palette"
+        android:id="@+id/action_delete"
         android:orderInCategory="101"
-        android:title="@string/choose_color"
-        android:icon="@drawable/ic_palette"
+        android:title="@string/action_delete"
+        android:icon="@drawable/ic_delete_forever"
         app:showAsAction="ifRoom" />
 
 </menu>

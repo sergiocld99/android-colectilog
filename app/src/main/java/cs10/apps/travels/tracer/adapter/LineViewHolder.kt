@@ -15,7 +15,7 @@ class LineViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun render(item: RatedBusLine, onLineClickListener: (CustomBusLine) -> Unit){
         item.number?.let { n -> binding.title.text = "Linea $n" }
-        item.name?.let { n -> binding.suggestedName.text = "Apodo: $n" }
+        item.name?.let { n -> binding.suggestedName.text = "- $n" }
 
         when(item.color){
             0 -> binding.card.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus))

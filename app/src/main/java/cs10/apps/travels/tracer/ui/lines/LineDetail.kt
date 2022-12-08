@@ -48,6 +48,21 @@ class LineDetail : CSActivity(), ColorPickerDialogListener {
         // back button
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        // save button
+        binding.fab.setOnClickListener {
+            val altName = binding.etAlternativeName.text.toString().trim()
+
+            if (altName.isNotEmpty()) doInBackground {
+                val db = MiDB.getInstance(this)
+                val line = db.linesDao().getByNumber(number!!) ?: return@doInBackground
+
+                line.name = altName
+                db.linesDao().update(line)
+
+                doInForeground { finish() }
+            }
+        }
     }
 
     private fun receiveExtras() {
@@ -57,14 +72,16 @@ class LineDetail : CSActivity(), ColorPickerDialogListener {
         binding.toolbarLayout.title = "Linea $number"
         this.number = number
 
-        doInBackground { fillAdapter() }
+        doInBackground { fillData() }
     }
 
-    private fun fillAdapter() {
+    private fun fillData() {
         val db = MiDB.getInstance(this)
         val data = db.linesDao().getRamalesFromLine(number!!)
+        val line = db.linesDao().getByNumber(number!!)
 
         doInForeground {
+            binding.etAlternativeName.setText(line?.name)
             adapter.list = data
             adapter.notifyDataSetChanged()
         }
@@ -102,11 +119,11 @@ class LineDetail : CSActivity(), ColorPickerDialogListener {
 
         doInBackground {
             val db = MiDB.getInstance(this)
-            val line = db.linesDao().getByNumber(number!!)
+            val line = db.linesDao().getByNumber(number!!) ?: return@doInBackground
             line.color = color
             db.linesDao().update(line)
 
-            fillAdapter()
+            fillData()
         }
     }
 

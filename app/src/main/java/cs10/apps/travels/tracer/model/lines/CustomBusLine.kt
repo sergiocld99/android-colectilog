@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 open class CustomBusLine(
     @PrimaryKey(autoGenerate = true) val id: Int,
     val number: Int?,
-    val name: String?,
+    var name: String?,
     var color: Int
 ) : Comparable<CustomBusLine> {
 

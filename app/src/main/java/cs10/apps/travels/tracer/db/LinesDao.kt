@@ -27,7 +27,7 @@ interface LinesDao {
     fun getAllFromViajes() : List<Int>
 
     @Query("SELECT * FROM lines WHERE number = :number limit 1")
-    fun getByNumber(number: Int) : CustomBusLine
+    fun getByNumber(number: Int) : CustomBusLine?
 
     // --------------------- JOINS -----------------------------
 

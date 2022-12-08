@@ -80,6 +80,20 @@ class LineDetail : CSActivity(), ColorPickerDialogListener {
         val data = db.linesDao().getRamalesFromLine(number!!)
         val line = db.linesDao().getByNumber(number!!)
 
+        data.forEach {
+            if (it.ramal != null){
+                val stats = db.viajesDao().getAllFinishedTravelsFromRamal(number!!, it.ramal)
+
+                if (stats.isEmpty()) it.speed = null
+                else {
+                    var sum = 0.0
+
+                    stats.forEach { stat -> sum += stat.calculateSpeedInKmH() }
+                    it.speed = sum / stats.size
+                }
+            }
+        }
+
         doInForeground {
             binding.etAlternativeName.setText(line?.name)
             adapter.list = data

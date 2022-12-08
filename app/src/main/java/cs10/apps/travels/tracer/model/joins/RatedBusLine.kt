@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.model.joins
 
+import androidx.room.Ignore
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
 
 class RatedBusLine(
@@ -10,6 +11,12 @@ class RatedBusLine(
     val avgUserRate: Double,
     val reviewsCount: Int
 ) : CustomBusLine(id, number, name, color) {
+
+    @Ignore
+    var speed: Double? = null
+
+    @Ignore
+    var lastTravelStats: TravelStats? = null
 
 
     override fun compareTo(other: CustomBusLine): Int {

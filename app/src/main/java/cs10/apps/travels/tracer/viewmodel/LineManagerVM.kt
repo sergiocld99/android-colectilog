@@ -32,6 +32,20 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
             // recargar con las lineas recién creadas desde viajes
             val lines = linesDao.getAllWithRates()
 
+            // calculate speed for each line using last travel
+            lines.forEach {
+                if (it.number != null){
+                    val stats = rootVM.database.viajesDao().getAllFinishedTravelsFromLine(it.number)
+
+                    if (stats.isEmpty()) it.speed = null
+                    else {
+                        var sum = 0.0
+                        stats.forEach { stat -> sum += stat.calculateSpeedInKmH() }
+                        it.speed = sum / stats.size
+                    }
+                }
+            }
+
             lines.sort()
             myLines.postValue(lines)
 

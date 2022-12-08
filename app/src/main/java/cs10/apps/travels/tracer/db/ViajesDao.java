@@ -143,6 +143,26 @@ public interface ViajesDao {
             "FROM Viaje V " +
             "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
             "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
+            "where linea = :linea and endHour is not null")
+    List<TravelStats> getAllFinishedTravelsFromLine(int linea);
+
+    @Query("SELECT P1.latitud as start_x, P1.longitud as start_y, " +
+            "P2.latitud as end_x, P2.longitud as end_y, " +
+            "(V.startHour * 60 + V.startMinute) as start_time," +
+            "(V.endHour * 60 + V.endMinute) as end_time " +
+            "FROM Viaje V " +
+            "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
+            "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
+            "where linea = :linea and ramal = :ramal and endHour is not null")
+    List<TravelStats> getAllFinishedTravelsFromRamal(int linea, String ramal);
+
+    @Query("SELECT P1.latitud as start_x, P1.longitud as start_y, " +
+            "P2.latitud as end_x, P2.longitud as end_y, " +
+            "(V.startHour * 60 + V.startMinute) as start_time," +
+            "(V.endHour * 60 + V.endMinute) as end_time " +
+            "FROM Viaje V " +
+            "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
+            "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
             "where linea = :linea and endHour is not null order by V.id DESC limit 1")
     TravelStats getLastFinishedTravelFromLine(int linea);
 

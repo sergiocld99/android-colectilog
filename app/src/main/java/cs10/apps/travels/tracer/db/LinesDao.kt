@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
 
 @Dao
@@ -25,4 +26,10 @@ interface LinesDao {
     fun getAllFromViajes() : List<Int>
 
 
+    // --------------------- JOINS -----------------------------
+
+    @Query("SELECT L.*, AVG(V.rate) as avgUserRate, COUNT(V.rate) as reviewsCount " +
+            "FROM lines L LEFT JOIN Viaje V ON L.number = V.linea " +
+            "GROUP BY L.id")
+    fun getAllWithRates() : MutableList<RatedBusLine>
 }

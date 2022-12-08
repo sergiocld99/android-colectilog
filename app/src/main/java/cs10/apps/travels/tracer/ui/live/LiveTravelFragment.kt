@@ -24,6 +24,7 @@ import cs10.apps.travels.tracer.adapter.NearStopAdapter
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
 import cs10.apps.travels.tracer.modules.ZoneData
+import cs10.apps.travels.tracer.ui.service.ServiceDetail
 import cs10.apps.travels.tracer.ui.travels.BusTravelEditor
 import cs10.apps.travels.tracer.ui.travels.TrainTravelEditor
 import cs10.apps.travels.tracer.viewmodel.LiveVM
@@ -45,7 +46,13 @@ class LiveTravelFragment : Fragment() {
     private lateinit var binding: FragmentLiveTravelBinding
 
     // adapters
-    private val nearStopAdapter = NearStopAdapter(mutableListOf())
+    private val nearStopAdapter = NearStopAdapter(mutableListOf()) {
+        val intent = Intent(activity, ServiceDetail::class.java)
+        intent.putExtra("station", it.station)
+        intent.putExtra("ramal", it.ramal)
+        intent.putExtra("id", it.service)
+        startActivity(intent)
+    }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

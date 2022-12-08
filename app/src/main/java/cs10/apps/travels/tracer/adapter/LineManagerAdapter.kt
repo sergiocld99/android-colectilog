@@ -4,10 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
+import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
 
 class LineManagerAdapter(
-    var list: List<CustomBusLine>,
+    var list: List<RatedBusLine>,
     private val onLineClick: (CustomBusLine) -> Unit
 ) : RecyclerView.Adapter<LineViewHolder>() {
 

@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "lines")
-data class CustomBusLine(
+open class CustomBusLine(
     @PrimaryKey(autoGenerate = true) val id: Int,
     val number: Int?,
     val name: String?,

@@ -22,7 +22,7 @@ class AutoRater {
                     v.preciseRate = if (v.rate == null) null else v.rate.toDouble()
                 } else {
                     val rate = 5.0 * minDuration / v.duration
-                    v.addPreciseRate(rate)
+                    v.addAutomaticRate(rate)
                 }
             }
         }

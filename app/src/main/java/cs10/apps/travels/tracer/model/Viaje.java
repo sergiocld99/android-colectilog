@@ -263,8 +263,8 @@ public class Viaje implements Comparable<Viaje> {
         this.preciseRate = preciseRate;
     }
 
-    public void addPreciseRate(double rate) {
-        if (getRate() != null) setPreciseRate(0.2 * getRate() + 0.8 * rate);
+    public void addAutomaticRate(double rate) {
+        if (getRate() != null) setPreciseRate(0.7 * getRate() + 0.3 * rate);
         else setPreciseRate(rate);
     }
 }

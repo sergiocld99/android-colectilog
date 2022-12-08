@@ -3,6 +3,7 @@ package cs10.apps.travels.tracer.viewmodel
 import android.app.Application
 import androidx.lifecycle.*
 import cs10.apps.travels.tracer.db.LinesDao
+import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -10,7 +11,7 @@ import kotlinx.coroutines.launch
 class LineManagerVM(application: Application) : AndroidViewModel(application) {
 
     // mis live data
-    private var myLines = MutableLiveData<List<CustomBusLine>>()
+    private var myLines = MutableLiveData<List<RatedBusLine>>()
     private lateinit var editingLine: CustomBusLine
 
 
@@ -18,17 +19,18 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
         rootVM.enableLoading()
 
         viewModelScope.launch(Dispatchers.IO){
-            val lines = linesDao.getAll()
             val numbers1 = linesDao.getCustomNumbers()
 
             linesDao.getAllFromViajes().forEach { number ->
                 if (!numbers1.contains(number)) {
                     val obj = CustomBusLine(0, number, null, 0)
                     linesDao.insert(obj)
-                    lines.add(obj)
                     numbers1.add(number)
                 }
             }
+
+            // recargar con las lineas recién creadas desde viajes
+            val lines = linesDao.getAllWithRates()
 
             lines.sort()
             myLines.postValue(lines)
@@ -37,7 +39,7 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun observe(lifecycleOwner: LifecycleOwner, observer: Observer<List<CustomBusLine>>) {
+    fun observe(lifecycleOwner: LifecycleOwner, observer: Observer<List<RatedBusLine>>) {
         myLines.observe(lifecycleOwner, observer)
     }
 

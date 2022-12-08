@@ -20,8 +20,6 @@ class LineManagerFragment : CS_Fragment() {
     private lateinit var rootVM: RootVM
     private lateinit var lineManagerVM: LineManagerVM
 
-    private lateinit var editingLine: CustomBusLine
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

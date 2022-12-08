@@ -31,6 +31,10 @@ import kotlin.math.roundToInt
 
 class LiveVM(application: Application) : AndroidViewModel(application) {
 
+    // Debug constants
+    private val areaSize = 0
+
+    // general live data
     val travel = MutableLiveData<ColoredTravel?>()
     val toggle = MutableLiveData(true)
     val nextTravel = MutableLiveData<Viaje?>()
@@ -242,7 +246,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
 
     // busca trenes llegando en la zona
     private fun findNearArrivals(db: MiDB, xCode: Int, yCode: Int) {
-        val nearStations = Station.findStationsAtZone(xCode, yCode, 2, 0)
+        val nearStations = Station.findStationsAtZone(xCode, yCode, 2, areaSize)
         val currentTime = Utils.getCurrentTs()
         val arrivals = mutableListOf<RamalSchedule>()
 

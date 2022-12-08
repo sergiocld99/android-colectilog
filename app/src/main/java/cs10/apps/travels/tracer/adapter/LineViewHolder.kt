@@ -2,15 +2,18 @@ package cs10.apps.travels.tracer.adapter
 
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
+import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ItemLineBinding
+import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
 
 class LineViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val binding = ItemLineBinding.bind(view)
 
-    fun render(customBusLine: CustomBusLine, onLineClickListener: (CustomBusLine) -> Unit){
+    fun render(customBusLine: RatedBusLine, onLineClickListener: (CustomBusLine) -> Unit){
         customBusLine.number?.let { n -> binding.title.text = "Linea $n" }
         customBusLine.name?.let { n -> binding.suggestedName.text = "Apodo: $n" }
 
@@ -19,15 +22,10 @@ class LineViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             else -> binding.card.setCardBackgroundColor(customBusLine.color)
         }
 
-        /*
-        val color = when(customBusLine.color){
-            0 -> R.color.bus
-            else -> customBusLine.color
-        }
+        binding.rateText.isVisible = (customBusLine.avgUserRate > 0)
+        binding.rateText.text = "${Utils.rateFormat(customBusLine.avgUserRate)} (" +
+                "${customBusLine.reviewsCount} reviews)"
 
-        binding.card.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, color))
-
-         */
         binding.card.setOnClickListener { onLineClickListener(customBusLine) }
     }
 }

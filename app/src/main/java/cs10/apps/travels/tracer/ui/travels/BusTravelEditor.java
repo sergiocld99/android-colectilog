@@ -36,6 +36,9 @@ public class BusTravelEditor extends CommonTravelEditor {
         Utils.loadBusBanner(binding.appbarImage);
         binding.fabStop.setVisibility(View.GONE);
         binding.toolbarLayout.setTitle(getString(R.string.edit_travel));
+
+        // listeners to open pickers
+        content.etDate.setOnClickListener(v -> createDatePicker());
     }
 
     @Override
@@ -135,20 +138,19 @@ public class BusTravelEditor extends CommonTravelEditor {
             Utils.setWeekDay(viaje);
             viaje.setRamal(ramal.isEmpty() ? null : ramal);
             viaje.setCosto(price.isEmpty() ? 0 : Double.parseDouble(price));
-
-            if (line.isEmpty()){
-                viaje.setTipo(1);
-                viaje.setLinea(null);
-            } else {
-                viaje.setTipo(0);
-                viaje.setLinea(Integer.parseInt(line));
-            }
+            viaje.setLinea(Integer.parseInt(line));
+            viaje.setTipo(0);
         } catch (Exception e){
             e.printStackTrace();
             return 5;
         }
 
         return 0;
+    }
+
+    @Override
+    public void onDateSet(int day, int month, int year) {
+        content.etDate.setText(Utils.dateFormat(day, month, year));
     }
 
     private class OnStartPlaceSelected implements AdapterView.OnItemSelectedListener {

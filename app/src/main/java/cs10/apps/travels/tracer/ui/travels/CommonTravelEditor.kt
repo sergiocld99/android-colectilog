@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import cs10.apps.common.android.CSActivity
+import cs10.apps.common.android.ui.DatePickerFragment
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding
 import cs10.apps.travels.tracer.db.MiDB
@@ -106,6 +107,21 @@ abstract class CommonTravelEditor : CSActivity() {
 
         Toast.makeText(applicationContext, messages[result], Toast.LENGTH_LONG).show()
     }
+
+    // ---------------------- PICKER FRAGMENTS --------------------
+
+    fun createDatePicker(){
+        val picker = DatePickerFragment(viaje.day, viaje.month, viaje.year) { day, month, year ->
+            onDateSet(day, month, year)
+            viaje.day = day
+            viaje.month = month
+            viaje.year = year
+        }
+
+        picker.show(supportFragmentManager, "DatePicker")
+    }
+
+    abstract fun onDateSet(day: Int, month: Int, year: Int)
 
     // -------------------------- TOP MENU ------------------
 

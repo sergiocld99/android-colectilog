@@ -187,8 +187,8 @@ class LiveTravelFragment : CS_Fragment() {
 
         // DEC 2022: EXPECTED RATING
         liveVM.rate.observe(viewLifecycleOwner) {
-            binding.rateText.isVisible = it != null
-            if (it != null) binding.rateText.text = Utils.rateFormat(it)
+            if (it == null) binding.rateText.text = "--"
+            else binding.rateText.text = Utils.rateFormat(it)
         }
 
         return binding.root
@@ -241,6 +241,7 @@ class LiveTravelFragment : CS_Fragment() {
         binding.minutesLeft.text = "..."
         binding.speedometerText.text = "--"
         binding.pb.progress = 0
+        binding.rateText.text = "--"
         rootVM.disableLoading()
     }
 

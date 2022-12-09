@@ -93,7 +93,7 @@ public enum Station {
         return null;
     }
 
-    public static List<Station> findStationsAtZone(int xCode, int yCode, int limit){
+    public static List<Station> findStationsAtZone(int xCode, int yCode, int limit, int areaSize){
         List<Station> result = new LinkedList<>();
         List<CandidateStation> candidates = new LinkedList<>();
 
@@ -101,8 +101,8 @@ public enum Station {
             if (s.latitude == 0) continue;     // evito procesamiento innecesario
             int diffX, diffY;
 
-            if ((diffX = Math.abs(ZoneData.Companion.getXCode(s.latitude) - xCode)) > 1) continue;
-            if ((diffY = Math.abs(ZoneData.Companion.getYCode(s.longitude) - yCode)) > 1) continue;
+            if ((diffX = Math.abs(ZoneData.Companion.getXCode(s.latitude) - xCode)) > areaSize) continue;
+            if ((diffY = Math.abs(ZoneData.Companion.getYCode(s.longitude) - yCode)) > areaSize) continue;
 
             candidates.add(new CandidateStation(s, diffX + diffY));
         }

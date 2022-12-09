@@ -11,10 +11,11 @@ class NearStopViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     val binding = ItemNearStopBinding.bind(view)
 
-    fun render(item: RamalSchedule) {
+    fun render(item: RamalSchedule, onClickListener: (RamalSchedule) -> Unit) {
         binding.title.text = "${Utils.hourFormat(item.hour, item.minute)} - ${item.station.replace("Estación", "").trim()}"
         binding.description.text = item.ramal
         binding.description.isSelected = true
+        binding.root.setOnClickListener { onClickListener(item) }
     }
 
     fun render(item: Station, destination: Station, hour: Int, minute: Int) {

@@ -89,7 +89,7 @@ public class BusTravelEditor extends CommonTravelEditor {
         Parada startPlace = getParadas().get(startIndex);
         Parada endPlace = getParadas().get(endIndex);
 
-        if (date.isEmpty() || startHour.isEmpty()) return 1;
+        if (line.isEmpty() || date.isEmpty() || startHour.isEmpty()) return 1;
         if (startPlace.equals(endPlace)) return 2;
 
         String[] hourParams = startHour.split(":");
@@ -133,8 +133,9 @@ public class BusTravelEditor extends CommonTravelEditor {
             viaje.setNombrePdaInicio(startPlace.getNombre());
             viaje.setNombrePdaFin(endPlace.getNombre());
             Utils.setWeekDay(viaje);
-            if (!ramal.isEmpty()) viaje.setRamal(ramal);
-            if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
+            viaje.setRamal(ramal.isEmpty() ? null : ramal);
+            viaje.setCosto(price.isEmpty() ? 0 : Double.parseDouble(price));
+
             if (line.isEmpty()){
                 viaje.setTipo(1);
                 viaje.setLinea(null);

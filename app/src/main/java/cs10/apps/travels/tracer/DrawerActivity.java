@@ -36,6 +36,7 @@ import com.google.android.gms.location.SettingsClient;
 import cs10.apps.travels.tracer.data.generator.DelayData;
 import cs10.apps.travels.tracer.data.generator.GlewFiller;
 import cs10.apps.travels.tracer.data.generator.LaPlataFiller;
+import cs10.apps.travels.tracer.data.generator.UniversitarioFiller;
 import cs10.apps.travels.tracer.data.generator.ViaCircuitoFiller;
 import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
 import cs10.apps.travels.tracer.db.MiDB;
@@ -44,6 +45,7 @@ import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
 import cs10.apps.travels.tracer.ui.travels.BusTravelCreator;
 import cs10.apps.travels.tracer.ui.travels.TrainTravelCreator;
+import cs10.apps.travels.tracer.viewmodel.LineManagerVM;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
 
@@ -56,6 +58,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
     private LocationCallback locationCallback;
 
     // ViewModel
+    private LineManagerVM lineManagerVM;
     private LocationVM locationVM;
     private RootVM rootVM;
 
@@ -100,7 +103,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_live, R.id.nav_colectivos,
-                R.id.nav_trenes, R.id.nav_proximos, R.id.nav_prox_destinos, R.id.nav_paradas)
+                R.id.nav_lines, R.id.nav_trenes, R.id.nav_proximos, R.id.nav_prox_destinos, R.id.nav_paradas)
                 .setOpenableLayout(binding.drawerLayout)
                 .build();
 
@@ -121,6 +124,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         Utils.checkPermissions(this);
 
         // ViewModel
+        lineManagerVM = new ViewModelProvider(this).get(LineManagerVM.class);
         locationVM = new ViewModelProvider(this).get(LocationVM.class);
 
         // Re-create Via Circuito if is needed
@@ -168,6 +172,17 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
                 db.viajesDao().update(v);
             }
 
+            // actualización 5: tren universitario
+            if (db.servicioDao().getServicesCount("La Plata (Universitario)") == 0){
+                db.servicioDao().deleteHorariosSince(2452);     // primero los hs
+                db.servicioDao().deleteServicesSince(2452);         // luego los serv
+                DelayData delayData = new DelayData();
+                UniversitarioFiller filler = new UniversitarioFiller(delayData);
+                filler.createIda(db);
+                filler.createVuelta(db);
+                runOnUiThread(() -> Toast.makeText(this, "Tren Universitario creado con éxito", Toast.LENGTH_LONG).show());
+            }
+
         }, "dbUpdater");
         dbThread.start();
 
@@ -175,7 +190,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
-                locationVM.getLocation().postValue(locationResult.getLastLocation());
+                locationVM.updateCurrentLocation(locationResult.getLastLocation());
             }
         };
 
@@ -257,4 +272,5 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
 
         return MiDB.getInstance(this);
     }
+
 }

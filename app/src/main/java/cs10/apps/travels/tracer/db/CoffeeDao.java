@@ -20,4 +20,7 @@ public interface CoffeeDao {
 
     @Query("SELECT SUM(price) FROM coffee where id > :coffeeId")
     double getSpentSince(long coffeeId);
+
+    @Query("SELECT price FROM coffee order by id desc limit 1")
+    Double getLastPrice();
 }

@@ -9,13 +9,14 @@ import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ItemTravelBinding
 import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.model.joins.ColoredTravel
 
 class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     private val binding = ItemTravelBinding.bind(view)
 
     fun render(
-        viaje: Viaje,
+        viaje: ColoredTravel,
         onClickListener: (Viaje) -> Unit,
         onLongClickListener: (Viaje, Int) -> Unit
     ) {
@@ -47,8 +48,11 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             binding.rateText.text = Utils.rateFormat(it)
         }
 
-        binding.root.background =
+        // COLOR
+        if (viaje.color != null) binding.root.setBackgroundColor(viaje.color)
+        else binding.root.background =
             AppCompatResources.getDrawable(binding.root.context, Utils.colorFor(viaje.linea))
+
         binding.root.setOnClickListener { onClickListener(viaje) }
 
         binding.root.setOnLongClickListener {

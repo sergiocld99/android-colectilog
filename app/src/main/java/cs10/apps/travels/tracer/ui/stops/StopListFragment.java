@@ -83,7 +83,7 @@ public class StopListFragment extends CS_Fragment {
     public void onResume() {
         super.onResume();
 
-        locationVM.getLocation().observe(getViewLifecycleOwner(), this::recalc);
+        locationVM.getLiveData().observe(getViewLifecycleOwner(), it -> recalc(it.getLocation()));
     }
 
     @Override

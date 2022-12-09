@@ -13,12 +13,15 @@
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/drawable/ic_money.xml" value="0.1535" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/drawable/ic_show_chart.xml" value="0.1535" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/drawable/side_nav_bar.xml" value="0.136" />
+        <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/drawable/speedometer_bg.xml" value="0.1535" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/drawable/splash_background.xml" value="0.1535" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/drawable/toolbar_title_background.xml" value="0.1535" />
+        <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/actiity_filtered_travels.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_coffee_creator.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_drawer.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_edit_balance.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_launcher.xml" value="0.18645833333333334" />
+        <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_line_details.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_main.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_new_travel.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_select_travel_type.xml" value="0.18645833333333334" />
@@ -41,11 +44,13 @@
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/fragment_first.xml" value="0.22" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/fragment_home.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/fragment_live_travel.xml" value="0.25" />
+        <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/fragment_manage_lines.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/fragment_stops.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/fragment_trains.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/fragment_travels.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/infobox_stops_near.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/item_arrival.xml" value="0.18645833333333334" />
+        <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/item_line.xml" value="0.33" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/item_near_stop.xml" value="0.25" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/item_service.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/item_stop.xml" value="0.25" />
@@ -63,7 +68,9 @@
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/menu/drawer.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/menu/menu_drawer.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/menu/menu_edit.xml" value="0.18645833333333334" />
+        <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/menu/menu_line.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/menu/menu_main.xml" value="0.18645833333333334" />
+        <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/menu/menu_travel_editor.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1535" />
       </map>
     </option>

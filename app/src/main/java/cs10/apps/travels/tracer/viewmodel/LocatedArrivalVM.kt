@@ -4,7 +4,7 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import cs10.apps.travels.tracer.model.Parada
-import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import kotlin.math.max
 
 class LocatedArrivalVM : ViewModel() {
@@ -13,17 +13,24 @@ class LocatedArrivalVM : ViewModel() {
         MutableLiveData<Parada>().also { Parada() }
     }
 
-    val arrivals: MutableLiveData<MutableList<Viaje>> by lazy {
-        MutableLiveData<MutableList<Viaje>>().also { emptyList<Viaje>() }
+    val arrivals = MutableLiveData<MutableList<ColoredTravel>>()
+
+    /*
+    val arrivals: MutableLiveData<MutableList<ColoredTravel>> by lazy {
+        MutableLiveData<MutableList<ColoredTravel>>().also { emptyList<Viaje>() }
     }
+
+     */
 
     val proximity = MutableLiveData<Double>()
     val goingTo = MutableLiveData(false)
     val summary = MutableLiveData<Pair<Int, Int>>()
 
     fun recalculate(locationVM: LocationVM, homeVM: HomeVM) {
-        if (locationVM.location.value != null && homeVM.maxDistance.value != null){
-            recalculate(locationVM.location.value!!, homeVM.maxDistance.value!!)
+        locationVM.getLiveData().value?.let { timedLocation ->
+            homeVM.maxDistance.value?.let { maxDistance ->
+                recalculate(timedLocation.location, maxDistance)
+            }
         }
     }
 
@@ -39,6 +46,10 @@ class LocatedArrivalVM : ViewModel() {
 
     fun setStop(parada: Parada){
         if (stop.value != parada) stop.postValue(parada)
+    }
+
+    fun setStop(parada: Parada, forceSet: Boolean){
+        if (forceSet) stop.postValue(parada) else setStop(parada)
     }
 
     private fun setProximity(prox: Double){

@@ -54,6 +54,14 @@ public class DelayData {
         add(Station.RINGUELET, Station.TOLOSA, 4);
         add(Station.TOLOSA, Station.LA_PLATA, 3);
 
+        // -------------------- TREN UNIVERSITARIO ------------------------------
+        add(Station.LA_PLATA, Station.ARQUI, 3);
+        add(Station.ARQUI, Station.INFO, 3);
+        add(Station.INFO, Station.MEDICINA, 4);
+        add(Station.MEDICINA, Station.PERIODISMO, 3);
+        add(Station.PERIODISMO, Station.DIAG_73, 4);
+        add(Station.DIAG_73, Station.POLICLINICO, 3);
+
         // ------------------- RAMAL GLEW / KORN --------------------------------
         add(Station.KORN, Station.GUERNICA, 6);
         add(Station.GUERNICA, Station.GLEW, 4);

@@ -74,4 +74,10 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
         annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+
+    // OCT 2022: SWIPE V1
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    // NOV 2022: COLOR PICKER
+    implementation 'com.jaredrummler:colorpicker:1.1.0'
 }

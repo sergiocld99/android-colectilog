@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.Calendar;
 import java.util.List;
 
 import cs10.apps.travels.tracer.R;
@@ -85,8 +86,10 @@ public class BusTravelCreator extends CommonTravelCreator {
             runOnUiThread(this::setSpinners);
 
             // part 2: autocomplete likely travel
+            int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+
             if (!paradas.isEmpty()){
-                Viaje viaje = db.viajesDao().getLikelyTravelFrom(paradas.get(0).getNombre());
+                Viaje viaje = db.viajesDao().getLikelyTravelFrom(paradas.get(0).getNombre(), currentHour);
                 if (viaje != null) runOnUiThread(() -> autoFillLikelyTravel(viaje));
             }
 

@@ -21,6 +21,8 @@ import cs10.apps.travels.tracer.databinding.FragmentTravelsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.model.joins.ColoredTravel;
+import cs10.apps.travels.tracer.modules.AutoRater;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
 
 public class MyTravelsFragment extends CS_Fragment {
@@ -47,7 +49,11 @@ public class MyTravelsFragment extends CS_Fragment {
             return null;
         });
 
-        // adapter.setCallback(this);
+        // View Model
+        rootVM.getLoading().observe(getViewLifecycleOwner(), it -> {
+            if (it) binding.getRoot().setVisibility(View.GONE);
+            else binding.getRoot().setVisibility(View.VISIBLE);
+        });
 
         RecyclerView rv = binding.recycler;
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -60,18 +66,26 @@ public class MyTravelsFragment extends CS_Fragment {
 
         doInBackground(() -> {
             rootVM.enableLoading();
+
             ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
-            List<Viaje> viajes = dao.getAll();
+            List<ColoredTravel> viajes = null;
+
+            // activity intent extras
+            if (getActivity() != null){
+                Intent i = getActivity().getIntent();
+                int line = i.getIntExtra("number", -1);
+                String ramal = i.getStringExtra("ramal");
+
+                if (line != -1) {
+                    if (ramal == null) viajes = dao.getAllFromNoRamal(line);
+                    else viajes = dao.getAllFromRamal(line, ramal);
+                }
+            }
+
+            if (viajes == null) viajes = dao.getAllPlusColors();
 
             // Oct 15: calculate rate based on duration
-            for (Viaje v : viajes){
-                if (v.getLinea() == null || v.getEndHour() == null) continue;
-                int minDuration = dao.getMinTravelDuration(v.getLinea(), v.getNombrePdaInicio(), v.getNombrePdaFin());
-                double rate = 5.0 * minDuration / v.getDuration();
-
-                // overrite rate saved by user
-                v.setPreciseRate(rate);
-            }
+            AutoRater.Companion.calculateRate(viajes, dao);
 
             adapter.setList(viajes);
             doInForeground(adapter::notifyDataSetChanged);

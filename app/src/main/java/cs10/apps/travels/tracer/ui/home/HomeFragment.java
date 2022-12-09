@@ -17,12 +17,13 @@ import java.util.Calendar;
 import java.util.List;
 
 import cs10.apps.common.android.CS_Fragment;
+import cs10.apps.common.android.TimedLocation;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.FragmentHomeBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
-import cs10.apps.travels.tracer.ui.stops.StopArrivalsFragment;
+import cs10.apps.travels.tracer.ui.arrivals.StopArrivalsFragment;
 import cs10.apps.travels.tracer.viewmodel.HomeVM;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
@@ -35,7 +36,7 @@ public class HomeFragment extends CS_Fragment {
     private HomeVM homeVM;
     private LocationVM locationVM;
     private RootVM rootVM;
-    private Observer<Location> firstLocationObserver;
+    private Observer<TimedLocation> firstLocationObserver;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
@@ -61,15 +62,15 @@ public class HomeFragment extends CS_Fragment {
 
         firstLocationObserver = location -> {
             rootVM.enableLoading();
-            onBuildHome(location);
+            onBuildHome(location.getLocation());
         };
 
-        locationVM.getLocation().observe(getViewLifecycleOwner(), firstLocationObserver);
+        locationVM.getLiveData().observe(getViewLifecycleOwner(), firstLocationObserver);
     }
 
     public void onBuildHome(Location location){
         // avoid multiple calls
-        locationVM.getLocation().removeObserver(firstLocationObserver);
+        locationVM.getLiveData().removeObserver(firstLocationObserver);
 
         if (getActivity() instanceof DatabaseCallback) doInBackground(() -> {
             DatabaseCallback callback = (DatabaseCallback) getActivity();

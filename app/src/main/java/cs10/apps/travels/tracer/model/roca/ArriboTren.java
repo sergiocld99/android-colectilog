@@ -3,14 +3,18 @@ package cs10.apps.travels.tracer.model.roca;
 import java.util.List;
 
 import cs10.apps.travels.tracer.data.generator.Station;
-import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.model.joins.ColoredTravel;
 
-public class ArriboTren extends Viaje {
+public class ArriboTren extends ColoredTravel {
 
     private List<HorarioTren> recorrido;
     private List<HorarioTren> recorridoDestino;
     private long serviceId;
     private int aux = 0;
+
+    public ArriboTren(){
+        super(null);
+    }
 
     public void restartAux(){
         aux = recorrido.size();

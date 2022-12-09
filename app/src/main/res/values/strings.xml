@@ -85,4 +85,9 @@
     <string name="path">Recorrido</string>
     <string name="progress">Progreso</string>
     <string name="end_hour">Hora de bajada</string>
+    <string name="manage_lines">Administrar lineas</string>
+    <string name="choose_color">Elegir color</string>
+    <string name="action_change_name">Cambiar apodo</string>
+    <string name="alternative_name">Apodo</string>
+    <string name="ramal_list">Ramales</string>
 </resources>

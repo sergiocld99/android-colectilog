@@ -19,6 +19,7 @@ import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Recarga;
 import cs10.apps.travels.tracer.model.Tren;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.model.lines.CustomBusLine;
 import cs10.apps.travels.tracer.model.prices.TarifaBus;
 import cs10.apps.travels.tracer.model.prices.TarifaTren;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
@@ -26,7 +27,7 @@ import cs10.apps.travels.tracer.model.roca.ServicioTren;
 
 @Database(entities = {Circuito.class, Comunicacion.class, Estacion.class, FormacionCircuito.class,
         Tren.class, Horario.class, Parada.class, Viaje.class, TarifaBus.class, TarifaTren.class,
-        Coffee.class, Recarga.class, ServicioTren.class, HorarioTren.class}, version = 19)
+        Coffee.class, Recarga.class, ServicioTren.class, HorarioTren.class, CustomBusLine.class}, version = 20)
 public abstract class MiDB extends RoomDatabase {
     private static MiDB instance;
 
@@ -37,7 +38,7 @@ public abstract class MiDB extends RoomDatabase {
                     COSTO_TARIFA_MIGRATION, ADD_FIXED_VIAJES_MIGRATION, TARIFA_BUS_MIGRATION,
                     ADD_COSTO_TO_VIAJE, CREATE_COFFEE_TABLE, CREATE_RECARGA_TABLE,
                     CREATE_ROCA_TABLES, FIX_HORARIOS_TABLE, ADD_RAMAL_COLUMN_TO_SERVICIOS,
-                    ADD_WEEK_DAY_COLUMN_TO_TRAVELS, ADD_RATE_COLUMN_TO_TRAVELS
+                    ADD_WEEK_DAY_COLUMN_TO_TRAVELS, ADD_RATE_COLUMN_TO_TRAVELS, CREATE_LINES_TABLE
             };
 
             instance = Room.databaseBuilder(context.getApplicationContext(), MiDB.class,
@@ -207,10 +208,20 @@ public abstract class MiDB extends RoomDatabase {
         }
     };
 
-    // DAO made in Java
+    private static final Migration CREATE_LINES_TABLE = new Migration(19, 20) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE lines ( " +
+                    "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                    "number INTEGER, name TEXT, color INTEGER NOT NULL ) ");
+        }
+    };
+
+    // DAOs
     public abstract ParadasDao paradasDao();
     public abstract ViajesDao viajesDao();
     public abstract CoffeeDao coffeeDao();
     public abstract RecargaDao recargaDao();
     public abstract ServicioDao servicioDao();
+    public abstract LinesDao linesDao();
 }

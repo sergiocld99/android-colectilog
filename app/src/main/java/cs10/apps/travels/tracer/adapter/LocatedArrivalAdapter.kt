@@ -6,11 +6,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.ArriboTren
 
 class LocatedArrivalAdapter(
-    var list: MutableList<Viaje>,
+    var list: MutableList<ColoredTravel>,
     private val onClickListener: (ArriboTren) -> Unit
 ) : RecyclerView.Adapter<LocatedArrivalViewHolder>() {
 

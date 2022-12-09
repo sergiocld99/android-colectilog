@@ -1,10 +1,13 @@
-package cs10.apps.travels.tracer.ui.stops;
+package cs10.apps.travels.tracer.ui.arrivals;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,9 +28,11 @@ import cs10.apps.travels.tracer.db.DynamicQuery;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.model.joins.ColoredTravel;
 import cs10.apps.travels.tracer.model.roca.ArriboTren;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 import cs10.apps.travels.tracer.model.roca.RamalSchedule;
+import cs10.apps.travels.tracer.modules.AutoRater;
 import cs10.apps.travels.tracer.ui.service.ServiceDetail;
 import cs10.apps.travels.tracer.viewmodel.HomeVM;
 import cs10.apps.travels.tracer.viewmodel.LocatedArrivalVM;
@@ -88,11 +93,15 @@ public class StopArrivalsFragment extends CS_Fragment {
             adapter.setList(arrivals);
 
             if (ogSize == 0) adapter.notifyItemRangeInserted(0, arrivals.size());
-            else if (ogSize == adapter.getItemCount()) adapter.notifyItemRangeChanged(0, arrivals.size());
+            //else if (ogSize == adapter.getItemCount()) adapter.notifyItemRangeChanged(0, arrivals.size());
             else adapter.notifyDataSetChanged();
 
             // binding.pbar.setVisibility(View.GONE);
             rootVM.disableLoading();
+
+            // OCT 2022: swipe
+            new Handler(Looper.getMainLooper()).postDelayed(() -> binding.swipe.setRefreshing(false), 800);
+
         });
 
         locatedArrivalVM.getSummary().observe(getViewLifecycleOwner(), data -> {
@@ -101,23 +110,34 @@ public class StopArrivalsFragment extends CS_Fragment {
             binding.stopSummary.getRoot().setVisibility(View.VISIBLE);
         });
 
-        locationVM.getLocation().observe(getViewLifecycleOwner(), location -> {
+        locationVM.getLiveData().observe(getViewLifecycleOwner(), location -> {
             Double maxD = homeVM.getMaxDistance().getValue();
-            if (maxD != null) locatedArrivalVM.recalculate(location, maxD);
+            if (maxD != null) locatedArrivalVM.recalculate(location.getLocation(), maxD);
         });
+
+        // OCT 2022
+        binding.swipe.setOnRefreshListener(() ->
+            new Handler(Looper.getMainLooper()).postDelayed(() -> reload(true), 800)
+        );
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        reload(false);
+    }
 
+    private void reload(boolean force){
         // get arguments
         Bundle args = getArguments();
 
         if (args != null) {
             int pos = args.getInt("pos");
             Parada parada = homeVM.getStop(pos);
-            locatedArrivalVM.setStop(parada);
+            locatedArrivalVM.setStop(parada, force);
+        } else {
+            Toast.makeText(requireContext(), "No se puede recargar", Toast.LENGTH_SHORT).show();
+            binding.swipe.setRefreshing(false);
         }
     }
 
@@ -131,19 +151,12 @@ public class StopArrivalsFragment extends CS_Fragment {
             int now = hour * 60 + m;
 
             String stopName = parada.getNombre();
-            List<Viaje> arrivals = DynamicQuery.getNextBusArrivals(getContext(), stopName);
+            List<ColoredTravel> arrivals = DynamicQuery.getNextBusArrivals(getContext(), stopName);
             List<RamalSchedule> trenes = DynamicQuery.getNextTrainArrivals(getContext(), stopName);
 
             // PROCESAMIENTO DE BUSES
-            // Oct 15: calculate rate based on duration (COPIED FROM MY TRAVELS FRAGMENT)
-            for (Viaje v : arrivals){
-                if (v.getLinea() == null || v.getEndHour() == null) continue;
-                int minDuration = miDB.viajesDao().getMinTravelDuration(v.getLinea(), v.getNombrePdaInicio(), v.getNombrePdaFin());
-                double rate = 5.0 * minDuration / v.getDuration();
-
-                // overrite rate saved by user
-                v.setPreciseRate(rate);
-            }
+            // Oct 15: calculate rate based on duration
+            AutoRater.Companion.calculateRate(arrivals, miDB.viajesDao());
 
             // PROCESAMIENTO DE TRENES
             for (RamalSchedule tren : trenes) {

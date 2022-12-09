@@ -10,12 +10,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import cs10.apps.common.android.CS_Fragment
 import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Emoji
+import cs10.apps.common.android.NumberUtils
 import cs10.apps.rater.HappyRater
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
@@ -23,16 +24,18 @@ import cs10.apps.travels.tracer.adapter.NearStopAdapter
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
 import cs10.apps.travels.tracer.modules.ZoneData
+import cs10.apps.travels.tracer.ui.service.ServiceDetail
 import cs10.apps.travels.tracer.ui.travels.BusTravelEditor
 import cs10.apps.travels.tracer.ui.travels.TrainTravelEditor
 import cs10.apps.travels.tracer.viewmodel.LiveVM
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
-class LiveTravelFragment : Fragment() {
+class LiveTravelFragment : CS_Fragment() {
 
     // View Models
     private lateinit var rootVM: RootVM
@@ -43,7 +46,13 @@ class LiveTravelFragment : Fragment() {
     private lateinit var binding: FragmentLiveTravelBinding
 
     // adapters
-    private val nearStopAdapter = NearStopAdapter(mutableListOf())
+    private val nearStopAdapter = NearStopAdapter(mutableListOf()) {
+        val intent = Intent(activity, ServiceDetail::class.java)
+        intent.putExtra("station", it.station)
+        intent.putExtra("ramal", it.ramal)
+        intent.putExtra("id", it.service)
+        startActivity(intent)
+    }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -60,7 +69,8 @@ class LiveTravelFragment : Fragment() {
         liveVM.travel.observe(viewLifecycleOwner) {
             if (it == null) resetViews()
             else {
-                binding.buttonCard.setCardBackgroundColor(Utils.colorFor(it.linea, context))
+                val bgColor = it.color?: Utils.colorFor(it.linea, context)
+                binding.buttonCard.setCardBackgroundColor(bgColor)
                 binding.travelFrom.text = "Desde: " + it.nombrePdaInicio
                 binding.travelTo.text = "Hasta: " + it.nombrePdaFin
                 binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(it.tipo, binding.root.context))
@@ -71,6 +81,7 @@ class LiveTravelFragment : Fragment() {
         liveVM.toggle.observe(viewLifecycleOwner) {
             liveVM.travel.value?.let { t ->
                 if (it && t.ramal != null) {
+                    if (binding.lineSubtitle.text.toString().length < 7) binding.lineSubtitle.isSelected = true
                     binding.lineSubtitle.textSize = 24f
                     binding.lineSubtitle.text = t.ramal
                     binding.lineSubtitle.setTextColor(ContextCompat.getColor(binding.root.context, R.color.yellow))
@@ -91,8 +102,11 @@ class LiveTravelFragment : Fragment() {
         }
 
         liveVM.averageDuration.observe(viewLifecycleOwner) {
-            if (it == null || it == 0) binding.averageDuration.text = null
-            else binding.averageDuration.text = "Duración promedio: $it minutos"
+            if (it == null || it.totalMinutes == 0) binding.averageDuration.text = null
+            else {
+                if (it.fromAverage) binding.averageDuration.text = "Duración promedio: ${it.totalMinutes} min. (${it.speed} km/h)"
+                else binding.averageDuration.text = "Duración esperada: ${it.totalMinutes} min. (${it.speed} km/h)"
+            }
         }
 
         liveVM.speed.observe(viewLifecycleOwner) {
@@ -103,12 +117,27 @@ class LiveTravelFragment : Fragment() {
             }
         }
 
-        liveVM.progress.observe(viewLifecycleOwner) {
-            when {
-                it == null -> binding.pb.progress = 0
-                it > 0.97 -> finishCurrentTravel()
-                else -> binding.pb.progress = (it * 100).roundToInt()
+        liveVM.progress.observe(viewLifecycleOwner) { prog ->
+            when (prog) {
+                null -> binding.pb.progress = 0
+                // prog > 0.97 -> finishCurrentTravel()
+                else -> binding.pb.progress = (prog * 100).roundToInt()
             }
+
+            val avgD = liveVM.averageDuration.value
+            val currentTime = liveVM.minutesFromStart.value
+
+            if (prog != null && avgD != null && currentTime != null){
+                val estimation = avgD.totalMinutes * prog
+                val error = abs(currentTime - estimation).roundToInt()
+
+                binding.estimationError.isVisible = error > 3
+                binding.estimationError.text = "Estimación con error de $error minutos"
+            } else binding.estimationError.isVisible = false
+        }
+
+        liveVM.endDistance.observe(viewLifecycleOwner) {
+            if (it != null && it < 0.8) finishCurrentTravel()
         }
 
         liveVM.nearArrivals.observe(viewLifecycleOwner) {
@@ -137,15 +166,23 @@ class LiveTravelFragment : Fragment() {
             }
         }
 
-        locationVM.location.observe(viewLifecycleOwner) {
+        locationVM.getLiveData().observe(viewLifecycleOwner) {
             // updating animation
-            binding.updatingView.root.isVisible = true
-            Handler(Looper.getMainLooper()).postDelayed({ binding.updatingView.root.isVisible = false}, 3000)
+            if (binding.lineSubtitle.text.length < 7){
+                binding.updatingView.root.isVisible = true
+                Handler(Looper.getMainLooper()).postDelayed({ binding.updatingView.root.isVisible = false}, 3000)
+            }
 
-            liveVM.recalculateDistances(rootVM.database, it) { rootVM.disableLoading() }
+            liveVM.recalculateDistances(rootVM.database, it.location) { rootVM.disableLoading() }
 
-            val zone = ZoneData.getZoneUppercase(it)
+            val zone = ZoneData.getZoneUppercase(it.location)
             binding.zoneInfo.text = zone
+        }
+
+        // OCT 2022
+        locationVM.setSpeedObserver(viewLifecycleOwner) { speedKmH ->
+            if (speedKmH > 100) binding.speedometerText.text = "--"
+            else binding.speedometerText.text = NumberUtils.roundWithPresicion(speedKmH, 5).toString()
         }
 
         return binding.root
@@ -175,7 +212,7 @@ class LiveTravelFragment : Fragment() {
         super.onResume()
 
         resetViews()
-        liveVM.findLastTravel(rootVM.database)
+        liveVM.findLastTravel(rootVM.database, locationVM) { rootVM.disableLoading() }
     }
 
     override fun onStop() {
@@ -196,6 +233,7 @@ class LiveTravelFragment : Fragment() {
         binding.averageDuration.text = null
         binding.nextTravelInfo.text = null
         binding.minutesLeft.text = "..."
+        binding.speedometerText.text = "--"
         binding.pb.progress = 0
         rootVM.disableLoading()
     }
@@ -204,27 +242,36 @@ class LiveTravelFragment : Fragment() {
 
         liveVM.minutesToEnd.value?.let {
             val line = liveVM.travel.value?.linea
+            val ramal = liveVM.travel.value?.ramal
             val destination = liveVM.travel.value?.nombrePdaFin
 
-            /*This will be the actual content you wish you share.*/
-            val shareBody = "Hola! ${Emoji.getHandEmoji()} \n\n" +
-                    "${Emoji.getBusEmoji()} Estoy viajando en un $line \n" +
-                    "${Emoji.getGlobeEmoji()} Destino: $destination \n" +
-                    "${Emoji.getClockEmoji()} Llego a las ${getETA(it)} \n\n" +
-                    "*Enviado desde Mi App*"
+            doInBackground {
+                val sb = StringBuilder("${Emoji.getBusEmoji()} ")
 
-            /*Create an ACTION_SEND Intent*/
-            val intent = Intent(Intent.ACTION_SEND)
+                if (line != null){
+                    val lineDetails = rootVM.database.linesDao().getByNumber(line)
 
-            /*The type of the content is text, obviously.*/
-            intent.type = "text/plain"
+                    if (!lineDetails?.name.isNullOrEmpty()) sb.append("${lineDetails?.name}")
+                    else sb.append("Linea $line")
+                } else sb.append("Tren Roca")
 
-            /*Applying information Subject and Body.*/
-            intent.putExtra(Intent.EXTRA_SUBJECT, "Travel Tracer")
-            intent.putExtra(Intent.EXTRA_TEXT, shareBody)
+                if (ramal != null) sb.append(" - $ramal \n")
+                else sb.append("\n")
 
-            /*Fire!*/
-            startActivity(Intent.createChooser(intent, "Compartir via..."))
+                sb.append("${Emoji.getGlobeEmoji()} Destino: $destination \n")
+                sb.append("${Emoji.getClockEmoji()} Llego a las ${getETA(it)}")
+
+                val shareBody = sb.toString().trim()
+                val intent = Intent(Intent.ACTION_SEND)
+
+                intent.type = "text/plain"
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Travel Tracer")
+                intent.putExtra(Intent.EXTRA_TEXT, shareBody)
+
+                doInForeground {
+                    startActivity(Intent.createChooser(intent, "Compartir via..."))
+                }
+            }
         }
     }
 

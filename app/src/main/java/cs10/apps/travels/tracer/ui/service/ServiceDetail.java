@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.MenuItem;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -117,6 +119,11 @@ public class ServiceDetail extends AppCompatActivity {
 
         // Keep device awake
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // back button
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void showEndedMessage() {
@@ -208,6 +215,21 @@ public class ServiceDetail extends AppCompatActivity {
                     }
                 }
 
+                // CASO LA PLATA
+                if (equals(h.getStation(), Station.LA_PLATA)){
+                    // Empezó en policlinico
+                    if (equals(start, Station.POLICLINICO)){
+                        HorarioTren comb = DynamicQuery.findCombination(this, Station.PLAZA.getSimplified(), h);
+                        h.setCombinationRamal("Plaza C");
+                        h.setCombination(comb);
+                    } else if (equals(start, Station.PLAZA)){
+                        // Caso desde Plaza C > Uni
+                        HorarioTren comb = DynamicQuery.findCombination(this, "Policlínico (Universitario)", h);
+                        h.setCombinationRamal("Universitario");
+                        h.setCombination(comb);
+                    }
+                }
+
             }
 
             serviceVM.getSchedules().postValue(horarios);
@@ -238,5 +260,18 @@ public class ServiceDetail extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         clock.stop();
+    }
+
+    // ------------------------ TOP MENU --------------------------
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -51,6 +51,9 @@ public class TrainTravelCreator extends CommonTravelCreator {
 
         client = LocationServices.getFusedLocationProviderClient(this);
         getLocation();
+
+        // listeners to open pickers
+        binding.content.etDate.setOnClickListener(v -> createDatePicker());
     }
 
     private void getLocation() throws SecurityException {
@@ -80,7 +83,7 @@ public class TrainTravelCreator extends CommonTravelCreator {
     }
 
     @Override
-    protected int onCheckEntries(@NonNull Viaje viaje){
+    public int onCheckEntries(@NonNull Viaje viaje){
         if (paradas == null || paradas.isEmpty()) return 6;
 
         String date = binding.content.etDate.getText().toString();
@@ -135,6 +138,11 @@ public class TrainTravelCreator extends CommonTravelCreator {
                 binding.content.etPrice.setText(Utils.priceFormat(price));
             } else binding.content.etPrice.setText(null);
         }
+    }
+
+    @Override
+    public void onDateSet(int day, int month, int year) {
+        binding.content.etDate.setText(Utils.dateFormat(day, month, year));
     }
 
     private class OnStartPlaceSelected implements AdapterView.OnItemSelectedListener {

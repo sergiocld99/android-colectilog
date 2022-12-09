@@ -61,6 +61,9 @@ public class BusTravelCreator extends CommonTravelCreator {
 
         client = LocationServices.getFusedLocationProviderClient(this);
         getLocation();
+
+        // listeners to open pickers
+        content.etDate.setOnClickListener(v -> createDatePicker());
     }
 
     private void autoFillRamals() {
@@ -125,7 +128,7 @@ public class BusTravelCreator extends CommonTravelCreator {
     }
 
     @Override
-    protected int onCheckEntries(@NonNull Viaje viaje){
+    public int onCheckEntries(@NonNull Viaje viaje){
         if (paradas == null || paradas.isEmpty()) return 6;
 
         String line = content.etLine.getText().toString();
@@ -178,11 +181,16 @@ public class BusTravelCreator extends CommonTravelCreator {
 
             runOnUiThread(() -> {
                 if (maxP != null) {
-                    final double price = maxP * RedSube.Companion.getPercentageToPay(redSubeCount) / 100;
+                    final double price = maxP * RedSube.Companion.getPercentageToPay(getRedSubeCount()) / 100;
                     content.etPrice.setText(String.valueOf(price));
                 } else content.etPrice.setText(null);
             });
         }).start();
+    }
+
+    @Override
+    public void onDateSet(int day, int month, int year) {
+        content.etDate.setText(Utils.dateFormat(day, month, year));
     }
 
     private class OnStartPlaceSelected implements AdapterView.OnItemSelectedListener {

@@ -17,7 +17,7 @@ class LineViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     fun render(item: RatedBusLine, onLineClickListener: (CustomBusLine) -> Unit){
         item.number?.let { n -> binding.title.text = "Linea $n" }
         item.name?.let { n -> binding.suggestedName.text = "- $n" }
-        item.speed?.let { n -> binding.speedText.text = "${NumberUtils.roundWithPresicion(n, 1)} km/h" }
+        item.speed?.let { n -> binding.speedText.text = "${NumberUtils.round(n, 1)} km/h" }
 
         when(item.color){
             0 -> binding.card.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus))
@@ -25,7 +25,7 @@ class LineViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         binding.rateText.text = "${Utils.rateFormat(item.avgUserRate)} (${item.reviewsCount} reviews)"
-        
+
         // visibility
         binding.suggestedName.isVisible = (item.name != null)
         binding.rateText.isVisible = (item.avgUserRate > 0)

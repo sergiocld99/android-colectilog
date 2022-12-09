@@ -85,8 +85,8 @@ abstract class CommonTravelEditor : CSActivity() {
         if (count == 0) return
 
         moduleRedSubeBinding.title.text = when (count) {
-            1 -> "Descuento del 50%"
-            else -> "Descuento del 25%"
+            1 -> getString(R.string.you_pay_percent, 50)
+            else -> getString(R.string.you_pay_percent, 25)
         }
 
         moduleRedSubeBinding.description.text = when(count){

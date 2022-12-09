@@ -15,7 +15,7 @@ class BusRamalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun render(item: BusRamalInfo, onItemClickListener: (BusRamalInfo) -> Unit){
 
-        item.speed?.let { n -> binding.speedText.text = "${NumberUtils.roundWithPresicion(n, 1)} km/h" }
+        item.speed?.let { n -> binding.speedText.text = "${NumberUtils.round(n, 1)} km/h" }
 
         when(item.color){
             0 -> binding.card.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus))

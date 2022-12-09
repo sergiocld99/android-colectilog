@@ -48,12 +48,16 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     val minutesFromStart = MutableLiveData<Double?>()
     val minutesToEnd = MutableLiveData<Int?>()
     val averageDuration = MutableLiveData<EstimationData?>()
+    val minDuration = MutableLiveData<Int?>()
 
     // speed in km/h
     val speed = MutableLiveData<Double?>()
 
     // progress (between 0 and 1)
     val progress = MutableLiveData<Double?>()
+
+    // expected rating
+    val rate = MutableLiveData<Double?>()
 
     // timer 1: update minutes from start every 30 seconds
     private var minuteClock: Clock? = null
@@ -72,6 +76,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             else {
                 // general estimation for buses or trains
                 calculateAvgDuration(db, t)
+                calculateBestRate(db, t)
 
                 travel.postValue(t)
                 delay(500)
@@ -101,11 +106,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
 
                 // force get location
                 locationVM.getLiveData().value?.let {
-                    if (TimedLocation.isStillValid(it)) recalculateDistances(
-                        db,
-                        it.location,
-                        newTravelRunnable
-                    )
+                    if (TimedLocation.isStillValid(it)) recalculateDistances(db, it.location, newTravelRunnable)
                 }
             }
         }
@@ -123,28 +124,38 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
 
         if (expectedDuration > 0) {
             val speed = (currentTravelDistance.distance / NumberUtils.minutesToHours(expectedDuration))
-            averageDuration.postValue(EstimationData(expectedDuration, speed.roundToInt(), true))
+            val estimationData = EstimationData(expectedDuration, speed.roundToInt(), true)
+            averageDuration.postValue(estimationData)
         } else {
             // en trenes: segundo buscar cualquier viaje realizado antes (todos son del Roca)
             // en colectivos: segundo buscar para cualquier viaje de la misma linea
-            val aPreviousTravel = if (t.linea == null) db.viajesDao().lastFinishedTrainTravel
+            val pastStats = if (t.linea == null) db.viajesDao().lastFinishedTrainTravel
             else db.viajesDao().getLastFinishedTravelFromLine(t.linea!!)
 
-            aPreviousTravel?.let { randomTravel ->
-                val coordsDistance = NumberUtils.hyp(
-                    randomTravel.end_x - randomTravel.start_x,
-                    randomTravel.end_y - randomTravel.start_y
-                )
-                val kmDistance = NumberUtils.coordsDistanceToKm(coordsDistance)
-                val speed = kmDistance / NumberUtils.minutesToHours(randomTravel.end_time - randomTravel.start_time)
+            val speed = pastStats?.calculateSpeedInKmH()
 
+            if (speed != null) {
                 expectedDuration = (currentTravelDistance.distance / speed).times(60).roundToInt()
+
                 if (expectedDuration > 0) averageDuration.postValue(
                     EstimationData(expectedDuration, speed.roundToInt(), false)
                 )
             }
 
             if (expectedDuration <= 0) averageDuration.postValue(null)
+        }
+    }
+
+    private fun calculateBestRate(db: MiDB, travel: Viaje){
+
+        if (travel.linea == null){
+            minDuration.postValue(db.viajesDao().getTrainMinTravelDuration(
+                travel.nombrePdaInicio, travel.nombrePdaFin
+            ))
+        } else {
+            minDuration.postValue(db.viajesDao().getMinTravelDuration(
+                travel.linea!!, travel.nombrePdaInicio, travel.nombrePdaFin
+            ))
         }
     }
 
@@ -189,14 +200,23 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                             else -> prog
                         }
 
-                        val minutesLeft =
-                            calculateMinutesLeft(speed, correctedProg, endStop.distance)
+                        val minutesLeft = calculateMinutesLeft(speed, correctedProg, endStop.distance)
 
                         // postear para ui
                         minutesToEnd.postValue(minutesLeft.roundToInt())
                         endDistance.postValue(endStop.distance)
                         progress.postValue(correctedProg)
                         this@LiveVM.speed.postValue(speed)
+
+                        // calculate expected rating
+                        minDuration.value?.let { bestDuration ->
+                            if (bestDuration > 0){
+                                val currentDuration = it + minutesLeft
+
+                                if (currentDuration <= bestDuration) rate.postValue(5.0)
+                                else rate.postValue(5.0 * bestDuration / currentDuration)
+                            } else rate.postValue(null)
+                        }
 
                         // guardar para analisis posterior
                         saveDebugData(t, it, prog, location, startStop, endStop)
@@ -283,6 +303,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         progress.postValue(null)
         speed.postValue(null)
         nextTravel.postValue(null)
+        rate.postValue(null)
     }
 
     fun eraseAll() {

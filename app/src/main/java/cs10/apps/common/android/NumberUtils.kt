@@ -15,7 +15,7 @@ class NumberUtils {
         fun secondsToHours(seconds: Long) : Double = seconds / 3600.0
         fun minutesToHours(minutes: Int) : Double = minutes / 60.0
 
-        fun roundWithPresicion(valueToRound: Double, precision: Int) : Int {
+        fun round(valueToRound: Double, precision: Int) : Int {
             return (valueToRound / precision).roundToInt() * precision
         }
     }

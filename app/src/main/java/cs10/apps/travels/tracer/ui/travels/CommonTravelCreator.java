@@ -14,6 +14,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Calendar;
 
+import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding;
 import cs10.apps.travels.tracer.db.MiDB;
@@ -55,7 +56,7 @@ public abstract class CommonTravelCreator extends AppCompatActivity {
         redSubeCount = count;
         int ptp = RedSube.Companion.getPercentageToPay(count);
         moduleRedSubeBinding.getRoot().setVisibility(View.VISIBLE);
-        moduleRedSubeBinding.title.setText("Descuento del " + ptp + "%");
+        moduleRedSubeBinding.title.setText(getString(R.string.you_pay_percent, ptp));
         moduleRedSubeBinding.description.setText(count == 1 ?
             "Se realizó 1 viaje en las últimas 2 horas" :
             "Se realizaron " + count + " viajes en las últimas 2 horas"

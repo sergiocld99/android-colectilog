@@ -139,7 +139,7 @@ public class Utils {
     }
 
     public static void loadBusBanner(ImageView iv){
-        Picasso.get().load("https://www.infoblancosobrenegro.com/uploads/noticias/5/2022/07/20220708100904_talp.jpg")
+        Picasso.get().load("https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/d037df20161495.562e68da93c72.jpg")
                 .memoryPolicy(MemoryPolicy.NO_CACHE).into(iv);
     }
 

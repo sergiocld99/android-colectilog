@@ -182,7 +182,13 @@ class LiveTravelFragment : CS_Fragment() {
         // OCT 2022
         locationVM.setSpeedObserver(viewLifecycleOwner) { speedKmH ->
             if (speedKmH > 100) binding.speedometerText.text = "--"
-            else binding.speedometerText.text = NumberUtils.roundWithPresicion(speedKmH, 5).toString()
+            else binding.speedometerText.text = NumberUtils.round(speedKmH, 5).toString()
+        }
+
+        // DEC 2022: EXPECTED RATING
+        liveVM.rate.observe(viewLifecycleOwner) {
+            binding.rateText.isVisible = it != null
+            if (it != null) binding.rateText.text = Utils.rateFormat(it)
         }
 
         return binding.root

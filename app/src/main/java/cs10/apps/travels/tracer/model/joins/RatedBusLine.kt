@@ -15,10 +15,6 @@ class RatedBusLine(
     @Ignore
     var speed: Double? = null
 
-    @Ignore
-    var lastTravelStats: TravelStats? = null
-
-
     override fun compareTo(other: CustomBusLine): Int {
 
         if (other is RatedBusLine){

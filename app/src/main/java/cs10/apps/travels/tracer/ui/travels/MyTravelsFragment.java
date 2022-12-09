@@ -66,8 +66,23 @@ public class MyTravelsFragment extends CS_Fragment {
 
         doInBackground(() -> {
             rootVM.enableLoading();
+
             ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
-            List<ColoredTravel> viajes = dao.getAllPlusColors();
+            List<ColoredTravel> viajes = null;
+
+            // activity intent extras
+            if (getActivity() != null){
+                Intent i = getActivity().getIntent();
+                int line = i.getIntExtra("number", -1);
+                String ramal = i.getStringExtra("ramal");
+
+                if (line != -1) {
+                    if (ramal == null) viajes = dao.getAllFromNoRamal(line);
+                    else viajes = dao.getAllFromRamal(line, ramal);
+                }
+            }
+
+            if (viajes == null) viajes = dao.getAllPlusColors();
 
             // Oct 15: calculate rate based on duration
             AutoRater.Companion.calculateRate(viajes, dao);

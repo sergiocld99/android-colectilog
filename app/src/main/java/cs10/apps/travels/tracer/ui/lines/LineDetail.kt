@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.ui.lines
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -23,7 +24,10 @@ class LineDetail : CSActivity(), ColorPickerDialogListener {
 
     // Adapter
     private val adapter: BusRamalsAdapter = BusRamalsAdapter(listOf()) {
-
+        val intent = Intent(this, FilteredTravelsActivity::class.java)
+        intent.putExtra("number", number!!)
+        intent.putExtra("ramal", it.ramal)
+        startActivity(intent)
     }
 
 

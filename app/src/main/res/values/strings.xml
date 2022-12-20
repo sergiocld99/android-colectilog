@@ -90,4 +90,11 @@
     <string name="alternative_name">Apodo</string>
     <string name="ramal_list">Ramales</string>
     <string name="you_pay_percent">Pagás el %1$d%%</string>
+    <string name="manage_zones">Administrar zonas</string>
+    <string name="name">Nombre</string>
+    <string name="radix">Radio (en km)</string>
+    <string name="zone">Zona</string>
+    <string name="stop">Parada</string>
+    <string name="train_travel">Viaje en tren</string>
+    <string name="bus_travel">Viaje en colectivo</string>
 </resources>

@@ -30,6 +30,12 @@
         tools:layout="@layout/fragment_manage_lines"/>
 
     <fragment
+        android:id="@+id/nav_zones"
+        android:name="cs10.apps.travels.tracer.ui.zones.ZoneManagerFragment"
+        android:label="@string/manage_zones"
+        tools:layout="@layout/fragment_manage_zones"/>
+
+    <fragment
         android:id="@+id/nav_trenes"
         android:name="cs10.apps.travels.tracer.ui.travels.MyTravelsFragment"
         android:label="@string/travels"

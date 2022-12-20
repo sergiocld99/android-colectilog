@@ -43,8 +43,10 @@ import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
+import cs10.apps.travels.tracer.ui.stops.StopCreator;
 import cs10.apps.travels.tracer.ui.travels.BusTravelCreator;
 import cs10.apps.travels.tracer.ui.travels.TrainTravelCreator;
+import cs10.apps.travels.tracer.ui.zones.ZoneCreator;
 import cs10.apps.travels.tracer.viewmodel.LineManagerVM;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
@@ -75,6 +77,8 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
             switch (resultCode){
                 case 0: return new Intent(DrawerActivity.this, BusTravelCreator.class);
                 case 1: return new Intent(DrawerActivity.this, TrainTravelCreator.class);
+                case 2: return new Intent(DrawerActivity.this, StopCreator.class);
+                case 3: return new Intent(DrawerActivity.this, ZoneCreator.class);
                 default: return null;
             }
         }
@@ -103,7 +107,8 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_live, R.id.nav_colectivos,
-                R.id.nav_lines, R.id.nav_trenes, R.id.nav_proximos, R.id.nav_prox_destinos, R.id.nav_paradas)
+                R.id.nav_lines, R.id.nav_zones, R.id.nav_trenes,
+                R.id.nav_proximos, R.id.nav_prox_destinos, R.id.nav_paradas)
                 .setOpenableLayout(binding.drawerLayout)
                 .build();
 

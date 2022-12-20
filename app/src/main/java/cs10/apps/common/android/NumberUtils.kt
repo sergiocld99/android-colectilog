@@ -10,7 +10,10 @@ class NumberUtils {
     companion object {
 
         fun coordsDistanceToKm(distance: Double) : Double = distance * 91.97
+        fun kmToCoordsDistance(value: Double): Double = value / 91.97
+
         fun hyp(x: Double, y: Double) : Double = sqrt(x.pow(2) + y.pow(2))
+
         fun millisToSeconds(millis: Long) : Long = TimeUnit.MILLISECONDS.toSeconds(millis)
         fun secondsToHours(seconds: Long) : Double = seconds / 3600.0
         fun minutesToHours(minutes: Int) : Double = minutes / 60.0

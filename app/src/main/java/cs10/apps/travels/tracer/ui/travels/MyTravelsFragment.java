@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import cs10.apps.common.android.CS_Fragment;
+import cs10.apps.common.android.ui.CS_Fragment;
 import cs10.apps.travels.tracer.adapter.TravelAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentTravelsBinding;
 import cs10.apps.travels.tracer.db.MiDB;

@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Calendar;
 
-import cs10.apps.common.android.CSActivity;
+import cs10.apps.common.android.ui.CSActivity;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ActivityCoffeeCreatorBinding;
 import cs10.apps.travels.tracer.databinding.ContentCoffeeCreatorBinding;

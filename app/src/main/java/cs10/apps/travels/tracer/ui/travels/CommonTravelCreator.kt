@@ -1,13 +1,11 @@
 package cs10.apps.travels.tracer.ui.travels
 
-import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import cs10.apps.common.android.CSActivity
 import cs10.apps.common.android.ui.DatePickerFragment
+import cs10.apps.common.android.ui.FormActivity
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding
@@ -16,7 +14,7 @@ import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.modules.RedSube.Companion.getPercentageToPay
 import java.util.*
 
-abstract class CommonTravelCreator : CSActivity() {
+abstract class CommonTravelCreator : FormActivity() {
 
     var redSubeCount = 0
 
@@ -29,11 +27,6 @@ abstract class CommonTravelCreator : CSActivity() {
         "Error general de formato",
         "No hay paradas guardadas"
     )
-
-    override fun setSupportActionBar(toolbar: Toolbar?) {
-        super.setSupportActionBar(toolbar)
-        if (supportActionBar != null) supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-    }
 
     protected fun setDoneFabBehavior(fab: FloatingActionButton) {
         fab.setOnClickListener { performDone() }
@@ -114,15 +107,5 @@ abstract class CommonTravelCreator : CSActivity() {
     }
 
     abstract fun onDateSet(day: Int, month: Int, year: Int)
-
-    // -------------------------- TOP MENU --------------------------
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
 
 }

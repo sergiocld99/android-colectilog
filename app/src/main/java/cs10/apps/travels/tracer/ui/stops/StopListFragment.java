@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import cs10.apps.common.android.CS_Fragment;
+import cs10.apps.common.android.ui.CS_Fragment;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.adapter.LocatedStopAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentStopsBinding;

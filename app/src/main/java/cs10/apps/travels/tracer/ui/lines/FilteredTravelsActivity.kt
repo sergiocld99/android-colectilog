@@ -2,7 +2,7 @@ package cs10.apps.travels.tracer.ui.lines
 
 import android.os.Bundle
 import android.view.MenuItem
-import cs10.apps.common.android.CSActivity
+import cs10.apps.common.android.ui.CSActivity
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ActivityFilteredTravelsBinding
 

@@ -16,7 +16,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import java.util.Calendar;
 import java.util.List;
 
-import cs10.apps.common.android.CS_Fragment;
+import cs10.apps.common.android.ui.CS_Fragment;
 import cs10.apps.common.android.TimedLocation;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.FragmentHomeBinding;

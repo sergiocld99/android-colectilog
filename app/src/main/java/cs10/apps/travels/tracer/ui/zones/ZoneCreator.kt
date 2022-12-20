@@ -51,6 +51,7 @@ class ZoneCreator : FormActivity() {
             }
             StatusCode.EMPTY_FIELDS -> showShortToast("Por favor, complete todos los campos")
             StatusCode.RADIX_ZERO -> binding.etRadix.error = "Ingrese un número mayor a 0"
+            StatusCode.OVERLAP -> showShortToast("El centro de la zona ya está contenida en otra")
         }
     }
 
@@ -79,6 +80,11 @@ class ZoneCreator : FormActivity() {
         val radixValue = radix.toDouble()
         if (radixValue <= 0) return StatusCode.RADIX_ZERO
 
+        // N°03: overlap
+        val db = MiDB.getInstance(this).zonesDao()
+        val overlaps = db.findZonesIn(latitude, longitude)
+        if (overlaps.isNotEmpty()) return StatusCode.OVERLAP
+
         // passed all checks, then save to database
         val radixAbsoluteValue = NumberUtils.kmToCoordsDistance(radixValue)
         val x0 = latitude - radixAbsoluteValue
@@ -86,7 +92,7 @@ class ZoneCreator : FormActivity() {
         val y0 = longitude - radixAbsoluteValue
         val y1 = longitude + radixAbsoluteValue
         val zone = Zone(name, x0, x1, y0, y1)
-        MiDB.getInstance(this).zonesDao().insert(zone)
+        db.insert(zone)
 
         return StatusCode.OK
     }

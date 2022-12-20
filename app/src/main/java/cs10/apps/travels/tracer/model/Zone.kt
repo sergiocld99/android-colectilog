@@ -1,6 +1,7 @@
 package cs10.apps.travels.tracer.model
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 @Entity
@@ -13,6 +14,9 @@ class Zone(
 ){
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0
+
+    @Ignore
+    var travelCount = 0
 
     fun getCenterX() : Double {
         return 0.5 * (x0 + x1)

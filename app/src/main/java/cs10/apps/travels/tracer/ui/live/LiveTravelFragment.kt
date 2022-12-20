@@ -13,17 +13,16 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import cs10.apps.common.android.ui.CS_Fragment
 import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Emoji
 import cs10.apps.common.android.NumberUtils
+import cs10.apps.common.android.ui.CS_Fragment
 import cs10.apps.rater.HappyRater
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.adapter.NearStopAdapter
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
-import cs10.apps.travels.tracer.modules.ZoneData
 import cs10.apps.travels.tracer.ui.service.ServiceDetail
 import cs10.apps.travels.tracer.ui.travels.BusTravelEditor
 import cs10.apps.travels.tracer.ui.travels.TrainTravelEditor
@@ -166,6 +165,11 @@ class LiveTravelFragment : CS_Fragment() {
             }
         }
 
+        liveVM.customZone.observe(viewLifecycleOwner){
+            if (it == null) binding.zoneInfo.text = "Zona desconocida"
+            else binding.zoneInfo.text = it.name
+        }
+
         locationVM.getLiveData().observe(viewLifecycleOwner) {
             // updating animation
             if (binding.lineSubtitle.text.length < 7){
@@ -175,8 +179,8 @@ class LiveTravelFragment : CS_Fragment() {
 
             liveVM.recalculateDistances(rootVM.database, it.location) { rootVM.disableLoading() }
 
-            val zone = ZoneData.getZoneUppercase(it.location)
-            binding.zoneInfo.text = zone
+            //val zone = ZoneData.getZoneUppercase(it.location)
+            //binding.zoneInfo.text = zone
         }
 
         // OCT 2022

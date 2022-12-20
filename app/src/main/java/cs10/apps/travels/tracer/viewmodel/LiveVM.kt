@@ -15,6 +15,7 @@ import cs10.apps.travels.tracer.data.generator.Station
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.model.Zone
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.RamalSchedule
 import cs10.apps.travels.tracer.modules.ZoneData
@@ -39,6 +40,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     val toggle = MutableLiveData(true)
     val nextTravel = MutableLiveData<Viaje?>()
     val nearArrivals = MutableLiveData<MutableList<RamalSchedule>>()
+    val customZone = MutableLiveData<Zone?>()
 
     // distances in metres
     val startDistance = MutableLiveData<Double?>()
@@ -239,6 +241,11 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             val zone = ZoneData.getCodes(location)
             findNearArrivals(db, zone.first, zone.second)
+
+            // new database
+            val zonesFromDB = db.zonesDao().findZonesIn(location.latitude, location.longitude)
+            if (zonesFromDB.isNotEmpty()) customZone.postValue(zonesFromDB[0])
+            else customZone.postValue(null)
         }
     }
 

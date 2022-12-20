@@ -16,6 +16,7 @@ class ZoneViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         binding.radixText.text = String.format("%.2f km", radix)
 
         binding.speedText.text = String.format("%.4f, %.4f", item.getCenterX(), item.getCenterY())
+        binding.rateText.text = String.format("%d viajes realizados", item.travelCount)
 
         binding.card.setOnClickListener { onLineClickListener(item) }
     }

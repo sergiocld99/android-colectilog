@@ -23,7 +23,10 @@ class ZoneManagerVM(application: Application) : AndroidViewModel(application) {
             val zones = miDB.zonesDao().getAll()
 
             // process zones
-
+            zones.forEach { z ->
+                val count = miDB.zonesDao().countTravelsIn(z.x0, z.x1, z.y0, z.y1)
+                z.travelCount = count
+            }
 
             // post zones
             myZones.postValue(zones)

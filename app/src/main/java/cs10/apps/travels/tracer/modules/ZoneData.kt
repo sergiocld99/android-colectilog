@@ -32,6 +32,23 @@ class ZoneData {
         private fun getZone(x_code: Int, y_code: Int) : String? {
 
             when (x_code) {
+                15 -> return when(y_code){
+                    34 -> "Constitución"
+                    else -> null
+                }
+                16 -> return when(y_code){
+                    33 -> "Sarandi"
+                    34 -> "Avellaneda"
+                    else -> null
+                }
+                17 -> return when(y_code){
+                    32 -> "Wilde"
+                    else -> null
+                }
+                18 -> return when (y_code){
+                    32 -> "Quilmes Oeste"
+                    else -> null
+                }
                 19 -> return when(y_code){
                     34 -> "Adrogué"
                     31 -> "Cruce Varela"
@@ -45,12 +62,13 @@ class ZoneData {
                     31 -> "Varela"
                     30 -> "Bosques"
                     29 -> "Gutiérrez"
+                    27 -> "Pereyra"
                     else -> null
                 }
                 21 -> return when(y_code){
                     30 -> "Ingeniero Allan"          // -58.20
                     29 -> "Alpargatas"          // -58.16
-                    28 -> "Pereyra"                 // -58.12
+                    28 -> "Parque Pereyra"                 // -58.12
                     27 -> "Villa Elisa"                 // -58.08
                     26 -> "Transradio / City Bell"
                     25 -> "Batallón 601"

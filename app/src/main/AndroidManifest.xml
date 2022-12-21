@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cs10.apps.travels.tracer">
-
+    package="cs10.apps.travels.tracer" >
     <!-- For Location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-    <!-- For Picasso -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- For Picasso -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -15,33 +12,51 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TravelTracer">
+        android:theme="@style/Theme.TravelTracer" >
+        <activity
+            android:name=".MapViewActivity"
+            android:exported="false" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_api_key" />
 
         <activity
             android:name=".ui.balance.EditBalanceActivity"
-            android:theme="@style/Theme.TravelTracer.Buses"
-            android:exported="false" />
-        <activity android:name=".SelectTravelType"
+            android:exported="false"
+            android:theme="@style/Theme.TravelTracer.Buses" />
+        <activity
+            android:name=".SelectTravelType"
             android:label="Seleccione el objeto a crear" />
-        <activity android:name=".ui.coffee.CoffeeCreator"
+        <activity
+            android:name=".ui.coffee.CoffeeCreator"
             android:theme="@style/Theme.TravelTracer.Coffee" />
-        <activity android:name=".ui.travels.BusTravelCreator"
+        <activity
+            android:name=".ui.travels.BusTravelCreator"
             android:theme="@style/Theme.TravelTracer.Buses" />
-        <activity android:name=".ui.travels.TrainTravelCreator"
+        <activity
+            android:name=".ui.travels.TrainTravelCreator"
             android:theme="@style/Theme.TravelTracer.Trains" />
-        <activity android:name=".ui.travels.BusTravelEditor"
+        <activity
+            android:name=".ui.travels.BusTravelEditor"
             android:theme="@style/Theme.TravelTracer.Buses" />
-        <activity android:name=".ui.travels.TrainTravelEditor"
+        <activity
+            android:name=".ui.travels.TrainTravelEditor"
             android:theme="@style/Theme.TravelTracer.Trains" />
-        <activity android:name=".ui.stops.StopCreator"
+        <activity
+            android:name=".ui.stops.StopCreator"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
-        <activity android:name=".ui.stops.StopEditor"
+        <activity
+            android:name=".ui.stops.StopEditor"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
-        <activity android:name=".ui.service.ServiceDetail"
+        <activity
+            android:name=".ui.service.ServiceDetail"
             android:theme="@style/Theme.TravelTracer.Trains" />
-        <activity android:name=".ui.lines.LineDetail"
+        <activity
+            android:name=".ui.lines.LineDetail"
             android:theme="@style/Theme.TravelTracer.Buses" />
-        <activity android:name=".ui.zones.ZoneCreator"
+        <activity
+            android:name=".ui.zones.ZoneCreator"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
             android:name=".ui.lines.FilteredTravelsActivity"
@@ -54,7 +69,7 @@
         <activity
             android:name=".ui.LauncherActivity"
             android:exported="true"
-            android:theme="@style/SplashScreen">
+            android:theme="@style/SplashScreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

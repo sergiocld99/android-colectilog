@@ -34,4 +34,14 @@
         android:contentDescription="@string/done"
         app:srcCompat="@drawable/ic_done" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_open_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="96dp"
+        android:contentDescription="@string/open_map"
+        app:srcCompat="@drawable/ic_location_searching" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

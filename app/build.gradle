@@ -69,6 +69,7 @@ dependencies {
 
     // Location
     implementation 'com.google.android.gms:play-services-location:19.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
 
     // Glide or Picasso
     implementation 'com.squareup.picasso:picasso:2.71828'

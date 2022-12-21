@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.ui.stops;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,8 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
+import cs10.apps.common.android.ui.CSActivity;
+import cs10.apps.travels.tracer.MapViewActivity;
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.databinding.ActivityStopCreatorBinding;
 import cs10.apps.travels.tracer.databinding.ContentStopCreatorBinding;
@@ -18,7 +20,7 @@ import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ParadasDao;
 import cs10.apps.travels.tracer.model.Parada;
 
-public class StopEditor extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class StopEditor extends CSActivity implements AdapterView.OnItemSelectedListener {
     private ContentStopCreatorBinding content;
     private ParadasDao dao;
     private String originalName;
@@ -43,6 +45,7 @@ public class StopEditor extends AppCompatActivity implements AdapterView.OnItemS
         content = binding.contentStopCreator;
 
         binding.fab.setOnClickListener(view -> new Thread(this::performDone, "performDone").start());
+        binding.fabOpenMap.setOnClickListener(v -> onOpenMap());
         content.tvTitle.setText(getString(R.string.editing_stop));
 
         originalName = getIntent().getExtras().getString("stopName");
@@ -72,6 +75,24 @@ public class StopEditor extends AppCompatActivity implements AdapterView.OnItemS
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         content.selectorType.setAdapter(aa);
         content.selectorType.setOnItemSelectedListener(this);
+    }
+
+    private void onOpenMap() {
+        String latitude = content.etLatitude.getText().toString().trim();
+        String longitude = content.etLongitude.getText().toString().trim();
+        String stopName = content.etStopName.getText().toString().trim();
+
+        try {
+            double x = Double.parseDouble(latitude);
+            double y = Double.parseDouble(longitude);
+            Intent intent = new Intent(this, MapViewActivity.class);
+            intent.putExtra("lat", x);
+            intent.putExtra("long", y);
+            intent.putExtra("name", stopName);
+            startActivity(intent);
+        } catch (NumberFormatException e){
+            showShortToast("No se ingresaron coordenadas válidas");
+        }
     }
 
     @Override

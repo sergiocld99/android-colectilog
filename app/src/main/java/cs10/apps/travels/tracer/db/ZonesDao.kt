@@ -2,6 +2,7 @@ package cs10.apps.travels.tracer.db
 
 import androidx.room.*
 import cs10.apps.travels.tracer.model.Zone
+import cs10.apps.travels.tracer.model.joins.ZoneStats
 
 @Dao
 interface ZonesDao {
@@ -21,7 +22,8 @@ interface ZonesDao {
     @Query("SELECT * FROM Zone WHERE (:x BETWEEN x0 AND x1) AND (:y BETWEEN y0 AND y1) ")
     fun findZonesIn(x: Double, y:Double) : List<Zone>
 
-    @Query("SELECT COUNT(*) FROM Viaje V INNER JOIN Parada P ON P.nombre = V.nombrePdaInicio " +
+    @Query("SELECT COUNT(*) as travelsCount, AVG(V.tipo) as averageType FROM Viaje V " +
+            "INNER JOIN Parada P ON P.nombre = V.nombrePdaInicio " +
             "WHERE (P.latitud BETWEEN :x0 AND :x1) AND (P.longitud BETWEEN :y0 AND :y1) ")
-    fun countTravelsIn(x0: Double, x1: Double, y0: Double, y1: Double) : Int
+    fun countTravelsIn(x0: Double, x1: Double, y0: Double, y1: Double) : ZoneStats
 }

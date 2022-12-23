@@ -84,6 +84,11 @@ public class Utils {
         return ContextCompat.getColor(context, colorFor(bus));
     }
 
+    public static int colorForType(double type){
+        if (Math.round(type) == 0) return R.color.bus;
+        return R.color.train;
+    }
+
     public static int colorFor(Integer bus){
         if (bus == null) return R.color.train;
 

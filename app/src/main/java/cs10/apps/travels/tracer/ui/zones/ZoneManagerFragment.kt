@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.ui.zones
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import cs10.apps.common.android.ui.CS_Fragment
 import cs10.apps.travels.tracer.adapter.ZoneManagerAdapter
 import cs10.apps.travels.tracer.databinding.FragmentManageZonesBinding
+import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Zone
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import cs10.apps.travels.tracer.viewmodel.ZoneManagerVM
@@ -21,6 +23,7 @@ class ZoneManagerFragment : CS_Fragment() {
     private lateinit var binding: FragmentManageZonesBinding
     private lateinit var rootVM: RootVM
     private lateinit var zoneManagerVM: ZoneManagerVM
+    private lateinit var adapter: ZoneManagerAdapter
     private var autoOpened = false
 
     override fun onCreateView(
@@ -40,7 +43,12 @@ class ZoneManagerFragment : CS_Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = ZoneManagerAdapter(listOf()) { zone -> onZoneClick(zone) }
+        adapter = ZoneManagerAdapter(
+            mutableListOf(),
+            { zone -> onZoneClick(zone) },
+            { zone, pos -> onZoneLongClick(zone, pos) }
+        )
+
         binding.recycler.adapter = adapter
         binding.recycler.layoutManager = LinearLayoutManager(requireContext())
 
@@ -48,9 +56,9 @@ class ZoneManagerFragment : CS_Fragment() {
             adapter.list = list
             adapter.notifyDataSetChanged()
 
-            if (list.isEmpty() && !autoOpened){
+            if (list.isEmpty() && !autoOpened) {
                 val intent = Intent(requireActivity(), ZoneCreator::class.java)
-                Handler(Looper.getMainLooper()).postDelayed({startActivity(intent)}, 200)
+                Handler(Looper.getMainLooper()).postDelayed({ startActivity(intent) }, 200)
                 autoOpened = true
             }
         }
@@ -67,7 +75,7 @@ class ZoneManagerFragment : CS_Fragment() {
         zoneManagerVM.load(rootVM.database, rootVM)
     }
 
-    private fun onZoneClick(item: Zone){
+    private fun onZoneClick(item: Zone) {
         zoneManagerVM.selectEditing(item)
 
         /*
@@ -76,6 +84,22 @@ class ZoneManagerFragment : CS_Fragment() {
         startActivity(intent)
 
          */
+    }
+
+    private fun onZoneLongClick(item: Zone, pos: Int) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(item.name)
+        builder.setMessage("¿Quieres eliminar esta zona?")
+        builder.setPositiveButton("Si") { dialogInterface, i ->
+            doInBackground {
+                val dao = MiDB.getInstance(context).zonesDao()
+                dao.delete(item)
+                doInForeground { adapter.remove(pos) }
+            }
+        }
+
+        builder.setNeutralButton("Volver") { dialogInterface, i -> dialogInterface.cancel() }
+        builder.create().show()
     }
 
 }

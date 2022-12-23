@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 class ZoneManagerVM(application: Application) : AndroidViewModel(application) {
 
     // mis live data
-    private var myZones = MutableLiveData<List<Zone>>()
+    private var myZones = MutableLiveData<MutableList<Zone>>()
     private lateinit var editingZone: Zone
 
 
@@ -24,18 +24,19 @@ class ZoneManagerVM(application: Application) : AndroidViewModel(application) {
 
             // process zones
             zones.forEach { z ->
-                val count = miDB.zonesDao().countTravelsIn(z.x0, z.x1, z.y0, z.y1)
-                z.travelCount = count
+                val stats = miDB.zonesDao().countTravelsIn(z.x0, z.x1, z.y0, z.y1)
+                z.zoneStats = stats
             }
 
             // post zones
+            zones.sort()
             myZones.postValue(zones)
 
             rootVM.disableLoading()
         }
     }
 
-    fun observe(lifecycleOwner: LifecycleOwner, observer: Observer<List<Zone>>) {
+    fun observe(lifecycleOwner: LifecycleOwner, observer: Observer<MutableList<Zone>>) {
         myZones.observe(lifecycleOwner, observer)
     }
 

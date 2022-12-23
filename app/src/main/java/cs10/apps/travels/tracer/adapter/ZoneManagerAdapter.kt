@@ -7,8 +7,9 @@ import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.model.Zone
 
 class ZoneManagerAdapter(
-    var list: List<Zone>,
-    private val onLineClick: (Zone) -> Unit
+    var list: MutableList<Zone>,
+    private val onClick: (Zone) -> Unit,
+    private val onLongClick: (Zone, Int) -> Unit
 ) : RecyclerView.Adapter<ZoneViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ZoneViewHolder {
@@ -17,9 +18,14 @@ class ZoneManagerAdapter(
     }
 
     override fun onBindViewHolder(holder: ZoneViewHolder, position: Int) {
-        holder.render(list[position], onLineClick)
+        holder.render(list[position], onClick, onLongClick)
     }
 
     override fun getItemCount() = list.size
 
+    // deletes item from adapter list and updates recycler
+    fun remove(pos: Int) {
+        list.removeAt(pos)
+        notifyItemRemoved(pos)
+    }
 }

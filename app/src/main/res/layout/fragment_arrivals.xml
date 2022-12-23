@@ -43,7 +43,10 @@
             app:layout_constraintEnd_toStartOf="@id/walking_icon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_title"
-            tools:text="97% de cercanía" />
+            android:drawablePadding="4dp"
+            tools:text="@string/unknown_zone"
+            android:textSize="18sp"
+            app:drawableStartCompat="@drawable/ic_radar" />
 
         <include layout="@layout/view_stop_summary"
             android:id="@+id/stop_summary"

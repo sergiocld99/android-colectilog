@@ -12,6 +12,7 @@ import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.modules.RedSube.Companion.getPercentageToPay
+import cs10.apps.travels.tracer.notification.NotificationCenter
 import java.util.*
 
 abstract class CommonTravelCreator : FormActivity() {
@@ -82,6 +83,12 @@ abstract class CommonTravelCreator : FormActivity() {
         if (result == 0) doInBackground {
             val dao = MiDB.getInstance(this).viajesDao()
             dao.insert(viaje)
+
+            // create notification
+            with(NotificationCenter()){
+                createChannel(this@CommonTravelCreator)
+                createNewStartedTravelNotification(this@CommonTravelCreator)
+            }
 
             doInForeground { finish() }
         }

@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -51,7 +50,7 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
         originalName = getIntent().getExtras().getString("stopName");
         content.etStopName.setText(originalName);
 
-        new Thread(() -> {
+        doInBackground(() -> {
             dao = MiDB.getInstance(getApplicationContext()).paradasDao();
             Parada parada = dao.getByName(originalName);
 
@@ -59,7 +58,7 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
             int travelCount = dao.getTravelCount(originalName);
             int rank = dao.getRank(travelCount);
 
-            runOnUiThread(() -> {
+            doInForeground(() -> {
                 content.etLatitude.setText(String.valueOf(parada.getLatitud()));
                 content.etLongitude.setText(String.valueOf(parada.getLongitud()));
                 content.selectorType.setSelection(parada.getTipo());
@@ -67,7 +66,7 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
                 content.stopSummary.stopRank.setText(getString(R.string.number_x_in_ranking, rank));
                 content.stopSummary.getRoot().setVisibility(View.VISIBLE);
             });
-        }).start();
+        });
 
         // Selector
         String[] options = {"Colectivo", "Tren"};
@@ -104,10 +103,10 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_delete){
-            new Thread(() -> {
+            doInBackground(() -> {
                 dao.delete(originalName);
-                runOnUiThread(this::finish);
-            }).start();
+                doInForeground(this::finish);
+            });
 
             return true;
         }
@@ -118,9 +117,9 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
     private void performDone(){
         int result = onUpdateStop();
 
-        runOnUiThread(() -> {
+        doInForeground(() -> {
             if (result == 0) finish();
-            Toast.makeText(getApplicationContext(), messages[result], Toast.LENGTH_LONG).show();
+            showShortToast(messages[result]);
         });
     }
 
@@ -155,7 +154,7 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
 
     @Override
     public void onBackPressed() {
-        Toast.makeText(getApplicationContext(), "Cambios descartados", Toast.LENGTH_LONG).show();
+        showLongToast("Cambios descartados");
         super.onBackPressed();
     }
 

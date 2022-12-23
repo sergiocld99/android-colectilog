@@ -67,14 +67,14 @@ public class BusTravelCreator extends CommonTravelCreator {
     }
 
     private void autoFillRamals() {
-        new Thread(() -> {
+        doInBackground(() -> {
             List<String> ramals = MiDB.getInstance(this).viajesDao().getAllRamals();
 
-            runOnUiThread(() -> {
+            doInForeground(() -> {
                 ramalAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ramals);
                 content.etRamal.setAdapter(ramalAdapter);
             });
-        }).start();
+        });
     }
 
     private void getLocation() throws SecurityException {
@@ -82,11 +82,11 @@ public class BusTravelCreator extends CommonTravelCreator {
     }
 
     private void loadStops(Location location) {
-        new Thread(() -> {
+        doInBackground(() -> {
             MiDB db = MiDB.getInstance(this);
             paradas = db.paradasDao().getAll();
             if (location != null) Utils.orderByProximity(paradas, location.getLatitude(), location.getLongitude());
-            runOnUiThread(this::setSpinners);
+            doInForeground(this::setSpinners);
 
             // part 2: autocomplete likely travel
             int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
@@ -96,7 +96,7 @@ public class BusTravelCreator extends CommonTravelCreator {
                 if (viaje != null) runOnUiThread(() -> autoFillLikelyTravel(viaje));
             }
 
-        }, "loadBusStops").start();
+        });
     }
 
     private void autoFillLikelyTravel(@NonNull Viaje viaje){
@@ -179,7 +179,7 @@ public class BusTravelCreator extends CommonTravelCreator {
             ViajesDao dao = MiDB.getInstance(getApplicationContext()).viajesDao();
             Double maxP = dao.getLastPrice(paradas.get(startIndex).getNombre(), paradas.get(endIndex).getNombre());
 
-            runOnUiThread(() -> {
+            doInForeground(() -> {
                 if (maxP != null) {
                     final double price = maxP * RedSube.Companion.getPercentageToPay(getRedSubeCount()) / 100;
                     content.etPrice.setText(String.valueOf(price));

@@ -68,23 +68,13 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     private var toggleClock: Clock? = null
 
     // DECEMBER 2022 - MVVM Architecture
-    private val database: MiDB
-    var getCurrentTravelUseCase: GetCurrentTravelUseCase
-
-    init {
-        val context = getApplication<Application>().applicationContext
-        database = MiDB.getInstance(context)
-
-        getCurrentTravelUseCase = GetCurrentTravelUseCase(database)
-    }
+    private val database: MiDB = MiDB.getInstance(getApplication<Application>().applicationContext)
+    private var getCurrentTravelUseCase: GetCurrentTravelUseCase = GetCurrentTravelUseCase(database)
 
 
     fun findLastTravel(db: MiDB, locationVM: LocationVM, newTravelRunnable: Runnable) {
-        // val (y, m, d) = Calendar2.getDate()
-
         viewModelScope.launch(Dispatchers.IO) {
             val t: ColoredTravel? = getCurrentTravelUseCase()
-            // val t: ColoredTravel? = db.viajesDao().getCurrentTravel(y, m, d, Utils.getCurrentTs())
 
             // Aceptamos buses y trenes
             if (t == null) resetAllButTravel()

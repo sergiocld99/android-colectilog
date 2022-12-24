@@ -86,7 +86,7 @@ public class HomeFragment extends CS_Fragment {
             Utils.orderByProximity(favoriteStops, location.getLatitude(), location.getLongitude());
 
             homeVM.getFavoriteStops().postValue(favoriteStops);
-            homeVM.updateMaxDistance(miDB);
+            homeVM.updateMaxDistance();
         });
     }
 

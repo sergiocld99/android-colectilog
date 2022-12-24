@@ -17,7 +17,7 @@ interface ZonesDao {
     fun delete(zone: Zone)
 
     @Query("SELECT * FROM Zone")
-    fun getAll() : MutableList<Zone>
+    suspend fun getAll() : MutableList<Zone>
 
     @Query("SELECT * FROM Zone WHERE (:x BETWEEN x0 AND x1) AND (:y BETWEEN y0 AND y1) ")
     fun findZonesIn(x: Double, y:Double) : List<Zone>

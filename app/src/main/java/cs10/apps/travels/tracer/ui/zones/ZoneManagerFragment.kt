@@ -72,7 +72,7 @@ class ZoneManagerFragment : CS_Fragment() {
         super.onResume()
 
         // reload
-        zoneManagerVM.load(rootVM.database, rootVM)
+        zoneManagerVM.load(rootVM)
     }
 
     private fun onZoneClick(item: Zone) {

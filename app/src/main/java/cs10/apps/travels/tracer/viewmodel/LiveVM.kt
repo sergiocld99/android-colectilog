@@ -6,13 +6,13 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Clock
 import cs10.apps.common.android.NumberUtils
 import cs10.apps.common.android.TimedLocation
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.data.generator.Station
 import cs10.apps.travels.tracer.db.MiDB
+import cs10.apps.travels.tracer.domain.GetCurrentTravelUseCase
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.Zone
@@ -67,11 +67,24 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     // timer 2: toggle a boolean every 5 seconds (ramal - line)
     private var toggleClock: Clock? = null
 
+    // DECEMBER 2022 - MVVM Architecture
+    private val database: MiDB
+    var getCurrentTravelUseCase: GetCurrentTravelUseCase
+
+    init {
+        val context = getApplication<Application>().applicationContext
+        database = MiDB.getInstance(context)
+
+        getCurrentTravelUseCase = GetCurrentTravelUseCase(database)
+    }
+
+
     fun findLastTravel(db: MiDB, locationVM: LocationVM, newTravelRunnable: Runnable) {
-        val (y, m, d) = Calendar2.getDate()
+        // val (y, m, d) = Calendar2.getDate()
 
         viewModelScope.launch(Dispatchers.IO) {
-            val t: ColoredTravel? = db.viajesDao().getCurrentTravel(y, m, d, Utils.getCurrentTs())
+            val t: ColoredTravel? = getCurrentTravelUseCase()
+            // val t: ColoredTravel? = db.viajesDao().getCurrentTravel(y, m, d, Utils.getCurrentTs())
 
             // Aceptamos buses y trenes
             if (t == null) resetAllButTravel()

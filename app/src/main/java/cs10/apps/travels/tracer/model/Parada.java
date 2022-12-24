@@ -29,6 +29,9 @@ public class Parada implements Comparable<Parada> {
     @Ignore
     private final DoubleHistory doubleHistory = new DoubleHistory(0.1);
 
+    @Ignore
+    private Zone zone;
+
     @NonNull
     public String getNombre() {
         return nombre;
@@ -97,10 +100,12 @@ public class Parada implements Comparable<Parada> {
         return NumberUtils.Companion.coordsDistanceToKm(hyp);
     }
 
-    public String getDistanceInKm(){
-        double value = getDistance();
-        if (value < 1) return Math.round(value * 100) * 10 + " metros";
-        return Math.round(value * 100) / 100.0 + " km";
+    public void setZone(Zone zone) {
+        this.zone = zone;
+    }
+
+    public Zone getZone() {
+        return zone;
     }
 
     @Override

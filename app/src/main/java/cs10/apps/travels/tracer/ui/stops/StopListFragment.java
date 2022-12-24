@@ -18,15 +18,16 @@ import java.util.List;
 
 import cs10.apps.common.android.ui.CS_Fragment;
 import cs10.apps.travels.tracer.Utils;
-import cs10.apps.travels.tracer.adapter.LocatedStopAdapter;
+import cs10.apps.travels.tracer.adapter.StopAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentStopsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
+import cs10.apps.travels.tracer.model.Zone;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
 
 public class StopListFragment extends CS_Fragment {
     private FragmentStopsBinding binding;
-    private LocatedStopAdapter adapter;
+    private StopAdapter adapter;
     private MiDB miDB;
 
     // ViewModel
@@ -41,7 +42,7 @@ public class StopListFragment extends CS_Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new LocatedStopAdapter(new LinkedList<>(), parada -> {
+        adapter = new StopAdapter(new LinkedList<>(), parada -> {
             onEditStop(parada.getNombre());
             return null;
         });
@@ -70,6 +71,12 @@ public class StopListFragment extends CS_Fragment {
                 miDB = MiDB.getInstance(getContext());
                 List<Parada> paradas = miDB.paradasDao().getAll();
                 Utils.orderByProximity(paradas, location.getLatitude(), location.getLongitude());
+
+                // find zones for each stop
+                for (Parada p : paradas){
+                    List<Zone> zones = miDB.zonesDao().findZonesIn(p.getLatitud(), p.getLongitud());
+                    if (!zones.isEmpty()) p.setZone(zones.get(0));
+                }
 
                 doInForeground(() -> {
                     adapter.setParadasList(paradas);

@@ -3,6 +3,8 @@ package cs10.apps.travels.tracer.ui.travels;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,8 +53,14 @@ public class MyTravelsFragment extends CS_Fragment {
 
         // View Model
         rootVM.getLoading().observe(getViewLifecycleOwner(), it -> {
-            if (it) binding.getRoot().setVisibility(View.GONE);
-            else binding.getRoot().setVisibility(View.VISIBLE);
+            if (it){
+                showLoading();
+            } else {
+                showContent();
+            }
+
+            //if (it) binding.getRoot().setVisibility(View.GONE);
+            //else binding.getRoot().setVisibility(View.VISIBLE);
         });
 
         RecyclerView rv = binding.recycler;
@@ -60,12 +68,24 @@ public class MyTravelsFragment extends CS_Fragment {
         rv.setAdapter(adapter);
     }
 
+    private void showContent() {
+        binding.recycler.setVisibility(View.VISIBLE);
+        binding.viewLoading.setVisibility(View.GONE);
+    }
+
+    private void showLoading() {
+        binding.recycler.setVisibility(View.GONE);
+        binding.viewLoading.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
+        showLoading();
+
         doInBackground(() -> {
-            rootVM.enableLoading();
+            // rootVM.enableLoading();
 
             ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
             List<ColoredTravel> viajes = null;
@@ -88,8 +108,16 @@ public class MyTravelsFragment extends CS_Fragment {
             AutoRater.Companion.calculateRate(viajes, dao);
 
             adapter.setList(viajes);
-            doInForeground(adapter::notifyDataSetChanged);
-            rootVM.disableLoading();
+
+            doInForeground(() -> {
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        adapter.notifyDataSetChanged();
+                        showContent();
+                }, 1000);
+            });
+
+            // doInForeground(adapter::notifyDataSetChanged);
+            //rootVM.disableLoading();
         });
     }
 

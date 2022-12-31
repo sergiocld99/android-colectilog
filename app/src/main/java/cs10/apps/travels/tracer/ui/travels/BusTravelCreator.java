@@ -18,7 +18,7 @@ import java.util.List;
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding;
-import cs10.apps.travels.tracer.databinding.ContentTravelCreatorBinding;
+import cs10.apps.travels.tracer.databinding.ContentBusTravelCreatorBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.model.Parada;
@@ -27,7 +27,7 @@ import cs10.apps.travels.tracer.modules.RedSube;
 import cs10.apps.travels.tracer.ui.stops.StopCreator;
 
 public class BusTravelCreator extends CommonTravelCreator {
-    private ContentTravelCreatorBinding content;
+    private ContentBusTravelCreatorBinding content;
     private ArrayAdapter<? extends Parada> startAdapter, endAdapter;
     private ArrayAdapter<String> ramalAdapter;
     private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
@@ -47,23 +47,23 @@ public class BusTravelCreator extends CommonTravelCreator {
         binding.toolbarLayout.setTitle(getString(R.string.new_travel));
         content = binding.contentTravelCreator;
 
-        super.setDoneFabBehavior(binding.fab);
-        super.setCurrentTime(content.etDate, content.etStartHour, content.redSubeHeader);
-
-        binding.fabStop.setOnClickListener(view -> startActivity(new Intent(this, StopCreator.class)));
-        //content.tvTitle.setText(getString(R.string.new_travel));
-
         onStartPlaceSelected = new OnStartPlaceSelected();
         onEndPlaceSelected = new OnEndPlaceSelected();
+
+        // default config init
+        super.setDoneFabBehavior(binding.fab);
+        super.setCurrentTime(content.etDate, content.etStartHour, content.redSubeHeader);
 
         // hint values
         autoFillRamals();
 
+        // order stops by last location
         client = LocationServices.getFusedLocationProviderClient(this);
         getLocation();
 
-        // listeners to open pickers
+        // listeners
         content.etDate.setOnClickListener(v -> createDatePicker());
+        binding.fabStop.setOnClickListener(view -> startActivity(new Intent(this, StopCreator.class)));
     }
 
     private void autoFillRamals() {
@@ -131,15 +131,16 @@ public class BusTravelCreator extends CommonTravelCreator {
     public int onCheckEntries(@NonNull Viaje viaje){
         if (paradas == null || paradas.isEmpty()) return 6;
 
-        String line = content.etLine.getText().toString();
+        String line = content.etLine.getText().toString().trim();
         String ramal = content.etRamal.getText().toString().trim();
-        String date = content.etDate.getText().toString();
-        String startHour = content.etStartHour.getText().toString();
-        String price = content.etPrice.getText().toString();
+        String date = content.etDate.getText().toString().trim();
+        String startHour = content.etStartHour.getText().toString().trim();
+        String peopleCount = content.etPeopleCount.getText().toString().trim();
+        String price = content.etPrice.getText().toString().trim();
         Parada startPlace = paradas.get(startIndex);
         Parada endPlace = paradas.get(endIndex);
 
-        if (date.isEmpty() || startHour.isEmpty() || line.isEmpty()) return 1;
+        if (date.isEmpty() || startHour.isEmpty() || line.isEmpty() || peopleCount.isEmpty()) return 1;
         if (startPlace.equals(endPlace)) return 2;
 
         String[] hourParams = startHour.split(":");
@@ -164,6 +165,8 @@ public class BusTravelCreator extends CommonTravelCreator {
             viaje.setNombrePdaFin(endPlace.getNombre());
             Utils.setWeekDay(viaje);
             viaje.setLinea(Integer.parseInt(line));
+            viaje.setPeopleCount(Integer.parseInt(peopleCount));
+            if (viaje.getPeopleCount() <= 0 || viaje.getPeopleCount() >= 10) return 7;
             if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
             if (!ramal.isEmpty()) viaje.setRamal(ramal);
         } catch (Exception e){

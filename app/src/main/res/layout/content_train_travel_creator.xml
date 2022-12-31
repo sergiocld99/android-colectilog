@@ -93,6 +93,22 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@string/people_count"
+            android:layout_marginTop="16dp"
+            android:textSize="20sp"/>
+
+        <EditText
+            android:id="@+id/et_people_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:importantForAutofill="no"
+            android:text="1"
+            android:maxLength="1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/price"
             android:layout_marginTop="16dp"
             android:textSize="20sp"/>
@@ -102,7 +118,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
-            android:autofillHints="price"/>
+            android:importantForAutofill="no" />
 
     </LinearLayout>
 

@@ -4,7 +4,7 @@ import android.os.Bundle
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import cs10.apps.common.android.NumberUtils
-import cs10.apps.common.android.enums.StatusCode
+import cs10.apps.travels.tracer.enums.StatusCode
 import cs10.apps.common.android.ui.FormActivity
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ActivityZoneCreatorBinding

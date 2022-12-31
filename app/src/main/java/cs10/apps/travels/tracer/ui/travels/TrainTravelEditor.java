@@ -38,6 +38,9 @@ public class TrainTravelEditor extends CommonTravelEditor {
 
         // listeners to open pickers
         content.etDate.setOnClickListener(v -> createDatePicker());
+
+        // disable people count (1 travel = 1 person)
+        content.etPeopleCount.setEnabled(false);
     }
 
     @Override

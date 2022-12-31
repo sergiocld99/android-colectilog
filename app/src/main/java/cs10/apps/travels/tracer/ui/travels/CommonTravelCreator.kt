@@ -26,7 +26,8 @@ abstract class CommonTravelCreator : FormActivity() {
         "Formato de hora incorrecto",
         "Formato de fecha incorrecto",
         "Error general de formato",
-        "No hay paradas guardadas"
+        "No hay paradas guardadas",
+        "La cantidad de pasajeros debe estar entre 1 y 9"
     )
 
     protected fun setDoneFabBehavior(fab: FloatingActionButton) {
@@ -82,7 +83,9 @@ abstract class CommonTravelCreator : FormActivity() {
 
         if (result == 0) doInBackground {
             val dao = MiDB.getInstance(this).viajesDao()
-            dao.insert(viaje)
+
+            // Update DEC 2022: now you can create travels of +1 people
+            for (i in 1..viaje.peopleCount) dao.insert(viaje)
 
             // create notification
             with(NotificationCenter()){

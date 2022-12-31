@@ -99,4 +99,5 @@
     <string name="bus_travel">Viaje en colectivo</string>
     <string name="open_map">Abrir mapa</string>
     <string name="unknown_zone">Zona sin definir</string>
+    <string name="people_count">Pasajeros (que pagaste)</string>
 </resources>

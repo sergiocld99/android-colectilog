@@ -113,7 +113,7 @@ public class MyTravelsFragment extends CS_Fragment {
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                         adapter.notifyDataSetChanged();
                         showContent();
-                }, 1000);
+                }, 700);
             });
 
             // doInForeground(adapter::notifyDataSetChanged);

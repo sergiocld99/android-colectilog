@@ -9,12 +9,12 @@ import androidx.annotation.NonNull;
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding;
-import cs10.apps.travels.tracer.databinding.ContentTravelCreatorBinding;
+import cs10.apps.travels.tracer.databinding.ContentBusTravelCreatorBinding;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
 
 public class BusTravelEditor extends CommonTravelEditor {
-    private ContentTravelCreatorBinding content;
+    private ContentBusTravelCreatorBinding content;
     private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
     private int startIndex, endIndex;
 
@@ -39,6 +39,9 @@ public class BusTravelEditor extends CommonTravelEditor {
 
         // listeners to open pickers
         content.etDate.setOnClickListener(v -> createDatePicker());
+
+        // disable people count (1 travel = 1 person)
+        content.etPeopleCount.setEnabled(false);
     }
 
     @Override

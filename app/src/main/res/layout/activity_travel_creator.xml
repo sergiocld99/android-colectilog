@@ -52,7 +52,7 @@
 
     <include
         android:id="@+id/content_travel_creator"
-        layout="@layout/content_travel_creator" />
+        layout="@layout/content_bus_travel_creator" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

@@ -3,6 +3,7 @@ package cs10.apps.travels.tracer.model
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import cs10.apps.common.android.NumberUtils
 import cs10.apps.travels.tracer.model.joins.ZoneStats
 
 @Entity
@@ -32,5 +33,9 @@ class Zone(
         val thisCount = this.zoneStats?.travelsCount?: 0
 
         return otherCount.compareTo(thisCount)
+    }
+
+    fun getRadix(): Double {
+        return 0.5 * NumberUtils.coordsDistanceToKm(x1 - x0)
     }
 }

@@ -7,7 +7,7 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import cs10.apps.travels.tracer.model.PriceSum;
+import cs10.apps.travels.tracer.model.joins.PriceSum;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.joins.ColoredTravel;
 import cs10.apps.travels.tracer.model.joins.TravelStats;

@@ -42,8 +42,13 @@ class LineManagerFragment : CS_Fragment() {
         binding.recycler.layoutManager = LinearLayoutManager(requireContext())
 
         lineManagerVM.observe(viewLifecycleOwner) { list ->
+            val ogSize = adapter.itemCount
+            val newSize = list.size
+
             adapter.list = list
-            adapter.notifyDataSetChanged()
+
+            if (ogSize == 0) adapter.notifyItemRangeInserted(0, newSize)
+            else adapter.notifyDataSetChanged()
         }
 
         rootVM.loading.observe(viewLifecycleOwner) {

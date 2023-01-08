@@ -7,7 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.model.PriceSum
+import cs10.apps.travels.tracer.model.joins.PriceSum
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import kotlinx.coroutines.*
 import java.util.*

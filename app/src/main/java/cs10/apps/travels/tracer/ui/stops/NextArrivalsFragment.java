@@ -18,7 +18,7 @@ import cs10.apps.common.android.ui.CS_Fragment;
 import cs10.apps.travels.tracer.adapter.NextArrivalAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentStopsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.model.ScheduledParada;
+import cs10.apps.travels.tracer.model.joins.ScheduledParada;
 
 public class NextArrivalsFragment extends CS_Fragment {
     private FragmentStopsBinding binding;

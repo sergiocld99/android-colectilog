@@ -8,7 +8,7 @@ import androidx.room.Update;
 import java.util.List;
 
 import cs10.apps.travels.tracer.model.Parada;
-import cs10.apps.travels.tracer.model.ScheduledParada;
+import cs10.apps.travels.tracer.model.joins.ScheduledParada;
 
 @Dao
 public interface ParadasDao {

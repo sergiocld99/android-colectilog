@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.model.ScheduledParada
+import cs10.apps.travels.tracer.model.joins.ScheduledParada
 
 class NextArrivalAdapter (
     var list: List<ScheduledParada>,

@@ -59,6 +59,9 @@
             android:name=".ui.zones.ZoneCreator"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
+            android:name=".ui.zones.ZoneEditor"
+            android:theme="@style/Theme.TravelTracer.Buses" />
+        <activity
             android:name=".ui.lines.FilteredTravelsActivity"
             android:label="@string/travels"
             android:theme="@style/Theme.TravelTracer.Buses" />

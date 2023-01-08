@@ -7,7 +7,7 @@ import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.model.Parada
 
 class StopAdapter (
-    var paradasList: List<Parada>,
+    var paradasList: MutableList<Parada>,
     private val onClickListener: (Parada) -> Unit
 ) : RecyclerView.Adapter<StopViewHolder>() {
 

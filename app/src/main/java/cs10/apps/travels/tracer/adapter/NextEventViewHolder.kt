@@ -8,7 +8,7 @@ import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ItemArrivalBinding
 import cs10.apps.travels.tracer.enums.TransportType
-import cs10.apps.travels.tracer.model.ScheduledParada
+import cs10.apps.travels.tracer.model.joins.ScheduledParada
 import cs10.apps.travels.tracer.ui.stops.UpsideDownSwitcher
 
 open class NextEventViewHolder(view: View) : RecyclerView.ViewHolder(view) {

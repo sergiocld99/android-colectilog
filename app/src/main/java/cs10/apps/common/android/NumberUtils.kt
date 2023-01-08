@@ -21,5 +21,9 @@ class NumberUtils {
         fun round(valueToRound: Double, precision: Int) : Int {
             return (valueToRound / precision).roundToInt() * precision
         }
+
+        fun round(valueToRound: Double, precision: Double) : Double {
+            return (valueToRound / precision).roundToInt() * precision
+        }
     }
 }

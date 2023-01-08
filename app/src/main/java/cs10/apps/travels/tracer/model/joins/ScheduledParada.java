@@ -1,8 +1,9 @@
-package cs10.apps.travels.tracer.model;
+package cs10.apps.travels.tracer.model.joins;
 
 import androidx.room.Ignore;
 
 import cs10.apps.travels.tracer.Utils;
+import cs10.apps.travels.tracer.model.Parada;
 
 public class ScheduledParada extends Parada {
 

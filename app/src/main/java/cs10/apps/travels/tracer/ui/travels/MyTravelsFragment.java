@@ -3,8 +3,6 @@ package cs10.apps.travels.tracer.ui.travels;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,14 +51,8 @@ public class MyTravelsFragment extends CS_Fragment {
 
         // View Model
         rootVM.getLoading().observe(getViewLifecycleOwner(), it -> {
-            if (it){
-                showLoading();
-            } else {
-                showContent();
-            }
-
-            //if (it) binding.getRoot().setVisibility(View.GONE);
-            //else binding.getRoot().setVisibility(View.VISIBLE);
+            if (it) showLoading();
+            else showContent();
         });
 
         RecyclerView rv = binding.recycler;
@@ -84,41 +76,39 @@ public class MyTravelsFragment extends CS_Fragment {
 
         showLoading();
 
-        doInBackground(() -> {
-            // rootVM.enableLoading();
+        // rootVM.enableLoading();
+        doInBackground(this::buildData);
+    }
 
-            ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
-            List<ColoredTravel> viajes = null;
+    private void buildData() {
+        ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
+        List<ColoredTravel> viajes = null;
 
-            // activity intent extras
-            if (getActivity() != null){
-                Intent i = getActivity().getIntent();
-                int line = i.getIntExtra("number", -1);
-                String ramal = i.getStringExtra("ramal");
+        // activity intent extras
+        if (getActivity() != null){
+            Intent i = getActivity().getIntent();
+            int line = i.getIntExtra("number", -1);
+            String ramal = i.getStringExtra("ramal");
 
-                if (line != -1) {
-                    if (ramal == null) viajes = dao.getAllFromNoRamal(line);
-                    else viajes = dao.getAllFromRamal(line, ramal);
-                }
+            if (line != -1) {
+                if (ramal == null) viajes = dao.getAllFromNoRamal(line);
+                else viajes = dao.getAllFromRamal(line, ramal);
             }
+        }
 
-            if (viajes == null) viajes = dao.getAllPlusColors();
+        if (viajes == null) viajes = dao.getAllPlusColors();
 
-            // Oct 15: calculate rate based on duration
-            AutoRater.Companion.calculateRate(viajes, dao);
+        // Oct 15: calculate rate based on duration
+        AutoRater.Companion.calculateRate(viajes, dao);
 
-            adapter.setList(viajes);
+        int ogSize = adapter.getItemCount();
+        int newSize = viajes.size();
+        adapter.setList(viajes);
 
-            doInForeground(() -> {
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        adapter.notifyDataSetChanged();
-                        showContent();
-                }, 700);
-            });
+        if (ogSize == 0) doInForeground(() -> adapter.notifyItemRangeInserted(0, newSize));
+        else doInForeground(adapter::notifyDataSetChanged);
 
-            // doInForeground(adapter::notifyDataSetChanged);
-            //rootVM.disableLoading();
-        });
+        doInForeground(this::showContent);
     }
 
     @Override

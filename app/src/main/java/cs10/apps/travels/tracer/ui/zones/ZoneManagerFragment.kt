@@ -53,8 +53,13 @@ class ZoneManagerFragment : CS_Fragment() {
         binding.recycler.layoutManager = LinearLayoutManager(requireContext())
 
         zoneManagerVM.observe(viewLifecycleOwner) { list ->
+            val ogSize = adapter.itemCount
+            val newSize = list.size
+
             adapter.list = list
-            adapter.notifyDataSetChanged()
+
+            if (ogSize == 0) adapter.notifyItemRangeInserted(0, newSize)
+            else adapter.notifyDataSetChanged()
 
             if (list.isEmpty() && !autoOpened) {
                 val intent = Intent(requireActivity(), ZoneCreator::class.java)
@@ -78,12 +83,9 @@ class ZoneManagerFragment : CS_Fragment() {
     private fun onZoneClick(item: Zone) {
         zoneManagerVM.selectEditing(item)
 
-        /*
-        val intent = Intent(requireActivity(), LineDetail::class.java)
-        intent.putExtra("number", customBusLine.number)
+        val intent = Intent(requireActivity(), ZoneEditor::class.java)
+        intent.putExtra("id", item.id)
         startActivity(intent)
-
-         */
     }
 
     private fun onZoneLongClick(item: Zone, pos: Int) {

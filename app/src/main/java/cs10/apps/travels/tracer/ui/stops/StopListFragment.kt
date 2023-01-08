@@ -1,107 +1,100 @@
-package cs10.apps.travels.tracer.ui.stops;
+package cs10.apps.travels.tracer.ui.stops
 
-import android.content.Intent;
-import android.location.Location;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.content.Intent
+import android.location.Location
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import cs10.apps.common.android.ui.CS_Fragment
+import cs10.apps.travels.tracer.Utils
+import cs10.apps.travels.tracer.adapter.StopAdapter
+import cs10.apps.travels.tracer.databinding.FragmentStopsBinding
+import cs10.apps.travels.tracer.viewmodel.LocationVM
+import cs10.apps.travels.tracer.viewmodel.RootVM
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
+class StopListFragment : CS_Fragment() {
+    private lateinit var binding: FragmentStopsBinding
+    private var adapter = StopAdapter(mutableListOf()) { onEditStop(it.nombre) }
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+    // view models
+    private lateinit var locationVM: LocationVM
+    private lateinit var rootVM: RootVM
 
-import cs10.apps.common.android.ui.CS_Fragment;
-import cs10.apps.travels.tracer.Utils;
-import cs10.apps.travels.tracer.adapter.StopAdapter;
-import cs10.apps.travels.tracer.databinding.FragmentStopsBinding;
-import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.model.Parada;
-import cs10.apps.travels.tracer.model.Zone;
-import cs10.apps.travels.tracer.viewmodel.LocationVM;
 
-public class StopListFragment extends CS_Fragment {
-    private FragmentStopsBinding binding;
-    private StopAdapter adapter;
-    private MiDB miDB;
-
-    // ViewModel
-    private LocationVM locationVM;
-
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentStopsBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentStopsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        adapter = new StopAdapter(new LinkedList<>(), parada -> {
-            onEditStop(parada.getNombre());
-            return null;
-        });
+        binding.recycler.layoutManager = LinearLayoutManager(context)
+        binding.recycler.adapter = adapter
+        // locationVM = ViewModelProvider(requireActivity()).get(LocationVM::class.java)
 
-        binding.recycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.recycler.setAdapter(adapter);
-
-        locationVM = new ViewModelProvider(requireActivity()).get(LocationVM.class);
+        rootVM = ViewModelProvider(requireActivity())[RootVM::class.java]
+        locationVM = ViewModelProvider(requireActivity())[LocationVM::class.java]
     }
 
-    private void recalc(Location location){
-        if (adapter.getItemCount() == 0) fillData(location);
+    private fun recalc(location: Location) {
+        fillData(location)
+
+    /*
+        if (adapter.itemCount == 0) fillData(location)
         else {
-            for (Parada p : adapter.getParadasList()) p.updateDistance(location);
-            Collections.sort(adapter.getParadasList());
+            for (p in adapter.paradasList) p.updateDistance(location)
+            adapter.paradasList.sort()
             //Utils.orderByProximity(adapter.getParadasList(), location.getLatitude(), location.getLongitude());
-            doInForeground(adapter::notifyDataSetChanged);
+            doInForeground { adapter.notifyDataSetChanged() }
+        }
+
+         */
+    }
+
+
+    private fun fillData(location: Location) {
+
+        lifecycleScope.launch(Dispatchers.IO){
+            val db = rootVM.database
+            val paradas = db.paradasDao().all
+            Utils.orderByProximity(paradas, location.latitude, location.longitude)
+
+            // find zones
+            paradas.forEach {
+                it.zone = db.zonesDao().findZonesIn(it.latitud, it.longitud).firstOrNull()
+            }
+
+            // show content
+            doInForeground {
+                val ogSize = adapter.itemCount
+                val newSize = paradas.size
+
+                adapter.paradasList = paradas
+                if (ogSize == 0) adapter.notifyItemRangeInserted(0, newSize)
+                else adapter.notifyDataSetChanged()
+            }
         }
     }
 
-    private void fillData(Location location) {
-        // locationVM.getLocation().removeObserver(firstLocationObserver);
-
-        if (location != null){
-            doInBackground(() -> {
-                miDB = MiDB.getInstance(getContext());
-                List<Parada> paradas = miDB.paradasDao().getAll();
-                Utils.orderByProximity(paradas, location.getLatitude(), location.getLongitude());
-
-                // find zones for each stop
-                for (Parada p : paradas){
-                    List<Zone> zones = miDB.zonesDao().findZonesIn(p.getLatitud(), p.getLongitud());
-                    if (!zones.isEmpty()) p.setZone(zones.get(0));
-                }
-
-                doInForeground(() -> {
-                    adapter.setParadasList(paradas);
-                    adapter.notifyItemRangeInserted(0, paradas.size());
-                });
-            });
-        }
+    override fun onResume() {
+        super.onResume()
+        locationVM.getLiveData().observe(viewLifecycleOwner) { recalc(it.location) }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        locationVM.getLiveData().observe(getViewLifecycleOwner(), it -> recalc(it.getLocation()));
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
-
-    private void onEditStop(String stopName) {
-        Intent intent = new Intent(getActivity(), StopEditor.class);
-        intent.putExtra("stopName", stopName);
-        startActivity(intent);
+    private fun onEditStop(stopName: String) {
+        val intent = Intent(activity, StopEditor::class.java)
+        intent.putExtra("stopName", stopName)
+        startActivity(intent)
     }
 }

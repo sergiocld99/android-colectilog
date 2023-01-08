@@ -1,12 +1,13 @@
 package cs10.apps.travels.tracer.adapter
 
 import android.view.View
-import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ItemArrivalBinding
+import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.ScheduledParada
 import cs10.apps.travels.tracer.ui.stops.UpsideDownSwitcher
 
@@ -18,10 +19,14 @@ open class NextEventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     open fun render(item: ScheduledParada, top : Boolean, onClickListener: (ScheduledParada) -> Unit) {
         binding.tvName.text = item.nombre
 
-        val type = if (item.linea == null) 1 else 0
+        val type = if (item.linea == null) TransportType.TRAIN else TransportType.BUS
         binding.ivType.setImageDrawable(Utils.getTypeDrawable(type, binding.root.context))
         binding.tvLine.text = item.lineaAsString
-        binding.root.background = AppCompatResources.getDrawable(binding.root.context, Utils.colorFor(item.linea))
+
+        when(type){
+            TransportType.BUS -> Utils.paintBusColor(item.color, binding.root)
+            TransportType.TRAIN -> binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.train))
+        }
 
         if (top && !item.ramal.isNullOrBlank()){
             upsideDownSwitcher.setTvSwitcher(binding.tvSwitcher)

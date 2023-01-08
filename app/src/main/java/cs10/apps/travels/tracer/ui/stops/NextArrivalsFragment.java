@@ -47,18 +47,20 @@ public class NextArrivalsFragment extends CS_Fragment {
     public void onResume() {
         super.onResume();
 
-        doInBackground(() -> {
-            Calendar c = Calendar.getInstance();
-            int h = c.get(Calendar.HOUR_OF_DAY);
-            int m = c.get(Calendar.MINUTE);
-            miDB = MiDB.getInstance(getContext());
-            List<ScheduledParada> paradas = miDB.paradasDao().getScheduledStopsFrom(h, m);
-            int originalSize = adapter.getItemCount();
-            adapter.setList(paradas);
+        doInBackground(this::buildData);
+    }
 
-            if (originalSize == 0) doInForeground(() -> adapter.notifyItemRangeInserted(0, paradas.size()));
-            else doInForeground(adapter::notifyDataSetChanged);
-        });
+    private void buildData() {
+        Calendar c = Calendar.getInstance();
+        int h = c.get(Calendar.HOUR_OF_DAY);
+        int m = c.get(Calendar.MINUTE);
+        miDB = MiDB.getInstance(getContext());
+        List<ScheduledParada> paradas = miDB.paradasDao().getScheduledStopsFrom(h, m);
+        int originalSize = adapter.getItemCount();
+        adapter.setList(paradas);
+
+        if (originalSize == 0) doInForeground(() -> adapter.notifyItemRangeInserted(0, paradas.size()));
+        else doInForeground(adapter::notifyDataSetChanged);
     }
 
     @Override

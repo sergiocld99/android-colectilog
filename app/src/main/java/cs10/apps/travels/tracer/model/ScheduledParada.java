@@ -7,7 +7,7 @@ import cs10.apps.travels.tracer.Utils;
 public class ScheduledParada extends Parada {
 
     private Integer linea;
-    private int startHour, startMinute;
+    private int startHour, startMinute, color;
     private String ramal, nombrePdaInicio, nombrePdaFin;
 
     @Ignore
@@ -84,5 +84,13 @@ public class ScheduledParada extends Parada {
 
     public String getNextArrival(){
         return getStartHour() + ":" + Utils.twoDecimals(getStartMinute());
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public int getColor() {
+        return color;
     }
 }

@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 
+import cs10.apps.travels.tracer.enums.TransportType;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
 
@@ -152,6 +153,10 @@ public class Utils {
 
     public static Drawable getTypeDrawable(int type, Context context){
         return ContextCompat.getDrawable(context, type == 0 ? R.drawable.ic_bus : R.drawable.ic_train);
+    }
+
+    public static Drawable getTypeDrawable(TransportType type, Context context){
+        return getTypeDrawable(type.ordinal(), context);
     }
 
     public static void loadTrainBanner(ImageView iv){

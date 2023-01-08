@@ -56,8 +56,8 @@ class MonthSummaryFragment : CS_Fragment() {
 
     private fun updateLineStat(stat: LineStat, v1: ViewCircularPbWithLegendBinding, v2: ViewLineIndicatorBinding) {
         updateTypeStat(stat, v1)
+        Utils.paintBusColor(stat.color, v2.root)
         v2.textLineNumber.text = stat.line.toString()
-        v2.root.setCardBackgroundColor(ContextCompat.getColor(v2.root.context, Utils.colorFor(stat.line)))
         v2.root.visibility = View.VISIBLE
     }
 

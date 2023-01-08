@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -87,6 +89,20 @@ public class Utils {
     public static int colorForType(double type){
         if (Math.round(type) == 0) return R.color.bus;
         return R.color.train;
+    }
+
+    public static void paintBusColor(int color, CardView view){
+        if (color == 0)
+            view.setCardBackgroundColor(ContextCompat.getColor(view.getContext(), R.color.bus));
+        else
+            view.setCardBackgroundColor(color);
+    }
+
+    public static void paintBusColor(int color, View view){
+        if (color == 0)
+            view.setBackgroundColor(ContextCompat.getColor(view.getContext(), R.color.bus));
+        else
+            view.setBackgroundColor(color);
     }
 
     public static int colorFor(Integer bus){

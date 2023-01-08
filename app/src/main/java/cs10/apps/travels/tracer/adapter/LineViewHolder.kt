@@ -1,11 +1,9 @@
 package cs10.apps.travels.tracer.adapter
 
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.common.android.NumberUtils
-import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ItemLineBinding
 import cs10.apps.travels.tracer.model.joins.RatedBusLine
@@ -19,10 +17,7 @@ class LineViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         item.name?.let { n -> binding.suggestedName.text = "- $n" }
         item.speed?.let { n -> binding.speedText.text = "${NumberUtils.round(n, 1)} km/h" }
 
-        when(item.color){
-            0 -> binding.card.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus))
-            else -> binding.card.setCardBackgroundColor(item.color)
-        }
+        Utils.paintBusColor(item.color, binding.card)
 
         binding.rateText.text = "${Utils.rateFormat(item.avgUserRate)} (${item.reviewsCount} reviews)"
 

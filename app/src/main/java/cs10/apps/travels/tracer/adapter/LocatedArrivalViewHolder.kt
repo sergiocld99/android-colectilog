@@ -43,7 +43,8 @@ class LocatedArrivalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         // bg color
         if (viaje.color != null){
-            binding.root.setBackgroundColor(viaje.color)
+            // binding.root.setBackgroundColor(viaje.color)
+            Utils.paintBusColor(viaje.color, binding.root)
         } else {
             // old method
             val color = if (viaje.tipo == 1 && !viaje.ramal.isNullOrEmpty() && viaje.ramal!!.contains("Directo")) R.color.bus_159

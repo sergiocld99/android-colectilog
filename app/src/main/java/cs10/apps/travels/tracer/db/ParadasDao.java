@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.db;
 
+import androidx.annotation.Nullable;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -66,4 +67,12 @@ public interface ParadasDao {
 
     @Query("SELECT * FROM parada where tipo = 1")
     List<Parada> getCustomTrainStops();
+
+
+    // ============================== LIVE WAITING ==========================
+
+    @Nullable
+    @Query("SELECT * FROM parada P where (P.latitud between :x0 and :x1) " +
+            "and (P.longitud between :y0 and :y1) limit 1")
+    Parada findStopIn(double x0, double x1, double y0, double y1);
 }

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import cs10.apps.common.android.CS_Fragment;
+import cs10.apps.common.android.ui.CS_Fragment;
 import cs10.apps.travels.tracer.adapter.TravelAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentTravelsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
@@ -51,8 +51,8 @@ public class MyTravelsFragment extends CS_Fragment {
 
         // View Model
         rootVM.getLoading().observe(getViewLifecycleOwner(), it -> {
-            if (it) binding.getRoot().setVisibility(View.GONE);
-            else binding.getRoot().setVisibility(View.VISIBLE);
+            if (it) showLoading();
+            else showContent();
         });
 
         RecyclerView rv = binding.recycler;
@@ -60,37 +60,55 @@ public class MyTravelsFragment extends CS_Fragment {
         rv.setAdapter(adapter);
     }
 
+    private void showContent() {
+        binding.recycler.setVisibility(View.VISIBLE);
+        binding.viewLoading.setVisibility(View.GONE);
+    }
+
+    private void showLoading() {
+        binding.recycler.setVisibility(View.GONE);
+        binding.viewLoading.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
-        doInBackground(() -> {
-            rootVM.enableLoading();
+        showLoading();
 
-            ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
-            List<ColoredTravel> viajes = null;
+        // rootVM.enableLoading();
+        doInBackground(this::buildData);
+    }
 
-            // activity intent extras
-            if (getActivity() != null){
-                Intent i = getActivity().getIntent();
-                int line = i.getIntExtra("number", -1);
-                String ramal = i.getStringExtra("ramal");
+    private void buildData() {
+        ViajesDao dao = MiDB.getInstance(getContext()).viajesDao();
+        List<ColoredTravel> viajes = null;
 
-                if (line != -1) {
-                    if (ramal == null) viajes = dao.getAllFromNoRamal(line);
-                    else viajes = dao.getAllFromRamal(line, ramal);
-                }
+        // activity intent extras
+        if (getActivity() != null){
+            Intent i = getActivity().getIntent();
+            int line = i.getIntExtra("number", -1);
+            String ramal = i.getStringExtra("ramal");
+
+            if (line != -1) {
+                if (ramal == null) viajes = dao.getAllFromNoRamal(line);
+                else viajes = dao.getAllFromRamal(line, ramal);
             }
+        }
 
-            if (viajes == null) viajes = dao.getAllPlusColors();
+        if (viajes == null) viajes = dao.getAllPlusColors();
 
-            // Oct 15: calculate rate based on duration
-            AutoRater.Companion.calculateRate(viajes, dao);
+        // Oct 15: calculate rate based on duration
+        AutoRater.Companion.calculateRate(viajes, dao);
 
-            adapter.setList(viajes);
-            doInForeground(adapter::notifyDataSetChanged);
-            rootVM.disableLoading();
-        });
+        int ogSize = adapter.getItemCount();
+        int newSize = viajes.size();
+        adapter.setList(viajes);
+
+        if (ogSize == 0) doInForeground(() -> adapter.notifyItemRangeInserted(0, newSize));
+        else doInForeground(adapter::notifyDataSetChanged);
+
+        doInForeground(this::showContent);
     }
 
     @Override

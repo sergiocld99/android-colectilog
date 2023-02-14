@@ -9,12 +9,12 @@ import androidx.annotation.NonNull;
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding;
-import cs10.apps.travels.tracer.databinding.ContentTravelCreatorBinding;
+import cs10.apps.travels.tracer.databinding.ContentBusTravelCreatorBinding;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
 
 public class BusTravelEditor extends CommonTravelEditor {
-    private ContentTravelCreatorBinding content;
+    private ContentBusTravelCreatorBinding content;
     private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
     private int startIndex, endIndex;
 
@@ -36,6 +36,12 @@ public class BusTravelEditor extends CommonTravelEditor {
         Utils.loadBusBanner(binding.appbarImage);
         binding.fabStop.setVisibility(View.GONE);
         binding.toolbarLayout.setTitle(getString(R.string.edit_travel));
+
+        // listeners to open pickers
+        content.etDate.setOnClickListener(v -> createDatePicker());
+
+        // disable people count (1 travel = 1 person)
+        content.etPeopleCount.setEnabled(false);
     }
 
     @Override
@@ -135,20 +141,19 @@ public class BusTravelEditor extends CommonTravelEditor {
             Utils.setWeekDay(viaje);
             viaje.setRamal(ramal.isEmpty() ? null : ramal);
             viaje.setCosto(price.isEmpty() ? 0 : Double.parseDouble(price));
-
-            if (line.isEmpty()){
-                viaje.setTipo(1);
-                viaje.setLinea(null);
-            } else {
-                viaje.setTipo(0);
-                viaje.setLinea(Integer.parseInt(line));
-            }
+            viaje.setLinea(Integer.parseInt(line));
+            viaje.setTipo(0);
         } catch (Exception e){
             e.printStackTrace();
             return 5;
         }
 
         return 0;
+    }
+
+    @Override
+    public void onDateSet(int day, int month, int year) {
+        content.etDate.setText(Utils.dateFormat(day, month, year));
     }
 
     private class OnStartPlaceSelected implements AdapterView.OnItemSelectedListener {

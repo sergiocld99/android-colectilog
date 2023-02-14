@@ -13,23 +13,23 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import cs10.apps.common.android.CS_Fragment
 import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Emoji
 import cs10.apps.common.android.NumberUtils
+import cs10.apps.common.android.ui.CS_Fragment
 import cs10.apps.rater.HappyRater
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.adapter.NearStopAdapter
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
-import cs10.apps.travels.tracer.modules.ZoneData
 import cs10.apps.travels.tracer.ui.service.ServiceDetail
 import cs10.apps.travels.tracer.ui.travels.BusTravelEditor
 import cs10.apps.travels.tracer.ui.travels.TrainTravelEditor
-import cs10.apps.travels.tracer.viewmodel.LiveVM
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
+import cs10.apps.travels.tracer.viewmodel.live.LiveVM
+import cs10.apps.travels.tracer.viewmodel.live.WaitingVM
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -41,6 +41,7 @@ class LiveTravelFragment : CS_Fragment() {
     private lateinit var rootVM: RootVM
     private lateinit var liveVM: LiveVM
     private lateinit var locationVM: LocationVM
+    private lateinit var waitingVM: WaitingVM
 
     // View Binding
     private lateinit var binding: FragmentLiveTravelBinding
@@ -54,26 +55,76 @@ class LiveTravelFragment : CS_Fragment() {
         startActivity(intent)
     }
 
+    // Custom Views
+    private lateinit var liveWaitingView: LiveWaitingView
+
+    /* ====================== MAIN FUNCTIONS ==================================== */
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         binding = FragmentLiveTravelBinding.inflate(inflater, container, false)
 
+        // inflate custom views
+        liveWaitingView = LiveWaitingView(binding.waitingLayout)
+
         // view model observers
         rootVM = ViewModelProvider(requireActivity())[RootVM::class.java]
         liveVM = ViewModelProvider(requireActivity())[LiveVM::class.java]
         locationVM = ViewModelProvider(requireActivity())[LocationVM::class.java]
+        waitingVM = ViewModelProvider(requireActivity())[WaitingVM::class.java]
 
+        // progress bar
         rootVM.loading.observe(requireActivity()) { binding.root.isVisible = !it }
 
+        observeLiveVM()
+
+        waitingVM.stopHere.observe(viewLifecycleOwner) {
+            // liveWaitingView.setVisibility(it != null)
+            liveWaitingView.setStopHere(it)
+        }
+
+        locationVM.getLiveData().observe(viewLifecycleOwner) {
+            // updating animation
+            if (binding.lineSubtitle.text.length < 7){
+                binding.updatingView.root.isVisible = true
+                Handler(Looper.getMainLooper()).postDelayed({ binding.updatingView.root.isVisible = false}, 3000)
+            }
+
+            liveVM.recalculateDistances(it.location) { rootVM.disableLoading() }
+            if (liveWaitingView.isVisible()) waitingVM.updateLocation(it.location)
+
+            //val zone = ZoneData.getZoneUppercase(it.location)
+            //binding.zoneInfo.text = zone
+        }
+
+        // OCT 2022
+        locationVM.setSpeedObserver(viewLifecycleOwner) { speedKmH ->
+            if (speedKmH > 100) binding.speedometerText.text = "--"
+            else binding.speedometerText.text = NumberUtils.round(speedKmH, 5).toString()
+        }
+
+        return binding.root
+    }
+
+    private fun observeLiveVM() {
         liveVM.travel.observe(viewLifecycleOwner) {
-            if (it == null) resetViews()
-            else {
-                val bgColor = it.color?: Utils.colorFor(it.linea, context)
+            binding.travellingLayout.isVisible = it != null
+            liveWaitingView.setVisibility(it == null)
+
+            if (it == null) {
+                resetViews()
+            } else {
+                val bgColor = it.color ?: Utils.colorFor(it.linea, context)
                 binding.buttonCard.setCardBackgroundColor(bgColor)
+
                 binding.travelFrom.text = "Desde: " + it.nombrePdaInicio
                 binding.travelTo.text = "Hasta: " + it.nombrePdaFin
-                binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(it.tipo, binding.root.context))
+                binding.buttonDrawing.setImageDrawable(
+                    Utils.getTypeDrawable(
+                        it.tipo,
+                        binding.root.context
+                    )
+                )
                 rootVM.disableLoading()
             }
         }
@@ -81,18 +132,33 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.toggle.observe(viewLifecycleOwner) {
             liveVM.travel.value?.let { t ->
                 if (it && t.ramal != null) {
-                    if (binding.lineSubtitle.text.toString().length < 7) binding.lineSubtitle.isSelected = true
+                    if (binding.lineSubtitle.text.toString().length < 7) binding.lineSubtitle.isSelected =
+                        true
                     binding.lineSubtitle.textSize = 24f
                     binding.lineSubtitle.text = t.ramal
-                    binding.lineSubtitle.setTextColor(ContextCompat.getColor(binding.root.context, R.color.yellow))
+                    binding.lineSubtitle.setTextColor(
+                        ContextCompat.getColor(
+                            binding.root.context,
+                            R.color.yellow
+                        )
+                    )
                 } else {
                     binding.lineSubtitle.text = t.lineSimplified
                     binding.lineSubtitle.textSize = 30f
-                    binding.lineSubtitle.setTextColor(ContextCompat.getColor(binding.root.context, R.color.white))
+                    binding.lineSubtitle.setTextColor(
+                        ContextCompat.getColor(
+                            binding.root.context,
+                            R.color.white
+                        )
+                    )
                 }
 
-                if (it) liveVM.progress.value?.let { prog -> binding.minutesLeft.text = prog.times(100).roundToInt().toString() + "%" }
-                else liveVM.minutesToEnd.value?.let { minutes -> binding.minutesLeft.text = "$minutes'" }
+                if (it) liveVM.progress.value?.let { prog ->
+                    binding.minutesLeft.text = prog.times(100).roundToInt().toString() + "%"
+                }
+                else liveVM.minutesToEnd.value?.let { minutes ->
+                    binding.minutesLeft.text = "$minutes'"
+                }
             }
         }
 
@@ -104,8 +170,10 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.averageDuration.observe(viewLifecycleOwner) {
             if (it == null || it.totalMinutes == 0) binding.averageDuration.text = null
             else {
-                if (it.fromAverage) binding.averageDuration.text = "Duración promedio: ${it.totalMinutes} min. (${it.speed} km/h)"
-                else binding.averageDuration.text = "Duración esperada: ${it.totalMinutes} min. (${it.speed} km/h)"
+                if (it.fromAverage) binding.averageDuration.text =
+                    "Duración promedio: ${it.totalMinutes} min. (${it.speed} km/h)"
+                else binding.averageDuration.text =
+                    "Duración esperada: ${it.totalMinutes} min. (${it.speed} km/h)"
             }
         }
 
@@ -127,7 +195,7 @@ class LiveTravelFragment : CS_Fragment() {
             val avgD = liveVM.averageDuration.value
             val currentTime = liveVM.minutesFromStart.value
 
-            if (prog != null && avgD != null && currentTime != null){
+            if (prog != null && avgD != null && currentTime != null) {
                 val estimation = avgD.totalMinutes * prog
                 val error = abs(currentTime - estimation).roundToInt()
 
@@ -161,31 +229,22 @@ class LiveTravelFragment : CS_Fragment() {
                 // next combination
                 liveVM.nextTravel.value?.let { nextT ->
                     val etaNext = Calendar2.getETA(eta, nextT.duration + 15)
-                    binding.nextTravelInfo.text = "Combinación a ${nextT.nombrePdaFin} (${Utils.hourFormat(etaNext)})"
+                    binding.nextTravelInfo.text =
+                        "Combinación a ${nextT.nombrePdaFin} (${Utils.hourFormat(etaNext)})"
                 }
             }
         }
 
-        locationVM.getLiveData().observe(viewLifecycleOwner) {
-            // updating animation
-            if (binding.lineSubtitle.text.length < 7){
-                binding.updatingView.root.isVisible = true
-                Handler(Looper.getMainLooper()).postDelayed({ binding.updatingView.root.isVisible = false}, 3000)
-            }
-
-            liveVM.recalculateDistances(rootVM.database, it.location) { rootVM.disableLoading() }
-
-            val zone = ZoneData.getZoneUppercase(it.location)
-            binding.zoneInfo.text = zone
+        liveVM.customZone.observe(viewLifecycleOwner) {
+            if (it == null) binding.zoneInfo.text = "Zona desconocida"
+            else binding.zoneInfo.text = it.name
         }
 
-        // OCT 2022
-        locationVM.setSpeedObserver(viewLifecycleOwner) { speedKmH ->
-            if (speedKmH > 100) binding.speedometerText.text = "--"
-            else binding.speedometerText.text = NumberUtils.roundWithPresicion(speedKmH, 5).toString()
+        // DEC 2022: EXPECTED RATING
+        liveVM.rate.observe(viewLifecycleOwner) {
+            if (it == null) binding.rateText.text = "--"
+            else binding.rateText.text = Utils.rateFormat(it)
         }
-
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -212,7 +271,7 @@ class LiveTravelFragment : CS_Fragment() {
         super.onResume()
 
         resetViews()
-        liveVM.findLastTravel(rootVM.database, locationVM) { rootVM.disableLoading() }
+        liveVM.findLastTravel(locationVM) { rootVM.disableLoading() }
     }
 
     override fun onStop() {
@@ -224,6 +283,7 @@ class LiveTravelFragment : CS_Fragment() {
     // ------------------------------- DONE -------------------------------
 
     private fun resetViews() {
+        binding.travellingLayout.isVisible = false
         binding.finishBtn.isVisible = false
         binding.etaInfo.text = null
         binding.averageSpeed.text = null
@@ -235,6 +295,7 @@ class LiveTravelFragment : CS_Fragment() {
         binding.minutesLeft.text = "..."
         binding.speedometerText.text = "--"
         binding.pb.progress = 0
+        binding.rateText.text = "--"
         rootVM.disableLoading()
     }
 
@@ -276,7 +337,7 @@ class LiveTravelFragment : CS_Fragment() {
     }
 
     private fun finishCurrentTravel() {
-        liveVM.finishTravel(Calendar.getInstance(), rootVM.database)
+        liveVM.finishTravel(Calendar.getInstance())
         showDoneAnimation()
     }
 
@@ -303,7 +364,7 @@ class LiveTravelFragment : CS_Fragment() {
 
     private fun showRateDialog() {
         val rater = HappyRater()
-        rater.doneCallback = { rate -> liveVM.saveRating(rate, rootVM.database) }
+        rater.doneCallback = { rate -> liveVM.saveRating(rate) }
         rater.cancelCallback = { liveVM.eraseAll() }
         rater.create(requireContext(), layoutInflater)
     }

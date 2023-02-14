@@ -4,10 +4,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import cs10.apps.common.android.CSActivity
+import cs10.apps.common.android.ui.DatePickerFragment
+import cs10.apps.common.android.ui.FormActivity
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding
 import cs10.apps.travels.tracer.db.MiDB
@@ -16,7 +16,7 @@ import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.modules.RedSube
 import kotlinx.coroutines.*
 
-abstract class CommonTravelEditor : CSActivity() {
+abstract class CommonTravelEditor : FormActivity() {
 
     protected lateinit var viaje: Viaje
     protected var paradas: List<Parada> = mutableListOf()
@@ -33,11 +33,6 @@ abstract class CommonTravelEditor : CSActivity() {
         "Error general de formato",
         "No hay paradas guardadas"
     )
-
-    override fun setSupportActionBar(toolbar: Toolbar?) {
-        super.setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
 
     protected fun prepare(onGetParadas: (MiDB) -> List<Parada>, moduleRedSubeBinding: ModuleRedSubeBinding){
 
@@ -85,8 +80,8 @@ abstract class CommonTravelEditor : CSActivity() {
         if (count == 0) return
 
         moduleRedSubeBinding.title.text = when (count) {
-            1 -> "Descuento del 50%"
-            else -> "Descuento del 25%"
+            1 -> getString(R.string.you_pay_percent, 50)
+            else -> getString(R.string.you_pay_percent, 25)
         }
 
         moduleRedSubeBinding.description.text = when(count){
@@ -107,6 +102,21 @@ abstract class CommonTravelEditor : CSActivity() {
         Toast.makeText(applicationContext, messages[result], Toast.LENGTH_LONG).show()
     }
 
+    // ---------------------- PICKER FRAGMENTS --------------------
+
+    fun createDatePicker(){
+        val picker = DatePickerFragment(viaje.day, viaje.month, viaje.year) { day, month, year ->
+            onDateSet(day, month, year)
+            viaje.day = day
+            viaje.month = month
+            viaje.year = year
+        }
+
+        picker.show(supportFragmentManager, "DatePicker")
+    }
+
+    abstract fun onDateSet(day: Int, month: Int, year: Int)
+
     // -------------------------- TOP MENU ------------------
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -115,26 +125,20 @@ abstract class CommonTravelEditor : CSActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                onBackPressed()
-                true
-            }
-            R.id.action_delete -> {
-                doInBackground {
-                    val db = MiDB.getInstance(this)
-                    db.viajesDao().delete(travelId)
+        if (item.itemId == R.id.action_delete) {
+            doInBackground {
+                val db = MiDB.getInstance(this)
+                db.viajesDao().delete(travelId)
 
-                    doInForeground {
-                        Toast.makeText(this, "Viaje eliminado con éxito", Toast.LENGTH_LONG).show()
-                        finish()
-                    }
+                doInForeground {
+                    Toast.makeText(this, "Viaje eliminado con éxito", Toast.LENGTH_LONG).show()
+                    finish()
                 }
-                true
             }
-            else -> super.onOptionsItemSelected(item)
+
+            return true
         }
-
-
+        
+        return super.onOptionsItemSelected(item)
     }
 }

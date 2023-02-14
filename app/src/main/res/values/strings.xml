@@ -12,7 +12,7 @@
     <string name="title_activity_drawer">DrawerActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Seguimiento de Viajes</string>
+    <string name="nav_header_title">Travel Tracer v1.0 (Feb 2023)</string>
     <string name="nav_header_subtitle">sergio.calderon@alu.ing.unlp.edu.ar</string>
     <string name="nav_header_desc">Navigation header</string>
 
@@ -87,7 +87,17 @@
     <string name="end_hour">Hora de bajada</string>
     <string name="manage_lines">Administrar lineas</string>
     <string name="choose_color">Elegir color</string>
-    <string name="action_change_name">Cambiar apodo</string>
     <string name="alternative_name">Apodo</string>
     <string name="ramal_list">Ramales</string>
+    <string name="you_pay_percent">Pagás el %1$d%%</string>
+    <string name="manage_zones">Administrar zonas</string>
+    <string name="name">Nombre</string>
+    <string name="radix">Radio (en km)</string>
+    <string name="zone">Zona</string>
+    <string name="stop">Parada</string>
+    <string name="train_travel">Viaje en tren</string>
+    <string name="bus_travel">Viaje en colectivo</string>
+    <string name="open_map">Abrir mapa</string>
+    <string name="unknown_zone">Zona sin definir</string>
+    <string name="people_count">Pasajeros (que pagaste)</string>
 </resources>

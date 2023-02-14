@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -22,6 +24,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 
+import cs10.apps.travels.tracer.enums.TransportType;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
 
@@ -84,6 +87,25 @@ public class Utils {
         return ContextCompat.getColor(context, colorFor(bus));
     }
 
+    public static int colorForType(double type){
+        if (Math.round(type) == 0) return R.color.bus;
+        return R.color.train;
+    }
+
+    public static void paintBusColor(int color, CardView view){
+        if (color == 0)
+            view.setCardBackgroundColor(ContextCompat.getColor(view.getContext(), R.color.bus));
+        else
+            view.setCardBackgroundColor(color);
+    }
+
+    public static void paintBusColor(int color, View view){
+        if (color == 0)
+            view.setBackgroundColor(ContextCompat.getColor(view.getContext(), R.color.bus));
+        else
+            view.setBackgroundColor(color);
+    }
+
     public static int colorFor(Integer bus){
         if (bus == null) return R.color.train;
 
@@ -133,13 +155,17 @@ public class Utils {
         return ContextCompat.getDrawable(context, type == 0 ? R.drawable.ic_bus : R.drawable.ic_train);
     }
 
+    public static Drawable getTypeDrawable(TransportType type, Context context){
+        return getTypeDrawable(type.ordinal(), context);
+    }
+
     public static void loadTrainBanner(ImageView iv){
         Picasso.get().load("https://www.el1digital.com.ar/wp-content/uploads/2021/12/b1-51.jpg")
                 .memoryPolicy(MemoryPolicy.NO_CACHE).into(iv);
     }
 
     public static void loadBusBanner(ImageView iv){
-        Picasso.get().load("https://www.infoblancosobrenegro.com/uploads/noticias/5/2022/07/20220708100904_talp.jpg")
+        Picasso.get().load("https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/d037df20161495.562e68da93c72.jpg")
                 .memoryPolicy(MemoryPolicy.NO_CACHE).into(iv);
     }
 

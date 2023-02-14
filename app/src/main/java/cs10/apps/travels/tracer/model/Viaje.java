@@ -50,6 +50,10 @@ public class Viaje implements Comparable<Viaje> {
     @Ignore
     private Double preciseRate;
 
+    // Auxiliar temp variable for multiple travel creation
+    @Ignore
+    private int peopleCount = 1;
+
     public double getCosto() {
         return costo;
     }
@@ -266,5 +270,13 @@ public class Viaje implements Comparable<Viaje> {
     public void addAutomaticRate(double rate) {
         if (getRate() != null) setPreciseRate(0.7 * getRate() + 0.3 * rate);
         else setPreciseRate(rate);
+    }
+
+    public int getPeopleCount() {
+        return peopleCount;
+    }
+
+    public void setPeopleCount(int peopleCount) {
+        this.peopleCount = peopleCount;
     }
 }

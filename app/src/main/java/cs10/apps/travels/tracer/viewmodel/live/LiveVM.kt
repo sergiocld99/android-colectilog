@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.viewmodel
+package cs10.apps.travels.tracer.viewmodel.live
 
 import android.app.Application
 import android.location.Location
@@ -6,18 +6,20 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Clock
 import cs10.apps.common.android.NumberUtils
 import cs10.apps.common.android.TimedLocation
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.data.generator.Station
 import cs10.apps.travels.tracer.db.MiDB
+import cs10.apps.travels.tracer.domain.GetCurrentTravelUseCase
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.model.Zone
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.RamalSchedule
 import cs10.apps.travels.tracer.modules.ZoneData
+import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.estimation.EstimationData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -39,6 +41,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     val toggle = MutableLiveData(true)
     val nextTravel = MutableLiveData<Viaje?>()
     val nearArrivals = MutableLiveData<MutableList<RamalSchedule>>()
+    val customZone = MutableLiveData<Zone?>()
 
     // distances in metres
     val startDistance = MutableLiveData<Double?>()
@@ -48,6 +51,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     val minutesFromStart = MutableLiveData<Double?>()
     val minutesToEnd = MutableLiveData<Int?>()
     val averageDuration = MutableLiveData<EstimationData?>()
+    val minDuration = MutableLiveData<Int?>()
 
     // speed in km/h
     val speed = MutableLiveData<Double?>()
@@ -55,23 +59,30 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     // progress (between 0 and 1)
     val progress = MutableLiveData<Double?>()
 
+    // expected rating
+    val rate = MutableLiveData<Double?>()
+
     // timer 1: update minutes from start every 30 seconds
     private var minuteClock: Clock? = null
 
     // timer 2: toggle a boolean every 5 seconds (ramal - line)
     private var toggleClock: Clock? = null
 
-    fun findLastTravel(db: MiDB, locationVM: LocationVM, newTravelRunnable: Runnable) {
-        val (y, m, d) = Calendar2.getDate()
+    // DECEMBER 2022 - MVVM Architecture
+    private val database: MiDB = MiDB.getInstance(getApplication<Application>().applicationContext)
+    private var getCurrentTravelUseCase: GetCurrentTravelUseCase = GetCurrentTravelUseCase(database)
 
+
+    fun findLastTravel(locationVM: LocationVM, newTravelRunnable: Runnable) {
         viewModelScope.launch(Dispatchers.IO) {
-            val t: ColoredTravel? = db.viajesDao().getCurrentTravel(y, m, d, Utils.getCurrentTs())
+            val t: ColoredTravel? = getCurrentTravelUseCase()
 
             // Aceptamos buses y trenes
             if (t == null) resetAllButTravel()
             else {
                 // general estimation for buses or trains
-                calculateAvgDuration(db, t)
+                calculateAvgDuration(t)
+                calculateBestRate(t)
 
                 travel.postValue(t)
                 delay(500)
@@ -102,7 +113,6 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 // force get location
                 locationVM.getLiveData().value?.let {
                     if (TimedLocation.isStillValid(it)) recalculateDistances(
-                        db,
                         it.location,
                         newTravelRunnable
                     )
@@ -112,39 +122,49 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     }
 
     // realizado solo al encontrar viaje actual
-    private fun calculateAvgDuration(db: MiDB, t: Viaje) {
+    private fun calculateAvgDuration(t: Viaje) {
         // get distance of current travel
-        val currentTravelDistance = db.viajesDao().getTravelDistanceFromId(t.id)
+        val currentTravelDistance = database.viajesDao().getTravelDistanceFromId(t.id)
 
         // primero buscar para el mismo origen, destino y ramal
         var expectedDuration =
-            if (t.ramal == null) db.viajesDao().getAverageTravelDuration(t.nombrePdaInicio, t.nombrePdaFin)
-            else db.viajesDao().getAverageTravelDurationWithRamal(t.nombrePdaInicio, t.nombrePdaFin, t.ramal)
+            if (t.ramal == null) database.viajesDao().getAverageTravelDuration(t.nombrePdaInicio, t.nombrePdaFin)
+            else database.viajesDao().getAverageTravelDurationWithRamal(t.nombrePdaInicio, t.nombrePdaFin, t.ramal)
 
         if (expectedDuration > 0) {
             val speed = (currentTravelDistance.distance / NumberUtils.minutesToHours(expectedDuration))
-            averageDuration.postValue(EstimationData(expectedDuration, speed.roundToInt(), true))
+            val estimationData = EstimationData(expectedDuration, speed.roundToInt(), true)
+            averageDuration.postValue(estimationData)
         } else {
             // en trenes: segundo buscar cualquier viaje realizado antes (todos son del Roca)
             // en colectivos: segundo buscar para cualquier viaje de la misma linea
-            val aPreviousTravel = if (t.linea == null) db.viajesDao().lastFinishedTrainTravel
-            else db.viajesDao().getLastFinishedTravelFromLine(t.linea!!)
+            val pastStats = if (t.linea == null) database.viajesDao().lastFinishedTrainTravel
+            else database.viajesDao().getLastFinishedTravelFromLine(t.linea!!)
 
-            aPreviousTravel?.let { randomTravel ->
-                val coordsDistance = NumberUtils.hyp(
-                    randomTravel.end_x - randomTravel.start_x,
-                    randomTravel.end_y - randomTravel.start_y
-                )
-                val kmDistance = NumberUtils.coordsDistanceToKm(coordsDistance)
-                val speed = kmDistance / NumberUtils.minutesToHours(randomTravel.end_time - randomTravel.start_time)
+            val speed = pastStats?.calculateSpeedInKmH()
 
+            if (speed != null) {
                 expectedDuration = (currentTravelDistance.distance / speed).times(60).roundToInt()
+
                 if (expectedDuration > 0) averageDuration.postValue(
                     EstimationData(expectedDuration, speed.roundToInt(), false)
                 )
             }
 
             if (expectedDuration <= 0) averageDuration.postValue(null)
+        }
+    }
+
+    private fun calculateBestRate(travel: Viaje){
+
+        if (travel.linea == null){
+            minDuration.postValue(database.viajesDao().getTrainMinTravelDuration(
+                travel.nombrePdaInicio, travel.nombrePdaFin
+            ))
+        } else {
+            minDuration.postValue(database.viajesDao().getMinTravelDuration(
+                travel.linea!!, travel.nombrePdaInicio, travel.nombrePdaFin
+            ))
         }
     }
 
@@ -159,14 +179,14 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         else (1 - prog) * averageDuration.value!!.totalMinutes
     }
 
-    fun recalculateDistances(db: MiDB, location: Location, newTravelRunnable: Runnable) {
+    fun recalculateDistances(location: Location, newTravelRunnable: Runnable) {
         travel.value?.let { t ->
             // do not continue if travel is already finished
             if (t.endHour != null) return
 
             viewModelScope.launch(Dispatchers.IO) {
-                val startStop = db.paradasDao().getByName(t.nombrePdaInicio)
-                val endStop = db.paradasDao().getByName(t.nombrePdaFin)
+                val startStop = database.paradasDao().getByName(t.nombrePdaInicio)
+                val endStop = database.paradasDao().getByName(t.nombrePdaFin)
 
                 // calc distances internally
                 startStop.updateDistance(location)
@@ -189,14 +209,23 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                             else -> prog
                         }
 
-                        val minutesLeft =
-                            calculateMinutesLeft(speed, correctedProg, endStop.distance)
+                        val minutesLeft = calculateMinutesLeft(speed, correctedProg, endStop.distance)
 
                         // postear para ui
                         minutesToEnd.postValue(minutesLeft.roundToInt())
                         endDistance.postValue(endStop.distance)
                         progress.postValue(correctedProg)
                         this@LiveVM.speed.postValue(speed)
+
+                        // calculate expected rating
+                        minDuration.value?.let { bestDuration ->
+                            if (bestDuration > 0){
+                                val currentDuration = it + minutesLeft
+
+                                if (currentDuration <= bestDuration) rate.postValue(5.0)
+                                else rate.postValue(5.0 * bestDuration / currentDuration)
+                            } else rate.postValue(null)
+                        }
 
                         // guardar para analisis posterior
                         saveDebugData(t, it, prog, location, startStop, endStop)
@@ -207,7 +236,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 }
 
                 // secondary action: search travel from next destination
-                if (nextTravel.value == null) db.viajesDao().getCompletedTravelFrom(
+                if (nextTravel.value == null) database.viajesDao().getCompletedTravelFrom(
                     endStop.nombre, startStop.nombre, t.linea
                 )?.let { nextT ->
                     nextTravel.postValue(nextT)
@@ -218,7 +247,12 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         // third action: search near arrivals
         viewModelScope.launch(Dispatchers.IO) {
             val zone = ZoneData.getCodes(location)
-            findNearArrivals(db, zone.first, zone.second)
+            findNearArrivals(zone.first, zone.second)
+
+            // new database
+            val zonesFromDB = database.zonesDao().findZonesIn(location.latitude, location.longitude)
+            if (zonesFromDB.isNotEmpty()) customZone.postValue(zonesFromDB[0])
+            else customZone.postValue(null)
         }
     }
 
@@ -245,7 +279,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     }
 
     // busca trenes llegando en la zona
-    private fun findNearArrivals(db: MiDB, xCode: Int, yCode: Int) {
+    private fun findNearArrivals(xCode: Int, yCode: Int) {
         val nearStations = Station.findStationsAtZone(xCode, yCode, 2, areaSize)
         val currentTime = Utils.getCurrentTs()
         val arrivals = mutableListOf<RamalSchedule>()
@@ -253,7 +287,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         nearStations.forEach { s ->
             // search 2 if there is only one station, search 1 if there's two stations
             val queryResult =
-                db.servicioDao().getNextArrivals(s.nombre, currentTime, 2 / nearStations.size)
+                database.servicioDao().getNextArrivals(s.nombre, currentTime, 2 / nearStations.size)
             queryResult.forEach { arrivals.add(it) }
         }
 
@@ -261,7 +295,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         nearArrivals.postValue(arrivals)
     }
 
-    fun finishTravel(cal: Calendar, db: MiDB) {
+    fun finishTravel(cal: Calendar) {
         travel.value?.let {
             // Sumar tiempo que faltaba para terminar 
             minutesToEnd.value?.let { minutes ->
@@ -270,7 +304,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
 
             it.endHour = cal.get(Calendar.HOUR_OF_DAY)
             it.endMinute = cal.get(Calendar.MINUTE)
-            viewModelScope.launch(Dispatchers.IO) { db.viajesDao().update(it) }
+            viewModelScope.launch(Dispatchers.IO) { database.viajesDao().update(it) }
             resetAllButTravel()
         }
     }
@@ -283,6 +317,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         progress.postValue(null)
         speed.postValue(null)
         nextTravel.postValue(null)
+        rate.postValue(null)
     }
 
     fun eraseAll() {
@@ -291,10 +326,10 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         resetAllButTravel()
     }
 
-    fun saveRating(rate: Int, db: MiDB) {
+    fun saveRating(rate: Int) {
         travel.value?.let { t ->
             t.rate = rate
-            viewModelScope.launch(Dispatchers.IO) { db.viajesDao().update(t) }
+            viewModelScope.launch(Dispatchers.IO) { database.viajesDao().update(t) }
             showToastInMainThread("Viaje calificado con éxito")
             eraseAll()
         }

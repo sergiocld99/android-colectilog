@@ -7,7 +7,7 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import cs10.apps.travels.tracer.model.PriceSum;
+import cs10.apps.travels.tracer.model.joins.PriceSum;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.joins.ColoredTravel;
 import cs10.apps.travels.tracer.model.joins.TravelStats;
@@ -184,7 +184,8 @@ public interface ViajesDao {
     @Query("SELECT SUM(costo) FROM viaje where linea is null and month is :month")
     double getTotalSpentInTrains(int month);
 
-    @Query("SELECT linea, SUM(costo) as suma FROM viaje " +
+    @Query("SELECT V.linea, L.color, SUM(V.costo) as suma FROM viaje V " +
+            "LEFT JOIN lines L ON V.linea = L.number " +
             "where linea is not null and month is :month group by linea order by 2 desc limit 3")
     List<PriceSum> getMostExpensiveBus(int month);
 }

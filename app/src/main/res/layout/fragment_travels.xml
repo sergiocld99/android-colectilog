@@ -11,7 +11,32 @@
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/item_travel" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        app:shimmer_auto_start="true"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:id="@+id/viewLoading"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/item_loading_travel" />
+            <include layout="@layout/item_loading_travel" />
+            <include layout="@layout/item_loading_travel" />
+            <include layout="@layout/item_loading_travel" />
+            <include layout="@layout/item_loading_travel" />
+            <include layout="@layout/item_loading_travel" />
+            <include layout="@layout/item_loading_travel" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

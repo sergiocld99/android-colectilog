@@ -7,7 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.model.PriceSum
+import cs10.apps.travels.tracer.model.joins.PriceSum
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import kotlinx.coroutines.*
 import java.util.*
@@ -82,15 +82,15 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
     }
 
     private fun setBus1Stat(priceSum: PriceSum, total: Double){
-        bus1Stat.postValue(LineStat(priceSum.linea, priceSum.suma, total))
+        bus1Stat.postValue(LineStat(priceSum.linea, priceSum.color, priceSum.suma, total))
     }
 
     private fun setBus2Stat(priceSum: PriceSum, total: Double){
-        bus2Stat.postValue(LineStat(priceSum.linea, priceSum.suma, total))
+        bus2Stat.postValue(LineStat(priceSum.linea, priceSum.color, priceSum.suma, total))
     }
 
     private fun setBus3Stat(priceSum: PriceSum, total: Double){
-        bus3Stat.postValue(LineStat(priceSum.linea, priceSum.suma, total))
+        bus3Stat.postValue(LineStat(priceSum.linea, priceSum.color, priceSum.suma, total))
     }
 
     private fun setTypeStats(buses: Double, trains: Double, coffee: Double, total: Double) {

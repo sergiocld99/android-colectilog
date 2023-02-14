@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.db;
 
+import androidx.annotation.Nullable;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -8,7 +9,7 @@ import androidx.room.Update;
 import java.util.List;
 
 import cs10.apps.travels.tracer.model.Parada;
-import cs10.apps.travels.tracer.model.ScheduledParada;
+import cs10.apps.travels.tracer.model.joins.ScheduledParada;
 
 @Dao
 public interface ParadasDao {
@@ -28,14 +29,16 @@ public interface ParadasDao {
     @Query("SELECT * FROM parada ORDER BY nombre")
     List<Parada> getAll();
 
-    @Query("SELECT * FROM (select p.*, linea, ramal, startHour, startMinute, nombrePdaFin " +
+    @Query("SELECT * FROM (select p.*, linea, ramal, L.color, startHour, startMinute, nombrePdaFin " +
             "from parada p inner join viaje v on v.nombrePdaInicio = p.nombre " +
+            "LEFT JOIN lines L ON v.linea = L.number " +
             "where (startHour is :hour and startMinute >= :minute) or startHour > :hour " +
             "order by startHour, startMinute) group by nombre order by startHour, startMinute")
     List<ScheduledParada> getScheduledStopsFrom(int hour, int minute);
 
-    @Query("SELECT * FROM (select p.*, linea, ramal, startHour, startMinute, nombrePdaInicio " +
+    @Query("SELECT * FROM (select p.*, linea, ramal, L.color, startHour, startMinute, nombrePdaInicio " +
             "from parada p inner join viaje v on v.nombrePdaFin = p.nombre " +
+            "LEFT JOIN lines L ON v.linea = L.number " +
             "where (startHour is :hour and startMinute >= :minute) or startHour > :hour " +
             "order by startHour, startMinute) group by nombre order by startHour, startMinute")
     List<ScheduledParada> getScheduledStopsTo(int hour, int minute);
@@ -64,4 +67,12 @@ public interface ParadasDao {
 
     @Query("SELECT * FROM parada where tipo = 1")
     List<Parada> getCustomTrainStops();
+
+
+    // ============================== LIVE WAITING ==========================
+
+    @Nullable
+    @Query("SELECT * FROM parada P where (P.latitud between :x0 and :x1) " +
+            "and (P.longitud between :y0 and :y1) limit 1")
+    Parada findStopIn(double x0, double x1, double y0, double y1);
 }

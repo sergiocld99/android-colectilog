@@ -42,15 +42,19 @@ public class TrainTravelCreator extends CommonTravelCreator {
         Utils.loadTrainBanner(binding.appbarImage);
         binding.toolbarLayout.setTitle(getString(R.string.new_train_travel));
 
-        super.setDoneFabBehavior(binding.fab);
-        super.setCurrentTime(binding.content.etDate, binding.content.etStartHour, binding.content.redSubeHeader);
-
-        // binding.content.tvTitle.setText(getString(R.string.new_train_travel));
         onStartPlaceSelected = new OnStartPlaceSelected();
         onEndPlaceSelected = new OnEndPlaceSelected();
 
+        // default init config
+        super.setDoneFabBehavior(binding.fab);
+        super.setCurrentTime(binding.content.etDate, binding.content.etStartHour, binding.content.redSubeHeader);
+
+        // order stops by last location
         client = LocationServices.getFusedLocationProviderClient(this);
         getLocation();
+
+        // listeners to open pickers
+        binding.content.etDate.setOnClickListener(v -> createDatePicker());
     }
 
     private void getLocation() throws SecurityException {
@@ -80,16 +84,17 @@ public class TrainTravelCreator extends CommonTravelCreator {
     }
 
     @Override
-    protected int onCheckEntries(@NonNull Viaje viaje){
+    public int onCheckEntries(@NonNull Viaje viaje){
         if (paradas == null || paradas.isEmpty()) return 6;
 
-        String date = binding.content.etDate.getText().toString();
-        String startHour = binding.content.etStartHour.getText().toString();
-        String price = binding.content.etPrice.getText().toString().replace("$","");
+        String date = binding.content.etDate.getText().toString().trim();
+        String startHour = binding.content.etStartHour.getText().toString().trim();
+        String peopleCount = binding.content.etPeopleCount.getText().toString().trim();
+        String price = binding.content.etPrice.getText().toString().replace("$","").trim();
         Parada startPlace = paradas.get(startIndex);
         Parada endPlace = paradas.get(endIndex);
 
-        if (date.isEmpty() || startHour.isEmpty()) return 1;
+        if (date.isEmpty() || startHour.isEmpty() || peopleCount.isEmpty()) return 1;
         if (startPlace.equals(endPlace)) return 2;
 
         String[] hourParams = startHour.split(":");
@@ -113,6 +118,8 @@ public class TrainTravelCreator extends CommonTravelCreator {
             viaje.setYear(Integer.parseInt(dateParams[2]));
             viaje.setNombrePdaInicio(startPlace.getNombre());
             viaje.setNombrePdaFin(endPlace.getNombre());
+            viaje.setPeopleCount(Integer.parseInt(peopleCount));
+            if (viaje.getPeopleCount() <= 0 || viaje.getPeopleCount() >= 10) return 7;
             Utils.setWeekDay(viaje);
             if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
         } catch (Exception e){
@@ -135,6 +142,11 @@ public class TrainTravelCreator extends CommonTravelCreator {
                 binding.content.etPrice.setText(Utils.priceFormat(price));
             } else binding.content.etPrice.setText(null);
         }
+    }
+
+    @Override
+    public void onDateSet(int day, int month, int year) {
+        binding.content.etDate.setText(Utils.dateFormat(day, month, year));
     }
 
     private class OnStartPlaceSelected implements AdapterView.OnItemSelectedListener {

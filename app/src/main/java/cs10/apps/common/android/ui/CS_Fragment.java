@@ -1,4 +1,4 @@
-package cs10.apps.common.android;
+package cs10.apps.common.android.ui;
 
 import androidx.fragment.app.Fragment;
 

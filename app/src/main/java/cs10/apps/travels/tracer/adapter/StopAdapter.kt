@@ -6,19 +6,19 @@ import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.model.Parada
 
-class LocatedStopAdapter (
-    var paradasList: List<Parada>,
+class StopAdapter (
+    var paradasList: MutableList<Parada>,
     private val onClickListener: (Parada) -> Unit
-) : RecyclerView.Adapter<LocatedStopViewHolder>() {
+) : RecyclerView.Adapter<StopViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocatedStopViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StopViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return LocatedStopViewHolder(layoutInflater.inflate(R.layout.item_stop, parent, false))
+        return StopViewHolder(layoutInflater.inflate(R.layout.item_stop, parent, false))
     }
 
-    override fun onBindViewHolder(holder: LocatedStopViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: StopViewHolder, position: Int) {
         val item = paradasList[position]
-        holder.render(item, position == 0, onClickListener)
+        holder.render(item, onClickListener)
     }
 
     override fun getItemCount() = paradasList.size

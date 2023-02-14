@@ -8,14 +8,14 @@ import android.view.MenuItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
-import cs10.apps.common.android.CSActivity
+import cs10.apps.common.android.ui.FormActivity
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.adapter.BusRamalsAdapter
 import cs10.apps.travels.tracer.databinding.ActivityLineDetailsBinding
 import cs10.apps.travels.tracer.db.MiDB
 
-class LineDetail : CSActivity(), ColorPickerDialogListener {
+class LineDetail : FormActivity(), ColorPickerDialogListener {
     private var llm: LinearLayoutManager? = null
     private var number: Int? = null
 
@@ -48,10 +48,6 @@ class LineDetail : CSActivity(), ColorPickerDialogListener {
         binding.recycler.adapter = adapter
         binding.recycler.layoutManager = llm
         receiveExtras()
-
-        // back button
-        supportActionBar?.setHomeButtonEnabled(true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // save button
         binding.fab.setOnClickListener {
@@ -114,19 +110,13 @@ class LineDetail : CSActivity(), ColorPickerDialogListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        return when (item.itemId) {
-            R.id.action_palette -> {
-                val dialog = ColorPickerDialog.newBuilder()
-                dialog.show(this)
-                true
-            }
-            android.R.id.home -> {
-                onBackPressed()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
+        if (item.itemId == R.id.action_palette) {
+            val dialog = ColorPickerDialog.newBuilder()
+            dialog.show(this)
+            return true
         }
+
+        return super.onOptionsItemSelected(item)
     }
 
     // ---------------------------- COLOR PICKER ------------------------

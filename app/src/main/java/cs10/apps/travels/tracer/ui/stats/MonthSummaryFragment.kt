@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
-import cs10.apps.common.android.CS_Fragment
+import cs10.apps.common.android.ui.CS_Fragment
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.FragmentBusesBinding
@@ -56,8 +56,8 @@ class MonthSummaryFragment : CS_Fragment() {
 
     private fun updateLineStat(stat: LineStat, v1: ViewCircularPbWithLegendBinding, v2: ViewLineIndicatorBinding) {
         updateTypeStat(stat, v1)
+        Utils.paintBusColor(stat.color, v2.root)
         v2.textLineNumber.text = stat.line.toString()
-        v2.root.setCardBackgroundColor(ContextCompat.getColor(v2.root.context, Utils.colorFor(stat.line)))
         v2.root.visibility = View.VISIBLE
     }
 

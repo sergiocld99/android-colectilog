@@ -9,29 +9,36 @@ import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ItemStopBinding
 import cs10.apps.travels.tracer.model.Parada
 
-class LocatedStopViewHolder(view : View) : RecyclerView.ViewHolder(view) {
+class StopViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     // View Binding
     private val binding = ItemStopBinding.bind(view)
 
     // Función para pintar el layout de este item
-    fun render(parada: Parada, top: Boolean, onClickListener: (Parada) -> Unit){
+    fun render(parada: Parada, onClickListener: (Parada) -> Unit) {
         // Rellenar textos
         binding.tvName.text = parada.nombre
-        binding.tvStartCount.text = binding.root.context.getString(R.string.distance_km, parada.distanceInKm)
+        binding.tvLine.text = String.format("%.1f km", parada.distance)
+        binding.tvStartCount.text =
+            parada.zone?.name ?: binding.root.context.getString(R.string.unknown_zone)
 
-         if (top) {
+        /*
+         if (adapterPosition == 0) {
              val diff = Utils.bestRound(parada.doubleHistory.diffSum)
              binding.tvLocation.text = when {
                 parada.doubleHistory.currentIsGreater() -> "Te alejaste $diff metros"
                 else -> "Te acercaste " + (-diff) + " metros"
              }
-        } else binding.tvLocation.text = binding.root.context.getString(R.string.coords, parada.latitud, parada.longitud)
+
+         */
+
+        binding.tvLocation.text =
+            binding.root.context.getString(R.string.coords, parada.latitud, parada.longitud)
 
         // Colocar icono y color que corresponda
-        val color : Int
+        val color: Int
 
-        if (parada.tipo == 0){
+        if (parada.tipo == 0) {
             color = when {
                 parada.doubleHistory.currentIsLess() -> R.color.bus_500
                 parada.doubleHistory.currentIsGreater() -> R.color.bus_414

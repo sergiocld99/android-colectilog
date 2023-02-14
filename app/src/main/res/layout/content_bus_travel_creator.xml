@@ -59,6 +59,8 @@
             android:id="@+id/et_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
             android:inputType="text"
             android:autofillHints="date"/>
 
@@ -121,6 +123,22 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@string/people_count"
+            android:layout_marginTop="16dp"
+            android:textSize="20sp"/>
+
+        <EditText
+            android:id="@+id/et_people_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:importantForAutofill="no"
+            android:text="1"
+            android:maxLength="1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/price"
             android:layout_marginTop="16dp"
             android:textSize="20sp"/>
@@ -129,8 +147,8 @@
             android:id="@+id/et_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:autofillHints="price"/>
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal" />
 
     </LinearLayout>
 

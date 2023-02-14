@@ -52,7 +52,7 @@
 
     <include
         android:id="@+id/content_travel_creator"
-        layout="@layout/content_travel_creator" />
+        layout="@layout/content_bus_travel_creator" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -71,7 +71,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="96dp"
-        android:contentDescription="@string/done"
+        android:contentDescription="@string/new_stop"
         app:srcCompat="@drawable/ic_edit_location" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

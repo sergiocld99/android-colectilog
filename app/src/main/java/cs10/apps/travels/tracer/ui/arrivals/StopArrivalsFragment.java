@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import cs10.apps.common.android.CS_Fragment;
+import cs10.apps.common.android.ui.CS_Fragment;
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.adapter.LocatedArrivalAdapter;
@@ -27,7 +27,6 @@ import cs10.apps.travels.tracer.databinding.FragmentArrivalsBinding;
 import cs10.apps.travels.tracer.db.DynamicQuery;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
-import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.joins.ColoredTravel;
 import cs10.apps.travels.tracer.model.roca.ArriboTren;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
@@ -80,8 +79,9 @@ public class StopArrivalsFragment extends CS_Fragment {
             fillData(parada);
         });
 
-        locatedArrivalVM.getProximity().observe(getViewLifecycleOwner(), prox -> {
-            binding.tvSubtitle.setText(getString(R.string.proximity_porcentage, prox * 100));
+        locatedArrivalVM.getStopZone().observe(getViewLifecycleOwner(), zone -> {
+            if (zone == null) binding.tvSubtitle.setText(getString(R.string.unknown_zone));
+            else binding.tvSubtitle.setText(zone.getName());
         });
 
         locatedArrivalVM.getGoingTo().observe(getViewLifecycleOwner(), goingTo -> {
@@ -134,7 +134,7 @@ public class StopArrivalsFragment extends CS_Fragment {
         if (args != null) {
             int pos = args.getInt("pos");
             Parada parada = homeVM.getStop(pos);
-            locatedArrivalVM.setStop(parada, force);
+            locatedArrivalVM.setStop(parada, force, rootVM);
         } else {
             Toast.makeText(requireContext(), "No se puede recargar", Toast.LENGTH_SHORT).show();
             binding.swipe.setRefreshing(false);

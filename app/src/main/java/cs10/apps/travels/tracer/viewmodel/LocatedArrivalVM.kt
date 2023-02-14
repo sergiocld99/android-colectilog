@@ -3,28 +3,22 @@ package cs10.apps.travels.tracer.viewmodel
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import cs10.apps.travels.tracer.model.Parada
+import cs10.apps.travels.tracer.model.Zone
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.math.max
 
 class LocatedArrivalVM : ViewModel() {
 
-    val stop: MutableLiveData<Parada> by lazy {
-        MutableLiveData<Parada>().also { Parada() }
-    }
-
+    val stop = MutableLiveData<Parada>()
     val arrivals = MutableLiveData<MutableList<ColoredTravel>>()
-
-    /*
-    val arrivals: MutableLiveData<MutableList<ColoredTravel>> by lazy {
-        MutableLiveData<MutableList<ColoredTravel>>().also { emptyList<Viaje>() }
-    }
-
-     */
-
     val proximity = MutableLiveData<Double>()
     val goingTo = MutableLiveData(false)
     val summary = MutableLiveData<Pair<Int, Int>>()
+    val stopZone = MutableLiveData<Zone?>()
 
     fun recalculate(locationVM: LocationVM, homeVM: HomeVM) {
         locationVM.getLiveData().value?.let { timedLocation ->
@@ -48,8 +42,16 @@ class LocatedArrivalVM : ViewModel() {
         if (stop.value != parada) stop.postValue(parada)
     }
 
-    fun setStop(parada: Parada, forceSet: Boolean){
+    fun setStop(parada: Parada, forceSet: Boolean, rootVM: RootVM){
         if (forceSet) stop.postValue(parada) else setStop(parada)
+
+        // find zone
+        viewModelScope.launch(Dispatchers.IO) {
+            val zones = rootVM.database.zonesDao().findZonesIn(parada.latitud, parada.longitud)
+
+            if (zones.isEmpty()) stopZone.postValue(null)
+            else stopZone.postValue(zones.first())
+        }
     }
 
     private fun setProximity(prox: Double){

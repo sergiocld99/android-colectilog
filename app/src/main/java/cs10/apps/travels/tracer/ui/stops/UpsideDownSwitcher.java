@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.widget.TextSwitcher;
 
 import cs10.apps.travels.tracer.R;
-import cs10.apps.travels.tracer.model.ScheduledParada;
+import cs10.apps.travels.tracer.model.joins.ScheduledParada;
 
 public class UpsideDownSwitcher {
     private TextSwitcher tvSwitcher;

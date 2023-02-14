@@ -14,11 +14,11 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import cs10.apps.common.android.CS_Fragment;
+import cs10.apps.common.android.ui.CS_Fragment;
 import cs10.apps.travels.tracer.adapter.NextArrivalAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentStopsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.model.ScheduledParada;
+import cs10.apps.travels.tracer.model.joins.ScheduledParada;
 
 public class NextArrivalsFragment extends CS_Fragment {
     private FragmentStopsBinding binding;
@@ -47,18 +47,20 @@ public class NextArrivalsFragment extends CS_Fragment {
     public void onResume() {
         super.onResume();
 
-        doInBackground(() -> {
-            Calendar c = Calendar.getInstance();
-            int h = c.get(Calendar.HOUR_OF_DAY);
-            int m = c.get(Calendar.MINUTE);
-            miDB = MiDB.getInstance(getContext());
-            List<ScheduledParada> paradas = miDB.paradasDao().getScheduledStopsFrom(h, m);
-            int originalSize = adapter.getItemCount();
-            adapter.setList(paradas);
+        doInBackground(this::buildData);
+    }
 
-            if (originalSize == 0) doInForeground(() -> adapter.notifyItemRangeInserted(0, paradas.size()));
-            else doInForeground(adapter::notifyDataSetChanged);
-        });
+    private void buildData() {
+        Calendar c = Calendar.getInstance();
+        int h = c.get(Calendar.HOUR_OF_DAY);
+        int m = c.get(Calendar.MINUTE);
+        miDB = MiDB.getInstance(getContext());
+        List<ScheduledParada> paradas = miDB.paradasDao().getScheduledStopsFrom(h, m);
+        int originalSize = adapter.getItemCount();
+        adapter.setList(paradas);
+
+        if (originalSize == 0) doInForeground(() -> adapter.notifyItemRangeInserted(0, paradas.size()));
+        else doInForeground(adapter::notifyDataSetChanged);
     }
 
     @Override

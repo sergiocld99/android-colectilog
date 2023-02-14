@@ -10,13 +10,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -33,6 +31,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
 
+import cs10.apps.common.android.ui.CSActivity;
 import cs10.apps.travels.tracer.data.generator.DelayData;
 import cs10.apps.travels.tracer.data.generator.GlewFiller;
 import cs10.apps.travels.tracer.data.generator.LaPlataFiller;
@@ -43,13 +42,14 @@ import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
+import cs10.apps.travels.tracer.ui.stops.StopCreator;
 import cs10.apps.travels.tracer.ui.travels.BusTravelCreator;
 import cs10.apps.travels.tracer.ui.travels.TrainTravelCreator;
-import cs10.apps.travels.tracer.viewmodel.LineManagerVM;
+import cs10.apps.travels.tracer.ui.zones.ZoneCreator;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
 
-public class DrawerActivity extends AppCompatActivity implements DatabaseCallback {
+public class DrawerActivity extends CSActivity implements DatabaseCallback {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityDrawerBinding binding;
     private FusedLocationProviderClient client;
@@ -57,8 +57,6 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
     private Thread dbThread;
     private LocationCallback locationCallback;
 
-    // ViewModel
-    private LineManagerVM lineManagerVM;
     private LocationVM locationVM;
     private RootVM rootVM;
 
@@ -75,6 +73,8 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
             switch (resultCode){
                 case 0: return new Intent(DrawerActivity.this, BusTravelCreator.class);
                 case 1: return new Intent(DrawerActivity.this, TrainTravelCreator.class);
+                case 2: return new Intent(DrawerActivity.this, StopCreator.class);
+                case 3: return new Intent(DrawerActivity.this, ZoneCreator.class);
                 default: return null;
             }
         }
@@ -103,7 +103,8 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_live, R.id.nav_colectivos,
-                R.id.nav_lines, R.id.nav_trenes, R.id.nav_proximos, R.id.nav_prox_destinos, R.id.nav_paradas)
+                R.id.nav_lines, R.id.nav_zones, R.id.nav_trenes,
+                R.id.nav_proximos, R.id.nav_prox_destinos, R.id.nav_paradas)
                 .setOpenableLayout(binding.drawerLayout)
                 .build();
 
@@ -124,10 +125,9 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
         Utils.checkPermissions(this);
 
         // ViewModel
-        lineManagerVM = new ViewModelProvider(this).get(LineManagerVM.class);
         locationVM = new ViewModelProvider(this).get(LocationVM.class);
 
-        // Re-create Via Circuito if is needed
+        // Create services if it's needed
         dbThread = new Thread(() -> {
             MiDB db = MiDB.getInstance(this);
 
@@ -141,7 +141,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
                 ViaCircuitoFiller filler = new ViaCircuitoFiller(delayData);
                 filler.create2_Q(db);       // hoja 2 de la planilla
                 filler.create2_T(db);       // hoja 1 de la planilla
-                runOnUiThread(() -> Toast.makeText(this, "Vias Temperley y Bosques creados con éxito", Toast.LENGTH_LONG).show());
+                doInForeground(() -> showLongToast("Vias Temperley y Bosques creados con éxito"));
             }
 
             // actualización 2: servicio la plata
@@ -151,7 +151,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
                 LaPlataFiller filler = new LaPlataFiller(delayData);
                 filler.createIda(db);
                 filler.createVuelta(db);
-                runOnUiThread(() -> Toast.makeText(this, "Ramal La Plata creado con éxito", Toast.LENGTH_LONG).show());
+                doInForeground(() -> showLongToast("Ramal La Plata creado con éxito"));
             }
 
             // actualizacion 3: servicio glew / korn
@@ -163,7 +163,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
                 db.servicioDao().deleteServicesSince(2244);
                 filler.createIda(db);
                 filler.createVuelta(db);
-                runOnUiThread(() -> Toast.makeText(this, "Ramal Glew/Korn creado con éxito", Toast.LENGTH_LONG).show());
+                doInForeground(() -> showLongToast("Ramal Glew/Korn creado con éxito"));
             }
 
             // actualización 4: dias de la semana
@@ -180,7 +180,7 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
                 UniversitarioFiller filler = new UniversitarioFiller(delayData);
                 filler.createIda(db);
                 filler.createVuelta(db);
-                runOnUiThread(() -> Toast.makeText(this, "Tren Universitario creado con éxito", Toast.LENGTH_LONG).show());
+                doInForeground(() -> showLongToast("Tren Universitario creado con éxito"));
             }
 
         }, "dbUpdater");
@@ -196,6 +196,13 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
 
         // Keep device awake
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // process intent
+        Intent intent = getIntent();
+        if (intent.getBooleanExtra("openLive", false)){
+            showShortToast("Abriendo sección \"En vivo\"");
+            navController.navigate(R.id.nav_live);
+        }
     }
 
     @Override
@@ -224,6 +231,8 @@ public class DrawerActivity extends AppCompatActivity implements DatabaseCallbac
     protected void onResume() {
         super.onResume();
         startLocationUpdates();
+
+
     }
 
     @Override

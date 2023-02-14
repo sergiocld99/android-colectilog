@@ -14,7 +14,7 @@ import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
 
 public class TrainTravelEditor extends CommonTravelEditor {
-    private ContentTrainTravelCreatorBinding myContent;
+    private ContentTrainTravelCreatorBinding content;
     private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
     private int startIndex, endIndex;
 
@@ -26,42 +26,48 @@ public class TrainTravelEditor extends CommonTravelEditor {
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
 
-        myContent = binding.content;
+        content = binding.content;
         onStartPlaceSelected = new OnStartPlaceSelected();
         onEndPlaceSelected = new OnEndPlaceSelected();
 
-        super.prepare(db -> db.paradasDao().getCustomTrainStops(), myContent.redSubeHeader);
+        super.prepare(db -> db.paradasDao().getCustomTrainStops(), content.redSubeHeader);
         super.setFabBehavior(binding.fab);
 
         Utils.loadTrainBanner(binding.appbarImage);
         binding.toolbarLayout.setTitle(getString(R.string.edit_travel));
+
+        // listeners to open pickers
+        content.etDate.setOnClickListener(v -> createDatePicker());
+
+        // disable people count (1 travel = 1 person)
+        content.etPeopleCount.setEnabled(false);
     }
 
     @Override
     public void setSpinners() {
-        myContent.selectorStartPlace.setAdapter(startAdapter);
-        myContent.selectorEndPlace.setAdapter(endAdapter);
-        myContent.selectorStartPlace.setOnItemSelectedListener(onStartPlaceSelected);
-        myContent.selectorEndPlace.setOnItemSelectedListener(onEndPlaceSelected);
+        content.selectorStartPlace.setAdapter(startAdapter);
+        content.selectorEndPlace.setAdapter(endAdapter);
+        content.selectorStartPlace.setOnItemSelectedListener(onStartPlaceSelected);
+        content.selectorEndPlace.setOnItemSelectedListener(onEndPlaceSelected);
     }
 
     @Override
     public void retrieve() {
-        if (viaje.getCosto() != 0) myContent.etPrice.setText(String.valueOf(viaje.getCosto()));
-        myContent.etDate.setText(Utils.dateFormat(viaje.getDay(), viaje.getMonth(), viaje.getYear()));
-        myContent.etStartHour.setText(Utils.hourFormat(viaje.getStartHour(), viaje.getStartMinute()));
+        if (viaje.getCosto() != 0) content.etPrice.setText(String.valueOf(viaje.getCosto()));
+        content.etDate.setText(Utils.dateFormat(viaje.getDay(), viaje.getMonth(), viaje.getYear()));
+        content.etStartHour.setText(Utils.hourFormat(viaje.getStartHour(), viaje.getStartMinute()));
 
         startIndex = getPosFor(viaje.getNombrePdaInicio());
         endIndex = getPosFor(viaje.getNombrePdaFin());
 
-        myContent.selectorStartPlace.setSelection(startIndex);
-        myContent.selectorEndPlace.setSelection(endIndex);
+        content.selectorStartPlace.setSelection(startIndex);
+        content.selectorEndPlace.setSelection(endIndex);
     }
 
-    private int getPosFor(String stopName){
-        int i=0;
+    private int getPosFor(String stopName) {
+        int i = 0;
 
-        for (Parada p : getParadas()){
+        for (Parada p : getParadas()) {
             if (p.getNombre().equals(stopName)) return i;
             i++;
         }
@@ -70,13 +76,13 @@ public class TrainTravelEditor extends CommonTravelEditor {
     }
 
     @Override
-    public int onCheckEntries(@NonNull Viaje viaje){
+    public int onCheckEntries(@NonNull Viaje viaje) {
         if (getParadas().isEmpty()) return 6;
 
-        String date = myContent.etDate.getText().toString();
-        String startHour = myContent.etStartHour.getText().toString();
-        String endHour = myContent.etEndHour.getText().toString();
-        String price = myContent.etPrice.getText().toString();
+        String date = content.etDate.getText().toString();
+        String startHour = content.etStartHour.getText().toString();
+        String endHour = content.etEndHour.getText().toString();
+        String price = content.etPrice.getText().toString();
         Parada startPlace = getParadas().get(startIndex);
         Parada endPlace = getParadas().get(endIndex);
 
@@ -86,22 +92,22 @@ public class TrainTravelEditor extends CommonTravelEditor {
         if (startPlace.equals(endPlace)) return 2;
 
         hourParams = startHour.split(":");
-        if (hourParams.length != 2){
-            myContent.etStartHour.setError("Ingrese una hora válida");
+        if (hourParams.length != 2) {
+            content.etStartHour.setError("Ingrese una hora válida");
             return 3;
         }
 
-        if (!endHour.isEmpty()){
+        if (!endHour.isEmpty()) {
             endHourParams = endHour.split(":");
-            if (endHourParams.length != 2){
-                myContent.etEndHour.setError("Ingrese una hora válida");
+            if (endHourParams.length != 2) {
+                content.etEndHour.setError("Ingrese una hora válida");
                 return 3;
             }
         }
 
         String[] dateParams = date.split("/");
-        if (dateParams.length != 3){
-            myContent.etDate.setError("Ingrese una fecha válida");
+        if (dateParams.length != 3) {
+            content.etDate.setError("Ingrese una fecha válida");
             return 4;
         }
 
@@ -124,13 +130,19 @@ public class TrainTravelEditor extends CommonTravelEditor {
             // train type
             viaje.setTipo(1);
             viaje.setLinea(null);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return 5;
         }
 
         return 0;
     }
+
+    @Override
+    public void onDateSet(int day, int month, int year) {
+        content.etDate.setText(Utils.dateFormat(day, month, year));
+    }
+
 
     private class OnStartPlaceSelected implements AdapterView.OnItemSelectedListener {
 

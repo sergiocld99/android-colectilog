@@ -1,16 +1,17 @@
 package cs10.apps.travels.tracer.ui.stops;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
+import cs10.apps.common.android.ui.CSActivity;
+import cs10.apps.travels.tracer.MapViewActivity;
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.databinding.ActivityStopCreatorBinding;
 import cs10.apps.travels.tracer.databinding.ContentStopCreatorBinding;
@@ -18,7 +19,7 @@ import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ParadasDao;
 import cs10.apps.travels.tracer.model.Parada;
 
-public class StopEditor extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class StopEditor extends CSActivity implements AdapterView.OnItemSelectedListener {
     private ContentStopCreatorBinding content;
     private ParadasDao dao;
     private String originalName;
@@ -43,12 +44,13 @@ public class StopEditor extends AppCompatActivity implements AdapterView.OnItemS
         content = binding.contentStopCreator;
 
         binding.fab.setOnClickListener(view -> new Thread(this::performDone, "performDone").start());
+        binding.fabOpenMap.setOnClickListener(v -> onOpenMap());
         content.tvTitle.setText(getString(R.string.editing_stop));
 
         originalName = getIntent().getExtras().getString("stopName");
         content.etStopName.setText(originalName);
 
-        new Thread(() -> {
+        doInBackground(() -> {
             dao = MiDB.getInstance(getApplicationContext()).paradasDao();
             Parada parada = dao.getByName(originalName);
 
@@ -56,7 +58,7 @@ public class StopEditor extends AppCompatActivity implements AdapterView.OnItemS
             int travelCount = dao.getTravelCount(originalName);
             int rank = dao.getRank(travelCount);
 
-            runOnUiThread(() -> {
+            doInForeground(() -> {
                 content.etLatitude.setText(String.valueOf(parada.getLatitud()));
                 content.etLongitude.setText(String.valueOf(parada.getLongitud()));
                 content.selectorType.setSelection(parada.getTipo());
@@ -64,7 +66,7 @@ public class StopEditor extends AppCompatActivity implements AdapterView.OnItemS
                 content.stopSummary.stopRank.setText(getString(R.string.number_x_in_ranking, rank));
                 content.stopSummary.getRoot().setVisibility(View.VISIBLE);
             });
-        }).start();
+        });
 
         // Selector
         String[] options = {"Colectivo", "Tren"};
@@ -72,6 +74,24 @@ public class StopEditor extends AppCompatActivity implements AdapterView.OnItemS
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         content.selectorType.setAdapter(aa);
         content.selectorType.setOnItemSelectedListener(this);
+    }
+
+    private void onOpenMap() {
+        String latitude = content.etLatitude.getText().toString().trim();
+        String longitude = content.etLongitude.getText().toString().trim();
+        String stopName = content.etStopName.getText().toString().trim();
+
+        try {
+            double x = Double.parseDouble(latitude);
+            double y = Double.parseDouble(longitude);
+            Intent intent = new Intent(this, MapViewActivity.class);
+            intent.putExtra("lat", x);
+            intent.putExtra("long", y);
+            intent.putExtra("name", stopName);
+            startActivity(intent);
+        } catch (NumberFormatException e){
+            showShortToast("No se ingresaron coordenadas válidas");
+        }
     }
 
     @Override
@@ -83,10 +103,10 @@ public class StopEditor extends AppCompatActivity implements AdapterView.OnItemS
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_delete){
-            new Thread(() -> {
+            doInBackground(() -> {
                 dao.delete(originalName);
-                runOnUiThread(this::finish);
-            }).start();
+                doInForeground(this::finish);
+            });
 
             return true;
         }
@@ -97,9 +117,9 @@ public class StopEditor extends AppCompatActivity implements AdapterView.OnItemS
     private void performDone(){
         int result = onUpdateStop();
 
-        runOnUiThread(() -> {
+        doInForeground(() -> {
             if (result == 0) finish();
-            Toast.makeText(getApplicationContext(), messages[result], Toast.LENGTH_LONG).show();
+            showShortToast(messages[result]);
         });
     }
 
@@ -134,7 +154,7 @@ public class StopEditor extends AppCompatActivity implements AdapterView.OnItemS
 
     @Override
     public void onBackPressed() {
-        Toast.makeText(getApplicationContext(), "Cambios descartados", Toast.LENGTH_LONG).show();
+        showLongToast("Cambios descartados");
         super.onBackPressed();
     }
 

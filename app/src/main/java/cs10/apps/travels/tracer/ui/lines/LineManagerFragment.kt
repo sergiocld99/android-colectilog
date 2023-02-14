@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import cs10.apps.common.android.CS_Fragment
+import cs10.apps.common.android.ui.CS_Fragment
 import cs10.apps.travels.tracer.adapter.LineManagerAdapter
 import cs10.apps.travels.tracer.databinding.FragmentManageLinesBinding
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
@@ -42,8 +42,13 @@ class LineManagerFragment : CS_Fragment() {
         binding.recycler.layoutManager = LinearLayoutManager(requireContext())
 
         lineManagerVM.observe(viewLifecycleOwner) { list ->
+            val ogSize = adapter.itemCount
+            val newSize = list.size
+
             adapter.list = list
-            adapter.notifyDataSetChanged()
+
+            if (ogSize == 0) adapter.notifyItemRangeInserted(0, newSize)
+            else adapter.notifyDataSetChanged()
         }
 
         rootVM.loading.observe(viewLifecycleOwner) {

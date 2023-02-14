@@ -18,7 +18,7 @@ import java.util.List;
 import cs10.apps.travels.tracer.adapter.NextDestinationAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentStopsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.model.ScheduledParada;
+import cs10.apps.travels.tracer.model.joins.ScheduledParada;
 
 public class NextDestinationsFragment extends Fragment {
     private FragmentStopsBinding binding;

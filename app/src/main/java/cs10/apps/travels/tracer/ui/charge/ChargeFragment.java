@@ -13,7 +13,7 @@ import java.util.Calendar;
 
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
-import cs10.apps.common.android.CS_Fragment;
+import cs10.apps.common.android.ui.CS_Fragment;
 import cs10.apps.travels.tracer.databinding.FragmentChargeBinding;
 import cs10.apps.travels.tracer.databinding.ViewCircularButtonBinding;
 import cs10.apps.travels.tracer.db.MiDB;

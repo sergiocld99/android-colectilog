@@ -169,6 +169,7 @@ public class BusTravelCreator extends CommonTravelCreator {
             if (viaje.getPeopleCount() <= 0 || viaje.getPeopleCount() >= 10) return 7;
             if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
             if (!ramal.isEmpty()) viaje.setRamal(ramal);
+            if (content.ratingBar.getRating() > 0) viaje.setRate(Math.round(content.ratingBar.getRating()));
         } catch (Exception e){
             e.printStackTrace();
             return 5;

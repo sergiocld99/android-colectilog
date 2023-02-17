@@ -100,4 +100,5 @@
     <string name="open_map">Abrir mapa</string>
     <string name="unknown_zone">Zona sin definir</string>
     <string name="people_count">Pasajeros (que pagaste)</string>
+    <string name="rating">Calificación</string>
 </resources>

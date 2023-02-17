@@ -17,7 +17,6 @@ import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Emoji
 import cs10.apps.common.android.NumberUtils
 import cs10.apps.common.android.ui.CS_Fragment
-import cs10.apps.rater.HappyRater
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.adapter.NearStopAdapter
@@ -337,7 +336,7 @@ class LiveTravelFragment : CS_Fragment() {
     }
 
     private fun finishCurrentTravel() {
-        liveVM.finishTravel(Calendar.getInstance())
+        liveVM.finishTravel(Calendar.getInstance(), layoutInflater, requireActivity())
         showDoneAnimation()
     }
 
@@ -354,20 +353,24 @@ class LiveTravelFragment : CS_Fragment() {
         val dialog = builder.create()
         dialog.show()
 
+
         // dismiss dialog and clear views
         Handler(Looper.getMainLooper()).postDelayed({
             dialog.cancel()
-            showRateDialog()
+            // showRateDialog()
             resetViews()
         }, 2000)
     }
 
+    /*
     private fun showRateDialog() {
         val rater = HappyRater()
         rater.doneCallback = { rate -> liveVM.saveRating(rate) }
         rater.cancelCallback = { liveVM.eraseAll() }
         rater.create(requireContext(), layoutInflater)
     }
+
+     */
 
     private fun getETA(minutesToEnd: Int) : CharSequence {
         val eta = Calendar.getInstance().apply { add(Calendar.MINUTE, minutesToEnd) }

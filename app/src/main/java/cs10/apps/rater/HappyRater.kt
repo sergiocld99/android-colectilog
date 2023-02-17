@@ -11,17 +11,20 @@ import kotlin.math.roundToInt
 class HappyRater {
     var doneCallback: (Int) -> Unit = {}
     var cancelCallback: () -> Unit = {}
+    private lateinit var alertDialog: AlertDialog
     private var integerRate = -1
 
-    fun create(context: Context, layoutInflater: LayoutInflater) {
+    fun create(context: Context, layoutInflater: LayoutInflater, defaultRate: Float = 3f) {
         val view = SimpleRateBinding.inflate(layoutInflater, null, false)
 
-        AlertDialog.Builder(context).let { b ->
+        alertDialog = AlertDialog.Builder(context).let { b ->
             b.setView(view.root)
             b.setPositiveButton("Done!") { dialogInterface, i -> doneCallback(integerRate) }
             b.setNeutralButton("Cancel") { dialogInterface, i -> cancelCallback() }
-            b.create().show()
+            b.create()
         }
+
+        view.ratingBar.rating = defaultRate
 
         // emoticon changes
         view.ratingBar.setOnRatingBarChangeListener { bar, rating, b ->
@@ -43,5 +46,9 @@ class HappyRater {
         }
 
         view.emoticon.setImageDrawable(ContextCompat.getDrawable(view.root.context, drawable))
+    }
+
+    fun show() {
+        alertDialog.show()
     }
 }

@@ -1,7 +1,11 @@
 package cs10.apps.travels.tracer.viewmodel.live
 
 import android.app.Application
+import android.content.Context
 import android.location.Location
+import android.os.Handler
+import android.os.Looper
+import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import cs10.apps.common.android.Clock
 import cs10.apps.common.android.NumberUtils
 import cs10.apps.common.android.TimedLocation
+import cs10.apps.rater.HappyRater
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.data.generator.Station
 import cs10.apps.travels.tracer.db.MiDB
@@ -295,18 +300,29 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         nearArrivals.postValue(arrivals)
     }
 
-    fun finishTravel(cal: Calendar) {
+    fun finishTravel(cal: Calendar, layoutInflater: LayoutInflater, context: Context) {
         travel.value?.let {
             // Sumar tiempo que faltaba para terminar 
-            minutesToEnd.value?.let { minutes ->
-                cal.add(Calendar.MINUTE, minutes)
-            }
+            minutesToEnd.value?.let { minutes -> cal.add(Calendar.MINUTE, minutes) }
 
             it.endHour = cal.get(Calendar.HOUR_OF_DAY)
             it.endMinute = cal.get(Calendar.MINUTE)
             viewModelScope.launch(Dispatchers.IO) { database.viajesDao().update(it) }
+
+            // load rater before reset variables
+            viewModelScope.launch(Dispatchers.Main) { showRaterDelayed(layoutInflater, context) }
+
             resetAllButTravel()
         }
+    }
+
+    private fun showRaterDelayed(layoutInflater: LayoutInflater, context: Context){
+        val rater = HappyRater()
+        rater.doneCallback = { rate -> saveRating(rate) }
+        rater.cancelCallback = { eraseAll() }
+        rater.create(context, layoutInflater, rate.value?.toFloat() ?: 3f)
+
+        Handler(Looper.getMainLooper()).postDelayed({rater.show()}, 2500)
     }
 
     fun resetAllButTravel() {

@@ -1,6 +1,7 @@
 package cs10.apps.travels.tracer.ui.live
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -22,6 +23,7 @@ import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.adapter.NearStopAdapter
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
+import cs10.apps.travels.tracer.notification.NotificationCenter
 import cs10.apps.travels.tracer.ui.service.ServiceDetail
 import cs10.apps.travels.tracer.ui.travels.BusTravelEditor
 import cs10.apps.travels.tracer.ui.travels.TrainTravelEditor
@@ -131,8 +133,7 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.toggle.observe(viewLifecycleOwner) {
             liveVM.travel.value?.let { t ->
                 if (it && t.ramal != null) {
-                    if (binding.lineSubtitle.text.toString().length < 7) binding.lineSubtitle.isSelected =
-                        true
+                    if (binding.lineSubtitle.text.toString().length < 7) binding.lineSubtitle.isSelected = true
                     binding.lineSubtitle.textSize = 24f
                     binding.lineSubtitle.text = t.ramal
                     binding.lineSubtitle.setTextColor(
@@ -221,9 +222,21 @@ class LiveTravelFragment : CS_Fragment() {
             else {
                 val eta = Calendar.getInstance().apply { add(Calendar.MINUTE, it) }
 
+                // ui
                 binding.minutesLeft.text = "$it'"
                 binding.etaInfo.text = "Llegarías a las " + Utils.hourFormat(eta)
                 binding.finishBtn.isVisible = it < 10
+
+                // arrival notification
+                liveVM.travel.value?.id?.let { id ->
+                    val prefs = requireContext().getSharedPreferences("eta_notified", Context.MODE_PRIVATE)
+                    val notified = prefs.getBoolean(id.toString(), false)
+                    if (!notified) {
+                        NotificationCenter().scheduleAskNotification(requireContext(), it * 60000L)
+                        prefs.edit().putBoolean(id.toString(), true).apply()
+                    }
+                }
+
 
                 // next combination
                 liveVM.nextTravel.value?.let { nextT ->

@@ -230,10 +230,10 @@ class LiveTravelFragment : CS_Fragment() {
                 // arrival notification
                 liveVM.travel.value?.id?.let { id ->
                     val prefs = requireContext().getSharedPreferences("eta_notified", Context.MODE_PRIVATE)
-                    val notified = prefs.getBoolean(id.toString(), false)
-                    if (!notified) {
+                    val scheduled = prefs.getLong("last_id", -1)
+                    if (scheduled != id) {
                         NotificationCenter().scheduleAskNotification(requireContext(), it * 60000L)
-                        prefs.edit().putBoolean(id.toString(), true).apply()
+                        prefs.edit().putLong("last_id", id).apply()
                     }
                 }
 

@@ -48,6 +48,7 @@ public class TrainTravelCreator extends CommonTravelCreator {
         // default init config
         super.setDoneFabBehavior(binding.fab);
         super.setCurrentTime(binding.content.etDate, binding.content.etStartHour, binding.content.redSubeHeader);
+        binding.content.etEndHour.setEnabled(false);
 
         // order stops by last location
         client = LocationServices.getFusedLocationProviderClient(this);

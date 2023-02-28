@@ -53,6 +53,7 @@ public class BusTravelCreator extends CommonTravelCreator {
         // default config init
         super.setDoneFabBehavior(binding.fab);
         super.setCurrentTime(content.etDate, content.etStartHour, content.redSubeHeader);
+        content.etEndHour.setEnabled(false);
 
         // hint values
         autoFillRamals();

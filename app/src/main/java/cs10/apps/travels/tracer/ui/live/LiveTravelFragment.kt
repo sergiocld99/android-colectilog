@@ -180,8 +180,8 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.speed.observe(viewLifecycleOwner) {
             if (it == null) binding.averageSpeed.text = null
             else {
-                val formated = (it * 10).roundToInt() / 10.0
-                binding.averageSpeed.text = "Velocidad: $formated km/h"
+                // val formated = (it * 10).roundToInt() / 10.0
+                // binding.averageSpeed.text = "Velocidad: $formated km/h"
             }
         }
 
@@ -205,7 +205,13 @@ class LiveTravelFragment : CS_Fragment() {
         }
 
         liveVM.endDistance.observe(viewLifecycleOwner) {
-            if (it != null && it < 0.8) finishCurrentTravel()
+            if (it != null) {
+                if (it < 0.8) finishCurrentTravel()
+                else {
+                    // show below elapsed time tv
+                    binding.averageSpeed.text = "A ${NumberUtils.round(it, 0.01)} km de destino"
+                }
+            }
         }
 
         liveVM.nearArrivals.observe(viewLifecycleOwner) {

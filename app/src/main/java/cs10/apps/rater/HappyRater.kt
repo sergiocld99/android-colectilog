@@ -14,7 +14,7 @@ class HappyRater {
     private lateinit var alertDialog: AlertDialog
     private var integerRate = -1
 
-    fun create(context: Context, layoutInflater: LayoutInflater, defaultRate: Float = 3f) {
+    fun create(context: Context, layoutInflater: LayoutInflater, defaultRate: Float) {
         val view = SimpleRateBinding.inflate(layoutInflater, null, false)
 
         alertDialog = AlertDialog.Builder(context).let { b ->
@@ -25,6 +25,7 @@ class HappyRater {
         }
 
         view.ratingBar.rating = defaultRate
+        integerRate = defaultRate.roundToInt()
 
         // emoticon changes
         view.ratingBar.setOnRatingBarChangeListener { bar, rating, b ->

@@ -26,6 +26,7 @@ class HappyRater {
 
         view.ratingBar.rating = defaultRate
         integerRate = defaultRate.roundToInt()
+        autoUpdateEmoticon(view)
 
         // emoticon changes
         view.ratingBar.setOnRatingBarChangeListener { bar, rating, b ->

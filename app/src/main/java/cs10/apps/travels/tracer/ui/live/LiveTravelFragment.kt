@@ -254,8 +254,11 @@ class LiveTravelFragment : CS_Fragment() {
         }
 
         liveVM.customZone.observe(viewLifecycleOwner) {
-            if (it == null) binding.zoneInfo.text = "Zona desconocida"
-            else binding.zoneInfo.text = it.name
+            if (it == null) binding.zoneInfo.isVisible = false
+            else {
+                binding.zoneInfo.text = it.name
+                binding.zoneInfo.isVisible = true
+            }
         }
 
         // DEC 2022: EXPECTED RATING

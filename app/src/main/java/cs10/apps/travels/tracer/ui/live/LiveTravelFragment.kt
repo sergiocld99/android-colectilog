@@ -209,7 +209,7 @@ class LiveTravelFragment : CS_Fragment() {
                 if (it < 0.8) finishCurrentTravel()
                 else {
                     // show below elapsed time tv
-                    binding.averageSpeed.text = String.format("Destino a %.2f km", it)
+                    binding.averageSpeed.text = String.format("Destino a %.1f km", it)
                 }
             }
         }

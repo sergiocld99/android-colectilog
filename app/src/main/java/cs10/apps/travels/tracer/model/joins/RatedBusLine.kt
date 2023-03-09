@@ -18,7 +18,10 @@ class RatedBusLine(
     override fun compareTo(other: CustomBusLine): Int {
 
         if (other is RatedBusLine){
-            val comp = other.reviewsCount.compareTo(this.reviewsCount)
+            val comp = if (other.speed != null && this.speed != null)
+                other.speed!!.compareTo(this.speed!!)
+            else other.reviewsCount.compareTo(this.reviewsCount)
+
             if (comp != 0) return comp
         }
 

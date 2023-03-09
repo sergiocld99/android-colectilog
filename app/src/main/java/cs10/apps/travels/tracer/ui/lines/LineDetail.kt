@@ -94,6 +94,8 @@ class LineDetail : FormActivity(), ColorPickerDialogListener {
             }
         }
 
+        data.sort()
+
         doInForeground {
             binding.etAlternativeName.setText(line?.name)
             adapter.list = data

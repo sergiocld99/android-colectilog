@@ -38,6 +38,6 @@ interface LinesDao {
 
     @Query("SELECT DISTINCT V.ramal, L.color, AVG(V.rate) as avgUserRate, COUNT(V.rate) as reviewsCount " +
             "FROM Viaje V INNER JOIN lines L ON V.linea = L.number " +
-            "WHERE V.rate is not null and V.linea is :number GROUP BY V.ramal ORDER BY 4 DESC")
-    fun getRamalesFromLine(number: Int) : List<BusRamalInfo>
+            "WHERE V.rate is not null and V.linea is :number GROUP BY V.ramal")
+    fun getRamalesFromLine(number: Int) : MutableList<BusRamalInfo>
 }

@@ -12,6 +12,7 @@ import cs10.apps.common.android.ui.FormActivity
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.adapter.BusRamalsAdapter
+import cs10.apps.travels.tracer.constants.Extras
 import cs10.apps.travels.tracer.databinding.ActivityLineDetailsBinding
 import cs10.apps.travels.tracer.db.MiDB
 
@@ -116,6 +117,9 @@ class LineDetail : FormActivity(), ColorPickerDialogListener {
             val dialog = ColorPickerDialog.newBuilder()
             dialog.show(this)
             return true
+        } else if (item.itemId == R.id.action_graph) {
+            number?.let { n -> openHourStats(n) }
+            return true
         }
 
         return super.onOptionsItemSelected(item)
@@ -138,4 +142,12 @@ class LineDetail : FormActivity(), ColorPickerDialogListener {
     }
 
     override fun onDialogDismissed(dialogId: Int) {}
+
+    // --------------------------------- HOUR STATS -------------------------
+
+    private fun openHourStats(lineNumber: Int){
+        val intent = Intent(this, HourStatsActivity::class.java)
+        intent.putExtra(Extras.LINE_NUMBER.name, lineNumber)
+        startActivity(intent)
+    }
 }

@@ -7,6 +7,7 @@ import androidx.room.Update
 import cs10.apps.travels.tracer.model.joins.BusRamalInfo
 import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
+import cs10.apps.travels.tracer.model.lines.HourBusStat
 
 @Dao
 interface LinesDao {
@@ -28,6 +29,11 @@ interface LinesDao {
 
     @Query("SELECT * FROM lines WHERE number = :number limit 1")
     fun getByNumber(number: Int) : CustomBusLine?
+
+    @Query("SELECT linea as number, startHour as hour, AVG(rate) as averageRate " +
+            "FROM viaje WHERE linea = :number and rate is not null " +
+            "GROUP BY startHour ORDER BY startHour")
+    fun getHourStatsForLine(number: Int) : List<HourBusStat>
 
     // --------------------- JOINS -----------------------------
 

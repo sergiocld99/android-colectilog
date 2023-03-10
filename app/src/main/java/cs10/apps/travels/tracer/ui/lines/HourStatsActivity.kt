@@ -2,7 +2,6 @@ package cs10.apps.travels.tracer.ui.lines
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -15,6 +14,7 @@ import cs10.apps.travels.tracer.constants.ErrorCodes
 import cs10.apps.travels.tracer.constants.Extras
 import cs10.apps.travels.tracer.databinding.ActivityHourStatsBinding
 import cs10.apps.travels.tracer.db.MiDB
+import kotlin.math.roundToInt
 
 class HourStatsActivity : FormActivity() {
     private lateinit var binding: ActivityHourStatsBinding
@@ -37,15 +37,24 @@ class HourStatsActivity : FormActivity() {
         binding.toolbarLayout.title = String.format("Linea %d", line)
 
         doInBackground {
-            val hourStats = MiDB.getInstance(this).linesDao().getHourStatsForLine(line)
+            val hourStats = MiDB.getInstance(this).linesDao().getHourStatsForLineByDuration(line)
             val entries = mutableListOf<BarEntry>()
             val xLabels = mutableListOf<String>()
+            var max = 0.0
+            var min = 1000.0
+
+            if (hourStats.isEmpty()) return@doInBackground
 
             hourStats.forEach { stat ->
-                Log.d("HOUR_STATS", String.format("Hour %d, avgRate %.2f", stat.hour, stat.averageRate))
+                // Log.d("HOUR_STATS", String.format("Hour %d, avgRate %.2f", stat.hour, stat.averageRate))
                 val barEntry = BarEntry(stat.hour.toFloat(), stat.averageRate.toFloat())
                 entries.add(barEntry)
                 xLabels.add(stat.hour.toString())
+
+                stat.averageRate.also { v ->
+                    if (v > max) max = v
+                    if (v < min) min = v
+                }
             }
 
             //empty label for the last vertical grid line on Y-Right Axis
@@ -64,11 +73,14 @@ class HourStatsActivity : FormActivity() {
                     yOffset = 0f
                 }
 
+                min = (min * 0.9).div(10).roundToInt().times(10.0)
+                max = (max * 1.1).div(10).roundToInt().times(10.0)
+
                 binding.barChart.axisLeft.apply {
                     applyCommonAxisOptions(this)
-                    axisMinimum = 0f
-                    axisMaximum = 5f
-                    labelCount = 10
+                    axisMinimum = min.toFloat()
+                    axisMaximum = max.toFloat()
+                    labelCount = (max - min).div(5).roundToInt() + 0
                     setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
                 }
 

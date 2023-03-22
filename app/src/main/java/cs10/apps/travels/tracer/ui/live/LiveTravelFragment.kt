@@ -197,10 +197,14 @@ class LiveTravelFragment : CS_Fragment() {
 
             if (prog != null && avgD != null && currentTime != null) {
                 val estimation = avgD.totalMinutes * prog
-                val error = abs(currentTime - estimation).roundToInt()
+                val error = (currentTime - estimation).roundToInt()
+                val absError = abs(error)
 
-                binding.estimationError.isVisible = error > 3
-                binding.estimationError.text = "Estimación con error de $error minutos"
+                binding.estimationError.isVisible = absError > 3
+                binding.estimationError.text = "Estimación con error de $absError minutos"
+                binding.estimationError.setTextColor(ContextCompat.getColor(binding.root.context,
+                    if (error > 3) R.color.bus_414 else R.color.bus_500
+                ))
             } else binding.estimationError.isVisible = false
         }
 

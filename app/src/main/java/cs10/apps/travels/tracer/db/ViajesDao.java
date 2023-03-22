@@ -209,6 +209,6 @@ public interface ViajesDao {
 
     @Query("SELECT V.linea, L.color, SUM(V.costo) as suma FROM viaje V " +
             "LEFT JOIN lines L ON V.linea = L.number " +
-            "where linea is not null and month is :month group by linea order by 2 desc limit 3")
+            "where linea is not null and month is :month group by linea order by 3 desc limit 3")
     List<PriceSum> getMostExpensiveBus(int month);
 }

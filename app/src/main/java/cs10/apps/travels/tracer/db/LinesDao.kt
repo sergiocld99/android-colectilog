@@ -21,6 +21,9 @@ interface LinesDao {
     @Query("SELECT * FROM lines")
     fun getAll() : MutableList<CustomBusLine>
 
+    @Query("SELECT id FROM lines")
+    fun getIds() : List<Int>
+
     @Query("SELECT DISTINCT number FROM lines")
     fun getCustomNumbers() : MutableList<Int>
 
@@ -47,6 +50,12 @@ interface LinesDao {
             "FROM lines L LEFT JOIN Viaje V ON L.number = V.linea " +
             "GROUP BY L.id")
     fun getAllWithRates() : MutableList<RatedBusLine>
+
+    @Query("SELECT D.id, D.number, D.name, D.color, " +
+            "AVG(D.rate) as avgUserRate, COUNT(D.rate) as reviewsCount FROM (" +
+            "SELECT L.*, V.rate FROM lines L LEFT JOIN Viaje V ON L.number = V.linea " +
+            "WHERE L.id = :id ORDER BY year desc, month desc, day desc limit 10) D")
+    fun getStatsFrom(id: Int) : MutableList<RatedBusLine>
 
     @Query("SELECT DISTINCT V.ramal, L.color, AVG(V.rate) as avgUserRate, COUNT(V.rate) as reviewsCount " +
             "FROM Viaje V INNER JOIN lines L ON V.linea = L.number " +

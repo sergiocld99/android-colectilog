@@ -83,7 +83,7 @@ class LineDetail : FormActivity(), ColorPickerDialogListener {
 
         data.forEach {
             if (it.ramal != null){
-                val stats = db.viajesDao().getAllFinishedTravelsFromRamal(number!!, it.ramal)
+                val stats = db.viajesDao().getRecentFinishedTravelsFromRamal(number!!, it.ramal)
 
                 if (stats.isEmpty()) it.speed = null
                 else {

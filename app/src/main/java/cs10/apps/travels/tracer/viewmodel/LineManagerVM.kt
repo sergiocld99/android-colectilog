@@ -35,7 +35,7 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
             // calculate speed for each line using last travel
             lines.forEach {
                 if (it.number != null){
-                    val stats = rootVM.database.viajesDao().getAllFinishedTravelsFromLine(it.number)
+                    val stats = rootVM.database.viajesDao().getRecentFinishedTravelsFromLine(it.number)
 
                     if (stats.isEmpty()) it.speed = null
                     else {

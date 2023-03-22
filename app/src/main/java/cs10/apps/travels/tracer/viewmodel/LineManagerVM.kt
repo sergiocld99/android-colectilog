@@ -2,6 +2,8 @@ package cs10.apps.travels.tracer.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
+import cs10.apps.travels.tracer.R
+import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.db.LinesDao
 import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
@@ -36,15 +38,15 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
             lines.forEach {
                 if (it.number != null){
                     val stats = rootVM.database.viajesDao().getRecentFinishedTravelsFromLine(it.number)
-
-                    if (stats.isEmpty()) it.speed = null
-                    else {
-                        var sum = 0.0
-                        stats.forEach { stat -> sum += stat.calculateSpeedInKmH() }
-                        it.speed = sum / stats.size
-                    }
+                    it.speed = Utils.calculateAverageSpeed(stats)
                 }
             }
+
+            // calculate speed for trains (all by now)
+            val train = RatedBusLine(-1, -1, null, R.color.train, 0.0, 0)
+            val stats = rootVM.database.viajesDao().recentFinishedTravelsFromTrains
+            train.speed = Utils.calculateAverageSpeed(stats)
+            lines.add(train)
 
             lines.sort()
             myLines.postValue(lines)

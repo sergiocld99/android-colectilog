@@ -73,8 +73,8 @@ class HourStatsActivity : FormActivity() {
                     yOffset = 0f
                 }
 
-                min = (min * 0.9).div(10).roundToInt().times(10.0)
-                max = (max * 1.1).div(10).roundToInt().times(10.0)
+                min = (min - 10).div(10).roundToInt().times(10.0)
+                max = (max + 10).div(10).roundToInt().times(10.0)
 
                 binding.barChart.axisLeft.apply {
                     applyCommonAxisOptions(this)

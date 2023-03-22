@@ -182,7 +182,7 @@ public class BusTravelCreator extends CommonTravelCreator {
     public void updatePrice(){
         if (paradas != null && !paradas.isEmpty()) new Thread(() -> {
             ViajesDao dao = MiDB.getInstance(getApplicationContext()).viajesDao();
-            Double maxP = dao.getLastPrice(paradas.get(startIndex).getNombre(), paradas.get(endIndex).getNombre());
+            Double maxP = dao.getMaxPrice(paradas.get(startIndex).getNombre(), paradas.get(endIndex).getNombre());
 
             doInForeground(() -> {
                 if (maxP != null) {

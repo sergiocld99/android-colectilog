@@ -14,6 +14,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.tabs.TabLayout
 import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Emoji
 import cs10.apps.common.android.NumberUtils
@@ -59,6 +60,9 @@ class LiveTravelFragment : CS_Fragment() {
     // Custom Views
     private lateinit var liveWaitingView: LiveWaitingView
 
+    // Switchers
+    private lateinit var basicSwitcher: BasicSwitcher
+
     /* ====================== MAIN FUNCTIONS ==================================== */
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -77,6 +81,13 @@ class LiveTravelFragment : CS_Fragment() {
         // progress bar
         rootVM.loading.observe(requireActivity()) { binding.root.isVisible = !it }
 
+        // tabs
+        binding.roundedTabs.addOnTabSelectedListener(TabsListener())
+
+        // other objects
+        basicSwitcher = BasicSwitcher(binding.topBannerSwitcher)
+
+        // live data
         observeLiveVM()
 
         waitingVM.stopHere.observe(viewLifecycleOwner) {
@@ -86,7 +97,7 @@ class LiveTravelFragment : CS_Fragment() {
 
         locationVM.getLiveData().observe(viewLifecycleOwner) {
             // updating animation
-            if (binding.lineSubtitle.text.length < 7){
+            if (basicSwitcher.getCurrentIteration() == 0){
                 binding.updatingView.root.isVisible = true
                 Handler(Looper.getMainLooper()).postDelayed({ binding.updatingView.root.isVisible = false}, 3000)
             }
@@ -111,77 +122,55 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.travel.observe(viewLifecycleOwner) {
             binding.travellingLayout.isVisible = it != null
             liveWaitingView.setVisibility(it == null)
+            updateTabs(it == null)
 
             if (it == null) {
                 resetViews()
+                basicSwitcher.stop()
             } else {
-                val bgColor = it.color ?: Utils.colorFor(it.linea, context)
-                binding.buttonCard.setCardBackgroundColor(bgColor)
+                // new design
+                if (it.ramal == null) basicSwitcher.replaceContent("Servicio común", 0)
+                else basicSwitcher.replaceContent("Ramal ${it.ramal}", 0)
 
-                binding.travelFrom.text = "Desde: " + it.nombrePdaInicio
-                binding.travelTo.text = "Hasta: " + it.nombrePdaFin
-                binding.buttonDrawing.setImageDrawable(
-                    Utils.getTypeDrawable(
-                        it.tipo,
-                        binding.root.context
-                    )
-                )
+                basicSwitcher.replaceContent("Desde ${it.nombrePdaInicio}", 1)
+                basicSwitcher.replaceContent("Hasta ${it.nombrePdaFin}", 2)
+                basicSwitcher.start()
+
+                binding.lineTitle.text = String.format("Línea %s", it.lineSimplified)
+                binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(it.tipo, context))
+                binding.topCardView.setCardBackgroundColor(it.color ?: Utils.colorFor(it.linea, context))
                 rootVM.disableLoading()
             }
         }
 
         liveVM.toggle.observe(viewLifecycleOwner) {
-            liveVM.travel.value?.let { t ->
-                if (it && t.ramal != null) {
-                    if (binding.lineSubtitle.text.toString().length < 7) binding.lineSubtitle.isSelected = true
-                    binding.lineSubtitle.textSize = 24f
-                    binding.lineSubtitle.text = t.ramal
-                    binding.lineSubtitle.setTextColor(
-                        ContextCompat.getColor(
-                            binding.root.context,
-                            R.color.yellow
-                        )
-                    )
-                } else {
-                    binding.lineSubtitle.text = t.lineSimplified
-                    binding.lineSubtitle.textSize = 30f
-                    binding.lineSubtitle.setTextColor(
-                        ContextCompat.getColor(
-                            binding.root.context,
-                            R.color.white
-                        )
-                    )
-                }
-
+            if (liveVM.travel.value != null) {
                 if (it) liveVM.progress.value?.let { prog ->
-                    binding.minutesLeft.text = prog.times(100).roundToInt().toString() + "%"
+                    binding.minutesLeft.text = String.format("%d%%", prog.times(100).roundToInt())
                 }
                 else liveVM.minutesToEnd.value?.let { minutes ->
-                    binding.minutesLeft.text = "$minutes'"
+                    binding.minutesLeft.text = String.format("%d'", minutes)
                 }
             }
         }
 
         liveVM.minutesFromStart.observe(viewLifecycleOwner) {
-            if (it == null || it <= 0.0) binding.startedMinAgo.text = null
-            else binding.startedMinAgo.text = "Inició hace ${it.roundToInt()} minutos"
+            // new design
+            if (it != null)
+                basicSwitcher.replaceContent("Inició hace ${it.roundToInt()} minutos", 3)
         }
 
         liveVM.averageDuration.observe(viewLifecycleOwner) {
-            if (it == null || it.totalMinutes == 0) binding.averageDuration.text = null
+            if (it == null || it.totalMinutes == 0) binding.trafficSub.text = null
             else {
+                binding.trafficSub.text = String.format("El viaje normal dura %d minutos", it.totalMinutes)
+                /*
                 if (it.fromAverage) binding.averageDuration.text =
                     "Duración promedio: ${it.totalMinutes} min. (${it.speed} km/h)"
                 else binding.averageDuration.text =
                     "Duración esperada: ${it.totalMinutes} min. (${it.speed} km/h)"
-            }
-        }
 
-        liveVM.speed.observe(viewLifecycleOwner) {
-            if (it == null) binding.averageSpeed.text = null
-            else {
-                // val formated = (it * 10).roundToInt() / 10.0
-                // binding.averageSpeed.text = "Velocidad: $formated km/h"
+                 */
             }
         }
 
@@ -200,12 +189,23 @@ class LiveTravelFragment : CS_Fragment() {
                 val error = (currentTime - estimation).roundToInt()
                 val absError = abs(error)
 
+                binding.trafficBanner.isVisible = absError > 3
+
+                if (error > 3){
+                    binding.trafficTitle.text = String.format("Tráfico: %d minutos", absError)
+                    binding.trafficCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus_414))
+                } else {
+                    binding.trafficTitle.text = String.format("Ventaja: %d minutos", absError)
+                    binding.trafficCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus_500))
+                }
+
+                /*
                 binding.estimationError.isVisible = absError > 3
                 binding.estimationError.text = "Estimación con error de $absError minutos"
-                binding.estimationError.setTextColor(ContextCompat.getColor(binding.root.context,
-                    if (error > 3) R.color.bus_414 else R.color.bus_500
-                ))
-            } else binding.estimationError.isVisible = false
+                binding.estimationError.setTextColor(
+
+                 */
+            } else binding.trafficBanner.isVisible = false
         }
 
         liveVM.endDistance.observe(viewLifecycleOwner) {
@@ -213,7 +213,8 @@ class LiveTravelFragment : CS_Fragment() {
                 if (it < 0.8) finishCurrentTravel()
                 else {
                     // show below elapsed time tv
-                    binding.averageSpeed.text = String.format("Destino a %.1f km", it)
+                    // binding.nearMeTitle.text = String.format("%s a %.1f km", liveVM.travel.value?.nombrePdaFin, it)
+                    basicSwitcher.replaceContent(String.format("Destino a %.1f km", it), 4)
                 }
             }
         }
@@ -233,9 +234,12 @@ class LiveTravelFragment : CS_Fragment() {
                 val eta = Calendar.getInstance().apply { add(Calendar.MINUTE, it) }
 
                 // ui
-                binding.minutesLeft.text = "$it'"
-                binding.etaInfo.text = "Llegarías a las " + Utils.hourFormat(eta)
+                binding.minutesLeft.text = String.format("%d'", it)
+                // binding.etaInfo.text = "Llegarías a las " + Utils.hourFormat(eta)
                 binding.finishBtn.isVisible = it < 10
+
+                // new design
+                binding.nearMeTitle.text = String.format("Llegarías a las %s", Utils.hourFormat(eta))
 
                 // arrival notification
                 liveVM.travel.value?.id?.let { id ->
@@ -247,12 +251,10 @@ class LiveTravelFragment : CS_Fragment() {
                     }
                 }
 
-
                 // next combination
                 liveVM.nextTravel.value?.let { nextT ->
                     val etaNext = Calendar2.getETA(eta, nextT.duration + 15)
-                    binding.nextTravelInfo.text =
-                        "Combinación a ${nextT.nombrePdaFin} (${Utils.hourFormat(etaNext)})"
+                    binding.nextTravelInfo.text = "Combinación a ${nextT.nombrePdaFin} (${Utils.hourFormat(etaNext)})"
                 }
             }
         }
@@ -297,11 +299,16 @@ class LiveTravelFragment : CS_Fragment() {
 
         resetViews()
         liveVM.findLastTravel(locationVM) { rootVM.disableLoading() }
+
+        // New design
+        basicSwitcher.start()
     }
 
     override fun onStop() {
         super.onStop()
         liveVM.eraseAll()
+        waitingVM.reset()
+        basicSwitcher.stop()
     }
 
 
@@ -310,12 +317,9 @@ class LiveTravelFragment : CS_Fragment() {
     private fun resetViews() {
         binding.travellingLayout.isVisible = false
         binding.finishBtn.isVisible = false
-        binding.etaInfo.text = null
-        binding.averageSpeed.text = null
-        binding.travelTo.text = null
-        binding.travelFrom.text = null
-        binding.lineSubtitle.text = null
-        binding.averageDuration.text = null
+        binding.nearMeTitle.text = null
+        basicSwitcher.clear()
+        binding.trafficBanner.isVisible = false
         binding.nextTravelInfo.text = null
         binding.minutesLeft.text = "..."
         binding.speedometerText.text = "--"
@@ -413,6 +417,42 @@ class LiveTravelFragment : CS_Fragment() {
 
             intent.putExtra("travelId", viaje.id)
             startActivity(intent)
+        }
+    }
+
+    // ==================== TABS ===================================
+
+    private fun updateTabs(waiting: Boolean){
+        //binding.roundedTabs.isEnabled = !waiting
+        // binding.roundedTabs.touchables.forEach { it.isClickable = !waiting }
+        if (waiting) binding.roundedTabs.getTabAt(0)?.select()
+        else binding.roundedTabs.getTabAt(1)?.select()
+    }
+
+    private inner class TabsListener : TabLayout.OnTabSelectedListener {
+
+        override fun onTabSelected(tab: TabLayout.Tab?) {
+            tab?.let { checkPosition(it) }
+        }
+
+        override fun onTabReselected(tab: TabLayout.Tab?) {
+            tab?.let { checkPosition(it) }
+        }
+
+        override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+        }
+
+        fun checkPosition(tab: TabLayout.Tab){
+            if (tab.position > 0 && liveVM.travel.value == null) {
+                binding.roundedTabs.getTabAt(0)?.select()
+                //binding.roundedTabs.setScrollPosition(0, 0f, true)
+            }
+
+            if (tab.position == 0 && liveVM.travel.value != null) {
+                binding.roundedTabs.getTabAt(1)?.select()
+                //binding.roundedTabs.setScrollPosition(1, 0f, true)
+            }
         }
     }
 }

@@ -12,10 +12,14 @@ import kotlinx.coroutines.launch
 
 class WaitingVM(application: Application) : AndroidViewModel(application) {
     private val db: MiDB = MiDB.getInstance(getApplication<Application>().applicationContext)
-    private val nearMargin = 1.0 / 2000
+    private val nearMargin = 1.0 / 1000
 
     // live models
     val stopHere = MutableLiveData<Parada?>()
+
+    fun reset(){
+        stopHere.postValue(null)
+    }
 
     fun updateLocation(location: Location?){
         if (location == null) {

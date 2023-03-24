@@ -170,6 +170,7 @@
                 android:textSize="20sp"
                 app:layout_constraintTop_toTopOf="parent"/>
 
+            <!-- Rounded Tabs -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/price_options"
                 android:layout_width="match_parent"
@@ -188,16 +189,7 @@
                     app:tabGravity="fill"
                     app:tabIndicatorGravity="stretch"
                     app:tabSelectedTextColor="@color/white"
-                    app:layout_constraintTop_toBottomOf="@id/tv_price">
-
-
-
-                    <com.google.android.material.tabs.TabItem
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:text="Otro"/>
-
-                </com.google.android.material.tabs.TabLayout>
+                    app:layout_constraintTop_toBottomOf="@id/tv_price"/>
 
             </com.google.android.material.card.MaterialCardView>
 

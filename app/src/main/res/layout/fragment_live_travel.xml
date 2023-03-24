@@ -1,342 +1,462 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.live.LiveTravelFragment">
 
-    <!-- CONTENEDOR SWITCHEABLE -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/switcheable_container">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <!-- MIENTRAS ESTÁ UBICADO EN PARADA -->
-        <include layout="@layout/content_live_waiting"
-            android:id="@+id/waiting_layout" />
-
-        <!-- DURANTE UN VIAJE -->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <!-- Rounded Tabs -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/tabs_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="gone"
-            android:id="@+id/travelling_layout">
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="20dp"
+            app:strokeWidth="1dp"
+            app:cardCornerRadius="18dp">
 
-            <Button
-                android:id="@+id/finish_btn"
-                android:layout_width="wrap_content"
+            <!-- tabIndicatorGravity=stretch paints selected -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/rounded_tabs"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                app:tabGravity="fill"
+                app:tabIndicatorColor="@color/bus"
+                app:tabIndicatorGravity="stretch"
+                app:tabSelectedTextColor="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/tv_price">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Esperando"/>
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="En viaje"/>
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Llegando"/>
+
+            </com.google.android.material.tabs.TabLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- CONTENEDOR SWITCHEABLE -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tabs_box"
+            android:id="@+id/switcheable_container">
+
+            <!-- MIENTRAS ESTÁ UBICADO EN PARADA -->
+            <include layout="@layout/content_live_waiting"
+                android:id="@+id/waiting_layout"
+                tools:visibility="gone" />
+
+            <!-- DURANTE UN VIAJE -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Finish"
-                android:textColor="@color/white"
-                android:layout_marginTop="8dp"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/edit_btn"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:visibility="gone"
                 tools:visibility="visible"
-                android:backgroundTint="@color/bus_414"/>
+                android:id="@+id/travelling_layout">
 
-            <Button
-                android:id="@+id/share_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Share"
-                android:textColor="@color/white"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/edit_btn"
-                android:layout_marginTop="8dp"
-                android:visibility="gone"
-                tools:visibility="visible"
-                android:backgroundTint="@color/bus"/>
-
-            <Button
-                android:id="@+id/edit_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Edit"
-                android:textColor="@color/white"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/share_btn"
-                app:layout_constraintEnd_toStartOf="@id/finish_btn"
-                android:layout_marginTop="8dp"
-                android:visibility="gone"
-                tools:visibility="visible"
-                android:backgroundTint="@color/bus_500"/>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/button_card"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                app:cardCornerRadius="16dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/info_container"
-                android:layout_marginTop="25dp"
-                app:layout_constraintTop_toBottomOf="@id/share_btn"
-                tools:cardBackgroundColor="@color/bus">
-
+                <!-- NEW DESIGN -->
                 <LinearLayout
+                    android:id="@+id/new_design"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_marginTop="24dp"
+                    android:layout_marginHorizontal="15dp"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <ImageView
-                        android:id="@+id/button_drawing"
+                    <!-- Banner general -->
+                    <LinearLayout
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="90dp"
-                        android:layout_marginVertical="4dp"
-                        tools:src="@drawable/ic_bus" />
+                        android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/rate_text"
-                        android:textColor="@color/white"
-                        tools:text="5.0"
-                        android:textSize="18sp"
-                        android:layout_gravity="center"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:drawablePadding="4dp"
-                        app:drawableStartCompat="@drawable/ic_star" />
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/top_card_view"
+                            app:cardBackgroundColor="@color/bus"
+                            app:cardCornerRadius="10dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp">
+
+                            <ImageView
+                                android:id="@+id/button_drawing"
+                                android:layout_margin="5dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_bus"/>
+
+                        </androidx.cardview.widget.CardView>
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/line_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+
+                            <!-- It's mandatory to have 2 text views -->
+                            <TextSwitcher
+                                android:id="@+id/top_banner_switcher"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+                            </TextSwitcher>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Banner Near Me -->
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_marginTop="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <androidx.cardview.widget.CardView
+                            app:cardBackgroundColor="@color/purple_500"
+                            app:cardCornerRadius="10dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp">
+
+                            <ImageView
+                                android:layout_margin="5dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_near_me"/>
+
+                        </androidx.cardview.widget.CardView>
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/near_me_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+
+                            <TextView
+                                android:id="@+id/near_me_sub"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Banner Traffic -->
+                    <LinearLayout
+                        android:id="@+id/traffic_banner"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/traffic_card"
+                            app:cardCornerRadius="10dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp">
+
+                            <ImageView
+                                android:layout_margin="5dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_traffic"/>
+
+                        </androidx.cardview.widget.CardView>
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/traffic_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+
+                            <TextView
+                                android:id="@+id/traffic_sub"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Progress Bar and Near Trains -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ProgressBar
+                            android:id="@+id/pb"
+                            android:layout_width="200dp"
+                            android:layout_height="200dp"
+                            android:indeterminateOnly="false"
+                            android:progressDrawable="@drawable/circle_green"
+                            tools:progress="60"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginVertical="20dp"
+                            app:layout_constraintEnd_toStartOf="@id/near_box_info"/>
+
+                        <TextView
+                            android:id="@+id/minutes_left"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintBottom_toBottomOf="@id/pb"
+                            app:layout_constraintEnd_toEndOf="@id/pb"
+                            app:layout_constraintStart_toStartOf="@id/pb"
+                            app:layout_constraintTop_toTopOf="@+id/pb"
+                            android:textStyle="bold"
+                            android:textSize="30sp"
+                            tools:text="150'" />
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/speedometer_box"
+                            app:layout_constraintBottom_toBottomOf="@id/pb"
+                            app:layout_constraintEnd_toEndOf="@id/pb"
+                            android:layout_margin="8dp"
+                            android:layout_width="70dp"
+                            android:layout_height="70dp">
+
+                            <View
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/speedometer_bg"/>
+
+                            <TextView
+                                android:id="@+id/speedometer_text"
+                                tools:text="120"
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                android:textSize="24sp"
+                                android:gravity="center"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <LinearLayout
+                            android:id="@+id/near_box_info"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="vertical"
+                            app:layout_constraintStart_toEndOf="@id/pb"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/pb"
+                            app:layout_constraintBottom_toBottomOf="@id/pb">
+
+                            <TextView
+                                style="@style/TextAppearance.AppCompat.Large"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="En la zona"
+                                android:gravity="center"
+                                android:textStyle="bold"/>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/near_stops_recycler"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                tools:listitem="@layout/item_near_stop"
+                                tools:itemCount="2"/>
+
+                        </LinearLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:id="@+id/line_subtitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                tools:text="Centenario"
-                android:singleLine="true"
-                android:ellipsize="marquee"
-                android:gravity="center"
-                android:textStyle="bold"
-                android:textSize="24sp"
-                android:layout_marginTop="12dp"
-                android:marqueeRepeatLimit="marquee_forever"
-                app:layout_constraintTop_toBottomOf="@id/button_card"
-                app:layout_constraintStart_toStartOf="@id/button_card"
-                app:layout_constraintEnd_toEndOf="@id/button_card" />
+                <!-- OLD IMPLEMENTATION -->
 
-            <LinearLayout
-                android:id="@+id/info_container"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="24dp"
-                app:layout_constraintTop_toBottomOf="@id/share_btn"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/button_card">
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Large"
+                <!-- Action Buttons -->
+                <LinearLayout
+                    android:id="@+id/action_buttons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/path"
-                    android:gravity="center"
-                    android:textStyle="bold"/>
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/new_design"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/travel_from"
-                    android:layout_width="match_parent"
+                    <View android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <Button
+                        android:id="@+id/share_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Share"
+                        android:textColor="@color/white"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        android:backgroundTint="@color/bus"/>
+
+                    <View android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <Button
+                        android:id="@+id/finish_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Finish"
+                        android:textColor="@color/white"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        android:backgroundTint="@color/bus_414"/>
+
+                    <View android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <Button
+                        android:id="@+id/edit_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Edit"
+                        android:textColor="@color/white"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        android:backgroundTint="@color/bus_500"/>
+
+                    <View android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                </LinearLayout>
+
+                <!-- Estimated Rating -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/button_card"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="18sp"
-                    tools:text="Desde: Arco de San Jorge"/>
-
-                <TextView
-                    android:id="@+id/travel_to"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="18sp"
-                    tools:text="Hasta: Cruce Varela"/>
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Large"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
-                    android:text="@string/progress"
-                    android:gravity="center"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:id="@+id/started_min_ago"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="18sp"
-                    tools:text="Iniciado hace 150 minutos"/>
-
-                <TextView
-                    android:id="@+id/average_speed"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="18sp"
-                    tools:text="Velocidad: 40 km/h"/>
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/average_duration"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/info_container"
-                android:layout_marginTop="24dp"
-                android:gravity="center"
-                android:textSize="18sp"
-                tools:text="Duración promedio: 160 minutos"/>
-
-            <TextView
-                android:id="@+id/estimation_error"
-                android:textColor="@color/bus_414"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/average_duration"
-                android:gravity="center"
-                android:textSize="18sp"
-                tools:text="Estimación con error de 10 minutos"/>
-
-            <TextView
-                android:id="@+id/next_travel_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/estimation_error"
-                android:gravity="center"
-                android:textSize="18sp"
-                tools:text="Combinación a otro lugar (23:55)"/>
-
-            <ProgressBar
-                android:id="@+id/pb"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:indeterminateOnly="false"
-                android:progressDrawable="@drawable/circle"
-                tools:progress="60"
-                app:layout_constraintTop_toBottomOf="@id/next_travel_info"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="10dp"
-                android:layout_marginVertical="20dp"
-                app:layout_constraintBottom_toTopOf="@id/updating_view"
-                app:layout_constraintEnd_toStartOf="@id/near_box_info"/>
-
-            <TextView
-                android:id="@+id/minutes_left"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="@id/pb"
-                app:layout_constraintEnd_toEndOf="@id/pb"
-                app:layout_constraintStart_toStartOf="@id/pb"
-                app:layout_constraintTop_toTopOf="@+id/pb"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                tools:text="150'" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/speedometer_box"
-                app:layout_constraintBottom_toBottomOf="@id/pb"
-                app:layout_constraintEnd_toEndOf="@id/pb"
-                android:layout_margin="8dp"
-                android:layout_width="70dp"
-                android:layout_height="70dp">
-
-                <View
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginHorizontal="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="25dp"
+                    app:layout_constraintTop_toBottomOf="@id/action_buttons"
+                    tools:cardBackgroundColor="@color/bus">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/rate_text"
+                            android:textColor="@color/white"
+                            tools:text="5.0"
+                            android:textSize="18sp"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="4dp"
+                            android:drawablePadding="4dp"
+                            app:drawableStartCompat="@drawable/ic_star" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/next_travel_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/button_card"
+                    android:gravity="center"
+                    android:textSize="18sp"
+                    android:layout_marginTop="10dp"
+                    tools:text="Combinación a otro lugar (23:55)" />
+
+                <include layout="@layout/view_updating_location"
+                    android:id="@+id/updating_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/speedometer_bg"/>
-
-                <TextView
-                    android:id="@+id/speedometer_text"
-                    tools:text="120"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:textSize="24sp"
-                    android:gravity="center"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/next_travel_info"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
-                android:id="@+id/near_box_info"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:orientation="vertical"
-                app:layout_constraintStart_toEndOf="@id/pb"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/pb"
-                app:layout_constraintBottom_toBottomOf="@id/pb">
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Large"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="En la zona"
-                    android:gravity="center"
-                    android:textStyle="bold"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/near_stops_recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    tools:listitem="@layout/item_near_stop"
-                    tools:itemCount="2"/>
-
-            </LinearLayout>
-
-            <include layout="@layout/view_updating_location"
-                android:id="@+id/updating_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/pb"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
-
-            <TextView
-                android:id="@+id/eta_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Llegarías a las 20:59"
-                style="@style/TextAppearance.AppCompat.Large"
-                android:layout_marginTop="12dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/updating_view"/>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Zona actual -->
+        <TextView
+            android:id="@+id/zone_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            tools:text="TRANSRADIO / CITY BELL"
+            android:textColor="@color/yellow"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:drawablePadding="12dp"
+            android:layout_marginBottom="20dp"
+            app:drawableLeftCompat="@drawable/ic_radar"
+            app:drawableTint="@color/yellow" />
 
-    <TextView
-        android:id="@+id/zone_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="TRANSRADIO / CITY BELL"
-        android:textColor="@color/yellow"
-        style="@style/TextAppearance.AppCompat.Large"
-        android:textStyle="bold"
-        android:drawablePadding="12dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/switcheable_container"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:drawableLeftCompat="@drawable/ic_radar"
-        app:drawableTint="@color/yellow" />
+    </LinearLayout>
     
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

@@ -15,8 +15,8 @@ class LiveWaitingView(private val binding: ContentLiveWaitingBinding) {
     }
 
     private fun animateButton(){
-        if (expanded) animateExpandButton()
-        else animateReduceButton()
+        if (expanded) animateReduceButton()
+        else animateExpandButton()
     }
 
     private fun animateExpandButton(){

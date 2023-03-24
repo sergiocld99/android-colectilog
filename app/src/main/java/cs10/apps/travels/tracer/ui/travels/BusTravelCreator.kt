@@ -1,229 +1,219 @@
-package cs10.apps.travels.tracer.ui.travels;
+package cs10.apps.travels.tracer.ui.travels
 
-import android.content.Intent;
-import android.location.Location;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.location.Location
+import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import cs10.apps.travels.tracer.R
+import cs10.apps.travels.tracer.Utils
+import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding
+import cs10.apps.travels.tracer.databinding.ContentBusTravelCreatorBinding
+import cs10.apps.travels.tracer.db.MiDB
+import cs10.apps.travels.tracer.model.Parada
+import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.modules.RedSube.Companion.getPercentageToPay
+import cs10.apps.travels.tracer.ui.stops.StopCreator
+import java.util.*
+import kotlin.math.roundToInt
 
-import androidx.annotation.NonNull;
+class BusTravelCreator : CommonTravelCreator() {
+    private lateinit var content: ContentBusTravelCreatorBinding
+    private lateinit var startAdapter: ArrayAdapter<out Parada>
+    private lateinit var endAdapter: ArrayAdapter<out Parada>
+    private lateinit var onStartPlaceSelected: AdapterView.OnItemSelectedListener
+    private lateinit var onEndPlaceSelected: AdapterView.OnItemSelectedListener
+    private lateinit var client: FusedLocationProviderClient
+    private var paradas: MutableList<Parada> = mutableListOf()
+    private var startIndex = 0
+    private var endIndex = 0
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val binding = ActivityTravelCreatorBinding.inflate(layoutInflater)
 
-import java.util.Calendar;
-import java.util.List;
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        Utils.loadBusBanner(binding.appbarImage)
+        binding.toolbarLayout.title = getString(R.string.new_travel)
 
-import cs10.apps.travels.tracer.R;
-import cs10.apps.travels.tracer.Utils;
-import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding;
-import cs10.apps.travels.tracer.databinding.ContentBusTravelCreatorBinding;
-import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.db.ViajesDao;
-import cs10.apps.travels.tracer.model.Parada;
-import cs10.apps.travels.tracer.model.Viaje;
-import cs10.apps.travels.tracer.modules.RedSube;
-import cs10.apps.travels.tracer.ui.stops.StopCreator;
-
-public class BusTravelCreator extends CommonTravelCreator {
-    private ContentBusTravelCreatorBinding content;
-    private ArrayAdapter<? extends Parada> startAdapter, endAdapter;
-    private ArrayAdapter<String> ramalAdapter;
-    private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
-    private FusedLocationProviderClient client;
-    private List<Parada> paradas;
-    private int startIndex, endIndex;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        ActivityTravelCreatorBinding binding = ActivityTravelCreatorBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        setSupportActionBar(binding.toolbar);
-        Utils.loadBusBanner(binding.appbarImage);
-        binding.toolbarLayout.setTitle(getString(R.string.new_travel));
-        content = binding.contentTravelCreator;
-
-        onStartPlaceSelected = new OnStartPlaceSelected();
-        onEndPlaceSelected = new OnEndPlaceSelected();
+        content = binding.contentTravelCreator
+        onStartPlaceSelected = OnStartPlaceSelected()
+        onEndPlaceSelected = OnEndPlaceSelected()
 
         // default config init
-        super.setDoneFabBehavior(binding.fab);
-        super.setCurrentTime(content.etDate, content.etStartHour, content.redSubeHeader);
-        content.etEndHour.setEnabled(false);
+        super.setDoneFabBehavior(binding.fab)
+        super.setCurrentTime(content.etDate, content.etStartHour, content.redSubeHeader)
+        content.etEndHour.isEnabled = false
 
         // hint values
-        autoFillRamals();
+        autoFillRamals()
 
         // order stops by last location
-        client = LocationServices.getFusedLocationProviderClient(this);
-        getLocation();
+        client = LocationServices.getFusedLocationProviderClient(this)
+        getLocation()
 
         // listeners
-        content.etDate.setOnClickListener(v -> createDatePicker());
-        binding.fabStop.setOnClickListener(view -> startActivity(new Intent(this, StopCreator.class)));
+        content.etDate.setOnClickListener { createDatePicker() }
+        binding.fabStop.setOnClickListener {
+            startActivity(Intent(this, StopCreator::class.java))
+        }
     }
 
-    private void autoFillRamals() {
-        doInBackground(() -> {
-            List<String> ramals = MiDB.getInstance(this).viajesDao().getAllRamals();
 
-            doInForeground(() -> {
-                ramalAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ramals);
-                content.etRamal.setAdapter(ramalAdapter);
-            });
-        });
+    @SuppressLint("MissingPermission")
+    private fun getLocation(){
+        if (Utils.checkPermissions(this)){
+            client.lastLocation.addOnSuccessListener {
+                loadStops(it)
+            }
+        }
     }
 
-    private void getLocation() throws SecurityException {
-        if (Utils.checkPermissions(this)) client.getLastLocation().addOnSuccessListener(this::loadStops);
+    private fun autoFillRamals() {
+        doInBackground {
+            val ramals = MiDB.getInstance(this).viajesDao().allRamals
+
+            doInForeground {
+                val ra = ArrayAdapter(this, android.R.layout.simple_list_item_1, ramals)
+                content.etRamal.setAdapter(ra)
+            }
+        }
     }
 
-    private void loadStops(Location location) {
-        doInBackground(() -> {
-            MiDB db = MiDB.getInstance(this);
-            paradas = db.paradasDao().getAll();
-            if (location != null) Utils.orderByProximity(paradas, location.getLatitude(), location.getLongitude());
-            doInForeground(this::setSpinners);
+    private fun loadStops(location: Location?) {
+        doInBackground {
+            val db = MiDB.getInstance(this)
+            paradas = db.paradasDao().all
+
+            location?.let { Utils.orderByProximity(paradas, it.latitude, it.longitude) }
+            doInForeground { setSpinners() }
 
             // part 2: autocomplete likely travel
-            int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-
-            if (!paradas.isEmpty()){
-                Viaje viaje = db.viajesDao().getLikelyTravelFrom(paradas.get(0).getNombre(), currentHour);
-                if (viaje != null) runOnUiThread(() -> autoFillLikelyTravel(viaje));
+            val currentHour = Calendar.getInstance()[Calendar.HOUR_OF_DAY]
+            if (paradas.isNotEmpty()) {
+                val viaje = db.viajesDao().getLikelyTravelFrom(paradas.first().nombre, currentHour)
+                viaje?.let { runOnUiThread { autoFillLikelyTravel(it) } }
             }
-
-        });
+        }
     }
 
-    private void autoFillLikelyTravel(@NonNull Viaje viaje){
-        if (viaje.getLinea() != null) content.etLine.setText(String.valueOf(viaje.getLinea()));
-        if (viaje.getRamal() != null) content.etRamal.setText(viaje.getRamal());
+    private fun autoFillLikelyTravel(viaje: Viaje) {
+        viaje.linea?.let { content.etLine.setText(it.toString()) }
+        viaje.ramal?.let { content.etRamal.setText(it) }
 
         // find end index
-        int endIndex = 0;
-
-        for (Parada p : paradas){
-            if (p.getNombre().equals(viaje.getNombrePdaFin())) break;
-            else endIndex++;
+        var endIndex = 0
+        for (p in paradas) {
+            if (p.nombre == viaje.nombrePdaFin) break else endIndex++
         }
 
-        content.selectorEndPlace.setSelection(endIndex, true);
+        content.selectorEndPlace.setSelection(endIndex, true)
     }
 
-    private void setSpinners(){
-        startAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, paradas);
-        endAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, paradas);
+    private fun setSpinners() {
+        startAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, paradas)
+        endAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, paradas)
 
-        startAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        startAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        content.selectorStartPlace.setAdapter(startAdapter);
-        content.selectorEndPlace.setAdapter(endAdapter);
-        content.selectorStartPlace.setOnItemSelectedListener(onStartPlaceSelected);
-        content.selectorEndPlace.setOnItemSelectedListener(onEndPlaceSelected);
+        content.selectorStartPlace.adapter = startAdapter
+        content.selectorEndPlace.adapter = endAdapter
+        content.selectorStartPlace.onItemSelectedListener = onStartPlaceSelected
+        content.selectorEndPlace.onItemSelectedListener = onEndPlaceSelected
     }
 
-    @Override
-    public int onCheckEntries(@NonNull Viaje viaje){
-        if (paradas == null || paradas.isEmpty()) return 6;
+    override fun onCheckEntries(viaje: Viaje): Int {
+        if (paradas.isEmpty()) return 6
 
-        String line = content.etLine.getText().toString().trim();
-        String ramal = content.etRamal.getText().toString().trim();
-        String date = content.etDate.getText().toString().trim();
-        String startHour = content.etStartHour.getText().toString().trim();
-        String peopleCount = content.etPeopleCount.getText().toString().trim();
-        String price = content.etPrice.getText().toString().trim();
-        Parada startPlace = paradas.get(startIndex);
-        Parada endPlace = paradas.get(endIndex);
+        val line = content.etLine.text.toString().trim()
+        val ramal = content.etRamal.text.toString().trim()
+        val date = content.etDate.text.toString().trim()
+        val startHour = content.etStartHour.text.toString().trim()
+        val peopleCount = content.etPeopleCount.text.toString().trim()
+        val price = content.etPrice.text.toString().trim()
 
-        if (date.isEmpty() || startHour.isEmpty() || line.isEmpty() || peopleCount.isEmpty()) return 1;
-        if (startPlace.equals(endPlace)) return 2;
+        val startPlace = paradas[startIndex]
+        val endPlace = paradas[endIndex]
 
-        String[] hourParams = startHour.split(":");
-        if (hourParams.length != 2){
-            content.etStartHour.setError("Ingrese una hora válida");
-            return 3;
+        if (date.isEmpty() || startHour.isEmpty() || line.isEmpty() || peopleCount.isEmpty()) return 1
+        if (startPlace == endPlace) return 2
+
+        val hourParams = startHour.split(":").toTypedArray()
+        if (hourParams.size != 2) {
+            content.etStartHour.error = "Ingrese una hora válida"
+            return 3
         }
 
-        String[] dateParams = date.split("/");
-        if (dateParams.length != 3){
-            content.etDate.setError("Ingrese una fecha válida");
-            return 4;
+        val dateParams = date.split("/").toTypedArray()
+        if (dateParams.size != 3) {
+            content.etDate.error = "Ingrese una fecha válida"
+            return 4
         }
 
         try {
-            viaje.setStartHour(Integer.parseInt(hourParams[0]));
-            viaje.setStartMinute(Integer.parseInt(hourParams[1]));
-            viaje.setDay(Integer.parseInt(dateParams[0]));
-            viaje.setMonth(Integer.parseInt(dateParams[1]));
-            viaje.setYear(Integer.parseInt(dateParams[2]));
-            viaje.setNombrePdaInicio(startPlace.getNombre());
-            viaje.setNombrePdaFin(endPlace.getNombre());
-            Utils.setWeekDay(viaje);
-            viaje.setLinea(Integer.parseInt(line));
-            viaje.setPeopleCount(Integer.parseInt(peopleCount));
-            if (viaje.getPeopleCount() <= 0 || viaje.getPeopleCount() >= 10) return 7;
-            if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
-            if (!ramal.isEmpty()) viaje.setRamal(ramal);
-            if (content.ratingBar.getRating() > 0) viaje.setRate(Math.round(content.ratingBar.getRating()));
-        } catch (Exception e){
-            e.printStackTrace();
-            return 5;
+            viaje.startHour = hourParams[0].toInt()
+            viaje.startMinute = hourParams[1].toInt()
+            viaje.day = dateParams[0].toInt()
+            viaje.month = dateParams[1].toInt()
+            viaje.year = dateParams[2].toInt()
+            viaje.nombrePdaInicio = startPlace.nombre
+            viaje.nombrePdaFin = endPlace.nombre
+            Utils.setWeekDay(viaje)
+            viaje.linea = line.toInt()
+            viaje.peopleCount = peopleCount.toInt()
+            if (viaje.peopleCount <= 0 || viaje.peopleCount >= 10) return 7
+            if (price.isNotEmpty()) viaje.costo = price.toDouble()
+            if (ramal.isNotEmpty()) viaje.ramal = ramal
+
+            // save rating if defined
+            content.ratingBar.rating.let { if (it > 0) viaje.rate = it.roundToInt() }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return 5
         }
 
-        return 0;
+        return 0
     }
 
-    public void updatePrice(){
-        if (paradas != null && !paradas.isEmpty()) new Thread(() -> {
-            ViajesDao dao = MiDB.getInstance(getApplicationContext()).viajesDao();
-            Double maxP = dao.getMaxPrice(paradas.get(startIndex).getNombre(), paradas.get(endIndex).getNombre());
-
-            doInForeground(() -> {
+    fun updatePrice() {
+        if (paradas.isNotEmpty()) doInBackground {
+            val dao = MiDB.getInstance(applicationContext).viajesDao()
+            val maxP = dao.getMaxPrice(paradas[startIndex].nombre, paradas[endIndex].nombre)
+            doInForeground {
                 if (maxP != null) {
-                    final double price = maxP * RedSube.Companion.getPercentageToPay(getRedSubeCount()) / 100;
-                    content.etPrice.setText(String.valueOf(price));
-                } else content.etPrice.setText(null);
-            });
-        }).start();
-    }
-
-    @Override
-    public void onDateSet(int day, int month, int year) {
-        content.etDate.setText(Utils.dateFormat(day, month, year));
-    }
-
-    private class OnStartPlaceSelected implements AdapterView.OnItemSelectedListener {
-
-        @Override
-        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-            startIndex = i;
-            updatePrice();
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-
+                    val price = maxP * getPercentageToPay(redSubeCount) / 100
+                    content.etPrice.setText(price.toString())
+                } else content.etPrice.text = null
+            }
         }
     }
 
-    private class OnEndPlaceSelected implements AdapterView.OnItemSelectedListener {
-
-        @Override
-        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-            endIndex = i;
-            updatePrice();
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-
-        }
+    override fun onDateSet(day: Int, month: Int, year: Int) {
+        content.etDate.setText(Utils.dateFormat(day, month, year))
     }
 
+    private inner class OnStartPlaceSelected : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
+            startIndex = i
+            updatePrice()
+        }
+
+        override fun onNothingSelected(adapterView: AdapterView<*>?) {}
+    }
+
+    private inner class OnEndPlaceSelected : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
+            endIndex = i
+            updatePrice()
+        }
+
+        override fun onNothingSelected(adapterView: AdapterView<*>?) {}
+    }
 }

@@ -170,6 +170,45 @@
                 android:textSize="20sp"
                 app:layout_constraintTop_toTopOf="parent"/>
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/price_options"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/tv_price"
+                android:layout_marginTop="10dp"
+                android:layout_marginHorizontal="10dp"
+                app:strokeWidth="1dp"
+                app:cardCornerRadius="12dp">
+
+                <!-- tabIndicatorGravity=stretch paints selected -->
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/price_tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    app:tabGravity="fill"
+                    app:tabIndicatorGravity="stretch"
+                    app:tabSelectedTextColor="@color/white"
+                    app:layout_constraintTop_toBottomOf="@id/tv_price">
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="$47.52"/>
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="$105.60"/>
+
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="Otro"/>
+
+                </com.google.android.material.tabs.TabLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
             <EditText
                 android:id="@+id/et_people_count"
                 android:layout_width="60dp"
@@ -179,7 +218,8 @@
                 android:importantForAutofill="no"
                 android:text="1"
                 android:maxLength="1"
-                app:layout_constraintTop_toBottomOf="@id/tv_price"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/price_options"
                 app:layout_constraintStart_toStartOf="parent"/>
 
             <TextView
@@ -200,7 +240,7 @@
                 android:layout_height="wrap_content"
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal"
-                app:layout_constraintTop_toBottomOf="@id/tv_price"
+                app:layout_constraintTop_toTopOf="@id/et_people_count"
                 app:layout_constraintStart_toEndOf="@id/tv_times"
                 app:layout_constraintEnd_toEndOf="parent"/>
 

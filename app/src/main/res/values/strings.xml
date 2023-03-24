@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Travel Tracer</string>
 
-    <string name="nav_header_title">Travel Tracer v2.21</string>
+    <string name="nav_header_title">Travel Tracer v2.22</string>
     <string name="nav_header_subtitle">sergio.calderon@alu.ing.unlp.edu.ar</string>
 
     <string name="action_settings">Settings</string>
@@ -103,4 +103,6 @@
     <string name="unknown_zone">Zona sin definir</string>
     <string name="people_count">Pasajeros (que pagaste)</string>
     <string name="rating">Calificación</string>
+    <string name="start">Subida</string>
+    <string name="end">Bajada</string>
 </resources>

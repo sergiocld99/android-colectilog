@@ -22,7 +22,7 @@ import cs10.apps.travels.tracer.model.Recarga;
 
 public class ChargeFragment extends CS_Fragment implements ChargeButtonCallback {
     private FragmentChargeBinding binding;
-    private static final String[] DEFAULT_VALUES = {"$100", "$200", "$500", "$810", "$1000"};
+    private static final String[] DEFAULT_VALUES = {"$200", "$500", "$750", "$1000", "$1500"};
     private final ChargeButton[] buttons = new ChargeButton[DEFAULT_VALUES.length];
     private int valueSelected;
 

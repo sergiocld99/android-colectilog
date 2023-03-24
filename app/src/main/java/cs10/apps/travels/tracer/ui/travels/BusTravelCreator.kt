@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -28,7 +29,8 @@ class BusTravelCreator : CommonTravelCreator() {
     private lateinit var onStartPlaceSelected: AdapterView.OnItemSelectedListener
     private lateinit var onEndPlaceSelected: AdapterView.OnItemSelectedListener
     private lateinit var client: FusedLocationProviderClient
-    private var paradas: MutableList<Parada> = mutableListOf()
+    private var paradas = mutableListOf<Parada>()
+    private var endParadas = mutableListOf<Parada>()
     private var startIndex = 0
     private var endIndex = 0
 
@@ -51,7 +53,8 @@ class BusTravelCreator : CommonTravelCreator() {
         content.etEndHour.isEnabled = false
 
         // hint values
-        autoFillRamals()
+        // content.etRamal.setOnClickListener { autoFillRamals() }
+        Handler(mainLooper).postDelayed({ autoFillRamals() }, 700)
 
         // order stops by last location
         client = LocationServices.getFusedLocationProviderClient(this)
@@ -76,7 +79,12 @@ class BusTravelCreator : CommonTravelCreator() {
 
     private fun autoFillRamals() {
         doInBackground {
-            val ramals = MiDB.getInstance(this).viajesDao().allRamals
+            var ramals: MutableList<String>
+
+            content.etLine.text.toString().let {
+                ramals = if (it.isEmpty()) MiDB.getInstance(this).viajesDao().allRamals
+                else MiDB.getInstance(this).viajesDao().getAllRamalsFromLine(it.toInt())
+            }
 
             doInForeground {
                 val ra = ArrayAdapter(this, android.R.layout.simple_list_item_1, ramals)
@@ -88,9 +96,18 @@ class BusTravelCreator : CommonTravelCreator() {
     private fun loadStops(location: Location?) {
         doInBackground {
             val db = MiDB.getInstance(this)
-            paradas = db.paradasDao().all
 
+            // get ordered by name and travel count
+            paradas = db.paradasDao().all
+            endParadas = db.paradasDao().allOrderedByTravelCount
+
+            // control
+            if (paradas.size != endParadas.size) throw Exception("Paradas count dismatch")
+
+            // order start
             location?.let { Utils.orderByProximity(paradas, it.latitude, it.longitude) }
+
+            // update spinners
             doInForeground { setSpinners() }
 
             // part 2: autocomplete likely travel
@@ -108,16 +125,19 @@ class BusTravelCreator : CommonTravelCreator() {
 
         // find end index
         var endIndex = 0
-        for (p in paradas) {
+        for (p in endParadas) {
             if (p.nombre == viaje.nombrePdaFin) break else endIndex++
         }
 
         content.selectorEndPlace.setSelection(endIndex, true)
+
+        // in case user wants to select another ramal
+        // autoFillRamals()
     }
 
     private fun setSpinners() {
         startAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, paradas)
-        endAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, paradas)
+        endAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, endParadas)
 
         startAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -139,7 +159,7 @@ class BusTravelCreator : CommonTravelCreator() {
         val price = content.etPrice.text.toString().trim()
 
         val startPlace = paradas[startIndex]
-        val endPlace = paradas[endIndex]
+        val endPlace = endParadas[endIndex]
 
         if (date.isEmpty() || startHour.isEmpty() || line.isEmpty() || peopleCount.isEmpty()) return 1
         if (startPlace == endPlace) return 2
@@ -185,7 +205,7 @@ class BusTravelCreator : CommonTravelCreator() {
     fun updatePrice() {
         if (paradas.isNotEmpty()) doInBackground {
             val dao = MiDB.getInstance(applicationContext).viajesDao()
-            val maxP = dao.getMaxPrice(paradas[startIndex].nombre, paradas[endIndex].nombre)
+            val maxP = dao.getMaxPrice(paradas[startIndex].nombre, endParadas[endIndex].nombre)
             doInForeground {
                 if (maxP != null) {
                     val price = maxP * getPercentageToPay(redSubeCount) / 100

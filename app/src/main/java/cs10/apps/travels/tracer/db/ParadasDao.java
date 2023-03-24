@@ -68,6 +68,12 @@ public interface ParadasDao {
     @Query("SELECT * FROM parada where tipo = 1")
     List<Parada> getCustomTrainStops();
 
+    // ============================= TRAVEL CREATION ===========================
+
+    @Query("SELECT P.* FROM Parada P LEFT JOIN Viaje V ON P.nombre = V.nombrePdaInicio " +
+            "GROUP BY P.nombre ORDER BY COUNT(V.id) desc ")
+    List<Parada> getAllOrderedByTravelCount();
+
 
     // ============================== LIVE WAITING ==========================
 

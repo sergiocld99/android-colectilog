@@ -134,6 +134,9 @@ public interface ViajesDao {
     @Query("SELECT DISTINCT ramal FROM Viaje where ramal like '___%' order by ramal")
     List<String> getAllRamals();
 
+    @Query("SELECT DISTINCT ramal FROM Viaje where linea = :line and ramal like '___%' order by ramal")
+    List<String> getAllRamalsFromLine(int line);
+
     // ------------------------------ TRAVEL STATS -----------------------------------
 
     @Query("SELECT MAX((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +

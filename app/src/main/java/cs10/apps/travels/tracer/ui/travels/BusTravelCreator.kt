@@ -8,8 +8,10 @@ import android.os.Handler
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.core.view.isVisible
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.tabs.TabLayout
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding
@@ -62,6 +64,8 @@ class BusTravelCreator : CommonTravelCreator() {
 
         // listeners
         content.etDate.setOnClickListener { createDatePicker() }
+        content.priceTabs.addOnTabSelectedListener(TabsListener())
+
         binding.fabStop.setOnClickListener {
             startActivity(Intent(this, StopCreator::class.java))
         }
@@ -206,11 +210,33 @@ class BusTravelCreator : CommonTravelCreator() {
         if (paradas.isNotEmpty()) doInBackground {
             val dao = MiDB.getInstance(applicationContext).viajesDao()
             val maxP = dao.getMaxPrice(paradas[startIndex].nombre, endParadas[endIndex].nombre)
+
             doInForeground {
+                // remove old ones
+                content.priceTabs.removeAllTabs()
+                content.priceOptions.isVisible = true
+
                 if (maxP != null) {
                     val price = maxP * getPercentageToPay(redSubeCount) / 100
                     content.etPrice.setText(price.toString())
-                } else content.etPrice.text = null
+
+                    // options
+                    content.priceTabs.let {
+                        // build new ones
+                        val tab1 = it.newTab().apply { text = Utils.priceFormat(price * 0.45) }
+                        val tab2 = it.newTab().apply { text = Utils.priceFormat(price) }
+                        val tab3 = it.newTab().setText("Otro")
+
+                        // add new ones
+                        it.addTab(tab1)
+                        it.addTab(tab2)
+                        it.addTab(tab3)
+                    }
+                } else {
+                    content.etPrice.text = null
+                    content.etPrice.isEnabled = true
+                    content.priceOptions.isVisible = false
+                }
             }
         }
     }
@@ -218,6 +244,33 @@ class BusTravelCreator : CommonTravelCreator() {
     override fun onDateSet(day: Int, month: Int, year: Int) {
         content.etDate.setText(Utils.dateFormat(day, month, year))
     }
+
+    // ======================== PRICE TABS ======================== //
+
+    private inner class TabsListener : TabLayout.OnTabSelectedListener {
+
+        override fun onTabSelected(tab: TabLayout.Tab) {
+            // called when a tab is selected
+            tab.text?.let {
+                if (it.toString().lowercase(Locale.getDefault()) == "otro"){
+                    content.etPrice.isEnabled = true
+                } else {
+                    content.etPrice.isEnabled = false
+                    content.etPrice.setText(it.toString().substring(1))
+                }
+            }
+        }
+
+        override fun onTabUnselected(tab: TabLayout.Tab) {
+            // called when a tab is unselected
+        }
+
+        override fun onTabReselected(tab: TabLayout.Tab) {
+            // called when a tab is reselected
+        }
+    }
+
+    // ======================== STOPS SPINNERS ========================== //
 
     private inner class OnStartPlaceSelected : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {

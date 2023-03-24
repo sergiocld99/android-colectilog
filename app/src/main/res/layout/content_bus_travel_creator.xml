@@ -190,15 +190,7 @@
                     app:tabSelectedTextColor="@color/white"
                     app:layout_constraintTop_toBottomOf="@id/tv_price">
 
-                    <com.google.android.material.tabs.TabItem
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:text="$47.52"/>
 
-                    <com.google.android.material.tabs.TabItem
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:text="$105.60"/>
 
                     <com.google.android.material.tabs.TabItem
                         android:layout_width="100dp"

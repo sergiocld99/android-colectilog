@@ -42,6 +42,9 @@ public class BusTravelEditor extends CommonTravelEditor {
 
         // disable people count (1 travel = 1 person)
         content.etPeopleCount.setEnabled(false);
+
+        // disable price options
+        content.priceOptions.setVisibility(View.GONE);
     }
 
     @Override

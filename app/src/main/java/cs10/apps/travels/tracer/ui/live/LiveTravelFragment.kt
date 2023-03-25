@@ -267,6 +267,11 @@ class LiveTravelFragment : CS_Fragment() {
             }
         }
 
+        liveVM.nextZone.observe(viewLifecycleOwner) {
+            if (it == null) binding.nearMeSub.text = null
+            else binding.nearMeSub.text = String.format("En %d' por %s", it.minutesLeft, it.zone.name)
+        }
+
         // DEC 2022: EXPECTED RATING
         liveVM.rate.observe(viewLifecycleOwner) {
             if (it == null) binding.rateText.text = "--"
@@ -318,6 +323,7 @@ class LiveTravelFragment : CS_Fragment() {
         binding.travellingLayout.isVisible = false
         binding.finishBtn.isVisible = false
         binding.nearMeTitle.text = null
+        binding.nearMeSub.text = null
         basicSwitcher.clear()
         binding.trafficBanner.isVisible = false
         binding.nextTravelInfo.text = null

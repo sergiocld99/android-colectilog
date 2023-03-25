@@ -57,6 +57,10 @@ public class TrainTravelEditor extends CommonTravelEditor {
         content.etDate.setText(Utils.dateFormat(viaje.getDay(), viaje.getMonth(), viaje.getYear()));
         content.etStartHour.setText(Utils.hourFormat(viaje.getStartHour(), viaje.getStartMinute()));
 
+        if (viaje.getEndHour() != null && viaje.getEndMinute() != null){
+            content.etEndHour.setText(Utils.hourFormat(viaje.getEndHour(), viaje.getEndMinute()));
+        }
+
         startIndex = getPosFor(viaje.getNombrePdaInicio());
         endIndex = getPosFor(viaje.getNombrePdaFin());
 
@@ -122,7 +126,10 @@ public class TrainTravelEditor extends CommonTravelEditor {
             Utils.setWeekDay(viaje);
             if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
 
-            if (endHourParams != null) {
+            if (endHourParams == null) {
+                viaje.setEndHour(null);
+                viaje.setEndMinute(null);
+            } else {
                 viaje.setEndHour(Integer.parseInt(endHourParams[0]));
                 viaje.setEndMinute(Integer.parseInt(endHourParams[1]));
             }

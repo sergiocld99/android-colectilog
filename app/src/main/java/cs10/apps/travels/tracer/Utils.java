@@ -27,6 +27,7 @@ import java.util.List;
 import cs10.apps.travels.tracer.enums.TransportType;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.model.joins.TravelStats;
 
 public class Utils {
     private static final DecimalFormat df = new DecimalFormat("0.00");
@@ -190,6 +191,15 @@ public class Utils {
                 calendar.get(Calendar.MINUTE) * 60 + calendar.get(Calendar.SECOND);
 
         return currentSeconds / 60d;
+    }
+
+    // v2.21
+    public static Double calculateAverageSpeed(List<TravelStats> stats){
+        if (stats.isEmpty()) return null;
+
+        double sum = 0.0;
+        for (TravelStats s : stats) sum += s.calculateSpeedInKmH();
+        return sum / stats.size();
     }
 
     public static Direction getDirection(@NonNull Parada start, @NonNull Parada end){

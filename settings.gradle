@@ -10,6 +10,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
+        // v2.18: CHARTS
+        maven { url 'https://jitpack.io' }
     }
 }
 rootProject.name = "Travel Tracer"

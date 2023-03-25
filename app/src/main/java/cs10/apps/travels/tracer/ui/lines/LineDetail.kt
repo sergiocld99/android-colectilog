@@ -12,6 +12,7 @@ import cs10.apps.common.android.ui.FormActivity
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.adapter.BusRamalsAdapter
+import cs10.apps.travels.tracer.constants.Extras
 import cs10.apps.travels.tracer.databinding.ActivityLineDetailsBinding
 import cs10.apps.travels.tracer.db.MiDB
 
@@ -82,7 +83,7 @@ class LineDetail : FormActivity(), ColorPickerDialogListener {
 
         data.forEach {
             if (it.ramal != null){
-                val stats = db.viajesDao().getAllFinishedTravelsFromRamal(number!!, it.ramal)
+                val stats = db.viajesDao().getRecentFinishedTravelsFromRamal(number!!, it.ramal)
 
                 if (stats.isEmpty()) it.speed = null
                 else {
@@ -93,6 +94,8 @@ class LineDetail : FormActivity(), ColorPickerDialogListener {
                 }
             }
         }
+
+        data.sort()
 
         doInForeground {
             binding.etAlternativeName.setText(line?.name)
@@ -113,6 +116,9 @@ class LineDetail : FormActivity(), ColorPickerDialogListener {
         if (item.itemId == R.id.action_palette) {
             val dialog = ColorPickerDialog.newBuilder()
             dialog.show(this)
+            return true
+        } else if (item.itemId == R.id.action_graph) {
+            number?.let { n -> openHourStats(n) }
             return true
         }
 
@@ -136,4 +142,12 @@ class LineDetail : FormActivity(), ColorPickerDialogListener {
     }
 
     override fun onDialogDismissed(dialogId: Int) {}
+
+    // --------------------------------- HOUR STATS -------------------------
+
+    private fun openHourStats(lineNumber: Int){
+        val intent = Intent(this, HourStatsActivity::class.java)
+        intent.putExtra(Extras.LINE_NUMBER.name, lineNumber)
+        startActivity(intent)
+    }
 }

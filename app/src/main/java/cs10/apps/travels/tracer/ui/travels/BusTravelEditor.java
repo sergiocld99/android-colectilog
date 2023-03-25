@@ -42,6 +42,9 @@ public class BusTravelEditor extends CommonTravelEditor {
 
         // disable people count (1 travel = 1 person)
         content.etPeopleCount.setEnabled(false);
+
+        // disable price options
+        content.priceOptions.setVisibility(View.GONE);
     }
 
     @Override
@@ -59,6 +62,8 @@ public class BusTravelEditor extends CommonTravelEditor {
         if (viaje.getCosto() != 0) content.etPrice.setText(String.valueOf(viaje.getCosto()));
         if (viaje.getEndHour() != null && viaje.getEndMinute() != null)
             content.etEndHour.setText(Utils.hourFormat(viaje.getEndHour(), viaje.getEndMinute()));
+
+        if (viaje.getRate() != null) content.ratingBar.setRating(viaje.getRate());
 
         // mandatory
         content.etDate.setText(Utils.dateFormat(viaje.getDay(), viaje.getMonth(), viaje.getYear()));
@@ -142,6 +147,10 @@ public class BusTravelEditor extends CommonTravelEditor {
             viaje.setRamal(ramal.isEmpty() ? null : ramal);
             viaje.setCosto(price.isEmpty() ? 0 : Double.parseDouble(price));
             viaje.setLinea(Integer.parseInt(line));
+
+            if (content.ratingBar.getRating() > 0) viaje.setRate(Math.round(content.ratingBar.getRating()));
+            else viaje.setRate(0);
+
             viaje.setTipo(0);
         } catch (Exception e){
             e.printStackTrace();

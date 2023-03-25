@@ -3,7 +3,6 @@ package cs10.apps.travels.tracer.adapter
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import cs10.apps.common.android.NumberUtils
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ItemLineBinding
 import cs10.apps.travels.tracer.model.joins.BusRamalInfo
@@ -13,7 +12,7 @@ class BusRamalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun render(item: BusRamalInfo, onItemClickListener: (BusRamalInfo) -> Unit){
 
-        item.speed?.let { n -> binding.speedText.text = "${NumberUtils.round(n, 1)} km/h" }
+        item.speed?.let { n -> binding.speedText.text = String.format("%.1f km/h", n) }
         Utils.paintBusColor(item.color, binding.card)
 
         binding.title.text = item.ramal

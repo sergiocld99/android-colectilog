@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cs10.apps.travels.tracer" >
+    package="cs10.apps.travels.tracer">
     <!-- For Location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- For Picasso -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- For Scheduled Notifications -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATION" />
 
     <application
         android:allowBackup="true"
@@ -12,7 +14,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TravelTracer" >
+        android:theme="@style/Theme.TravelTracer">
+
+        <!-- For Scheduled Notifications, even when app is dead -->
+        <receiver
+            android:name=".notification.NotificationBroadcast"
+            android:enabled="true" />
+
         <activity
             android:name=".MapViewActivity"
             android:exported="false" />
@@ -56,6 +64,10 @@
             android:name=".ui.lines.LineDetail"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
+            android:name=".ui.lines.HourStatsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TravelTracer.Buses" />
+        <activity
             android:name=".ui.zones.ZoneCreator"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
@@ -72,7 +84,7 @@
         <activity
             android:name=".ui.LauncherActivity"
             android:exported="true"
-            android:theme="@style/SplashScreen" >
+            android:theme="@style/SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

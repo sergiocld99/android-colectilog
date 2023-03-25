@@ -79,12 +79,15 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.9.0'
         annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
 
-    // OCT 2022: SWIPE V1
+    // v1.80: SWIPE V1
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
-    // NOV 2022: COLOR PICKER
+    // v1.88: COLOR PICKER
     implementation 'com.jaredrummler:colorpicker:1.1.0'
 
-    // DEC 2022: FACEBOOK SHIMMER
+    // v1.96: FACEBOOK SHIMMER
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
+    // v2.18: CHARTS
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }

@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.model
 
+import android.location.Location
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
@@ -37,5 +38,9 @@ class Zone(
 
     fun getRadix(): Double {
         return 0.5 * NumberUtils.coordsDistanceToKm(x1 - x0)
+    }
+
+    fun getCoordsDistanceTo(location: Location) : Double {
+        return NumberUtils.hyp(getCenterX() - location.latitude, getCenterY() - location.longitude)
     }
 }

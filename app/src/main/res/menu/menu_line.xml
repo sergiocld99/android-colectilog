@@ -10,4 +10,11 @@
         android:icon="@drawable/ic_palette"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_graph"
+        android:orderInCategory="100"
+        android:title="Agrupar por horario"
+        android:icon="@drawable/ic_timer"
+        app:showAsAction="ifRoom" />
+
 </menu>

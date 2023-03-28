@@ -284,7 +284,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 val kmDistance = NumberUtils.coordsDistanceToKm(distance)
                 val minutesToZ = (kmDistance * minutesLeft / endStop.distance).roundToInt()
 
-                if (minutesToZ > 0) {
+                if (minutesToZ > 0 && minutesToZ < minutesLeft) {
                     list.add(NextZone(z, minutesToZ))
                     // nextFound = true
                     // break

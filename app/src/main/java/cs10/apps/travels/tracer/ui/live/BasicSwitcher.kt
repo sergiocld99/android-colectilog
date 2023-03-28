@@ -14,6 +14,7 @@ class BasicSwitcher(var textSwitcher: TextSwitcher, val autoRepeat: Boolean = tr
 
     // content to show
     private val mutableList = mutableListOf<String>()
+    private var lastTextShown = ""
 
     fun addContent(text: String) {
         mutableList.add(text)
@@ -34,11 +35,11 @@ class BasicSwitcher(var textSwitcher: TextSwitcher, val autoRepeat: Boolean = tr
             if (ite < mutableList.size){
                 slideUp(mutableList[ite])
                 ite++
-                scheduleNext(4000)
-            } else if (autoRepeat) {
+                scheduleNext(16000L / mutableList.size)
+            } else {
                 slideDown(mutableList[0])
                 ite = 1
-                scheduleNext(4000)
+                if (autoRepeat) scheduleNext(20000L / mutableList.size)
             }
         }
 
@@ -65,6 +66,9 @@ class BasicSwitcher(var textSwitcher: TextSwitcher, val autoRepeat: Boolean = tr
     fun getCurrentIteration() : Int = ite
 
     private fun slideDown(text: String){
+        if (lastTextShown == text) return
+        else lastTextShown = text
+
         textSwitcher.setInAnimation(getContext(), R.anim.slide_down_in)
         textSwitcher.setOutAnimation(getContext(), R.anim.slide_down_out)
         textSwitcher.setText(text)
@@ -72,6 +76,9 @@ class BasicSwitcher(var textSwitcher: TextSwitcher, val autoRepeat: Boolean = tr
     }
 
     private fun slideUp(text: String){
+        if (lastTextShown == text) return
+        else lastTextShown = text
+
         textSwitcher.setInAnimation(getContext(), R.anim.slide_up_in)
         textSwitcher.setOutAnimation(getContext(), R.anim.slide_up_out)
         textSwitcher.setText(text)

@@ -145,6 +145,7 @@ class LiveTravelFragment : CS_Fragment() {
             }
         }
 
+        /*
         liveVM.toggle.observe(viewLifecycleOwner) {
             if (liveVM.travel.value != null) {
                 if (it) liveVM.progress.value?.let { prog ->
@@ -155,6 +156,8 @@ class LiveTravelFragment : CS_Fragment() {
                 }
             }
         }
+
+         */
 
         liveVM.minutesFromStart.observe(viewLifecycleOwner) {
             // new design
@@ -321,7 +324,8 @@ class LiveTravelFragment : CS_Fragment() {
         super.onStop()
         liveVM.eraseAll()
         waitingVM.reset()
-        basicSwitcher.stop()
+        basicSwitcher.clear()
+        zoneSwitcher.clear()
     }
 
 

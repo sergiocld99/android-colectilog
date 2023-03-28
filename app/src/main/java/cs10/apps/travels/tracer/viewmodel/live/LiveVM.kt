@@ -58,7 +58,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     // aditional info
     val progress = MutableLiveData<Double?>()
     val rate = MutableLiveData<Double?>()
-    val nextZone = MutableLiveData<NextZone?>()
+    val nextZones = MutableLiveData<MutableList<NextZone>>()
 
 
     // timer 1: update minutes from start every 30 seconds
@@ -218,30 +218,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         progress.postValue(correctedProg)
 
                         // fourth action: find next zones to get in
-                        val start = Point(location.latitude, location.longitude)
-                        val end = Point(endStop.latitud, endStop.longitud)
-                        val n = (1-correctedProg) * 10
-                        val nextPoints = calculateNextPoints(start, end, n.roundToInt())
-                        var nextFound = false
-
-                        for (p in nextPoints){
-                            val zonesHere = database.zonesDao().findZonesIn(p.x, p.y)
-
-                            if (zonesHere.isNotEmpty()){
-                                val z = zonesHere[0]
-                                val distance = z.getCoordsDistanceTo(location)
-                                val kmDistance = NumberUtils.coordsDistanceToKm(distance)
-                                val minutesToZ = (kmDistance * minutesLeft / endStop.distance).roundToInt()
-
-                                if (minutesToZ > 0){
-                                    nextZone.postValue(NextZone(z, minutesToZ))
-                                    nextFound = true
-                                    break
-                                }
-                            }
-                        }
-
-                        if (!nextFound) nextZone.postValue(null)
+                        calculateNextPoints(location, endStop, correctedProg, minutesLeft)
 
                         // fifth action: calculate expected rating
                         minDuration.value?.let { bestDuration ->
@@ -281,6 +258,44 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             if (zonesFromDB.isNotEmpty()) customZone.postValue(zonesFromDB[0])
             else customZone.postValue(null)
         }
+    }
+
+    private suspend fun calculateNextPoints(
+        location: Location,
+        endStop: Parada,
+        correctedProg: Double,
+        minutesLeft: Double
+    ) {
+        val start = Point(location.latitude, location.longitude)
+        val end = Point(endStop.latitud, endStop.longitud)
+        val n = (1 - correctedProg) * 10
+        val nextPoints = calculateNextPoints(start, end, n.roundToInt())
+        // var nextFound = false
+
+        // avoid repeated zones
+        val zoneIds = mutableSetOf<Long>()
+        val list = mutableListOf<NextZone>()
+
+        for (p in nextPoints) {
+            database.zonesDao().findFirstZoneIn(p.x, p.y)?.let { z ->
+                if (zoneIds.contains(z.id)) return@let
+
+                val distance = z.getCoordsDistanceTo(location)
+                val kmDistance = NumberUtils.coordsDistanceToKm(distance)
+                val minutesToZ = (kmDistance * minutesLeft / endStop.distance).roundToInt()
+
+                if (minutesToZ > 0) {
+                    list.add(NextZone(z, minutesToZ))
+                    // nextFound = true
+                    // break
+                }
+
+                zoneIds.add(z.id)
+            }
+        }
+
+        nextZones.postValue(list)
+        // if (!nextFound) nextZone.postValue(null)
     }
 
     private fun calculateNextPoints(start: Point, end: Point, n: Int): MutableList<Point> {

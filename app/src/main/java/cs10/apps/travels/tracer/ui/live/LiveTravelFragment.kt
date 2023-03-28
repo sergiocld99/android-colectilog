@@ -62,6 +62,7 @@ class LiveTravelFragment : CS_Fragment() {
 
     // Switchers
     private lateinit var basicSwitcher: BasicSwitcher
+    private lateinit var zoneSwitcher: BasicSwitcher
 
     /* ====================== MAIN FUNCTIONS ==================================== */
 
@@ -86,6 +87,7 @@ class LiveTravelFragment : CS_Fragment() {
 
         // other objects
         basicSwitcher = BasicSwitcher(binding.topBannerSwitcher)
+        zoneSwitcher = BasicSwitcher(binding.zoneSwitcher, false)
 
         // live data
         observeLiveVM()
@@ -267,9 +269,15 @@ class LiveTravelFragment : CS_Fragment() {
             }
         }
 
-        liveVM.nextZone.observe(viewLifecycleOwner) {
-            if (it == null) binding.nearMeSub.text = null
-            else binding.nearMeSub.text = String.format("En %d' por %s", it.minutesLeft, it.zone.name)
+        liveVM.nextZones.observe(viewLifecycleOwner) {
+            zoneSwitcher.clear()
+
+            it?.forEach { nz ->
+                zoneSwitcher.addContent("En ${nz.minutesLeft}' por ${nz.zone.name}")
+            }
+
+
+            zoneSwitcher.start()
         }
 
         // DEC 2022: EXPECTED RATING
@@ -323,7 +331,7 @@ class LiveTravelFragment : CS_Fragment() {
         binding.travellingLayout.isVisible = false
         binding.finishBtn.isVisible = false
         binding.nearMeTitle.text = null
-        binding.nearMeSub.text = null
+        zoneSwitcher.clear()
         basicSwitcher.clear()
         binding.trafficBanner.isVisible = false
         binding.nextTravelInfo.text = null

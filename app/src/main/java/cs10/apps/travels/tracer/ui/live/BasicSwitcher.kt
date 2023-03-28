@@ -6,7 +6,7 @@ import android.os.Looper
 import android.widget.TextSwitcher
 import cs10.apps.travels.tracer.R
 
-class BasicSwitcher(var textSwitcher: TextSwitcher) {
+class BasicSwitcher(var textSwitcher: TextSwitcher, val autoRepeat: Boolean = true) {
     private var handler: Handler? = null
     private var runnable: Runnable? = null
     private var lastAction = LastAction.SLIDED_DOWN
@@ -14,6 +14,10 @@ class BasicSwitcher(var textSwitcher: TextSwitcher) {
 
     // content to show
     private val mutableList = mutableListOf<String>()
+
+    fun addContent(text: String) {
+        mutableList.add(text)
+    }
 
     fun replaceContent(text: String, index: Int){
         if (index >= mutableList.size) mutableList.add(text)
@@ -30,15 +34,19 @@ class BasicSwitcher(var textSwitcher: TextSwitcher) {
             if (ite < mutableList.size){
                 slideUp(mutableList[ite])
                 ite++
-            } else {
+                scheduleNext(4000)
+            } else if (autoRepeat) {
                 slideDown(mutableList[0])
                 ite = 1
+                scheduleNext(4000)
             }
-
-            handler?.postDelayed(runnable!!, 4000)
         }
 
         runnable?.run()
+    }
+
+    private fun scheduleNext(ms: Long){
+        handler?.postDelayed(runnable!!, ms)
     }
 
     fun stop(){

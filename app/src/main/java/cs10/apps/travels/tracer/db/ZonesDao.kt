@@ -25,6 +25,9 @@ interface ZonesDao {
     @Query("SELECT * FROM Zone WHERE (:x BETWEEN x0 AND x1) AND (:y BETWEEN y0 AND y1) ")
     suspend fun findZonesIn(x: Double, y:Double) : MutableList<Zone>
 
+    @Query("SELECT * FROM Zone WHERE (:x BETWEEN x0 AND x1) AND (:y BETWEEN y0 AND y1) limit 1")
+    suspend fun findFirstZoneIn(x: Double, y: Double) : Zone?
+
     @Query("SELECT * FROM Zone WHERE " +
             "( (x0 BETWEEN :x0 and :x1) OR (x1 BETWEEN :x0 and :x1) ) AND " +
             "( (y0 BETWEEN :y0 and :y1) OR (y1 BETWEEN :y0 and :y1) ) limit 2")

@@ -19,6 +19,7 @@ import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Emoji
 import cs10.apps.common.android.NumberUtils
 import cs10.apps.common.android.ui.CS_Fragment
+import cs10.apps.rater.HappyRater
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.adapter.NearStopAdapter
@@ -204,6 +205,7 @@ class LiveTravelFragment : CS_Fragment() {
                     binding.trafficCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus_500))
                 }
 
+
                 /*
                 binding.estimationError.isVisible = absError > 3
                 binding.estimationError.text = "Estimación con error de $absError minutos"
@@ -287,6 +289,10 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.rate.observe(viewLifecycleOwner) {
             if (it == null) binding.rateText.text = "--"
             else binding.rateText.text = Utils.rateFormat(it)
+
+            // emoji icon
+            val face = HappyRater.getDrawableByRating(it?.roundToInt() ?: 3)
+            binding.trafficIv.setImageDrawable(ContextCompat.getDrawable(binding.root.context, face))
         }
     }
 

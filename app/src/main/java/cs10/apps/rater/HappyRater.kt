@@ -39,18 +39,23 @@ class HappyRater {
     }
 
     private fun autoUpdateEmoticon(view: SimpleRateBinding){
-        val drawable = when(integerRate){
-            5 -> R.drawable.ic_sentiment_very_satisfied
-            4 -> R.drawable.ic_sentiment_satisfied_alt
-            3 -> R.drawable.ic_sentiment_satisfied
-            2 -> R.drawable.ic_sentiment_dissatisfied
-            else -> R.drawable.ic_sentiment_very_dissatisfied
-        }
-
+        val drawable = getDrawableByRating(integerRate)
         view.emoticon.setImageDrawable(ContextCompat.getDrawable(view.root.context, drawable))
     }
 
     fun show() {
         alertDialog.show()
+    }
+
+    companion object {
+        fun getDrawableByRating(rating: Int): Int {
+            return when(rating){
+                5 -> R.drawable.ic_sentiment_very_satisfied
+                4 -> R.drawable.ic_sentiment_satisfied_alt
+                3 -> R.drawable.ic_sentiment_satisfied
+                2 -> R.drawable.ic_sentiment_dissatisfied
+                else -> R.drawable.ic_sentiment_very_dissatisfied
+            }
+        }
     }
 }

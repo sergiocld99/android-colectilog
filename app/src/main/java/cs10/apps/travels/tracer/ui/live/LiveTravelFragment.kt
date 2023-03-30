@@ -325,7 +325,7 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.eraseAll()
         waitingVM.reset()
         basicSwitcher.clear()
-        zoneSwitcher.clear()
+        zoneSwitcher.purge()
     }
 
 

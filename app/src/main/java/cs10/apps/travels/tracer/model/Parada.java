@@ -8,10 +8,11 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import cs10.apps.common.android.DoubleHistory;
+import cs10.apps.common.android.Localizable;
 import cs10.apps.common.android.NumberUtils;
 
 @Entity
-public class Parada implements Comparable<Parada> {
+public class Parada implements Comparable<Parada>, Localizable {
 
     @PrimaryKey @NonNull
     private String nombre = "Nombre de ejemplo";
@@ -116,5 +117,15 @@ public class Parada implements Comparable<Parada> {
     @Override @NonNull
     public String toString() {
         return nombre;
+    }
+
+    @Override
+    public double getX() {
+        return getLatitud();
+    }
+
+    @Override
+    public double getY() {
+        return getLongitud();
     }
 }

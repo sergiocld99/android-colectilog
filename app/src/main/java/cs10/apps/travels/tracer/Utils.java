@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 
+import cs10.apps.common.android.Localizable;
 import cs10.apps.travels.tracer.enums.TransportType;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
@@ -202,9 +203,9 @@ public class Utils {
         return sum / stats.size();
     }
 
-    public static Direction getDirection(@NonNull Parada start, @NonNull Parada end){
-        double diff_x = end.getLatitud() - start.getLatitud();
-        double diff_y = end.getLongitud() - start.getLongitud();
+    public static Direction getDirection(double x0, double y0, double x1, double y1){
+        double diff_x = x1 - x0;
+        double diff_y = y1 - y0;
 
         // va hacia el norte
         if (diff_x > 0){
@@ -214,6 +215,10 @@ public class Utils {
             if (diff_y > 0) return Direction.SOUTH_EAST;
             else return Direction.SOUTH_WEST;
         }
+    }
+
+    public static Direction getDirection(@NonNull Localizable start, @NonNull Localizable end){
+        return getDirection(start.getX(), start.getY(), end.getX(), end.getY());
     }
 
     public enum Direction {

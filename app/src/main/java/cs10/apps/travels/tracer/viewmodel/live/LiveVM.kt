@@ -11,6 +11,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import cs10.apps.common.android.Clock
+import cs10.apps.common.android.Localizable
 import cs10.apps.common.android.NumberUtils
 import cs10.apps.common.android.TimedLocation
 import cs10.apps.rater.HappyRater
@@ -169,13 +170,20 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
 
     // CALCULA EL PORCENTAJE A PARTIR DE LA DISTANCIA AL INICIO y AL FIN
     /**
+     * @param startDist distance from start measured in a custom unit
+     * @param endDist distance to end measured in same unit than startDist
      * @return progress between 0 and 1
      */
     private fun calculateProgress(startDist: Double, endDist: Double): Double {
-        val total = startDist + endDist
-        return startDist / total
+        return startDist / (startDist + endDist)
     }
 
+    /**
+     * @param endDist in kilometers
+     * @param speed in km/h
+     * @param prog percentage between 0 and 1
+     * @return estimated time in minutes (double) to arrive from now
+     */
     private fun calculateMinutesLeft(speed: Double, prog: Double, endDist: Double): Double {
         return if (averageDuration.value == null) (endDist / speed) * 60
         else (1 - prog) * averageDuration.value!!.totalMinutes
@@ -204,12 +212,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         val speed = 0.5 * (startStop.distance / hours) + 12.5
 
                         // calc direction and apply correction to progress
-                        val correctedProg = when (Utils.getDirection(startStop, endStop)) {
-                            Utils.Direction.SOUTH_EAST -> 2 * prog.pow(3) - 2.76 * prog.pow(2) + 1.76 * prog
-                            Utils.Direction.NORTH_WEST -> 0.25 * prog.pow(3) - 1.05 * prog.pow(2) + 1.8 * prog
-                            else -> prog
-                        }
-
+                        val correctedProg = getCorrectedProgress(startStop, endStop, prog)
                         val minutesLeft = calculateMinutesLeft(speed, correctedProg, endStop.distance)
 
                         // postear para ui
@@ -218,7 +221,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         progress.postValue(correctedProg)
 
                         // fourth action: find next zones to get in
-                        calculateNextPoints(location, endStop, correctedProg, minutesLeft)
+                        calculateNextPoints(startStop, endStop, correctedProg, minutesLeft, speed)
 
                         // fifth action: calculate expected rating
                         minDuration.value?.let { bestDuration ->
@@ -260,16 +263,25 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private fun getCorrectedProgress(start: Localizable, end: Localizable, prog: Double): Double {
+        return when (Utils.getDirection(start, end)) {
+            Utils.Direction.SOUTH_EAST -> 2 * prog.pow(3) - 2.76 * prog.pow(2) + 1.76 * prog
+            Utils.Direction.NORTH_WEST -> 0.25 * prog.pow(3) - 1.05 * prog.pow(2) + 1.8 * prog
+            else -> prog
+        }
+    }
+
     private suspend fun calculateNextPoints(
-        location: Location,
+        startStop: Parada,
         endStop: Parada,
-        correctedProg: Double,
-        minutesLeft: Double
+        currentProg: Double,
+        minutesCurrentToEnd: Double,
+        speed: Double
     ) {
-        val start = Point(location.latitude, location.longitude)
+        val start = Point(startStop.latitud, startStop.longitud)
         val end = Point(endStop.latitud, endStop.longitud)
-        val n = (1 - correctedProg) * 10
-        val nextPoints = calculateNextPoints(start, end, n.roundToInt())
+        val n = ((1 - currentProg) * 10).roundToInt()
+        val nextPoints = calculateNextPoints(start, end, n)
         // var nextFound = false
 
         // avoid repeated zones
@@ -277,18 +289,25 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         val list = mutableListOf<NextZone>()
 
         for (p in nextPoints) {
-            database.zonesDao().findFirstZoneIn(p.x, p.y)?.let { z ->
+            database.zonesDao().findFirstZoneIn(p.getX(), p.getY())?.let { z ->
                 if (zoneIds.contains(z.id)) return@let
 
-                val distance = z.getCoordsDistanceTo(location)
-                val kmDistance = NumberUtils.coordsDistanceToKm(distance)
-                val minutesToZ = (kmDistance * minutesLeft / endStop.distance).roundToInt()
+                // calculate variables from this point
+                val distanceFromStart = p.getCoordsDistanceTo(start)
+                val distanceToEnd = p.getCoordsDistanceTo(end)
+                val prog = calculateProgress(distanceFromStart, distanceToEnd)
+                val correctedProg = getCorrectedProgress(start, end, prog)
 
-                if (minutesToZ > 0 && minutesToZ < minutesLeft) {
-                    list.add(NextZone(z, minutesToZ))
+                //val distance = z.getCoordsDistanceTo(location)
+                //val kmDistance = NumberUtils.coordsDistanceToKm(distance)
+                val minutesPointToEnd = calculateMinutesLeft(speed, correctedProg, distanceToEnd)
+                val minutesCurrentToPoint = minutesCurrentToEnd - minutesPointToEnd
+
+                //if (minutesToZ > 0 && minutesToZ < minutesToEnd) {
+                    list.add(NextZone(z, minutesCurrentToPoint.roundToInt()))
                     // nextFound = true
                     // break
-                }
+                //}
 
                 zoneIds.add(z.id)
             }
@@ -300,12 +319,12 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
 
     private fun calculateNextPoints(start: Point, end: Point, n: Int): MutableList<Point> {
         val result = mutableListOf<Point>()
-        val absX = end.x - start.x
-        val absY = end.y - start.y
+        val absX = end.getX() - start.getX()
+        val absY = end.getY() - start.getY()
 
-        for (i in 1..n){
-            val x = start.x + i * absX / n
-            val y = start.y + i * absY / n
+        for (i in 1 until n){
+            val x = start.getX() + i * absX / n
+            val y = start.getY() + i * absY / n
             result.add(Point(x,y))
         }
 

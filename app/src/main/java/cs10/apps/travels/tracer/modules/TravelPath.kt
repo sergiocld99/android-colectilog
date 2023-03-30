@@ -1,6 +1,5 @@
 package cs10.apps.travels.tracer.modules
 
-import cs10.apps.travels.tracer.db.ZonesDao
 import cs10.apps.travels.tracer.model.Point
 import cs10.apps.travels.tracer.model.Zone
 import cs10.apps.travels.tracer.model.joins.TravelStats
@@ -31,30 +30,6 @@ class TravelPath {
             }
 
             return points
-        }
-
-        suspend fun getZonesForPoints(points: List<Point>, dao: ZonesDao) : PathResult {
-            val result = PathResult()
-
-            points.forEach {
-                val zone = dao.findZonesIn(it.x, it.y).firstOrNull()
-
-                if (zone == null) result.unknownPoints.add(it)
-                else result.zonesMatched.add(zone)
-            }
-
-            return result
-        }
-
-        suspend fun getUnknownZonesForPoints(points: List<Point>, dao: ZonesDao) : List<Point> {
-            val result = mutableListOf<Point>()
-
-            points.forEach {
-                val zone = dao.findZonesIn(it.x, it.y).firstOrNull()
-                if (zone == null) result.add(it)
-            }
-
-            return result
         }
 
     }

@@ -14,7 +14,7 @@ class BasicSwitcher(var textSwitcher: TextSwitcher, val autoRepeat: Boolean = tr
 
     // content to show
     private val mutableList = mutableListOf<String>()
-    private var lastTextShown = ""
+    private var lastTextShown: String? = null
 
     fun addContent(text: String) {
         mutableList.add(text)
@@ -63,9 +63,14 @@ class BasicSwitcher(var textSwitcher: TextSwitcher, val autoRepeat: Boolean = tr
         ite = 0
     }
 
+    fun purge(){
+        clear()
+        slideDown(null)
+    }
+
     fun getCurrentIteration() : Int = ite
 
-    private fun slideDown(text: String){
+    private fun slideDown(text: String?){
         if (lastTextShown == text) return
         else lastTextShown = text
 
@@ -75,7 +80,7 @@ class BasicSwitcher(var textSwitcher: TextSwitcher, val autoRepeat: Boolean = tr
         lastAction = LastAction.SLIDED_DOWN
     }
 
-    private fun slideUp(text: String){
+    private fun slideUp(text: String?){
         if (lastTextShown == text) return
         else lastTextShown = text
 

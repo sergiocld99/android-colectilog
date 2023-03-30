@@ -221,7 +221,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         progress.postValue(correctedProg)
 
                         // fourth action: find next zones to get in
-                        calculateNextPoints(startStop, endStop, correctedProg, minutesLeft, speed)
+                        calculateNextPoints(startStop, endStop, location, correctedProg, minutesLeft, speed)
 
                         // fifth action: calculate expected rating
                         minDuration.value?.let { bestDuration ->
@@ -274,14 +274,16 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     private suspend fun calculateNextPoints(
         startStop: Parada,
         endStop: Parada,
+        currentLocation: Location,
         currentProg: Double,
         minutesCurrentToEnd: Double,
         speed: Double
     ) {
         val start = Point(startStop.latitud, startStop.longitud)
         val end = Point(endStop.latitud, endStop.longitud)
+        val current = Point(currentLocation.latitude, currentLocation.longitude)
         val n = ((1 - currentProg) * 10).roundToInt()
-        val nextPoints = calculateNextPoints(start, end, n)
+        val nextPoints = calculateNextPoints(current, end, n)
         // var nextFound = false
 
         // avoid repeated zones

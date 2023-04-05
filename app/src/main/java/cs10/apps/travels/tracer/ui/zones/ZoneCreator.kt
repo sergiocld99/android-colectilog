@@ -64,8 +64,16 @@ class ZoneCreator : FormActivity() {
             }
             StatusCode.EMPTY_FIELDS -> showShortToast("Por favor, complete todos los campos")
             StatusCode.RADIX_ZERO -> binding.etRadix.error = "Ingrese un número mayor a 0"
-            StatusCode.OVERLAP_CENTER -> showShortToast("El centro ya se encuentra en $details")
-            StatusCode.OVERLAP_RADIX -> binding.etRadix.error = "Se superpone con zona $details"
+
+            StatusCode.OVERLAP_CENTER -> {
+                showShortToast("Atención: centro en $details")
+                finish()
+            }
+
+            StatusCode.OVERLAP_RADIX -> {
+                showShortToast("Atención: superposición con $details")
+                finish()
+            }
         }
     }
 
@@ -94,12 +102,14 @@ class ZoneCreator : FormActivity() {
         val radixValue = radix.toDouble()
         if (radixValue <= 0) return StatusCode.RADIX_ZERO
 
-        // N°03: overlap
+        // N°03: overlap (can save in creation)
         val db = MiDB.getInstance(this).zonesDao()
         val overlaps = db.findZonesIn(latitude, longitude)
+        var statusCode = StatusCode.OK
+
         if (overlaps.isNotEmpty()) {
             details = overlaps[0].name
-            return StatusCode.OVERLAP_CENTER
+            statusCode = StatusCode.OVERLAP_CENTER
         }
 
         // passed all checks, then save to database
@@ -109,17 +119,17 @@ class ZoneCreator : FormActivity() {
         val y0 = longitude - radixAbsoluteValue
         val y1 = longitude + radixAbsoluteValue
 
-        // N°04: partial overlap (but this)
+        // N°04: partial overlap (can save on creation)
         val partialOverlaps = db.findPartialOverlapsIn(x0, x1, y0, y1)
         if (partialOverlaps.isNotEmpty()){
             details = partialOverlaps[0].name
-            return StatusCode.OVERLAP_RADIX
+            statusCode = StatusCode.OVERLAP_RADIX
         }
 
         val zone = Zone(name, x0, x1, y0, y1)
         db.insert(zone)
 
-        return StatusCode.OK
+        return statusCode
     }
 
 }

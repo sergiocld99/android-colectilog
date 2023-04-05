@@ -72,7 +72,7 @@ class StopListFragment : CS_Fragment() {
 
             // find zones
             paradas.forEach {
-                it.zone = db.zonesDao().findZonesIn(it.latitud, it.longitud).firstOrNull()
+                it.zone = db.zonesDao().findFirstZoneIn(it.latitud, it.longitud)
             }
 
             // show content

@@ -257,9 +257,8 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             findNearArrivals(zone.first, zone.second)
 
             // new database
-            val zonesFromDB = database.zonesDao().findZonesIn(location.latitude, location.longitude)
-            if (zonesFromDB.isNotEmpty()) customZone.postValue(zonesFromDB[0])
-            else customZone.postValue(null)
+            val found = database.zonesDao().findFirstZoneIn(location.latitude, location.longitude)
+            customZone.postValue(found)
         }
     }
 

@@ -47,10 +47,8 @@ class LocatedArrivalVM : ViewModel() {
 
         // find zone
         viewModelScope.launch(Dispatchers.IO) {
-            val zones = rootVM.database.zonesDao().findZonesIn(parada.latitud, parada.longitud)
-
-            if (zones.isEmpty()) stopZone.postValue(null)
-            else stopZone.postValue(zones.first())
+            val zone = rootVM.database.zonesDao().findFirstZoneIn(parada.latitud, parada.longitud)
+            stopZone.postValue(zone)
         }
     }
 

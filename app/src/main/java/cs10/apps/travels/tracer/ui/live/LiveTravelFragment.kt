@@ -277,6 +277,8 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.nextZones.observe(viewLifecycleOwner) {
             zoneSwitcher.clear()
 
+            if (it.isNullOrEmpty()) zoneSwitcher.purge()
+
             it?.forEach { nz ->
                 zoneSwitcher.addContent("En ${nz.minutesLeft}' por ${nz.zone.name}")
             }

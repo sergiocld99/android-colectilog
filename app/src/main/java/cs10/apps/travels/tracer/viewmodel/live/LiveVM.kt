@@ -294,9 +294,9 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             database.zonesDao().findFirstZoneIn(p.getX(), p.getY())?.let { z ->
                 if (zoneIds.contains(z.id)) return@let
 
-                // calculate variables from this point
-                val distanceFromStart = p.getCoordsDistanceTo(start)
-                val distanceToEnd = p.getCoordsDistanceTo(end)
+                // calculate variables from this zone
+                val distanceFromStart = z.getCoordsDistanceTo(start)
+                val distanceToEnd = z.getCoordsDistanceTo(end)
                 val prog = calculateProgress(distanceFromStart, distanceToEnd)
                 val correctedProg = getCorrectedProgress(start, end, prog)
 

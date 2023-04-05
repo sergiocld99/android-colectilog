@@ -4,6 +4,7 @@ import android.location.Location
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import cs10.apps.common.android.Localizable
 import cs10.apps.common.android.NumberUtils
 import cs10.apps.travels.tracer.model.joins.ZoneStats
 
@@ -42,5 +43,9 @@ class Zone(
 
     fun getCoordsDistanceTo(location: Location) : Double {
         return NumberUtils.hyp(getCenterX() - location.latitude, getCenterY() - location.longitude)
+    }
+
+    fun getCoordsDistanceTo(l: Localizable) : Double {
+        return NumberUtils.hyp(getCenterX() - l.getX(), getCenterY() - l.getY())
     }
 }

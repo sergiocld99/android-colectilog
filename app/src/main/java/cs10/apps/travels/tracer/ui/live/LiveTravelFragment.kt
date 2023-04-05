@@ -291,7 +291,7 @@ class LiveTravelFragment : CS_Fragment() {
             else binding.rateText.text = Utils.rateFormat(it)
 
             // emoji icon
-            val face = HappyRater.getDrawableByRating(it?.roundToInt() ?: 3)
+            val face = HappyRater.getDrawableByRating(it?.toInt() ?: 3)
             binding.trafficIv.setImageDrawable(ContextCompat.getDrawable(binding.root.context, face))
         }
     }

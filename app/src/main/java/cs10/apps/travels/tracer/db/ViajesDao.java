@@ -54,8 +54,8 @@ public interface ViajesDao {
 
     @Query("SELECT V.*, L.color FROM viaje V LEFT JOIN lines L ON V.linea = L.number " +
             "where nombrePdaInicio = :stopName and linea is NOT NULL " +
-            "and (startHour * 60 + startMinute) >= :target " +
-            "order by startHour, startMinute limit :cant")
+            "and (startHour * 60 + startMinute) between (:target - 5) and (:target + 95) " +
+            "order by startHour, year desc, month desc, day desc limit :cant")
     List<ColoredTravel> getNextArrivals(String stopName, int target, int cant);
 
     @Query("SELECT * FROM Viaje where wd = 0")

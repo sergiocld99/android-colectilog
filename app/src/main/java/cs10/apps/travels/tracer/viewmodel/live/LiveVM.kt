@@ -281,7 +281,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         val start = Point(startStop.latitud, startStop.longitud)
         val end = Point(endStop.latitud, endStop.longitud)
         val current = Point(currentLocation.latitude, currentLocation.longitude)
-        val n = ((1 - currentProg) * 10).roundToInt()
+        val n = 8 // ((1 - currentProg) * 10).roundToInt()
         val nextPoints = calculateNextPoints(current, end, n)
         // var nextFound = false
 
@@ -302,13 +302,11 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 //val distance = z.getCoordsDistanceTo(location)
                 //val kmDistance = NumberUtils.coordsDistanceToKm(distance)
                 val minutesPointToEnd = calculateMinutesLeft(speed, correctedProg, distanceToEnd)
-                val minutesCurrentToPoint = minutesCurrentToEnd - minutesPointToEnd
+                val minutesCurrentToPoint = (minutesCurrentToEnd - minutesPointToEnd).toInt()
 
-                //if (minutesToZ > 0 && minutesToZ < minutesToEnd) {
-                    list.add(NextZone(z, minutesCurrentToPoint.roundToInt()))
-                    // nextFound = true
-                    // break
-                //}
+                if (minutesCurrentToPoint > 0){
+                    list.add(NextZone(z, minutesCurrentToPoint))
+                }
 
                 zoneIds.add(z.id)
             }
@@ -323,7 +321,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         val absX = end.getX() - start.getX()
         val absY = end.getY() - start.getY()
 
-        for (i in 1 until n){
+        for (i in 0 until n){
             val x = start.getX() + i * absX / n
             val y = start.getY() + i * absY / n
             result.add(Point(x,y))

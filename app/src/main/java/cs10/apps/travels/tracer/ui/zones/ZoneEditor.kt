@@ -67,8 +67,18 @@ class ZoneEditor : FormActivity() {
             }
             StatusCode.EMPTY_FIELDS -> showShortToast("Por favor, complete todos los campos")
             StatusCode.RADIX_ZERO -> binding.etRadix.error = "Ingrese un número mayor a 0"
-            StatusCode.OVERLAP_CENTER -> showShortToast("El centro ya se encuentra en $details")
-            StatusCode.OVERLAP_RADIX -> binding.etRadix.error = "Se superpone con zona $details"
+            //StatusCode.OVERLAP_CENTER -> showShortToast("El centro ya se encuentra en $details")
+            //StatusCode.OVERLAP_RADIX -> binding.etRadix.error = "Se superpone con zona $details"
+
+            StatusCode.OVERLAP_CENTER -> {
+                showLongToast("Atención: centro en $details")
+                finish()
+            }
+
+            StatusCode.OVERLAP_RADIX -> {
+                showLongToast("Atención: superposición con $details")
+                finish()
+            }
         }
     }
 
@@ -90,11 +100,13 @@ class ZoneEditor : FormActivity() {
         // N°03: overlap
         val db = MiDB.getInstance(this).zonesDao()
         val overlaps = db.findZonesIn(latitude, longitude)
+        var statusCode = StatusCode.OK
+
         if (overlaps.isNotEmpty()) {
             if (overlaps.first().id == this.id) overlaps.removeAt(0)
             if (overlaps.isNotEmpty()) {
                 details = overlaps[0].name
-                return StatusCode.OVERLAP_CENTER
+                statusCode = StatusCode.OVERLAP_CENTER
             }
         }
 
@@ -112,7 +124,7 @@ class ZoneEditor : FormActivity() {
 
             if (partialOverlaps.isNotEmpty()) {
                 details = partialOverlaps[0].name
-                return StatusCode.OVERLAP_RADIX
+                statusCode = StatusCode.OVERLAP_RADIX
             }
         }
 
@@ -122,7 +134,7 @@ class ZoneEditor : FormActivity() {
         zone.id = this.id
         db.update(zone)
 
-        return StatusCode.OK
+        return statusCode
     }
 
 }

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Travel Tracer</string>
 
-    <string name="nav_header_title">Travel Tracer v2.23</string>
+    <string name="nav_header_title">Travel Tracer v2.27</string>
     <string name="nav_header_subtitle">sergio.calderon@alu.ing.unlp.edu.ar</string>
 
     <string name="action_settings">Settings</string>

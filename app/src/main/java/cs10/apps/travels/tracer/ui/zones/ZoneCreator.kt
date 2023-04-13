@@ -66,12 +66,12 @@ class ZoneCreator : FormActivity() {
             StatusCode.RADIX_ZERO -> binding.etRadix.error = "Ingrese un número mayor a 0"
 
             StatusCode.OVERLAP_CENTER -> {
-                showShortToast("Atención: centro en $details")
+                showLongToast("Atención: centro en $details")
                 finish()
             }
 
             StatusCode.OVERLAP_RADIX -> {
-                showShortToast("Atención: superposición con $details")
+                showLongToast("Atención: superposición con $details")
                 finish()
             }
         }

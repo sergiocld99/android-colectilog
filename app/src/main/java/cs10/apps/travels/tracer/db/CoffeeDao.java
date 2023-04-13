@@ -23,4 +23,7 @@ public interface CoffeeDao {
 
     @Query("SELECT price FROM coffee order by id desc limit 1")
     Double getLastPrice();
+
+    @Query("SELECT * FROM coffee order by id desc limit 1")
+    Coffee getLastCoffee();
 }

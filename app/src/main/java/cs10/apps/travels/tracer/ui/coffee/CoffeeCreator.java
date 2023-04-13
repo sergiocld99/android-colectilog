@@ -7,7 +7,8 @@ import androidx.annotation.NonNull;
 
 import java.util.Calendar;
 
-import cs10.apps.common.android.ui.CSActivity;
+import cs10.apps.common.android.ui.FormActivity;
+import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ActivityCoffeeCreatorBinding;
 import cs10.apps.travels.tracer.databinding.ContentCoffeeCreatorBinding;
@@ -15,7 +16,7 @@ import cs10.apps.travels.tracer.db.CoffeeDao;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Coffee;
 
-public class CoffeeCreator extends CSActivity {
+public class CoffeeCreator extends FormActivity {
     private ContentCoffeeCreatorBinding content;
 
     private final String[] messages = {
@@ -59,8 +60,15 @@ public class CoffeeCreator extends CSActivity {
         // search last price
         doInBackground(() -> {
             CoffeeDao dao = MiDB.getInstance(this).coffeeDao();
-            Double price = dao.getLastPrice();
-            doInForeground(() -> content.etPrice.setText(Utils.priceFormat(price)));
+            Coffee last = dao.getLastCoffee();
+            if (last == null) return;
+
+            double price = last.getPrice();
+
+            doInForeground(() -> {
+                content.etPrice.setText(Utils.priceFormat(price));
+                content.lastCoffeeInfo.setText(getString(R.string.last_coffee_info, last.getDay(), last.getMonth()));
+            });
         });
     }
 

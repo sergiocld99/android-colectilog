@@ -14,10 +14,18 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/last_coffee_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="La última vez que compraste uno fue hace 10 días"
+            android:layout_marginTop="16dp"
+            android:textSize="22sp"/>
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/date"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:textSize="20sp"/>
 
         <EditText

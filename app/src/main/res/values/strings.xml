@@ -105,4 +105,5 @@
     <string name="rating">Calificación</string>
     <string name="start">Subida</string>
     <string name="end">Bajada</string>
+    <string name="last_coffee_info">La última vez que compraste uno fue el día %1$d/%2$d</string>
 </resources>

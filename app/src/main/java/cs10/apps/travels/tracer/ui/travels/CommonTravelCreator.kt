@@ -91,6 +91,7 @@ abstract class CommonTravelCreator : FormActivity() {
             with(NotificationCenter()){
                 createChannel(this@CommonTravelCreator)
                 createNewStartedTravelNotification(this@CommonTravelCreator)
+                scheduleBalanceSummary(this@CommonTravelCreator)
             }
 
             doInForeground { finish() }

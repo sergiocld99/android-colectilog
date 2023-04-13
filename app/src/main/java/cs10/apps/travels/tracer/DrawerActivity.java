@@ -203,6 +203,13 @@ public class DrawerActivity extends CSActivity implements DatabaseCallback {
             showShortToast("Abriendo sección \"En vivo\"");
             navController.navigate(R.id.nav_live);
         }
+
+        // run tests
+        runTests();
+    }
+
+    private void runTests() {
+        // new NotificationCenter().scheduleNotification(this, 15000, NotificationCenter.BALANCE_SUMMARY_ID);
     }
 
     @Override

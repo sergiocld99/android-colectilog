@@ -6,15 +6,19 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import cs10.apps.common.CanFail
 import cs10.apps.travels.tracer.DrawerActivity
 import cs10.apps.travels.tracer.R
+import cs10.apps.travels.tracer.db.MiDB
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class NotificationCenter {
     companion object {
         const val CHANNEL_ID = "TravelTracer"
         const val NEW_TRAVEL_NOTIF_ID = 1
         const val ASK_FINISH_NOTIF_ID = 2
+        const val BALANCE_SUMMARY_ID = 3
     }
 
     fun createChannel(activity: Activity) {
@@ -33,11 +37,13 @@ class NotificationCenter {
         }
     }
 
-    fun scheduleAskNotification(context: Context, delayMs: Long){
+    private fun scheduleNotification(context: Context, delayMs: Long, id: Int){
         val intent = Intent(context.applicationContext, NotificationBroadcast::class.java)
+        intent.putExtra(NotificationBroadcast.NOTIFICATION_ID_KEY, id)
+
         val pendingIntent = PendingIntent.getBroadcast(
             context.applicationContext,
-            ASK_FINISH_NOTIF_ID,
+            0,
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
@@ -48,7 +54,29 @@ class NotificationCenter {
             Calendar.getInstance().timeInMillis + delayMs,
             pendingIntent
         )
+    }
 
+    fun scheduleAskNotification(context: Context, delayMs: Long){
+        scheduleNotification(context, delayMs, ASK_FINISH_NOTIF_ID)
+    }
+
+    /**
+     * Schedules a notification that shows your current balance at 11 PM. If the notification
+     * is already scheduled for today, it does nothing
+     */
+    fun scheduleBalanceSummary(context: Context) {
+        val c = Calendar.getInstance()
+        val h = c[Calendar.HOUR_OF_DAY]
+        val currentLd = c[Calendar.DAY_OF_MONTH]
+
+        val prefs = context.getSharedPreferences("notif-cache", Context.MODE_PRIVATE)
+        val lastDay = prefs.getInt("ld", -1)
+
+        if (lastDay != currentLd && h < 23){
+            val delayMs = TimeUnit.HOURS.toMillis((23 - h).toLong())
+            scheduleNotification(context, delayMs, BALANCE_SUMMARY_ID)
+            prefs.edit().putInt("ld", currentLd).apply()
+        }
     }
 
 
@@ -86,6 +114,40 @@ class NotificationCenter {
         }
     }
 
+    // -------------------------  CALLED BY BROADCAST --------------------------------
+
+    @CanFail
+    fun createBalanceSummaryNotification(context: Context){
+        val prefs = context.getSharedPreferences("balance", Context.MODE_PRIVATE)
+        val travelId = prefs.getLong("travelId", 0)
+        val coffeeId = prefs.getLong("coffeeId", 0)
+        val chargeId = prefs.getLong("chargeId", 0)
+        val savedBalance = prefs.getFloat("balance", 0f)
+
+        Thread {
+            val database = MiDB.getInstance(context)
+            val sinceBuses = database.viajesDao().getSpentInBusesSince(travelId)
+            val sinceTrains = database.viajesDao().getSpentInTrainsSince(travelId)
+            val sinceCoffee = database.coffeeDao().getSpentSince(coffeeId)
+            val charges = database.recargaDao().getTotalChargedSince(chargeId)
+            val money = (savedBalance - sinceBuses - sinceTrains - sinceCoffee + charges).toInt()
+
+            // build notification (allowed from any thread)
+            val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            builder.apply {
+                setContentTitle("Informe de saldo")
+                setContentText(context.getString(R.string.current_money_info, money))
+                setSmallIcon(R.drawable.ic_savings)
+                setAutoCancel(true)
+                priority = NotificationCompat.PRIORITY_DEFAULT
+            }
+
+            val notif = builder.build()
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.notify(ASK_FINISH_NOTIF_ID, notif)
+        }.start()
+    }
+
     fun createAskForFinishedTravelNotification(context: Context){
         // create intent to open screen when user touches notification
         val intent = Intent(context, DrawerActivity::class.java)
@@ -117,5 +179,7 @@ class NotificationCenter {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(ASK_FINISH_NOTIF_ID, notif)
     }
+
+
 
 }

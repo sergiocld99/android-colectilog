@@ -106,4 +106,5 @@
     <string name="start">Subida</string>
     <string name="end">Bajada</string>
     <string name="last_coffee_info">La última vez que compraste uno fue el día %1$d/%2$d</string>
+    <string name="current_money_info">Tu SUBE ahora tiene $%d pesos</string>
 </resources>

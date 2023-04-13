@@ -69,10 +69,15 @@ class MonthSummaryFragment : CS_Fragment() {
         binding.bus3Pb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_green)
 
         rootVM.enableLoading()
-        statsVM.fillData(rootVM)
 
         binding.ivEdit.setOnClickListener {
             startActivity(Intent(context, EditBalanceActivity::class.java))
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        statsVM.fillData(rootVM)
     }
 }

@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.tabs.TabLayout
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import cs10.apps.common.android.ui.FormActivity
@@ -15,8 +17,10 @@ import cs10.apps.travels.tracer.adapter.BusRamalsAdapter
 import cs10.apps.travels.tracer.constants.Extras
 import cs10.apps.travels.tracer.databinding.ActivityLineDetailsBinding
 import cs10.apps.travels.tracer.db.MiDB
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class LineDetail : FormActivity(), ColorPickerDialogListener {
+class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSelectedListener {
     private var llm: LinearLayoutManager? = null
     private var number: Int? = null
 
@@ -64,6 +68,11 @@ class LineDetail : FormActivity(), ColorPickerDialogListener {
                 doInForeground { finish() }
             }
         }
+
+        // switch tabs
+        binding.lineTabs.addOnTabSelectedListener(this)
+
+        if (adapter.list.isEmpty()) lifecycleScope.launch(Dispatchers.IO) { fillRamalsData() }
     }
 
     private fun receiveExtras() {
@@ -73,34 +82,15 @@ class LineDetail : FormActivity(), ColorPickerDialogListener {
         binding.toolbarLayout.title = "Linea $number"
         this.number = number
 
-        doInBackground { fillData() }
+        doInBackground { findName() }
     }
 
-    private fun fillData() {
+    private fun findName() {
         val db = MiDB.getInstance(this)
-        val data = db.linesDao().getRamalesFromLine(number!!)
         val line = db.linesDao().getByNumber(number!!)
-
-        data.forEach {
-            if (it.ramal != null){
-                val stats = db.viajesDao().getRecentFinishedTravelsFromRamal(number!!, it.ramal)
-
-                if (stats.isEmpty()) it.speed = null
-                else {
-                    var sum = 0.0
-
-                    stats.forEach { stat -> sum += stat.calculateSpeedInKmH() }
-                    it.speed = sum / stats.size
-                }
-            }
-        }
-
-        data.sort()
 
         doInForeground {
             binding.etAlternativeName.setText(line?.name)
-            adapter.list = data
-            adapter.notifyDataSetChanged()
         }
     }
 
@@ -137,7 +127,7 @@ class LineDetail : FormActivity(), ColorPickerDialogListener {
             line.color = color
             db.linesDao().update(line)
 
-            fillData()
+            findName()
         }
     }
 
@@ -149,5 +139,75 @@ class LineDetail : FormActivity(), ColorPickerDialogListener {
         val intent = Intent(this, HourStatsActivity::class.java)
         intent.putExtra(Extras.LINE_NUMBER.name, lineNumber)
         startActivity(intent)
+    }
+
+    // ------------------------------- TABS ----------------------------------
+
+    override fun onTabSelected(tab: TabLayout.Tab?) {
+        tab?.let {
+            when (it.position) {
+                0 -> doInBackground { fillRamalsData() }
+                1 -> lifecycleScope.launch(Dispatchers.IO) { fillDestinationsData() }
+                else -> {}
+            }
+        }
+    }
+
+    override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+    }
+
+    override fun onTabReselected(tab: TabLayout.Tab?) {
+
+    }
+
+    private suspend fun fillDestinationsData() {
+        val db = MiDB.getInstance(this)
+        val data = db.linesDao().getDestinationStatsForLine(number!!)
+
+        data.forEach {
+            // ramal here is actually the end stop name
+            val stats = db.viajesDao().getRecentFinishedTravelsTo(it.ramal, number!!)
+
+            if (stats.isEmpty()) it.speed = null
+            else {
+                var sum = 0.0
+                stats.forEach { stat -> sum += stat.calculateSpeedInKmH() }
+                it.speed = sum / stats.size
+            }
+        }
+
+        data.sort()
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            adapter.list = data
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun fillRamalsData() {
+        val db = MiDB.getInstance(this)
+        val data = db.linesDao().getRamalesFromLine(number!!)
+
+        data.forEach {
+            if (it.ramal != null){
+                val stats = db.viajesDao().getRecentFinishedTravelsFromRamal(number!!, it.ramal)
+
+                if (stats.isEmpty()) it.speed = null
+                else {
+                    var sum = 0.0
+
+                    stats.forEach { stat -> sum += stat.calculateSpeedInKmH() }
+                    it.speed = sum / stats.size
+                }
+            }
+        }
+
+        data.sort()
+
+        doInForeground {
+            adapter.list = data
+            adapter.notifyDataSetChanged()
+        }
     }
 }

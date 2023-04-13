@@ -20,6 +20,7 @@
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_coffee_creator.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_drawer.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_edit_balance.xml" value="0.18645833333333334" />
+        <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_filtered_travels.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_hour_stats.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_launcher.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/activity_line_details.xml" value="0.18645833333333334" />
@@ -35,7 +36,7 @@
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/app_bar_drawer.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/button_select_type.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/common_appbar.xml" value="0.18645833333333334" />
-        <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/content_bus_travel_creator.xml" value="0.33" />
+        <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/content_bus_travel_creator.xml" value="0.22" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/content_coffee_creator.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/content_drawer.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/Sergio/AndroidStudioProjects/TravelTracer/app/src/main/res/layout/content_live_waiting.xml" value="0.18645833333333334" />

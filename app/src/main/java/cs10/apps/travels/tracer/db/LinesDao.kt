@@ -61,4 +61,10 @@ interface LinesDao {
             "FROM Viaje V INNER JOIN lines L ON V.linea = L.number " +
             "WHERE V.rate is not null and V.linea is :number GROUP BY V.ramal")
     fun getRamalesFromLine(number: Int) : MutableList<BusRamalInfo>
+    
+    @Query("SELECT DISTINCT V.nombrePdaFin as ramal, L.color, " +
+            "AVG(V.rate) as avgUserRate, COUNT(V.rate) as reviewsCount " +
+            "FROM Viaje V INNER JOIN lines L on V.linea = L.number " +
+            "WHERE V.rate is not null and V.linea is :number GROUP BY V.nombrePdaFin")
+    suspend fun getDestinationStatsForLine(number: Int) : MutableList<BusRamalInfo>
 }

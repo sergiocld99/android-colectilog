@@ -5,6 +5,8 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import cs10.apps.travels.tracer.model.joins.PriceSum;
@@ -189,12 +191,21 @@ public interface ViajesDao {
             "P2.latitud as end_x, P2.longitud as end_y, " +
             "(V.startHour * 60 + V.startMinute) as start_time," +
             "(V.endHour * 60 + V.endMinute) as end_time " +
-            "FROM Viaje V " +
-            "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
+            "FROM Viaje V INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
             "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
             "where linea = :linea and ramal = :ramal and endHour is not null " +
             "order by year desc, month desc, day desc limit 10")
     List<TravelStats> getRecentFinishedTravelsFromRamal(int linea, String ramal);
+
+    @Query("SELECT P1.latitud as start_x, P1.longitud as start_y, " +
+            "P2.latitud as end_x, P2.longitud as end_y, " +
+            "(V.startHour * 60 + V.startMinute) as start_time," +
+            "(V.endHour * 60 + V.endMinute) as end_time " +
+            "FROM Viaje V INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
+            "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
+            "where linea = :number and nombrePdaFin = :endStop and endHour is not null " +
+            "order by year desc, month desc, day desc limit 10")
+    List<TravelStats> getRecentFinishedTravelsTo(String endStop, int number);
 
     // -------------------------- MONTH SUMMARY -------------------------------
 
@@ -214,4 +225,6 @@ public interface ViajesDao {
             "LEFT JOIN lines L ON V.linea = L.number " +
             "where linea is not null and month is :month group by linea order by 3 desc limit 3")
     List<PriceSum> getMostExpensiveBus(int month);
+
+
 }

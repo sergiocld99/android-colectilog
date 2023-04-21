@@ -90,4 +90,7 @@ dependencies {
 
     // v2.18: CHARTS
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    // v2.29: HTML Document
+    implementation("org.jsoup:jsoup:1.15.4")
 }

@@ -14,24 +14,13 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 import cs10.apps.common.android.ui.CS_Fragment;
 import cs10.apps.travels.tracer.R;
-import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.adapter.LocatedArrivalAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentArrivalsBinding;
-import cs10.apps.travels.tracer.db.DynamicQuery;
-import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
-import cs10.apps.travels.tracer.model.joins.ColoredTravel;
-import cs10.apps.travels.tracer.model.roca.ArriboTren;
-import cs10.apps.travels.tracer.model.roca.HorarioTren;
-import cs10.apps.travels.tracer.model.roca.RamalSchedule;
-import cs10.apps.travels.tracer.modules.AutoRater;
 import cs10.apps.travels.tracer.ui.service.ServiceDetail;
 import cs10.apps.travels.tracer.viewmodel.HomeVM;
 import cs10.apps.travels.tracer.viewmodel.LocatedArrivalVM;
@@ -142,52 +131,8 @@ public class StopArrivalsFragment extends CS_Fragment {
     }
 
     private void fillData(Parada parada) {
-
-        doInBackground(() -> {
-            MiDB miDB = MiDB.getInstance(getContext());
-            Calendar calendar = Calendar.getInstance();
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            int m = calendar.get(Calendar.MINUTE);
-            int now = hour * 60 + m;
-
-            String stopName = parada.getNombre();
-            List<ColoredTravel> arrivals = DynamicQuery.getNextBusArrivals(getContext(), stopName);
-            List<RamalSchedule> trenes = DynamicQuery.getNextTrainArrivals(getContext(), stopName);
-
-            // PROCESAMIENTO DE BUSES
-            // Oct 15: calculate rate based on duration
-            AutoRater.Companion.calculateRate(arrivals, miDB.viajesDao());
-
-            // PROCESAMIENTO DE TRENES
-            for (RamalSchedule tren : trenes) {
-                ArriboTren v = new ArriboTren();
-                int target = tren.getHour() * 60 + tren.getMinute();
-                HorarioTren end = miDB.servicioDao().getFinalStation(tren.getService());
-
-                v.setTipo(1);
-                v.setRamal(tren.getRamal());
-                v.setStartHour(tren.getHour());
-                v.setStartMinute(tren.getMinute());
-                v.setServiceId(tren.getService());
-                v.setNombrePdaFin(Utils.simplify(end.getStation()));
-                v.setNombrePdaInicio(tren.getCabecera());
-                v.setRecorrido(miDB.servicioDao().getRecorridoUntil(tren.getService(), now, target));
-                v.setRecorridoDestino(miDB.servicioDao().getRecorridoFrom(tren.getService(), target));
-                v.setEndHour(end.getHour());
-                v.setEndMinute(end.getMinute());
-                v.restartAux();
-                arrivals.add(v);
-            }
-
-            Collections.sort(arrivals);
-
-            doInForeground(() -> locatedArrivalVM.getArrivals().postValue(arrivals));
-
-            int travelCount = miDB.paradasDao().getTravelCount(stopName);
-            int rank = miDB.paradasDao().getRank(travelCount);
-
-            locatedArrivalVM.setSummary(travelCount, rank);
-        });
+        locatedArrivalVM.fillData(parada, rootVM, requireContext());
+        locatedArrivalVM.calculateSummary(rootVM, parada.getNombre());
     }
 
     private void onServiceSelected(long id, String ramal) {

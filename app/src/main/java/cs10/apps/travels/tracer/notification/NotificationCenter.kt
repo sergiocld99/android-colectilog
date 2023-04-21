@@ -66,14 +66,14 @@ class NotificationCenter {
      */
     fun scheduleBalanceSummary(context: Context) {
         val c = Calendar.getInstance()
-        val h = c[Calendar.HOUR_OF_DAY]
+        // val h = c[Calendar.HOUR_OF_DAY]
         val currentLd = c[Calendar.DAY_OF_MONTH]
 
         val prefs = context.getSharedPreferences("notif-cache", Context.MODE_PRIVATE)
         val lastDay = prefs.getInt("ld", -1)
 
-        if (lastDay != currentLd && h < 23){
-            val delayMs = TimeUnit.HOURS.toMillis((23 - h).toLong())
+        if (lastDay != currentLd){
+            val delayMs = TimeUnit.HOURS.toMillis(3)
             scheduleNotification(context, delayMs, BALANCE_SUMMARY_ID)
             prefs.edit().putInt("ld", currentLd).apply()
         }

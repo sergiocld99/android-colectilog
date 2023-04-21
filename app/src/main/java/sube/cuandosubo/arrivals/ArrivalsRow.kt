@@ -35,6 +35,9 @@ class ArrivalsRow(val line: String, var destination: String, val status: String)
         if (i > 0){
             ramal = destination.substringAfter(" x ")
             destination = destination.substringBefore(" x ")
+
+            // Fix: 338B es Pasco, no Centenario
+            if (ramal == "CENTENARIO") ramal = "Pasco"
         }
     }
 

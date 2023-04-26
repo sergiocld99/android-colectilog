@@ -217,7 +217,10 @@ class LiveTravelFragment : CS_Fragment() {
 
         liveVM.endDistance.observe(viewLifecycleOwner) {
             if (it != null) {
-                if (it < 0.8) finishCurrentTravel()
+                val d = liveVM.direction.value
+                if (d == null && it < 0.8) finishCurrentTravel()
+                else if (d != Utils.Direction.NORTH_WEST && it < 0.8) finishCurrentTravel()
+                else if (d == Utils.Direction.NORTH_WEST && it < 1.2) finishCurrentTravel()
                 else {
                     // show below elapsed time tv
                     // binding.nearMeTitle.text = String.format("%s a %.1f km", liveVM.travel.value?.nombrePdaFin, it)
@@ -225,7 +228,7 @@ class LiveTravelFragment : CS_Fragment() {
                 }
             }
         }
-
+        
         liveVM.nearArrivals.observe(viewLifecycleOwner) {
             binding.nearBoxInfo.isVisible = it.isNotEmpty()
             nearStopAdapter.list = it

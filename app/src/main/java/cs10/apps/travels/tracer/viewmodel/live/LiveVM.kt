@@ -42,10 +42,11 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
 
     // general live data
     val travel = MutableLiveData<ColoredTravel?>()
-    val toggle = MutableLiveData(true)
+    private val toggle = MutableLiveData(true)
     val nextTravel = MutableLiveData<Viaje?>()
     val nearArrivals = MutableLiveData<MutableList<RamalSchedule>>()
     val customZone = MutableLiveData<Zone?>()
+    val direction = MutableLiveData<Utils.Direction>()
 
     // distances in metres
     val endDistance = MutableLiveData<Double?>()
@@ -216,12 +217,13 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         val minutesLeft = calculateMinutesLeft(speed, correctedProg, endStop.distance)
 
                         // postear para ui
+                        direction.postValue(Utils.getDirection(startStop, endStop))
                         minutesToEnd.postValue(minutesLeft.roundToInt())
                         endDistance.postValue(endStop.distance)
                         progress.postValue(correctedProg)
 
                         // fourth action: find next zones to get in
-                        calculateNextPoints(startStop, endStop, location, correctedProg, minutesLeft, speed)
+                        calculateNextPoints(startStop, endStop, location, minutesLeft, speed)
 
                         // fifth action: calculate expected rating
                         minDuration.value?.let { bestDuration ->
@@ -274,7 +276,6 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         startStop: Parada,
         endStop: Parada,
         currentLocation: Location,
-        currentProg: Double,
         minutesCurrentToEnd: Double,
         speed: Double
     ) {

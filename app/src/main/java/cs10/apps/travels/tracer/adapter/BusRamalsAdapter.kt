@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.model.joins.BusRamalInfo
+import cs10.apps.travels.tracer.model.joins.BusInfo
 
 class BusRamalsAdapter(
-    var list: List<BusRamalInfo>,
-    private val onItemClick: (BusRamalInfo) -> Unit
+    var list: List<BusInfo>,
+    private val onItemClick: (BusInfo) -> Unit
 ) : RecyclerView.Adapter<BusRamalViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusRamalViewHolder {

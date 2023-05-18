@@ -35,11 +35,12 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
     fun fillData(rootVM: RootVM){
         val calendar = Calendar.getInstance()
         val month = calendar[Calendar.MONTH] + 1
+        val year = calendar[Calendar.YEAR]
 
         viewModelScope.launch(Dispatchers.IO) {
-            val coffee = async { database.coffeeDao().getTotalSpent(month) }
-            val buses = async { database.viajesDao().getTotalSpentInBuses(month) }
-            val trains = async { database.viajesDao().getTotalSpentInTrains(month) }
+            val coffee = async { database.coffeeDao().getTotalSpent(month, year) }
+            val buses = async { database.viajesDao().getTotalSpentInBuses(month, year) }
+            val trains = async { database.viajesDao().getTotalSpentInTrains(month, year) }
 
             val genStats = async {
                 val (c,b,t) = awaitAll(coffee, buses, trains)
@@ -48,7 +49,7 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
             }
 
             val busesStats = async {
-                val sums = database.viajesDao().getMostExpensiveBus(month)
+                val sums = database.viajesDao().getMostExpensiveBus(month, year)
                 val b = buses.await()
 
                 if (sums.size > 0) setBus1Stat(sums[0], b)

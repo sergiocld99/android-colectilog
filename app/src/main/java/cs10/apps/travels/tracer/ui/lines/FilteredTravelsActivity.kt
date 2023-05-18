@@ -20,8 +20,14 @@ class FilteredTravelsActivity : CSActivity() {
         Utils.loadBusBanner(binding.appbarImage)
 
         // UI
-        val ramal = intent.getStringExtra("ramal")
-        binding.title.text = "Ramal ${ramal?: "sin nombre"}"
+        if (intent.hasExtra("ramal")){
+            val ramal = intent.getStringExtra("ramal")
+            binding.title.text = String.format("Ramal %s", ramal ?: "sin nombre")
+        } else if (intent.hasExtra("dest")){
+            binding.title.text = String.format("Destino %s", intent.getStringExtra("dest"))
+        }
+
+        // This activity contains a fragment container: MyTravelsFragment
 
         // back button
         supportActionBar?.setHomeButtonEnabled(true)

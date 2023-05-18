@@ -5,13 +5,11 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 
-import cs10.apps.travels.tracer.model.joins.PriceSum;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.joins.ColoredTravel;
+import cs10.apps.travels.tracer.model.joins.PriceSum;
 import cs10.apps.travels.tracer.model.joins.TravelStats;
 import cs10.apps.travels.tracer.model.location.TravelDistance;
 
@@ -33,6 +31,11 @@ public interface ViajesDao {
     @Query("SELECT V.*, L.color FROM viaje V LEFT JOIN lines L ON V.linea = L.number " +
             "ORDER BY year desc, month desc, day desc, startHour desc, startMinute desc")
     List<ColoredTravel> getAllPlusColors();
+
+    @Query("SELECT V.*, L.color FROM viaje V LEFT JOIN lines L ON V.linea = L.number " +
+            "WHERE V.linea = :line and V.nombrePdaFin is :dest " +
+            "ORDER BY year desc, month desc, day desc, startHour desc, startMinute desc")
+    List<ColoredTravel> getAllToDestination(int line, String dest);
 
     @Query("SELECT V.*, L.color FROM viaje V LEFT JOIN lines L ON V.linea = L.number " +
             "WHERE V.linea = :line and V.ramal = :ramal " +
@@ -215,16 +218,17 @@ public interface ViajesDao {
     @Query("SELECT SUM(costo) FROM viaje where linea is null and id > :travelId")
     double getSpentInTrainsSince(long travelId);
 
-    @Query("SELECT SUM(costo) FROM viaje where linea is not null and month is :month")
-    double getTotalSpentInBuses(int month);
+    @Query("SELECT SUM(costo) FROM viaje where linea is not null and month is :month and year is :year")
+    double getTotalSpentInBuses(int month, int year);
 
-    @Query("SELECT SUM(costo) FROM viaje where linea is null and month is :month")
-    double getTotalSpentInTrains(int month);
+    @Query("SELECT SUM(costo) FROM viaje where linea is null and month is :month and year is :year")
+    double getTotalSpentInTrains(int month, int year);
 
     @Query("SELECT V.linea, L.color, SUM(V.costo) as suma FROM viaje V " +
             "LEFT JOIN lines L ON V.linea = L.number " +
-            "where linea is not null and month is :month group by linea order by 3 desc limit 3")
-    List<PriceSum> getMostExpensiveBus(int month);
+            "where linea is not null and month is :month and year is :year " +
+            " group by linea order by 3 desc limit 3")
+    List<PriceSum> getMostExpensiveBus(int month, int year);
 
 
 }

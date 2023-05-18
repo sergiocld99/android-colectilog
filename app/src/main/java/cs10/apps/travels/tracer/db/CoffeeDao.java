@@ -12,8 +12,8 @@ public interface CoffeeDao {
     @Insert
     void insert(Coffee coffee);
 
-    @Query("SELECT SUM(price) FROM coffee WHERE month is :month")
-    double getTotalSpent(int month);
+    @Query("SELECT SUM(price) FROM coffee WHERE month is :month and year is :year")
+    double getTotalSpent(int month, int year);
 
     @Query("SELECT MAX(id) FROM coffee")
     Long getLastId();

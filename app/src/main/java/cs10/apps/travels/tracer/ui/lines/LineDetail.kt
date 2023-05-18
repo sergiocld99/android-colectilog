@@ -17,6 +17,8 @@ import cs10.apps.travels.tracer.adapter.BusRamalsAdapter
 import cs10.apps.travels.tracer.constants.Extras
 import cs10.apps.travels.tracer.databinding.ActivityLineDetailsBinding
 import cs10.apps.travels.tracer.db.MiDB
+import cs10.apps.travels.tracer.model.joins.BusDestinationInfo
+import cs10.apps.travels.tracer.model.joins.BusRamalInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -31,7 +33,10 @@ class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSel
     private val adapter: BusRamalsAdapter = BusRamalsAdapter(listOf()) {
         val intent = Intent(this, FilteredTravelsActivity::class.java)
         intent.putExtra("number", number!!)
-        intent.putExtra("ramal", it.ramal)
+
+        if (it is BusDestinationInfo) intent.putExtra("dest", it.nombrePdaFin)
+        else if (it is BusRamalInfo) intent.putExtra("ramal", it.ramal)
+
         startActivity(intent)
     }
 
@@ -167,7 +172,7 @@ class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSel
 
         data.forEach {
             // ramal here is actually the end stop name
-            val stats = db.viajesDao().getRecentFinishedTravelsTo(it.ramal, number!!)
+            val stats = db.viajesDao().getRecentFinishedTravelsTo(it.nombrePdaFin, number!!)
 
             if (stats.isEmpty()) it.speed = null
             else {

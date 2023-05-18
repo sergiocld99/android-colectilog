@@ -89,9 +89,11 @@ public class MyTravelsFragment extends CS_Fragment {
             Intent i = getActivity().getIntent();
             int line = i.getIntExtra("number", -1);
             String ramal = i.getStringExtra("ramal");
+            String dest = i.getStringExtra("dest");
 
             if (line != -1) {
-                if (ramal == null) viajes = dao.getAllFromNoRamal(line);
+                if (dest != null) viajes = dao.getAllToDestination(line, dest);
+                else if (ramal == null) viajes = dao.getAllFromNoRamal(line);
                 else viajes = dao.getAllFromRamal(line, ramal);
             }
         }

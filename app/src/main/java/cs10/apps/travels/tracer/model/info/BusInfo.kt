@@ -1,6 +1,6 @@
-package cs10.apps.travels.tracer.model.joins
+package cs10.apps.travels.tracer.model.info
 
-open class BusInfo: Comparable<BusInfo> {
+abstract class BusInfo: Comparable<BusInfo> {
     var color = 0
     var avgUserRate = 0.0
     var reviewsCount = 0
@@ -11,4 +11,7 @@ open class BusInfo: Comparable<BusInfo> {
         if (comp == 0) return other.reviewsCount.compareTo(reviewsCount)
         return comp
     }
+
+    abstract fun getIdentifier(): String?
+    abstract fun getTypeKey(): String
 }

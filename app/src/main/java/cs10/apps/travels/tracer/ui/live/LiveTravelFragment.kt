@@ -198,21 +198,36 @@ class LiveTravelFragment : CS_Fragment() {
                 binding.trafficBanner.isVisible = absError > 3
 
                 if (error > 3){
+                    binding.deviationBanner.isVisible = false
                     binding.trafficTitle.text = String.format("Tráfico: %d minutos", absError)
                     binding.trafficCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus_414))
+                    binding.trafficSub.setTextColor(ContextCompat.getColor(binding.root.context, android.R.color.holo_red_light))
                 } else {
+                    binding.deviationBanner.isVisible = false
                     binding.trafficTitle.text = String.format("Ventaja: %d minutos", absError)
                     binding.trafficCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus_500))
+                    binding.trafficSub.setTextColor(ContextCompat.getColor(binding.root.context, android.R.color.holo_green_light))
+                }
+            } else binding.trafficBanner.isVisible = false
+        }
+
+        liveVM.deviation.observe(viewLifecycleOwner) {
+            val eta = liveVM.minutesToEnd.value
+
+            if (it == null || it == 0.0 || eta == null){
+                binding.deviationBanner.isVisible = false
+            } else {
+                val timeError = (eta * it / 100).roundToInt()
+                if (timeError > 3){
+                    binding.deviationBanner.isVisible = true
+                    binding.trafficBanner.isVisible = false
+                    binding.deviationTitle.text = String.format("Desviación del %d%%", it.toInt())
+                    binding.deviationSub.text = String.format("Error de hasta %d minutos", timeError)
+                } else {
+                    binding.deviationBanner.isVisible = false
                 }
 
-
-                /*
-                binding.estimationError.isVisible = absError > 3
-                binding.estimationError.text = "Estimación con error de $absError minutos"
-                binding.estimationError.setTextColor(
-
-                 */
-            } else binding.trafficBanner.isVisible = false
+            }
         }
 
         liveVM.endDistance.observe(viewLifecycleOwner) {
@@ -289,6 +304,8 @@ class LiveTravelFragment : CS_Fragment() {
 
             zoneSwitcher.start()
         }
+
+
 
         // DEC 2022: EXPECTED RATING
         liveVM.rate.observe(viewLifecycleOwner) {

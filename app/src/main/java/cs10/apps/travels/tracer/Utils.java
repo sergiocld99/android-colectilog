@@ -153,6 +153,32 @@ public class Utils {
         v.setWeekDay(calendar.get(Calendar.DAY_OF_WEEK));
     }
 
+    public static String getWdCompleteString(int weekDay){
+        switch (weekDay) {
+            case Calendar.SUNDAY: return "Domingo";
+            case Calendar.MONDAY: return "Lunes";
+            case Calendar.TUESDAY: return "Martes";
+            case Calendar.WEDNESDAY: return "Miércoles";
+            case Calendar.THURSDAY: return "Jueves";
+            case Calendar.FRIDAY: return "Viernes";
+            case Calendar.SATURDAY: return "Sábado";
+            default: return "";
+        }
+    }
+
+    public static String getWeekDayString(int weekDay) {
+        switch (weekDay) {
+            case Calendar.SUNDAY: return "Dom ";
+            case Calendar.MONDAY: return "Lun ";
+            case Calendar.TUESDAY: return "Mar ";
+            case Calendar.WEDNESDAY: return "Mie ";
+            case Calendar.THURSDAY: return "Jue ";
+            case Calendar.FRIDAY: return "Vie ";
+            case Calendar.SATURDAY: return "Sab ";
+            default: return "";
+        }
+    }
+
     public static Drawable getTypeDrawable(int type, Context context){
         return ContextCompat.getDrawable(context, type == 0 ? R.drawable.ic_bus : R.drawable.ic_train);
     }

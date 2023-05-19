@@ -117,6 +117,7 @@
                                 android:id="@+id/line_title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                tools:text="Línea 338"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
                             <!-- It's mandatory to have 2 text views -->
@@ -128,11 +129,14 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:textColor="@android:color/holo_blue_light"
+                                    tools:text="Destino a 33.3 km"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:textColor="@android:color/holo_blue_light"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                             </TextSwitcher>
@@ -173,6 +177,7 @@
                                 android:id="@+id/near_me_title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                tools:text="Llegarías a las 18:53"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
                             <!-- It's mandatory to have 2 text views -->
@@ -184,11 +189,14 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    tools:text="En 49' por Tolosa"
+                                    android:textColor="@android:color/holo_purple"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:textColor="@android:color/holo_purple"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                             </TextSwitcher>
@@ -217,7 +225,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_traffic"/>
+                                tools:src="@drawable/ic_sentiment_satisfied"/>
 
                         </androidx.cardview.widget.CardView>
 
@@ -231,12 +239,65 @@
                                 android:id="@+id/traffic_title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                tools:text="Ventaja: 4 minutos"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
                             <TextView
                                 android:id="@+id/traffic_sub"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                tools:text="El viaje normal dura 80 minutos"
+                                tools:textColor="@android:color/holo_green_light"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Deviation -->
+                    <LinearLayout
+                        android:id="@+id/deviation_banner"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <androidx.cardview.widget.CardView
+                            app:cardBackgroundColor="@color/bus_202"
+                            app:cardCornerRadius="10dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp">
+
+                            <ImageView
+                                android:src="@drawable/ic_directions"
+                                android:layout_margin="5dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"/>
+
+                        </androidx.cardview.widget.CardView>
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/deviation_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="Desvíación del 20%"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+
+                            <TextView
+                                android:id="@+id/deviation_sub"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="Error de hasta 10 minutos"
+                                android:lines="1"
+                                android:textColor="@color/bus_202"
+                                android:ellipsize="end"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                         </LinearLayout>
@@ -257,7 +318,6 @@
                             tools:progress="60"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            android:layout_marginStart="10dp"
                             android:layout_marginVertical="20dp"
                             app:layout_constraintEnd_toStartOf="@id/near_box_info"/>
 

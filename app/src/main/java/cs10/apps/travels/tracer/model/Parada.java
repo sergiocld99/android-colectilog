@@ -12,7 +12,7 @@ import cs10.apps.common.android.Localizable;
 import cs10.apps.common.android.NumberUtils;
 
 @Entity
-public class Parada implements Comparable<Parada>, Localizable {
+public class Parada extends Localizable implements Comparable<Parada> {
 
     @PrimaryKey @NonNull
     private String nombre = "Nombre de ejemplo";

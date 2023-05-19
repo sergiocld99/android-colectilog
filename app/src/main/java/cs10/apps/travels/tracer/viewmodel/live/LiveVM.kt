@@ -32,6 +32,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -61,7 +62,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     val progress = MutableLiveData<Double?>()
     val rate = MutableLiveData<Double?>()
     val nextZones = MutableLiveData<MutableList<NextZone>>()
-
+    val deviation = MutableLiveData(0.0)
 
     // timer 1: update minutes from start every 30 seconds
     private var minuteClock: Clock? = null
@@ -202,6 +203,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 // calc distances internally
                 startStop.updateDistance(location)
                 endStop.updateDistance(location)
+                calculateDeviation(startStop, endStop)
 
                 // update values for UI
                 val prog = calculateProgress(startStop.distance, endStop.distance)
@@ -262,6 +264,17 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             val found = database.zonesDao().findFirstZoneIn(location.latitude, location.longitude)
             customZone.postValue(found)
         }
+    }
+
+    private fun calculateDeviation(startStop: Parada, endStop: Parada) {
+        val startPlusEndDistance = startStop.distance + endStop.distance
+        val perfectDistance = endStop.kmDistanceTo(startStop)
+        val error = abs(startPlusEndDistance - perfectDistance)
+
+        Thread {
+            Thread.sleep(6000)
+            deviation.postValue(error * 100 / perfectDistance)
+        }.start()
     }
 
     private fun getCorrectedProgress(start: Localizable, end: Localizable, prog: Double): Double {
@@ -402,6 +415,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         progress.postValue(null)
         nextTravel.postValue(null)
         rate.postValue(null)
+        deviation.postValue(0.0)
     }
 
     fun eraseAll() {

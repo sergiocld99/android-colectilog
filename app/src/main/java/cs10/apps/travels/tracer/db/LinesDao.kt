@@ -4,8 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import cs10.apps.travels.tracer.model.joins.BusDestinationInfo
-import cs10.apps.travels.tracer.model.joins.BusRamalInfo
+import cs10.apps.travels.tracer.model.info.BusDayInfo
+import cs10.apps.travels.tracer.model.info.BusDestinationInfo
+import cs10.apps.travels.tracer.model.info.BusRamalInfo
 import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
 import cs10.apps.travels.tracer.model.lines.HourBusStat
@@ -63,9 +64,13 @@ interface LinesDao {
             "WHERE V.rate is not null and V.linea is :number GROUP BY V.ramal")
     fun getRamalesFromLine(number: Int) : MutableList<BusRamalInfo>
     
-    @Query("SELECT DISTINCT V.nombrePdaFin, L.color, " +
-            "AVG(V.rate) as avgUserRate, COUNT(V.rate) as reviewsCount " +
+    @Query("SELECT DISTINCT V.nombrePdaFin, L.color, AVG(V.rate) as avgUserRate, COUNT(V.rate) as reviewsCount " +
             "FROM Viaje V INNER JOIN lines L on V.linea = L.number " +
             "WHERE V.rate is not null and V.linea is :number GROUP BY V.nombrePdaFin")
     suspend fun getDestinationStatsForLine(number: Int) : MutableList<BusDestinationInfo>
+
+    @Query("SELECT DISTINCT V.wd, L.color, AVG(V.rate) as avgUserRate, COUNT(V.rate) as reviewsCount " +
+            "FROM Viaje V INNER JOIN lines L on V.linea = L.number " +
+            "WHERE V.rate is not null and V.linea is :number GROUP BY V.wd")
+    suspend fun getDayStatsForLine(number: Int) : MutableList<BusDayInfo>
 }

@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.model.joins.BusInfo
+import cs10.apps.travels.tracer.model.info.BusInfo
 
 class BusRamalsAdapter(
     var list: List<BusInfo>,

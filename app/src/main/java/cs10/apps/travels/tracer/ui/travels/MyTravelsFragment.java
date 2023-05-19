@@ -90,9 +90,11 @@ public class MyTravelsFragment extends CS_Fragment {
             int line = i.getIntExtra("number", -1);
             String ramal = i.getStringExtra("ramal");
             String dest = i.getStringExtra("dest");
+            int wd = i.getIntExtra("wd", -1);
 
             if (line != -1) {
-                if (dest != null) viajes = dao.getAllToDestination(line, dest);
+                if (wd != -1) viajes = dao.getAllTravelsOn(line, wd);
+                else if (dest != null) viajes = dao.getAllToDestination(line, dest);
                 else if (ramal == null) viajes = dao.getAllFromNoRamal(line);
                 else viajes = dao.getAllFromRamal(line, ramal);
             }

@@ -17,8 +17,9 @@ import cs10.apps.travels.tracer.adapter.BusRamalsAdapter
 import cs10.apps.travels.tracer.constants.Extras
 import cs10.apps.travels.tracer.databinding.ActivityLineDetailsBinding
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.model.joins.BusDestinationInfo
-import cs10.apps.travels.tracer.model.joins.BusRamalInfo
+import cs10.apps.travels.tracer.model.info.BusDayInfo
+import cs10.apps.travels.tracer.model.info.BusInfo
+import cs10.apps.travels.tracer.model.joins.TravelStats
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -34,8 +35,8 @@ class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSel
         val intent = Intent(this, FilteredTravelsActivity::class.java)
         intent.putExtra("number", number!!)
 
-        if (it is BusDestinationInfo) intent.putExtra("dest", it.nombrePdaFin)
-        else if (it is BusRamalInfo) intent.putExtra("ramal", it.ramal)
+        if (it is BusDayInfo) intent.putExtra(it.getTypeKey(), it.wd)
+        else intent.putExtra(it.getTypeKey(), it.getIdentifier())
 
         startActivity(intent)
     }
@@ -153,6 +154,7 @@ class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSel
             when (it.position) {
                 0 -> doInBackground { fillRamalsData() }
                 1 -> lifecycleScope.launch(Dispatchers.IO) { fillDestinationsData() }
+                2 -> lifecycleScope.launch(Dispatchers.IO) { fillByDayData() }
                 else -> {}
             }
         }
@@ -166,6 +168,37 @@ class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSel
 
     }
 
+    // About "out": https://stackoverflow.com/questions/44298702/what-is-out-keyword-in-kotlin/45516961#45516961
+    private fun sortAndPost(list: MutableList<out BusInfo>) {
+        list.sort()
+
+        lifecycleScope.launch(Dispatchers.Main){
+            adapter.list = list
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun calculateSpeed(item: BusInfo, stats: List<TravelStats>) {
+        if (stats.isEmpty()) item.speed = null
+        else {
+            var sum = 0.0
+            stats.forEach { stat -> sum += stat.calculateSpeedInKmH() }
+            item.speed = sum / stats.size
+        }
+    }
+
+    private suspend fun fillByDayData() {
+        val db = MiDB.getInstance(this)
+        val data = db.linesDao().getDayStatsForLine(number!!)
+
+        data.forEach {
+            val stats = db.viajesDao().getRecentFinishedTravelsOn(it.wd, number!!)
+            calculateSpeed(it, stats)
+        }
+
+        sortAndPost(data)
+    }
+
     private suspend fun fillDestinationsData() {
         val db = MiDB.getInstance(this)
         val data = db.linesDao().getDestinationStatsForLine(number!!)
@@ -173,21 +206,10 @@ class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSel
         data.forEach {
             // ramal here is actually the end stop name
             val stats = db.viajesDao().getRecentFinishedTravelsTo(it.nombrePdaFin, number!!)
-
-            if (stats.isEmpty()) it.speed = null
-            else {
-                var sum = 0.0
-                stats.forEach { stat -> sum += stat.calculateSpeedInKmH() }
-                it.speed = sum / stats.size
-            }
+            calculateSpeed(it, stats)
         }
 
-        data.sort()
-
-        lifecycleScope.launch(Dispatchers.Main) {
-            adapter.list = data
-            adapter.notifyDataSetChanged()
-        }
+        sortAndPost(data)
     }
 
     private fun fillRamalsData() {
@@ -197,22 +219,10 @@ class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSel
         data.forEach {
             if (it.ramal != null){
                 val stats = db.viajesDao().getRecentFinishedTravelsFromRamal(number!!, it.ramal)
-
-                if (stats.isEmpty()) it.speed = null
-                else {
-                    var sum = 0.0
-
-                    stats.forEach { stat -> sum += stat.calculateSpeedInKmH() }
-                    it.speed = sum / stats.size
-                }
+                calculateSpeed(it, stats)
             }
         }
 
-        data.sort()
-
-        doInForeground {
-            adapter.list = data
-            adapter.notifyDataSetChanged()
-        }
+        sortAndPost(data)
     }
 }

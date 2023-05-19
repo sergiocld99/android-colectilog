@@ -33,6 +33,11 @@ public interface ViajesDao {
     List<ColoredTravel> getAllPlusColors();
 
     @Query("SELECT V.*, L.color FROM viaje V LEFT JOIN lines L ON V.linea = L.number " +
+            "WHERE V.linea = :line and V.wd = :wd " +
+            "ORDER BY year desc, month desc, day desc, startHour desc, startMinute desc")
+    List<ColoredTravel> getAllTravelsOn(int line, int wd);
+
+    @Query("SELECT V.*, L.color FROM viaje V LEFT JOIN lines L ON V.linea = L.number " +
             "WHERE V.linea = :line and V.nombrePdaFin is :dest " +
             "ORDER BY year desc, month desc, day desc, startHour desc, startMinute desc")
     List<ColoredTravel> getAllToDestination(int line, String dest);
@@ -209,6 +214,16 @@ public interface ViajesDao {
             "where linea = :number and nombrePdaFin = :endStop and endHour is not null " +
             "order by year desc, month desc, day desc limit 10")
     List<TravelStats> getRecentFinishedTravelsTo(String endStop, int number);
+
+    @Query("SELECT P1.latitud as start_x, P1.longitud as start_y, " +
+            "P2.latitud as end_x, P2.longitud as end_y, " +
+            "(V.startHour * 60 + V.startMinute) as start_time," +
+            "(V.endHour * 60 + V.endMinute) as end_time " +
+            "FROM Viaje V INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
+            "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
+            "where linea = :number and V.wd = :wd and endHour is not null " +
+            "order by year desc, month desc, day desc limit 10")
+    List<TravelStats> getRecentFinishedTravelsOn(int wd, int number);
 
     // -------------------------- MONTH SUMMARY -------------------------------
 

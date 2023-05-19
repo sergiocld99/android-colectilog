@@ -25,6 +25,8 @@ class FilteredTravelsActivity : CSActivity() {
             binding.title.text = String.format("Ramal %s", ramal ?: "sin nombre")
         } else if (intent.hasExtra("dest")){
             binding.title.text = String.format("Destino %s", intent.getStringExtra("dest"))
+        } else if (intent.hasExtra("wd")){
+            binding.title.text = String.format("Día %s", Utils.getWdCompleteString(intent.getIntExtra("wd", -1)))
         }
 
         // This activity contains a fragment container: MyTravelsFragment

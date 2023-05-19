@@ -4,7 +4,7 @@ import android.location.Location
 import cs10.apps.common.android.Localizable
 import cs10.apps.common.android.NumberUtils
 
-data class Point(private val x: Double, private val y: Double) : Localizable {
+data class Point(private val x: Double, private val y: Double) : Localizable() {
 
     fun getCoordsDistanceTo(location: Location) : Double {
         return NumberUtils.hyp(x - location.latitude, y - location.longitude)

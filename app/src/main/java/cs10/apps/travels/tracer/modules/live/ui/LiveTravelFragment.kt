@@ -195,18 +195,19 @@ class LiveTravelFragment : CS_Fragment() {
                 val error = (currentTime - estimation).roundToInt()
                 val absError = abs(error)
 
-                binding.trafficBanner.isVisible = absError > 3
+                if (absError > 3){
+                    binding.trafficBanner.isVisible = true
+                    binding.deviationBanner.isVisible = false
 
-                if (error > 3){
-                    binding.deviationBanner.isVisible = false
-                    binding.trafficTitle.text = String.format("Tráfico: %d minutos", absError)
-                    binding.trafficCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus_414))
-                    binding.trafficSub.setTextColor(ContextCompat.getColor(binding.root.context, android.R.color.holo_red_light))
-                } else {
-                    binding.deviationBanner.isVisible = false
-                    binding.trafficTitle.text = String.format("Ventaja: %d minutos", absError)
-                    binding.trafficCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus_500))
-                    binding.trafficSub.setTextColor(ContextCompat.getColor(binding.root.context, android.R.color.holo_green_light))
+                    if (error > 0){
+                        binding.trafficTitle.text = String.format("Tráfico: %d minutos", absError)
+                        binding.trafficCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus_414))
+                        binding.trafficSub.setTextColor(ContextCompat.getColor(binding.root.context, android.R.color.holo_red_light))
+                    } else {
+                        binding.trafficTitle.text = String.format("Ventaja: %d minutos", absError)
+                        binding.trafficCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus_500))
+                        binding.trafficSub.setTextColor(ContextCompat.getColor(binding.root.context, android.R.color.holo_green_light))
+                    }
                 }
             } else binding.trafficBanner.isVisible = false
         }

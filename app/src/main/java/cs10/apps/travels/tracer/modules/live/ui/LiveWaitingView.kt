@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.live
+package cs10.apps.travels.tracer.modules.live.ui
 
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible

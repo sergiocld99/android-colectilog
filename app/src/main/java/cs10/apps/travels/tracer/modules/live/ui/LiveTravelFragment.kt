@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.live
+package cs10.apps.travels.tracer.modules.live.ui
 
 import android.app.AlertDialog
 import android.content.Context
@@ -25,14 +25,14 @@ import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.adapter.NearStopAdapter
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
+import cs10.apps.travels.tracer.modules.live.viewmodel.LiveVM
+import cs10.apps.travels.tracer.modules.live.viewmodel.WaitingVM
 import cs10.apps.travels.tracer.notification.NotificationCenter
 import cs10.apps.travels.tracer.ui.service.ServiceDetail
 import cs10.apps.travels.tracer.ui.travels.BusTravelEditor
 import cs10.apps.travels.tracer.ui.travels.TrainTravelEditor
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
-import cs10.apps.travels.tracer.viewmodel.live.LiveVM
-import cs10.apps.travels.tracer.viewmodel.live.WaitingVM
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.roundToInt

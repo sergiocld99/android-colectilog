@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.viewmodel.live
+package cs10.apps.travels.tracer.modules.live.viewmodel
 
 import android.app.Application
 import android.content.Context
@@ -11,7 +11,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import cs10.apps.common.android.Clock
-import cs10.apps.common.android.Localizable
 import cs10.apps.common.android.NumberUtils
 import cs10.apps.common.android.TimedLocation
 import cs10.apps.rater.HappyRater
@@ -23,8 +22,9 @@ import cs10.apps.travels.tracer.model.*
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.RamalSchedule
 import cs10.apps.travels.tracer.modules.ZoneData
+import cs10.apps.travels.tracer.modules.live.model.EstimationData
+import cs10.apps.travels.tracer.modules.live.utils.ProgressCorrector
 import cs10.apps.travels.tracer.viewmodel.LocationVM
-import cs10.apps.travels.tracer.viewmodel.estimation.EstimationData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -33,7 +33,6 @@ import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import java.util.*
 import kotlin.math.abs
-import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class LiveVM(application: Application) : AndroidViewModel(application) {
@@ -73,6 +72,9 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     // DECEMBER 2022 - MVVM Architecture
     private val database: MiDB = MiDB.getInstance(getApplication<Application>().applicationContext)
     private var getCurrentTravelUseCase: GetCurrentTravelUseCase = GetCurrentTravelUseCase(database)
+
+    // utils
+    private val corrector = ProgressCorrector()
 
 
     fun findLastTravel(locationVM: LocationVM, newTravelRunnable: Runnable) {
@@ -215,7 +217,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         val speed = 0.5 * (startStop.distance / hours) + 12.5
 
                         // calc direction and apply correction to progress
-                        val correctedProg = getCorrectedProgress(startStop, endStop, prog)
+                        val correctedProg = corrector.correct(startStop, endStop, prog)
                         val minutesLeft = calculateMinutesLeft(speed, correctedProg, endStop.distance)
 
                         // postear para ui
@@ -277,14 +279,6 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         }.start()
     }
 
-    private fun getCorrectedProgress(start: Localizable, end: Localizable, prog: Double): Double {
-        return when (Utils.getDirection(start, end)) {
-            Utils.Direction.SOUTH_EAST -> 2 * prog.pow(3) - 2.76 * prog.pow(2) + 1.76 * prog
-            Utils.Direction.NORTH_WEST -> 0.25 * prog.pow(3) - 1.05 * prog.pow(2) + 1.8 * prog
-            else -> prog
-        }
-    }
-
     private suspend fun calculateNextPoints(
         startStop: Parada,
         endStop: Parada,
@@ -311,7 +305,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 val distanceFromStart = z.getCoordsDistanceTo(start)
                 val distanceToEnd = z.getCoordsDistanceTo(end)
                 val prog = calculateProgress(distanceFromStart, distanceToEnd)
-                val correctedProg = getCorrectedProgress(start, end, prog)
+                val correctedProg = corrector.correct(start, end, prog)
 
                 //val distance = z.getCoordsDistanceTo(location)
                 //val kmDistance = NumberUtils.coordsDistanceToKm(distance)

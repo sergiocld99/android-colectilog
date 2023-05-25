@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/nav_live"
-        android:name="cs10.apps.travels.tracer.ui.live.LiveTravelFragment"
+        android:name="cs10.apps.travels.tracer.modules.live.ui.LiveTravelFragment"
         android:label="@string/live"
         tools:layout="@layout/fragment_live_travel" />
 

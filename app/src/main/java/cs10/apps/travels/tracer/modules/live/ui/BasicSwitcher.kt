@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.live
+package cs10.apps.travels.tracer.modules.live.ui
 
 import android.content.Context
 import android.os.Handler
@@ -6,7 +6,7 @@ import android.os.Looper
 import android.widget.TextSwitcher
 import cs10.apps.travels.tracer.R
 
-class BasicSwitcher(var textSwitcher: TextSwitcher, val autoRepeat: Boolean = true) {
+class BasicSwitcher(private var textSwitcher: TextSwitcher, private val autoRepeat: Boolean = true) {
     private var handler: Handler? = null
     private var runnable: Runnable? = null
     private var lastAction = LastAction.SLIDED_DOWN

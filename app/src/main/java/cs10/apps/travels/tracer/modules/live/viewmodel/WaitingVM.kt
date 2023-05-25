@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.viewmodel.live
+package cs10.apps.travels.tracer.modules.live.viewmodel
 
 import android.app.Application
 import android.location.Location

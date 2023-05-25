@@ -8,6 +8,7 @@ class ProgressCorrector {
 
     fun correct(start: Localizable, end: Localizable, prog: Double): Double {
         return when (Utils.getDirection(start, end)) {
+            Utils.Direction.SOUTH_WEST -> f4SO(prog)
             Utils.Direction.SOUTH_EAST -> f4SE(prog)
             Utils.Direction.NORTH_WEST -> f4NW(prog)
             else -> prog
@@ -23,4 +24,5 @@ class ProgressCorrector {
 
     private fun f4NW(prog: Double) = p4(prog, -1.78, 5.43, -5.29, 2.59, 0.03)
     private fun f4SE(prog: Double) = p4(prog, 3.0, -4.18, 1.52, 0.62, 0.0)
+    private fun f4SO(prog: Double) = p4(prog, -5.46, 9.84, -4.44, 1.05, 0.0)
 }

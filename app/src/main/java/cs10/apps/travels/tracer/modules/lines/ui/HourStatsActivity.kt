@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.lines
+package cs10.apps.travels.tracer.modules.lines.ui
 
 import android.graphics.Color
 import android.os.Bundle

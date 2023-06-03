@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.lines
+package cs10.apps.travels.tracer.modules.lines.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,10 +9,10 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import cs10.apps.common.android.ui.CS_Fragment
-import cs10.apps.travels.tracer.adapter.LineManagerAdapter
 import cs10.apps.travels.tracer.databinding.FragmentManageLinesBinding
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
-import cs10.apps.travels.tracer.viewmodel.LineManagerVM
+import cs10.apps.travels.tracer.modules.lines.adapter.LineManagerAdapter
+import cs10.apps.travels.tracer.modules.lines.viewmodel.LineManagerVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
 
 class LineManagerFragment : CS_Fragment() {
@@ -66,9 +66,20 @@ class LineManagerFragment : CS_Fragment() {
     private fun onLineClick(customBusLine: CustomBusLine){
         lineManagerVM.selectEditing(customBusLine)
 
-        val intent = Intent(requireActivity(), LineDetail::class.java)
-        intent.putExtra("number", customBusLine.number)
-        startActivity(intent)
+        customBusLine.number?.let { n ->
+            val intent: Intent
+
+            if (n >= 0){
+                intent = Intent(requireActivity(), LineDetail::class.java)
+                intent.putExtra("number", customBusLine.number)
+            } else {
+                intent = Intent(requireActivity(), TrainDetail::class.java)
+            }
+
+            startActivity(intent)
+        }
+
+
     }
 
 }

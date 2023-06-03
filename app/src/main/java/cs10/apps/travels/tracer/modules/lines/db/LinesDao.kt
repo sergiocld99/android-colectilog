@@ -1,15 +1,17 @@
-package cs10.apps.travels.tracer.db
+package cs10.apps.travels.tracer.modules.lines.db
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import cs10.apps.travels.tracer.model.info.BusDayInfo
-import cs10.apps.travels.tracer.model.info.BusDestinationInfo
-import cs10.apps.travels.tracer.model.info.BusRamalInfo
 import cs10.apps.travels.tracer.model.joins.RatedBusLine
+import cs10.apps.travels.tracer.model.joins.TravelStats
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
 import cs10.apps.travels.tracer.model.lines.HourBusStat
+import cs10.apps.travels.tracer.modules.lines.model.BusDayInfo
+import cs10.apps.travels.tracer.modules.lines.model.BusDestinationInfo
+import cs10.apps.travels.tracer.modules.lines.model.BusRamalInfo
+import cs10.apps.travels.tracer.modules.lines.model.TrainDayInfo
 
 @Dao
 interface LinesDao {
@@ -46,6 +48,7 @@ interface LinesDao {
             "GROUP BY startHour ORDER BY startHour")
     fun getHourStatsForLineByDuration(number: Int) : List<HourBusStat>
 
+
     // --------------------- JOINS -----------------------------
 
     @Query("SELECT L.*, AVG(V.rate) as avgUserRate, COUNT(V.rate) as reviewsCount " +
@@ -73,4 +76,21 @@ interface LinesDao {
             "FROM Viaje V INNER JOIN lines L on V.linea = L.number " +
             "WHERE V.rate is not null and V.linea is :number GROUP BY V.wd")
     suspend fun getDayStatsForLine(number: Int) : MutableList<BusDayInfo>
+
+    // --------------------- TRAIN ------------------------------
+
+    @Query("SELECT DISTINCT wd, AVG(rate) as avgUserRate, COUNT(rate) as reviewsCount " +
+            "FROM Viaje WHERE rate is not null and linea is null GROUP BY wd")
+    suspend fun getDayStatsForTrain() : MutableList<TrainDayInfo>
+
+    @Query("SELECT P1.latitud as start_x, P1.longitud as start_y, " +
+                "P2.latitud as end_x, P2.longitud as end_y, " +
+                "(V.startHour * 60 + V.startMinute) as start_time," +
+                "(V.endHour * 60 + V.endMinute) as end_time " +
+                "FROM Viaje V INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
+                "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
+                "where linea is null and V.wd = :wd and endHour is not null " +
+                "order by year desc, month desc, day desc limit 10")
+    suspend fun getRecentFinishedTrainTravelsOn(wd: Int): MutableList<TravelStats>
+
 }

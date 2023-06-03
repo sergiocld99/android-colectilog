@@ -1,8 +1,8 @@
-package cs10.apps.travels.tracer.model.info
+package cs10.apps.travels.tracer.modules.lines.model
 
 import cs10.apps.travels.tracer.Utils
 
-class BusDayInfo: BusInfo() {
+class TrainDayInfo: TrainInfo() {
     var wd = -1
 
     override fun getIdentifier(): String {

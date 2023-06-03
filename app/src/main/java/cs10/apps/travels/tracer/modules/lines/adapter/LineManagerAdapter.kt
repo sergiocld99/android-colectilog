@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.adapter
+package cs10.apps.travels.tracer.modules.lines.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

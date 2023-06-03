@@ -225,6 +225,7 @@ public interface ViajesDao {
             "order by year desc, month desc, day desc limit 10")
     List<TravelStats> getRecentFinishedTravelsOn(int wd, int number);
 
+
     // -------------------------- MONTH SUMMARY -------------------------------
 
     @Query("SELECT SUM(costo) FROM viaje where linea is not null and id > :travelId")

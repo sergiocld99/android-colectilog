@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/nav_lines"
-        android:name="cs10.apps.travels.tracer.ui.lines.LineManagerFragment"
+        android:name="cs10.apps.travels.tracer.modules.lines.ui.LineManagerFragment"
         android:label="@string/manage_lines"
         tools:layout="@layout/fragment_manage_lines"/>
 

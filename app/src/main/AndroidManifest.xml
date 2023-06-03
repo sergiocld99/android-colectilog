@@ -61,10 +61,13 @@
             android:name=".ui.service.ServiceDetail"
             android:theme="@style/Theme.TravelTracer.Trains" />
         <activity
-            android:name=".ui.lines.LineDetail"
+            android:name=".modules.lines.ui.TrainDetail"
+            android:theme="@style/Theme.TravelTracer.Trains" />
+        <activity
+            android:name=".modules.lines.ui.LineDetail"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".ui.lines.HourStatsActivity"
+            android:name=".modules.lines.ui.HourStatsActivity"
             android:exported="false"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
@@ -74,7 +77,7 @@
             android:name=".ui.zones.ZoneEditor"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".ui.lines.FilteredTravelsActivity"
+            android:name=".modules.lines.ui.FilteredTravelsActivity"
             android:label="@string/travels"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity

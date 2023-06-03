@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.lines
+package cs10.apps.travels.tracer.modules.lines.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,13 +13,13 @@ import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import cs10.apps.common.android.ui.FormActivity
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
-import cs10.apps.travels.tracer.adapter.BusRamalsAdapter
 import cs10.apps.travels.tracer.constants.Extras
 import cs10.apps.travels.tracer.databinding.ActivityLineDetailsBinding
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.model.info.BusDayInfo
-import cs10.apps.travels.tracer.model.info.BusInfo
-import cs10.apps.travels.tracer.model.joins.TravelStats
+import cs10.apps.travels.tracer.modules.lines.adapter.CommonLineInfoAdapter
+import cs10.apps.travels.tracer.modules.lines.model.BusDayInfo
+import cs10.apps.travels.tracer.modules.lines.model.BusInfo
+import cs10.apps.travels.tracer.modules.lines.utils.SpeedCalculator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -27,11 +27,11 @@ class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSel
     private var llm: LinearLayoutManager? = null
     private var number: Int? = null
 
-    // ViewModel
+    // view binding
     private lateinit var binding: ActivityLineDetailsBinding
 
     // Adapter
-    private val adapter: BusRamalsAdapter = BusRamalsAdapter(listOf()) {
+    private val adapter: CommonLineInfoAdapter = CommonLineInfoAdapter(listOf()) {
         val intent = Intent(this, FilteredTravelsActivity::class.java)
         intent.putExtra("number", number!!)
 
@@ -51,9 +51,6 @@ class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSel
 
         // adapter
         llm = LinearLayoutManager(this)
-
-        // view model
-        // serviceVM = ViewModelProvider(this).get(ServiceVM::class.java)
 
         // UI
         binding.recycler.adapter = adapter
@@ -178,22 +175,13 @@ class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSel
         }
     }
 
-    private fun calculateSpeed(item: BusInfo, stats: List<TravelStats>) {
-        if (stats.isEmpty()) item.speed = null
-        else {
-            var sum = 0.0
-            stats.forEach { stat -> sum += stat.calculateSpeedInKmH() }
-            item.speed = sum / stats.size
-        }
-    }
-
     private suspend fun fillByDayData() {
         val db = MiDB.getInstance(this)
         val data = db.linesDao().getDayStatsForLine(number!!)
 
         data.forEach {
             val stats = db.viajesDao().getRecentFinishedTravelsOn(it.wd, number!!)
-            calculateSpeed(it, stats)
+            SpeedCalculator.calculate(it, stats)
         }
 
         sortAndPost(data)
@@ -206,7 +194,7 @@ class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSel
         data.forEach {
             // ramal here is actually the end stop name
             val stats = db.viajesDao().getRecentFinishedTravelsTo(it.nombrePdaFin, number!!)
-            calculateSpeed(it, stats)
+            SpeedCalculator.calculate(it, stats)
         }
 
         sortAndPost(data)
@@ -219,7 +207,7 @@ class LineDetail : FormActivity(), ColorPickerDialogListener, TabLayout.OnTabSel
         data.forEach {
             if (it.ramal != null){
                 val stats = db.viajesDao().getRecentFinishedTravelsFromRamal(number!!, it.ramal)
-                calculateSpeed(it, stats)
+                SpeedCalculator.calculate(it, stats)
             }
         }
 

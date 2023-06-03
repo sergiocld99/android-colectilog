@@ -1,12 +1,13 @@
-package cs10.apps.travels.tracer.viewmodel
+package cs10.apps.travels.tracer.modules.lines.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
-import cs10.apps.travels.tracer.db.LinesDao
+import cs10.apps.travels.tracer.modules.lines.db.LinesDao
 import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
+import cs10.apps.travels.tracer.viewmodel.RootVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

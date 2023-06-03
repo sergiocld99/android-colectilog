@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.model.info
+package cs10.apps.travels.tracer.modules.lines.model
 
 class BusDestinationInfo: BusInfo() {
     var nombrePdaFin: String? = null

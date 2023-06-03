@@ -25,6 +25,7 @@ import cs10.apps.travels.tracer.model.prices.TarifaBus;
 import cs10.apps.travels.tracer.model.prices.TarifaTren;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 import cs10.apps.travels.tracer.model.roca.ServicioTren;
+import cs10.apps.travels.tracer.modules.lines.db.LinesDao;
 
 @Database(entities = {Circuito.class, Comunicacion.class, Estacion.class, FormacionCircuito.class,
         Tren.class, Horario.class, Parada.class, Viaje.class, TarifaBus.class, TarifaTren.class,

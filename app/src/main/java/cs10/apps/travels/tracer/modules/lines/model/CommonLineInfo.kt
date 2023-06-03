@@ -1,12 +1,12 @@
-package cs10.apps.travels.tracer.model.info
+package cs10.apps.travels.tracer.modules.lines.model
 
-abstract class BusInfo: Comparable<BusInfo> {
-    var color = 0
+abstract class CommonLineInfo: Comparable<CommonLineInfo> {
+
     var avgUserRate = 0.0
     var reviewsCount = 0
     var speed: Double? = null
 
-    override fun compareTo(other: BusInfo): Int {
+    override fun compareTo(other: CommonLineInfo): Int {
         val comp = (other.speed ?: 0.0).compareTo(speed ?: 0.0)
         if (comp == 0) return other.reviewsCount.compareTo(reviewsCount)
         return comp

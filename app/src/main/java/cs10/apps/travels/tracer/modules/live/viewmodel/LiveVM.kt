@@ -23,6 +23,7 @@ import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.RamalSchedule
 import cs10.apps.travels.tracer.modules.ZoneData
 import cs10.apps.travels.tracer.modules.live.model.EstimationData
+import cs10.apps.travels.tracer.modules.live.utils.AutoTravelFinisher
 import cs10.apps.travels.tracer.modules.live.utils.ProgressCorrector
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +47,6 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     val nextTravel = MutableLiveData<Viaje?>()
     val nearArrivals = MutableLiveData<MutableList<RamalSchedule>>()
     val customZone = MutableLiveData<Zone?>()
-    val direction = MutableLiveData<Utils.Direction>()
 
     // distances in metres
     val endDistance = MutableLiveData<Double?>()
@@ -62,6 +62,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     val rate = MutableLiveData<Double?>()
     val nextZones = MutableLiveData<MutableList<NextZone>>()
     val deviation = MutableLiveData(0.0)
+    val finishData = MutableLiveData(false)
 
     // timer 1: update minutes from start every 30 seconds
     private var minuteClock: Clock? = null
@@ -75,7 +76,10 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
 
     // utils
     private val corrector = ProgressCorrector()
+    private val finisher = AutoTravelFinisher()
 
+
+    // --------------------------- FUNCTIONS ---------------------------------
 
     fun findLastTravel(locationVM: LocationVM, newTravelRunnable: Runnable) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -220,11 +224,14 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         val correctedProg = corrector.correct(startStop, endStop, prog)
                         val minutesLeft = calculateMinutesLeft(speed, correctedProg, endStop.distance)
 
+                        // evaluate if travel should be finished
+                        val shouldFinish = finisher.evaluate(startStop, endStop, endStop.distance)
+
                         // postear para ui
-                        direction.postValue(Utils.getDirection(startStop, endStop))
                         minutesToEnd.postValue(minutesLeft.roundToInt())
                         endDistance.postValue(endStop.distance)
                         progress.postValue(correctedProg)
+                        finishData.postValue(shouldFinish)
 
                         // fourth action: find next zones to get in
                         calculateNextPoints(startStop, endStop, location, minutesLeft, speed)
@@ -410,6 +417,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         nextTravel.postValue(null)
         rate.postValue(null)
         deviation.postValue(0.0)
+        finishData.postValue(false)
     }
 
     fun eraseAll() {

@@ -65,6 +65,7 @@ class LiveTravelFragment : CS_Fragment() {
     private lateinit var basicSwitcher: BasicSwitcher
     private lateinit var zoneSwitcher: BasicSwitcher
 
+
     /* ====================== MAIN FUNCTIONS ==================================== */
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -146,20 +147,6 @@ class LiveTravelFragment : CS_Fragment() {
             }
         }
 
-        /*
-        liveVM.toggle.observe(viewLifecycleOwner) {
-            if (liveVM.travel.value != null) {
-                if (it) liveVM.progress.value?.let { prog ->
-                    binding.minutesLeft.text = String.format("%d%%", prog.times(100).roundToInt())
-                }
-                else liveVM.minutesToEnd.value?.let { minutes ->
-                    binding.minutesLeft.text = String.format("%d'", minutes)
-                }
-            }
-        }
-
-         */
-
         liveVM.minutesFromStart.observe(viewLifecycleOwner) {
             // new design
             if (it != null)
@@ -232,17 +219,11 @@ class LiveTravelFragment : CS_Fragment() {
         }
 
         liveVM.endDistance.observe(viewLifecycleOwner) {
-            if (it != null) {
-                val d = liveVM.direction.value
-                if (d == null && it < 0.8) finishCurrentTravel()
-                else if (d != Utils.Direction.NORTH_WEST && it < 0.8) finishCurrentTravel()
-                else if (d == Utils.Direction.NORTH_WEST && it < 1.2) finishCurrentTravel()
-                else {
-                    // show below elapsed time tv
-                    // binding.nearMeTitle.text = String.format("%s a %.1f km", liveVM.travel.value?.nombrePdaFin, it)
-                    basicSwitcher.replaceContent(String.format("Destino a %.1f km", it), 4)
-                }
-            }
+            basicSwitcher.replaceContent(String.format("Destino a %.1f km", it ?: 0.0), 4)
+        }
+
+        liveVM.finishData.observe(viewLifecycleOwner) {
+            if (it) finishCurrentTravel()
         }
         
         liveVM.nearArrivals.observe(viewLifecycleOwner) {
@@ -302,16 +283,13 @@ class LiveTravelFragment : CS_Fragment() {
                 zoneSwitcher.addContent("En ${nz.minutesLeft}' por ${nz.zone.name}")
             }
 
-
             zoneSwitcher.start()
         }
-
-
 
         // DEC 2022: EXPECTED RATING
         liveVM.rate.observe(viewLifecycleOwner) {
             if (it == null) binding.rateText.text = "--"
-            else binding.rateText.text = Utils.rateFormat(it)
+            else binding.rateText.text = String.format("%.2f", it)
 
             // emoji icon
             val face = HappyRater.getDrawableByRating(it?.toInt() ?: 3)

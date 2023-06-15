@@ -22,6 +22,7 @@ import cs10.apps.travels.tracer.model.*
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.RamalSchedule
 import cs10.apps.travels.tracer.modules.ZoneData
+import cs10.apps.travels.tracer.modules.live.model.Countdown
 import cs10.apps.travels.tracer.modules.live.model.EstimationData
 import cs10.apps.travels.tracer.modules.live.utils.AutoTravelFinisher
 import cs10.apps.travels.tracer.modules.live.utils.ProgressCorrector
@@ -52,8 +53,9 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     val endDistance = MutableLiveData<Double?>()
 
     // time in minutes
+    val countdown = Countdown()
     val minutesFromStart = MutableLiveData<Double?>()
-    val minutesToEnd = MutableLiveData<Int?>()
+    val minutesToEnd = MutableLiveData<Double?>()
     val averageDuration = MutableLiveData<EstimationData?>()
     private val minDuration = MutableLiveData<Int?>()
 
@@ -228,7 +230,9 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         val shouldFinish = finisher.evaluate(startStop, endStop, endStop.distance)
 
                         // postear para ui
-                        minutesToEnd.postValue(minutesLeft.roundToInt())
+                        countdown.start((minutesLeft * 60).roundToInt())
+
+                        minutesToEnd.postValue(minutesLeft)
                         endDistance.postValue(endStop.distance)
                         progress.postValue(correctedProg)
                         finishData.postValue(shouldFinish)
@@ -387,7 +391,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     fun finishTravel(cal: Calendar, layoutInflater: LayoutInflater, context: Context) {
         travel.value?.let {
             // Sumar tiempo que faltaba para terminar 
-            minutesToEnd.value?.let { minutes -> cal.add(Calendar.MINUTE, minutes) }
+            minutesToEnd.value?.let { min -> cal.add(Calendar.SECOND, (min * 60).toInt()) }
 
             it.endHour = cal.get(Calendar.HOUR_OF_DAY)
             it.endMinute = cal.get(Calendar.MINUTE)
@@ -418,6 +422,8 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         rate.postValue(null)
         deviation.postValue(0.0)
         finishData.postValue(false)
+
+        countdown.stop()
     }
 
     fun eraseAll() {

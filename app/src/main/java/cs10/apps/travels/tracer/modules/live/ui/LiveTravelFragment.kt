@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
-import cs10.apps.common.android.Calendar2
 import cs10.apps.common.android.Emoji
 import cs10.apps.common.android.NumberUtils
 import cs10.apps.common.android.ui.CS_Fragment
@@ -204,17 +203,12 @@ class LiveTravelFragment : CS_Fragment() {
 
             if (it == null || it == 0.0 || eta == null){
                 binding.deviationBanner.isVisible = false
-            } else {
+            } else if (binding.trafficBanner.isVisible) {
                 val timeError = (eta * it / 100).roundToInt()
-                if (timeError > 3){
-                    binding.deviationBanner.isVisible = true
-                    binding.trafficBanner.isVisible = false
-                    binding.deviationTitle.text = String.format("Desviación del %d%%", it.toInt())
-                    binding.deviationSub.text = String.format("Error de hasta %d minutos", timeError)
-                } else {
-                    binding.deviationBanner.isVisible = false
-                }
-
+                binding.deviationBanner.isVisible = true
+                binding.trafficBanner.isVisible = false
+                binding.deviationTitle.text = String.format("Desviación del %.1f%%", it)
+                binding.deviationSub.text = String.format("Error de hasta %d minutos", timeError)
             }
         }
 
@@ -232,16 +226,21 @@ class LiveTravelFragment : CS_Fragment() {
             nearStopAdapter.notifyDataSetChanged()
         }
 
+        liveVM.countdown.liveData.observe(viewLifecycleOwner) {
+            binding.minutesLeft.text = String.format("%d' %d\"", it / 60, it % 60)
+        }
+
         liveVM.minutesToEnd.observe(viewLifecycleOwner) {
             binding.shareBtn.isVisible = it != null
             binding.editBtn.isVisible = it != null
 
             if (it == null) binding.minutesLeft.text = null
             else {
-                val eta = Calendar.getInstance().apply { add(Calendar.MINUTE, it) }
+                val seconds = (it * 60).roundToInt()
+                val eta = Calendar.getInstance().apply { add(Calendar.SECOND, seconds) }
 
                 // ui
-                binding.minutesLeft.text = String.format("%d'", it)
+                // binding.minutesLeft.text = String.format("%d' %.0f\"", it.toInt(), (it % 1.0) * 60)
                 // binding.etaInfo.text = "Llegarías a las " + Utils.hourFormat(eta)
                 binding.finishBtn.isVisible = it < 10
 
@@ -253,16 +252,19 @@ class LiveTravelFragment : CS_Fragment() {
                     val prefs = requireContext().getSharedPreferences("eta_notified", Context.MODE_PRIVATE)
                     val scheduled = prefs.getLong("last_id", -1)
                     if (scheduled != id) {
-                        NotificationCenter().scheduleAskNotification(requireContext(), it * 60000L)
+                        NotificationCenter().scheduleAskNotification(requireContext(), (it * 60000).toLong())
                         prefs.edit().putLong("last_id", id).apply()
                     }
                 }
 
                 // next combination
+                binding.nextTravelInfo.isVisible = false
+
+                /*
                 liveVM.nextTravel.value?.let { nextT ->
                     val etaNext = Calendar2.getETA(eta, nextT.duration + 15)
                     binding.nextTravelInfo.text = "Combinación a ${nextT.nombrePdaFin} (${Utils.hourFormat(etaNext)})"
-                }
+                }*/
             }
         }
 
@@ -374,7 +376,7 @@ class LiveTravelFragment : CS_Fragment() {
                 else sb.append("\n")
 
                 sb.append("${Emoji.getGlobeEmoji()} Destino: $destination \n")
-                sb.append("${Emoji.getClockEmoji()} Llego a las ${getETA(it)}")
+                sb.append("${Emoji.getClockEmoji()} Llego a las ${getETA(it.roundToInt())}")
 
                 val shareBody = sb.toString().trim()
                 val intent = Intent(Intent.ACTION_SEND)

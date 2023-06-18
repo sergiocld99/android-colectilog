@@ -3,8 +3,7 @@ package cs10.apps.travels.tracer.modules.live.viewmodel
 import android.app.Application
 import android.content.Context
 import android.location.Location
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
@@ -39,13 +38,21 @@ import kotlin.math.roundToInt
 
 class LiveVM(application: Application) : AndroidViewModel(application) {
 
+    // services
+    private val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val vm = application.applicationContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        vm.defaultVibrator
+    } else {
+        application.applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    }
+
     // Debug constants
     private val areaSize = 0
 
     // general live data
     val travel = MutableLiveData<ColoredTravel?>()
     private val toggle = MutableLiveData(true)
-    val nextTravel = MutableLiveData<Viaje?>()
+    private val nextTravel = MutableLiveData<Viaje?>()
     val nearArrivals = MutableLiveData<MutableList<RamalSchedule>>()
     val customZone = MutableLiveData<Zone?>()
 
@@ -230,7 +237,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         val shouldFinish = finisher.evaluate(startStop, endStop, endStop.distance)
 
                         // postear para ui
-                        countdown.start((minutesLeft * 60).roundToInt())
+                        if (countdown.start((minutesLeft * 60).roundToInt())) shortVibration()
 
                         minutesToEnd.postValue(minutesLeft)
                         endDistance.postValue(endStop.distance)
@@ -276,6 +283,13 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             // new database
             val found = database.zonesDao().findFirstZoneIn(location.latitude, location.longitude)
             customZone.postValue(found)
+        }
+    }
+
+    private fun shortVibration() {
+        if (vibrator.hasVibrator() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val effect = VibrationEffect.createOneShot(360, VibrationEffect.DEFAULT_AMPLITUDE)
+            vibrator.vibrate(effect)
         }
     }
 

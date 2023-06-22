@@ -24,6 +24,7 @@ import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.adapter.NearStopAdapter
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
+import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.modules.live.viewmodel.LiveVM
 import cs10.apps.travels.tracer.modules.live.viewmodel.WaitingVM
 import cs10.apps.travels.tracer.notification.NotificationCenter
@@ -121,29 +122,39 @@ class LiveTravelFragment : CS_Fragment() {
         return binding.root
     }
 
+    private fun showWaitingView(){
+        binding.travellingLayout.isVisible = false
+        liveWaitingView.setVisibility(true)
+        updateTabs(true)
+
+        resetViews()
+        basicSwitcher.stop()
+    }
+
+    private fun showTravellingView(t: ColoredTravel){
+        binding.travellingLayout.isVisible = true
+        liveWaitingView.setVisibility(false)
+        updateTabs(false)
+
+        // new design
+        if (t.ramal == null) basicSwitcher.replaceContent("Servicio común", 0)
+        else basicSwitcher.replaceContent("Ramal ${t.ramal}", 0)
+
+        basicSwitcher.replaceContent("Desde ${t.nombrePdaInicio}", 1)
+        basicSwitcher.replaceContent("Hasta ${t.nombrePdaFin}", 2)
+        basicSwitcher.start()
+
+        binding.lineTitle.text = String.format("Línea %s", t.lineSimplified)
+        binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(t.tipo, context))
+        binding.topCardView.setCardBackgroundColor(t.color ?: Utils.colorFor(t.linea, context))
+        rootVM.disableLoading()
+    }
+
     private fun observeLiveVM() {
         liveVM.travel.observe(viewLifecycleOwner) {
-            binding.travellingLayout.isVisible = it != null
-            liveWaitingView.setVisibility(it == null)
-            updateTabs(it == null)
-
-            if (it == null) {
-                resetViews()
-                basicSwitcher.stop()
-            } else {
-                // new design
-                if (it.ramal == null) basicSwitcher.replaceContent("Servicio común", 0)
-                else basicSwitcher.replaceContent("Ramal ${it.ramal}", 0)
-
-                basicSwitcher.replaceContent("Desde ${it.nombrePdaInicio}", 1)
-                basicSwitcher.replaceContent("Hasta ${it.nombrePdaFin}", 2)
-                basicSwitcher.start()
-
-                binding.lineTitle.text = String.format("Línea %s", it.lineSimplified)
-                binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(it.tipo, context))
-                binding.topCardView.setCardBackgroundColor(it.color ?: Utils.colorFor(it.linea, context))
-                rootVM.disableLoading()
-            }
+            // si estoy pasando por una parada o no estoy viajando, mostrar "esperando"
+            if (it == null || waitingVM.stopHere.value != null) showWaitingView()
+            else showTravellingView(it)
         }
 
         liveVM.minutesFromStart.observe(viewLifecycleOwner) {

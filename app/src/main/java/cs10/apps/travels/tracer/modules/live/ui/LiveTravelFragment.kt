@@ -212,7 +212,7 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.deviation.observe(viewLifecycleOwner) {
             val eta = liveVM.minutesToEnd.value
 
-            if (it == null || it == 0.0 || eta == null){
+            if (it == null || it == 0.0 || eta == null || !binding.trafficBanner.isVisible){
                 binding.deviationBanner.isVisible = false
             } else if (binding.trafficBanner.isVisible) {
                 val timeError = (eta * it / 100).roundToInt()

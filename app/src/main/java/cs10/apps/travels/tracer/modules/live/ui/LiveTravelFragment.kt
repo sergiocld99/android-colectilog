@@ -163,7 +163,7 @@ class LiveTravelFragment : CS_Fragment() {
                 basicSwitcher.replaceContent("Inició hace ${it.roundToInt()} minutos", 3)
         }
 
-        liveVM.averageDuration.observe(viewLifecycleOwner) {
+        liveVM.estData.observe(viewLifecycleOwner) {
             if (it == null || it.totalMinutes == 0) binding.trafficSub.text = null
             else {
                 binding.trafficSub.text = String.format("El viaje normal dura %d minutos", it.totalMinutes)
@@ -184,7 +184,7 @@ class LiveTravelFragment : CS_Fragment() {
                 else -> binding.pb.progress = (prog * 100).roundToInt()
             }
 
-            val avgD = liveVM.averageDuration.value
+            val avgD = liveVM.estData.value
             val currentTime = liveVM.minutesFromStart.value
 
             if (prog != null && avgD != null && currentTime != null) {
@@ -210,12 +210,12 @@ class LiveTravelFragment : CS_Fragment() {
         }
 
         liveVM.deviation.observe(viewLifecycleOwner) {
-            val eta = liveVM.minutesToEnd.value
+            val ed = liveVM.estData.value
 
-            if (it == null || it == 0.0 || eta == null || !binding.trafficBanner.isVisible){
+            if (it == null || it < 0.4 || ed == null || !binding.trafficBanner.isVisible){
                 binding.deviationBanner.isVisible = false
             } else if (binding.trafficBanner.isVisible) {
-                val timeError = (eta * it / 100).roundToInt()
+                val timeError = (ed.totalMinutes * it / 100).roundToInt()
                 binding.deviationBanner.isVisible = true
                 binding.trafficBanner.isVisible = false
                 binding.deviationTitle.text = String.format("Desviación del %.1f%%", it)

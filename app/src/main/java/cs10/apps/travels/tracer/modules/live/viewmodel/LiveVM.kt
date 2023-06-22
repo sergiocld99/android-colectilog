@@ -63,7 +63,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     val countdown = Countdown()
     val minutesFromStart = MutableLiveData<Double?>()
     val minutesToEnd = MutableLiveData<Double?>()
-    val averageDuration = MutableLiveData<EstimationData?>()
+    val estData = MutableLiveData<EstimationData?>()
     private val minDuration = MutableLiveData<Int?>()
 
     // aditional info
@@ -151,7 +151,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         if (expectedDuration > 0) {
             val speed = (currentTravelDistance.distance / NumberUtils.minutesToHours(expectedDuration))
             val estimationData = EstimationData(expectedDuration, speed.roundToInt(), true)
-            averageDuration.postValue(estimationData)
+            estData.postValue(estimationData)
         } else {
             // en trenes: segundo buscar cualquier viaje realizado antes (todos son del Roca)
             // en colectivos: segundo buscar para cualquier viaje de la misma linea
@@ -163,12 +163,12 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             if (speed != null) {
                 expectedDuration = (currentTravelDistance.distance / speed).times(60).roundToInt()
 
-                if (expectedDuration > 0) averageDuration.postValue(
+                if (expectedDuration > 0) estData.postValue(
                     EstimationData(expectedDuration, speed.roundToInt(), false)
                 )
             }
 
-            if (expectedDuration <= 0) averageDuration.postValue(null)
+            if (expectedDuration <= 0) estData.postValue(null)
         }
     }
 
@@ -202,8 +202,8 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
      * @return estimated time in minutes (double) to arrive from now
      */
     private fun calculateMinutesLeft(speed: Double, prog: Double, endDist: Double): Double {
-        return if (averageDuration.value == null) (endDist / speed) * 60
-        else (1 - prog) * averageDuration.value!!.totalMinutes
+        return if (estData.value == null) (endDist / speed) * 60
+        else (1 - prog) * estData.value!!.totalMinutes
     }
 
     fun recalculateDistances(location: Location, newTravelRunnable: Runnable) {
@@ -430,7 +430,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     private fun resetAllButTravel() {
         endDistance.postValue(null)
         minutesToEnd.postValue(null)
-        averageDuration.postValue(null)
+        estData.postValue(null)
         progress.postValue(null)
         nextTravel.postValue(null)
         rate.postValue(null)

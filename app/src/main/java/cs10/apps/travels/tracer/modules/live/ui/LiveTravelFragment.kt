@@ -96,7 +96,14 @@ class LiveTravelFragment : CS_Fragment() {
 
         waitingVM.stopHere.observe(viewLifecycleOwner) {
             // liveWaitingView.setVisibility(it != null)
-            liveWaitingView.setStopHere(it)
+            val currentT = liveVM.travel.value
+
+            if (it == null && currentT != null) showTravellingView(currentT)
+            else {
+                // si estoy viajando y estoy pasando por una parada, mostrar "esperando"
+                if (currentT != null) showWaitingView()
+                liveWaitingView.setStopHere(it)
+            }
         }
 
         locationVM.getLiveData().observe(viewLifecycleOwner) {
@@ -152,8 +159,8 @@ class LiveTravelFragment : CS_Fragment() {
 
     private fun observeLiveVM() {
         liveVM.travel.observe(viewLifecycleOwner) {
-            // si estoy pasando por una parada o no estoy viajando, mostrar "esperando"
-            if (it == null || waitingVM.stopHere.value != null) showWaitingView()
+            // si no estoy viajando, mostrar "esperando"
+            if (it == null) showWaitingView()
             else showTravellingView(it)
         }
 

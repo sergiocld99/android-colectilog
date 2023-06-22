@@ -45,11 +45,11 @@ class Countdown {
     }
 
     private fun acelerar(){
-        interval = max(interval * 0.8, 600.0).toLong()
+        interval = min(1000, max(interval * 0.8, 600.0).toLong())
     }
 
     private fun frenar(){
-        interval = min(interval * 1.2, 1440.0).toLong()
+        interval = max(1000, min(interval * 1.2, 1440.0).toLong())
     }
 
     fun stop(){

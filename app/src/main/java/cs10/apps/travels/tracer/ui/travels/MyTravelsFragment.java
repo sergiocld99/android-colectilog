@@ -13,6 +13,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.tabs.TabLayout;
+
 import java.util.List;
 
 import cs10.apps.common.android.ui.CS_Fragment;
@@ -20,6 +22,7 @@ import cs10.apps.travels.tracer.adapter.TravelAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentTravelsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ViajesDao;
+import cs10.apps.travels.tracer.enums.TransportType;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.joins.ColoredTravel;
 import cs10.apps.travels.tracer.modules.AutoRater;
@@ -58,6 +61,38 @@ public class MyTravelsFragment extends CS_Fragment {
         RecyclerView rv = binding.recycler;
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(adapter);
+
+        // Filter
+        binding.roundedTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                String constraint;
+
+                switch (tab.getPosition()){
+                    case 1:
+                        constraint = TransportType.BUS.toString();
+                        break;
+                    case 2:
+                        constraint = TransportType.TRAIN.toString();
+                        break;
+                    default:
+                        constraint = null;
+                        break;
+                }
+
+                adapter.getFilter().filter(constraint);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
     }
 
     private void showContent() {
@@ -78,6 +113,7 @@ public class MyTravelsFragment extends CS_Fragment {
 
         // rootVM.enableLoading();
         doInBackground(this::buildData);
+        binding.roundedTabs.selectTab(binding.roundedTabs.getTabAt(0));
     }
 
     private void buildData() {
@@ -107,7 +143,7 @@ public class MyTravelsFragment extends CS_Fragment {
 
         int ogSize = adapter.getItemCount();
         int newSize = viajes.size();
-        adapter.setList(viajes);
+        adapter.updateList(viajes);
 
         if (ogSize == 0) doInForeground(() -> adapter.notifyItemRangeInserted(0, newSize));
         else doInForeground(adapter::notifyDataSetChanged);

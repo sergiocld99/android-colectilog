@@ -74,7 +74,7 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="train_price">Tarifa: %1$s</string>
     <string name="proximity_porcentage">%1$.2f%% de cercania</string>
-    <string name="bus">Colectivo</string>
+    <string name="bus">Bus</string>
     <string name="train">Tren</string>
     <string name="new_train_travel">Nuevo viaje en Tren</string>
     <string name="ingrese_nuevo_valor">Ingrese el nuevo valor</string>
@@ -108,4 +108,5 @@
     <string name="last_coffee_info">La última vez que compraste uno fue el día %1$d/%2$d</string>
     <string name="current_money_info">Tu SUBE ahora tiene $%d pesos</string>
     <string name="destinations">Destinos</string>
+    <string name="all">Todos</string>
 </resources>

@@ -98,10 +98,10 @@ class LiveTravelFragment : CS_Fragment() {
             // liveWaitingView.setVisibility(it != null)
             val currentT = liveVM.travel.value
 
-            if (it == null && currentT != null) showTravellingView(currentT)
+            if ((it == null || binding.waitingLayout.root.isVisible) && currentT != null) showTravellingView(currentT)
             else {
                 // si estoy viajando y estoy pasando por una parada, mostrar "esperando"
-                if (currentT != null) showWaitingView()
+                if (currentT != null) showWaitingView(false)
                 liveWaitingView.setStopHere(it)
             }
         }
@@ -114,7 +114,8 @@ class LiveTravelFragment : CS_Fragment() {
             }
 
             liveVM.recalculateDistances(it.location) { rootVM.disableLoading() }
-            if (liveWaitingView.isVisible()) waitingVM.updateLocation(it.location)
+            //if (liveWaitingView.isVisible())
+            waitingVM.updateLocation(it.location)
 
             //val zone = ZoneData.getZoneUppercase(it.location)
             //binding.zoneInfo.text = zone
@@ -129,10 +130,10 @@ class LiveTravelFragment : CS_Fragment() {
         return binding.root
     }
 
-    private fun showWaitingView(){
+    private fun showWaitingView(forceTabMov: Boolean = true){
         binding.travellingLayout.isVisible = false
         liveWaitingView.setVisibility(true)
-        updateTabs(true)
+        if (forceTabMov) updateTabs(true)
 
         resetViews()
         basicSwitcher.stop()

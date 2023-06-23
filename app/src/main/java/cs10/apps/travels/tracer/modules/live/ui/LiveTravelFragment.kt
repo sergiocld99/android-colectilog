@@ -292,12 +292,12 @@ class LiveTravelFragment : CS_Fragment() {
 
             if (it.isNullOrEmpty()) zoneSwitcher.purge()
 
-            waitingVM.stopHere.value?.let {
-                zoneSwitcher.addContent("Ahora: ${it.nombre}")
-            }
-
             it?.forEach { nz ->
                 zoneSwitcher.addContent("En ${nz.minutesLeft}' por ${nz.zone.name}")
+            }
+
+            waitingVM.stopHere.value?.let { p ->
+                zoneSwitcher.replaceContent("Ahora: ${p.nombre}", 0)
             }
 
             zoneSwitcher.start()

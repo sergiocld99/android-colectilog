@@ -33,6 +33,7 @@ public class MyTravelsFragment extends CS_Fragment {
     private TravelAdapter adapter;
 
     private RootVM rootVM;
+    private boolean filterAvailable = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTravelsBinding.inflate(inflater, container, false);
@@ -98,6 +99,8 @@ public class MyTravelsFragment extends CS_Fragment {
     private void showContent() {
         binding.recycler.setVisibility(View.VISIBLE);
         binding.viewLoading.setVisibility(View.GONE);
+
+        binding.tabsBox.setVisibility(filterAvailable ? View.VISIBLE : View.GONE);
     }
 
     private void showLoading() {
@@ -110,6 +113,7 @@ public class MyTravelsFragment extends CS_Fragment {
         super.onResume();
 
         showLoading();
+        filterAvailable = false;
 
         // rootVM.enableLoading();
         doInBackground(this::buildData);
@@ -136,7 +140,10 @@ public class MyTravelsFragment extends CS_Fragment {
             }
         }
 
-        if (viajes == null) viajes = dao.getAllPlusColors();
+        if (viajes == null) {
+            viajes = dao.getAllPlusColors();
+            filterAvailable = true;
+        }
 
         // Oct 15: calculate rate based on duration
         AutoRater.Companion.calculateRate(viajes, dao);
@@ -144,6 +151,8 @@ public class MyTravelsFragment extends CS_Fragment {
         int ogSize = adapter.getItemCount();
         int newSize = viajes.size();
         adapter.updateList(viajes);
+
+        //doInForeground(() -> adapter.getFilter().filter(null));
 
         if (ogSize == 0) doInForeground(() -> adapter.notifyItemRangeInserted(0, newSize));
         else doInForeground(adapter::notifyDataSetChanged);

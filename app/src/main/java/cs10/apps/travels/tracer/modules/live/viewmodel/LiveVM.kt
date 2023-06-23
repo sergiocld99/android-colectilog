@@ -230,7 +230,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         val speed = 0.5 * (startStop.distance / hours) + 12.5
 
                         // calc direction and apply correction to progress
-                        val correctedProg = corrector.correct(startStop, endStop, prog)
+                        val correctedProg = corrector.correct(startStop, endStop, prog, t.ramal)
                         val minutesLeft = calculateMinutesLeft(speed, correctedProg, endStop.distance)
 
                         // evaluate if travel should be finished
@@ -330,7 +330,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 val distanceFromStart = z.getCoordsDistanceTo(start)
                 val distanceToEnd = z.getCoordsDistanceTo(end)
                 val prog = calculateProgress(distanceFromStart, distanceToEnd)
-                val correctedProg = corrector.correct(start, end, prog)
+                val correctedProg = corrector.correct(start, end, prog, null)
 
                 //val distance = z.getCoordsDistanceTo(location)
                 //val kmDistance = NumberUtils.coordsDistanceToKm(distance)

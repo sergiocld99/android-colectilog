@@ -95,15 +95,7 @@ class LiveTravelFragment : CS_Fragment() {
         observeLiveVM()
 
         waitingVM.stopHere.observe(viewLifecycleOwner) {
-            // liveWaitingView.setVisibility(it != null)
-            val currentT = liveVM.travel.value
-
-            if ((it == null || binding.waitingLayout.root.isVisible) && currentT != null) showTravellingView(currentT)
-            else {
-                // si estoy viajando y estoy pasando por una parada, mostrar "esperando"
-                if (currentT != null) showWaitingView(false)
-                liveWaitingView.setStopHere(it)
-            }
+            liveWaitingView.setStopHere(it)
         }
 
         locationVM.getLiveData().observe(viewLifecycleOwner) {
@@ -299,6 +291,10 @@ class LiveTravelFragment : CS_Fragment() {
             zoneSwitcher.clear()
 
             if (it.isNullOrEmpty()) zoneSwitcher.purge()
+
+            waitingVM.stopHere.value?.let {
+                zoneSwitcher.addContent("Ahora: ${it.nombre}")
+            }
 
             it?.forEach { nz ->
                 zoneSwitcher.addContent("En ${nz.minutesLeft}' por ${nz.zone.name}")

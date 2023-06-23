@@ -131,12 +131,16 @@
                                     android:layout_height="wrap_content"
                                     android:textColor="@android:color/holo_blue_light"
                                     tools:text="Destino a 33.3 km"
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textColor="@android:color/holo_blue_light"
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                             </TextSwitcher>
@@ -191,12 +195,16 @@
                                     android:layout_height="wrap_content"
                                     tools:text="En 49' por Tolosa"
                                     android:textColor="@android:color/holo_purple"
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textColor="@android:color/holo_purple"
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                             </TextSwitcher>

@@ -118,6 +118,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 tools:text="Línea 338"
+                                android:maxLines="1"
+                                android:ellipsize="end"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
                             <!-- It's mandatory to have 2 text views -->

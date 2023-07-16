@@ -117,7 +117,7 @@ public class Utils {
     }
 
     public static int colorFor(Integer bus){
-        //if (bus == null) return R.color.train;
+        if (bus == null) return R.color.black;
 
         switch (bus){
             case 202:

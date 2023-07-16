@@ -195,13 +195,18 @@ public class Viaje implements Comparable<Viaje> {
     }
 
     public String getLineInformation() {
-        if (getLinea() == null) return null;
-        return "Línea " + getLinea() + (getRamal() != null ? " - " + getRamal() : "");
+        if (getLinea() == null) {
+            if (tipo == 1) return "Línea Roca";
+            else return "En Auto";
+        }
+        return getLinea() + (getRamal() != null ? " - " + getRamal() : "");
     }
 
     public String getLineSimplified(){
-        if (getLinea() == null) return "Roca";
-        else return String.valueOf(getLinea());
+        if (getLinea() == null){
+            if (tipo == 1) return "Roca";
+            else return "--";
+        } else return String.valueOf(getLinea());
     }
 
     public String getLineInfoAndPrice() {

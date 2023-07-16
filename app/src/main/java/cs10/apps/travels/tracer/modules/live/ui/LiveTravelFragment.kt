@@ -24,6 +24,7 @@ import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.adapter.NearStopAdapter
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
+import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.modules.live.viewmodel.LiveVM
 import cs10.apps.travels.tracer.modules.live.viewmodel.WaitingVM
@@ -136,17 +137,15 @@ class LiveTravelFragment : CS_Fragment() {
         liveWaitingView.setVisibility(false)
         updateTabs(false)
 
-        // new design
-        if (t.ramal == null) basicSwitcher.replaceContent("Servicio común", 0)
-        else basicSwitcher.replaceContent("Ramal ${t.ramal}", 0)
-
-        basicSwitcher.replaceContent("Desde ${t.nombrePdaInicio}", 1)
-        basicSwitcher.replaceContent("Hasta ${t.nombrePdaFin}", 2)
+        basicSwitcher.replaceContent("Desde ${t.nombrePdaInicio}", 0)
+        basicSwitcher.replaceContent("Hasta ${t.nombrePdaFin}", 1)
         basicSwitcher.start()
 
-        binding.lineTitle.text = String.format("Línea %s", t.lineSimplified)
+        binding.lineTitle.text = t.lineInformation
         binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(t.tipo, context))
-        binding.topCardView.setCardBackgroundColor(t.color ?: Utils.colorFor(t.linea, context))
+        binding.topCardView.setCardBackgroundColor(t.color ?:
+            ContextCompat.getColor(binding.root.context, Utils.colorForType(t.tipo)))
+
         rootVM.disableLoading()
     }
 
@@ -160,7 +159,7 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.minutesFromStart.observe(viewLifecycleOwner) {
             // new design
             if (it != null)
-                basicSwitcher.replaceContent("Inició hace ${it.roundToInt()} minutos", 3)
+                basicSwitcher.replaceContent("Inició hace ${it.roundToInt()} minutos", 2)
         }
 
         liveVM.estData.observe(viewLifecycleOwner) {
@@ -224,7 +223,7 @@ class LiveTravelFragment : CS_Fragment() {
         }
 
         liveVM.endDistance.observe(viewLifecycleOwner) {
-            basicSwitcher.replaceContent(String.format("Destino a %.1f km", it ?: 0.0), 4)
+            basicSwitcher.replaceContent(String.format("Destino a %.1f km", it ?: 0.0), 3)
         }
 
         liveVM.finishData.observe(viewLifecycleOwner) {
@@ -453,6 +452,8 @@ class LiveTravelFragment : CS_Fragment() {
 
     private fun editCurrentTravel() {
         liveVM.travel.value?.let { viaje ->
+            if (viaje.tipo == TransportType.CAR.ordinal) return
+
             val intent = Intent(activity,
                 if (viaje.tipo == 0) BusTravelEditor::class.java else TrainTravelEditor::class.java
             )

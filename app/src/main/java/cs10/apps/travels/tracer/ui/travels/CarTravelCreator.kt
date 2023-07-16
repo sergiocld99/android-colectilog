@@ -143,7 +143,7 @@ class CarTravelCreator : CommonTravelCreator() {
         }
 
         val endTimeParams = endHour.split(":").toTypedArray()
-        if (endTimeParams.isNotEmpty() && endTimeParams.size != 2) {
+        if (endHour.isNotEmpty() && endTimeParams.size != 2) {
             content.etEndHour.error = "Ingrese hora valida o deje vacío"
             return 3
         }
@@ -168,7 +168,7 @@ class CarTravelCreator : CommonTravelCreator() {
             }
 
             endTimeParams.also {
-                if (it.isNotEmpty()){
+                if (it.size == 2){
                     viaje.endHour = it[0].toInt()
                     viaje.endMinute = it[1].toInt()
                 }

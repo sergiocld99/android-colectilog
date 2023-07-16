@@ -55,7 +55,7 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         if (viaje.color != null) binding.root.setBackgroundColor(viaje.color)
         else {
             val selectedColor = if (viaje.linea == null) Utils.colorForType(viaje.tipo)
-            else Utils.colorFor(viaje.linea)
+                else Utils.colorFor(viaje.linea)
 
             binding.root.background = AppCompatResources.getDrawable(binding.root.context, selectedColor)
         }

@@ -90,8 +90,16 @@ public class Utils {
     }
 
     public static int colorForType(double type){
-        if (Math.round(type) == 0) return R.color.bus;
-        return R.color.train;
+        return colorForType((int) Math.round(type));
+    }
+
+    public static int colorForType(int type){
+        switch (type){
+            case 0: return R.color.bus;
+            case 1: return R.color.train;
+            case 2: return R.color.bus_159;
+            default: return R.color.black;
+        }
     }
 
     public static void paintBusColor(int color, CardView view){
@@ -109,7 +117,7 @@ public class Utils {
     }
 
     public static int colorFor(Integer bus){
-        if (bus == null) return R.color.train;
+        //if (bus == null) return R.color.train;
 
         switch (bus){
             case 202:
@@ -180,7 +188,25 @@ public class Utils {
     }
 
     public static Drawable getTypeDrawable(int type, Context context){
-        return ContextCompat.getDrawable(context, type == 0 ? R.drawable.ic_bus : R.drawable.ic_train);
+        if (type < 0 || type > 3) return null;
+        TransportType tt = TransportType.values()[type];
+        int drawableId;
+
+        switch (tt){
+            case BUS:
+                drawableId = R.drawable.ic_bus;
+                break;
+            case TRAIN:
+                drawableId = R.drawable.ic_train;
+                break;
+            case CAR:
+                drawableId = R.drawable.ic_car;
+                break;
+            default:
+                return null;
+        }
+
+        return ContextCompat.getDrawable(context, drawableId);
     }
 
     public static Drawable getTypeDrawable(TransportType type, Context context){

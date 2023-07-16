@@ -181,6 +181,8 @@ public class MyTravelsFragment extends CS_Fragment {
     }
 
     public void onEditTravel(Viaje viaje) {
+        if (viaje.getTipo() > 1) return;    // disable car travels edition
+
         Intent intent = new Intent(getActivity(), viaje.getTipo() == 0 ? BusTravelEditor.class : TrainTravelEditor.class);
         intent.putExtra("travelId", viaje.getId());
         startActivity(intent);

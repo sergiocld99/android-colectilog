@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ItemTravelBinding
+import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 
@@ -29,8 +30,10 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         binding.tvStartPlace.isSelected = adapterPosition == 0
 
         // line sublabel
-        binding.tvLineNumber.text = if (viaje.linea == null) "Roca"
-        else viaje.linea.toString()
+        binding.tvLineNumber.text = if (viaje.tipo == TransportType.TRAIN.ordinal) "Roca"
+        else if (viaje.tipo == TransportType.CAR.ordinal) "Auto"
+        else if (viaje.linea != null) viaje.linea.toString()
+        else ""
 
         // rate
         binding.rateBox.isVisible = viaje.preciseRate != null
@@ -50,8 +53,12 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         // COLOR
         if (viaje.color != null) binding.root.setBackgroundColor(viaje.color)
-        else binding.root.background =
-            AppCompatResources.getDrawable(binding.root.context, Utils.colorFor(viaje.linea))
+        else {
+            val selectedColor = if (viaje.linea == null) Utils.colorForType(viaje.tipo)
+            else Utils.colorFor(viaje.linea)
+
+            binding.root.background = AppCompatResources.getDrawable(binding.root.context, selectedColor)
+        }
 
         binding.root.setOnClickListener { onClickListener(viaje) }
 

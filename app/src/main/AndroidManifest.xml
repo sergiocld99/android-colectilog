@@ -54,6 +54,9 @@
             android:name=".ui.travels.TrainTravelCreator"
             android:theme="@style/Theme.TravelTracer.Trains" />
         <activity
+            android:name=".ui.travels.CarTravelCreator"
+            android:theme="@style/Theme.TravelTracer.NoActionBar" />
+        <activity
             android:name=".ui.travels.BusTravelEditor"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity

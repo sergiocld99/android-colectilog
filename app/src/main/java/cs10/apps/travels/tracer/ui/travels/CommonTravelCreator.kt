@@ -51,7 +51,7 @@ abstract class CommonTravelCreator : FormActivity() {
     protected fun setCurrentTime(
         etDate: EditText,
         etStartHour: EditText,
-        subeHeader: ModuleRedSubeBinding
+        subeHeader: ModuleRedSubeBinding?
     ) {
         // set today values
         val calendar = Calendar.getInstance()
@@ -65,11 +65,12 @@ abstract class CommonTravelCreator : FormActivity() {
         etStartHour.setText(Utils.hourFormat(hour, minute))
 
         // sube header
-        doInBackground {
-            val count = MiDB.getInstance(this).viajesDao()
-                .last2HoursQuantity(year, month, day, hour, minute)
-
-            doInForeground { updateRedSubeHeader(subeHeader, count) }
+        subeHeader?.let {
+           doInBackground {
+               val db = MiDB.getInstance(this)
+               val count = db.viajesDao().last2HoursQuantity(year, month, day, hour, minute)
+               doInForeground { updateRedSubeHeader(it, count) }
+           }
         }
     }
 

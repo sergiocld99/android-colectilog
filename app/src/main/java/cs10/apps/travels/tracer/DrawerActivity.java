@@ -39,6 +39,7 @@ import cs10.apps.travels.tracer.data.generator.UniversitarioFiller;
 import cs10.apps.travels.tracer.data.generator.ViaCircuitoFiller;
 import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
 import cs10.apps.travels.tracer.db.MiDB;
+import cs10.apps.travels.tracer.enums.SelectOption;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
@@ -70,11 +71,14 @@ public class DrawerActivity extends CSActivity implements DatabaseCallback {
 
         @Override
         public Intent parseResult(int resultCode, @Nullable Intent intent) {
-            switch (resultCode){
-                case 0: return new Intent(DrawerActivity.this, BusTravelCreator.class);
-                case 1: return new Intent(DrawerActivity.this, TrainTravelCreator.class);
-                case 2: return new Intent(DrawerActivity.this, StopCreator.class);
-                case 3: return new Intent(DrawerActivity.this, ZoneCreator.class);
+            if (resultCode < 0 || resultCode >= SelectOption.values().length) return null;
+            SelectOption opSelected = SelectOption.values()[resultCode];
+
+            switch (opSelected){
+                case BUS_TRAVEL: return new Intent(DrawerActivity.this, BusTravelCreator.class);
+                case TRAIN_TRAVEL: return new Intent(DrawerActivity.this, TrainTravelCreator.class);
+                case STOP: return new Intent(DrawerActivity.this, StopCreator.class);
+                case ZONE: return new Intent(DrawerActivity.this, ZoneCreator.class);
                 default: return null;
             }
         }

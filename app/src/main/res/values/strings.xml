@@ -109,4 +109,5 @@
     <string name="current_money_info">Tu SUBE ahora tiene $%d pesos</string>
     <string name="destinations">Destinos</string>
     <string name="all">Todos</string>
+    <string name="car_travel">Viaje en auto</string>
 </resources>

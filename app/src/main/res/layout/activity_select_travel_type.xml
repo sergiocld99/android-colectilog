@@ -20,6 +20,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/btn1"
+        app:layout_constraintEnd_toStartOf="@id/btn5"
+        app:layout_constraintTop_toTopOf="@id/btn1"
+        app:layout_constraintBottom_toBottomOf="@id/btn1"/>
+
+    <include layout="@layout/button_select_type"
+        android:id="@+id/btn5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/btn2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/btn1"
         app:layout_constraintBottom_toBottomOf="@id/btn1"/>

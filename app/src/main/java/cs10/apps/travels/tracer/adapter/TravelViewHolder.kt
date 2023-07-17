@@ -23,17 +23,23 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     ) {
         binding.ivType.setImageDrawable(Utils.getTypeDrawable(viaje.tipo, binding.root.context))
         binding.tvDatetime.text = viaje.startTimeString
-        binding.tvLine.text = viaje.ramalAndPrice
+        binding.tvLine.text = viaje.ramal
 
         // start and end
         binding.tvStartPlace.text = viaje.startAndEnd
         binding.tvStartPlace.isSelected = adapterPosition == 0
 
         // line sublabel
-        binding.tvLineNumber.text = if (viaje.tipo == TransportType.TRAIN.ordinal) "Roca"
-        else if (viaje.tipo == TransportType.CAR.ordinal) "Auto"
-        else if (viaje.linea != null) viaje.linea.toString()
-        else ""
+        binding.tvLineNumber.text = when {
+            viaje.tipo == TransportType.TRAIN.ordinal -> "Roca"
+            viaje.tipo == TransportType.CAR.ordinal -> "Auto"
+            viaje.linea != null -> viaje.linea.toString()
+            else -> ""
+        }
+
+        // duration
+        binding.durationBox.isVisible = viaje.endHour != null
+        binding.durationText.text = String.format("%d'", viaje.duration)
 
         // rate
         binding.rateBox.isVisible = viaje.preciseRate != null

@@ -1,6 +1,11 @@
 # Android App - Travel Tracer
 Esta es una aplicación de uso personal para registrar viajes tanto en colectivo como en trenes. Me permite tener un seguimiento más al día del saldo en la Sube y obtener estadísticas de cuáles son las líneas en la que más gasto, por si tengo que ajustar...
 
+## Troubleshoot
+
+### Failed to transform viewbinding-7.1.3.aar
+Simplemente invalidar cachés (marcar tick para borrar los archivos) y reiniciar IDE
+
 ## Surgimiento
 Este proyecto nació como una necesidad de poner en práctica el lenguaje SQL que me encontraba aprendiendo en la materia "Bases de Datos", y también para aprender un poco de Kotlin, ya que estoy muy aferrado a Java y Android lo está dejando de lado :(
 

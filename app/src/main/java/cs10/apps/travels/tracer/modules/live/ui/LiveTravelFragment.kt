@@ -375,16 +375,24 @@ class LiveTravelFragment : CS_Fragment() {
             val line = liveVM.travel.value?.linea
             val ramal = liveVM.travel.value?.ramal
             val destination = liveVM.travel.value?.nombrePdaFin
+            val travel = liveVM.travel.value
 
-            doInBackground {
-                val sb = StringBuilder("${Emoji.getBusEmoji()} ")
+            if (travel != null) doInBackground {
+                val sb = StringBuilder()
+
+                when (travel.tipo) {
+                    TransportType.TRAIN.ordinal -> sb.append(Emoji.getTrainEmoji())
+                    TransportType.CAR.ordinal -> sb.append(Emoji.getCarEmoji())
+                    TransportType.BUS.ordinal -> sb.append(Emoji.getBusEmoji())
+                    else -> sb.append(Emoji.getHandEmoji())
+                }
 
                 if (line != null){
                     val lineDetails = rootVM.database.linesDao().getByNumber(line)
 
                     if (!lineDetails?.name.isNullOrEmpty()) sb.append("${lineDetails?.name}")
                     else sb.append("Linea $line")
-                } else sb.append("Tren Roca")
+                } else sb.append(travel.lineInformation)
 
                 if (ramal != null) sb.append(" - $ramal \n")
                 else sb.append("\n")

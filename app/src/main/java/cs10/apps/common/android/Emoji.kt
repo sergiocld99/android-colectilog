@@ -9,6 +9,8 @@ class Emoji {
         }
 
         fun getHandEmoji() = getEmojiByUnicode(0x1F44B)
+        fun getTrainEmoji() = getEmojiByUnicode(0x1F686)
+        fun getCarEmoji() = getEmojiByUnicode(0x1F697)
         fun getBusEmoji() = getEmojiByUnicode(0x1F68D)
         fun getGlobeEmoji() = getEmojiByUnicode(0x1F30E)
         fun getClockEmoji() = getEmojiByUnicode(0x1F553)

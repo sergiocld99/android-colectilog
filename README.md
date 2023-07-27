@@ -6,6 +6,12 @@ Esta es una aplicación de uso personal para registrar viajes tanto en colectivo
 ### Failed to transform viewbinding-7.1.3.aar
 Simplemente invalidar cachés (marcar tick para borrar los archivos) y reiniciar IDE
 
+### Module was compiled with an incompatible version of Kotlin
+1) Actualizar Android Studio
+2) Actualizar la versión de Kotlin en build.gradle de proyecto
+3) Actualizar compileSDK version, no hace falta targetSDK 
+4) Actualizar dependencias en build.gradle de módulo (TODAS)
+
 ## Surgimiento
 Este proyecto nació como una necesidad de poner en práctica el lenguaje SQL que me encontraba aprendiendo en la materia "Bases de Datos", y también para aprender un poco de Kotlin, ya que estoy muy aferrado a Java y Android lo está dejando de lado :(
 

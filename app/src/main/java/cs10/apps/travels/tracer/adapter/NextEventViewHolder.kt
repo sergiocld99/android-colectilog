@@ -25,7 +25,7 @@ open class NextEventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         when(type){
             TransportType.BUS -> Utils.paintBusColor(item.color, binding.root)
-            TransportType.TRAIN -> binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.train))
+            else -> binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.train))
         }
 
         if (top && !item.ramal.isNullOrBlank()){

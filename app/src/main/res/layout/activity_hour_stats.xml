@@ -57,10 +57,13 @@
         android:paddingVertical="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.github.mikephil.charting.charts.BarChart
-            android:id="@+id/bar_chart"
+        <com.patrykandpatrick.vico.views.chart.ChartView
+            android:id="@+id/chart_view"
             android:layout_width="match_parent"
-            android:layout_height="400dp"/>
+            android:layout_height="400dp"
+            app:chart="line"
+            app:showStartAxis="true"
+            app:showBottomAxis="true" />
 
     </LinearLayout>
 

@@ -3,18 +3,15 @@ package cs10.apps.travels.tracer.modules.lines.ui
 import android.graphics.Color
 import android.os.Bundle
 import com.github.mikephil.charting.components.AxisBase
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.patrykandpatrick.vico.core.entry.FloatEntry
+import com.patrykandpatrick.vico.core.entry.entryModelOf
 import cs10.apps.common.android.ui.FormActivity
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.constants.ErrorCodes
 import cs10.apps.travels.tracer.constants.Extras
 import cs10.apps.travels.tracer.databinding.ActivityHourStatsBinding
 import cs10.apps.travels.tracer.db.MiDB
-import kotlin.math.roundToInt
 
 class HourStatsActivity : FormActivity() {
     private lateinit var binding: ActivityHourStatsBinding
@@ -45,8 +42,12 @@ class HourStatsActivity : FormActivity() {
 
             if (hourStats.isEmpty()) return@doInBackground
 
+            // vico charts
+            val chartEntries = mutableListOf<FloatEntry>()
+
             hourStats.forEach { stat ->
-                // Log.d("HOUR_STATS", String.format("Hour %d, avgRate %.2f", stat.hour, stat.averageRate))
+                chartEntries.add(FloatEntry(stat.hour.toFloat(), stat.averageRate.toFloat()))
+
                 val barEntry = BarEntry(stat.hour.toFloat(), stat.averageRate.toFloat())
                 entries.add(barEntry)
                 xLabels.add(stat.hour.toString())
@@ -62,6 +63,9 @@ class HourStatsActivity : FormActivity() {
 
             // prepare x axis
             doInForeground {
+                binding.chartView.setModel(entryModelOf(chartEntries))
+
+                /*
                 binding.barChart.xAxis.apply {
                     enableGridDashedLine(10f, 10f, 0f)
                     applyCommonAxisOptions(this)
@@ -112,7 +116,7 @@ class HourStatsActivity : FormActivity() {
                     setPinchZoom(false)
                     setDrawGridBackground(true)
                     invalidate()
-                }
+                } */
             }
         }
     }

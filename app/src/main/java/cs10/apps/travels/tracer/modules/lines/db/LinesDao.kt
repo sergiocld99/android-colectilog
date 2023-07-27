@@ -48,6 +48,15 @@ interface LinesDao {
             "GROUP BY startHour ORDER BY startHour")
     fun getHourStatsForLineByDuration(number: Int) : List<HourBusStat>
 
+    @Query("SELECT linea as number, startHour as hour, " +
+            "AVG(endHour * 60 + endMinute - startHour * 60 - startMinute) as averageRate " +
+            "FROM Viaje WHERE linea = :number and endHour is not null and nombrePdaInicio is :stop " +
+            "GROUP BY startHour ORDER BY startHour")
+    fun getHourStatsFromStop(number: Int, stop: String) : List<HourBusStat>
+
+    @Query("SELECT nombrePdaInicio FROM Viaje WHERE linea = :number and endHour is not null " +
+            "GROUP BY nombrePdaInicio ORDER BY COUNT(*) DESC LIMIT 2")
+    fun getTopStopsFrom(number: Int) : List<String>
 
     // --------------------- JOINS -----------------------------
 

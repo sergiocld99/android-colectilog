@@ -111,4 +111,5 @@
     <string name="all">Todos</string>
     <string name="car_travel">Viaje en auto</string>
     <string name="new_travel_by_car">Nuevo viaje en Auto</string>
+    <string name="from_stop">Desde %1$s</string>
 </resources>

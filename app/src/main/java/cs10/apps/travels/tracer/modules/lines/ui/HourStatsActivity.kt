@@ -3,10 +3,10 @@ package cs10.apps.travels.tracer.modules.lines.ui
 import android.graphics.Color
 import android.os.Bundle
 import com.github.mikephil.charting.components.AxisBase
-import com.github.mikephil.charting.data.BarEntry
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import cs10.apps.common.android.ui.FormActivity
+import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.constants.ErrorCodes
 import cs10.apps.travels.tracer.constants.Extras
@@ -34,36 +34,31 @@ class HourStatsActivity : FormActivity() {
         binding.toolbarLayout.title = String.format("Linea %d", line)
 
         doInBackground {
-            val hourStats = MiDB.getInstance(this).linesDao().getHourStatsForLineByDuration(line)
-            val entries = mutableListOf<BarEntry>()
-            val xLabels = mutableListOf<String>()
-            var max = 0.0
-            var min = 1000.0
-
-            if (hourStats.isEmpty()) return@doInBackground
+            val dao = MiDB.getInstance(this).linesDao()
+            val topStopsFrom = dao.getTopStopsFrom(line)
+            if (topStopsFrom.size < 2) return@doInBackground
 
             // vico charts
-            val chartEntries = mutableListOf<FloatEntry>()
+            val firstEntries = mutableListOf<FloatEntry>()
+            val secondEntries = mutableListOf<FloatEntry>()
 
-            hourStats.forEach { stat ->
-                chartEntries.add(FloatEntry(stat.hour.toFloat(), stat.averageRate.toFloat()))
-
-                val barEntry = BarEntry(stat.hour.toFloat(), stat.averageRate.toFloat())
-                entries.add(barEntry)
-                xLabels.add(stat.hour.toString())
-
-                stat.averageRate.also { v ->
-                    if (v > max) max = v
-                    if (v < min) min = v
-                }
+            // first chart
+            dao.getHourStatsFromStop(line, topStopsFrom[0]).forEach { stat ->
+                firstEntries.add(FloatEntry(stat.hour.toFloat(), stat.averageRate.toFloat()))
             }
 
-            //empty label for the last vertical grid line on Y-Right Axis
-            xLabels.add("")
+            // second chart
+            dao.getHourStatsFromStop(line, topStopsFrom[1]).forEach { stat ->
+                secondEntries.add(FloatEntry(stat.hour.toFloat(), stat.averageRate.toFloat()))
+            }
 
             // prepare x axis
             doInForeground {
-                binding.chartView.setModel(entryModelOf(chartEntries))
+                binding.firstTitle.text = binding.root.context.getString(R.string.from_stop, topStopsFrom[0])
+                binding.firstChart.setModel(entryModelOf(firstEntries))
+
+                binding.secondTitle.text = binding.root.context.getString(R.string.from_stop, topStopsFrom[1])
+                binding.secondChart.setModel(entryModelOf(secondEntries))
 
                 /*
                 binding.barChart.xAxis.apply {

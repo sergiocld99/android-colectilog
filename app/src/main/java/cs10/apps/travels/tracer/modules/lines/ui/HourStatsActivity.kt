@@ -3,6 +3,11 @@ package cs10.apps.travels.tracer.modules.lines.ui
 import android.graphics.Color
 import android.os.Bundle
 import com.github.mikephil.charting.components.AxisBase
+import com.patrykandpatrick.vico.core.axis.Axis
+import com.patrykandpatrick.vico.core.axis.AxisPosition
+import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
+import com.patrykandpatrick.vico.core.axis.formatter.DecimalFormatAxisValueFormatter
+import com.patrykandpatrick.vico.core.chart.values.AxisValuesOverrider
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import cs10.apps.common.android.ui.FormActivity
@@ -12,6 +17,7 @@ import cs10.apps.travels.tracer.constants.ErrorCodes
 import cs10.apps.travels.tracer.constants.Extras
 import cs10.apps.travels.tracer.databinding.ActivityHourStatsBinding
 import cs10.apps.travels.tracer.db.MiDB
+import java.math.RoundingMode
 
 class HourStatsActivity : FormActivity() {
     private lateinit var binding: ActivityHourStatsBinding
@@ -41,23 +47,44 @@ class HourStatsActivity : FormActivity() {
             // vico charts
             val firstEntries = mutableListOf<FloatEntry>()
             val secondEntries = mutableListOf<FloatEntry>()
+            var min = 9999.0
+            var max = 0.0
 
             // first chart
             dao.getHourStatsFromStop(line, topStopsFrom[0]).forEach { stat ->
                 firstEntries.add(FloatEntry(stat.hour.toFloat(), stat.averageRate.toFloat()))
+                if (min > stat.averageRate) min = stat.averageRate
+                if (max < stat.averageRate) max = stat.averageRate
             }
 
             // second chart
             dao.getHourStatsFromStop(line, topStopsFrom[1]).forEach { stat ->
                 secondEntries.add(FloatEntry(stat.hour.toFloat(), stat.averageRate.toFloat()))
+                if (min > stat.averageRate) min = stat.averageRate
+                if (max < stat.averageRate) max = stat.averageRate
             }
 
             // prepare x axis
             doInForeground {
+                val vaf = DecimalFormatAxisValueFormatter<AxisPosition.Vertical.Start>("#.#", RoundingMode.HALF_UP)
+
+                val haf = AxisValueFormatter<AxisPosition.Horizontal.Bottom> { value, _ ->
+                    String.format("%.0f hs", value)
+                }
+
+                // round
+                min = (min / 10).toInt() * 10.0
+                max = ((max / 10).toInt() + 1) * 10.0
+
                 binding.firstTitle.text = binding.root.context.getString(R.string.from_stop, topStopsFrom[0])
+                //binding.firstChart.chart?.axisValuesOverrider = AxisValuesOverrider.fixed(0f, 23f, 0f, 100f)
+                (binding.firstChart.startAxis as Axis<AxisPosition.Vertical.Start>).valueFormatter = vaf
+                binding.firstChart.chart?.axisValuesOverrider = AxisValuesOverrider.fixed(minY = min.toFloat(), maxY = max.toFloat())
                 binding.firstChart.setModel(entryModelOf(firstEntries))
 
                 binding.secondTitle.text = binding.root.context.getString(R.string.from_stop, topStopsFrom[1])
+                (binding.secondChart.startAxis as Axis<AxisPosition.Vertical.Start>).valueFormatter = vaf
+                binding.secondChart.chart?.axisValuesOverrider = AxisValuesOverrider.fixed(minY = min.toFloat(), maxY = max.toFloat())
                 binding.secondChart.setModel(entryModelOf(secondEntries))
 
                 /*

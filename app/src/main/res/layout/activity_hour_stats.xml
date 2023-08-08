@@ -96,6 +96,7 @@
             android:layout_width="match_parent"
             android:layout_height="400dp"
             app:chart="line"
+            app:axisStyle="@style/Axis"
             app:showStartAxis="true"
             app:showBottomAxis="true" />
 

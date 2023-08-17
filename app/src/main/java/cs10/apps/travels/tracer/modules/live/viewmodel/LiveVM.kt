@@ -3,12 +3,18 @@ package cs10.apps.travels.tracer.modules.live.viewmodel
 import android.app.Application
 import android.content.Context
 import android.location.Location
-import android.os.*
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.patrykandpatrick.vico.core.entry.FloatEntry
 import cs10.apps.common.android.Clock
 import cs10.apps.common.android.NumberUtils
 import cs10.apps.common.android.TimedLocation
@@ -17,7 +23,11 @@ import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.data.generator.Station
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.domain.GetCurrentTravelUseCase
-import cs10.apps.travels.tracer.model.*
+import cs10.apps.travels.tracer.model.NextZone
+import cs10.apps.travels.tracer.model.Parada
+import cs10.apps.travels.tracer.model.Point
+import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.model.Zone
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.RamalSchedule
 import cs10.apps.travels.tracer.modules.ZoneData
@@ -32,7 +42,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
-import java.util.*
+import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -70,7 +80,8 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     val progress = MutableLiveData<Double?>()
     val rate = MutableLiveData<Double?>()
     val nextZones = MutableLiveData<MutableList<NextZone>>()
-    val deviation = MutableLiveData(0.0)
+    private val deviation = MutableLiveData(0.0)
+    val progressEntries = MutableLiveData<MutableList<FloatEntry>>()
     val finishData = MutableLiveData(false)
 
     // timer 1: update minutes from start every 30 seconds
@@ -257,6 +268,20 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                             } else rate.postValue(null)
                         }
 
+                        // sixth action: build progress chart
+                        val entries = mutableListOf<FloatEntry>()
+
+                        for (p in 0..10){
+                            val x = p * 0.1
+                            if (x + 0.1 < prog) continue
+
+                            val x2 = x + (prog % 0.1) * (1.0 - x)
+                            val y = corrector.correct(startStop, endStop, x2, t.ramal)
+                            entries.add(FloatEntry(x.toFloat(), y.toFloat()))
+                        }
+
+                        progressEntries.postValue(entries)
+
                         // guardar para analisis posterior
                         // saveDebugData(t, it, prog, location, startStop, endStop)
                     } else {
@@ -287,8 +312,12 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     }
 
     private fun shortVibration() {
+        vibrate(360)
+    }
+
+    fun vibrate(ms: Long) {
         if (vibrator.hasVibrator() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val effect = VibrationEffect.createOneShot(360, VibrationEffect.DEFAULT_AMPLITUDE)
+            val effect = VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE)
             vibrator.vibrate(effect)
         }
     }

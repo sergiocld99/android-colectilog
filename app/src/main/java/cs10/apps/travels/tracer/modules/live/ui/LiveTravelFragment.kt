@@ -15,6 +15,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
+import com.patrykandpatrick.vico.core.chart.values.AxisValuesOverrider
+import com.patrykandpatrick.vico.core.entry.entryModelOf
 import cs10.apps.common.android.Emoji
 import cs10.apps.common.android.NumberUtils
 import cs10.apps.common.android.ui.CS_Fragment
@@ -34,7 +36,7 @@ import cs10.apps.travels.tracer.ui.travels.BusTravelEditor
 import cs10.apps.travels.tracer.ui.travels.TrainTravelEditor
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
-import java.util.*
+import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -180,7 +182,11 @@ class LiveTravelFragment : CS_Fragment() {
             when (prog) {
                 null -> binding.pb.progress = 0
                 // prog > 0.97 -> finishCurrentTravel()
-                else -> binding.pb.progress = (prog * 100).roundToInt()
+                else -> {
+                    val norm = prog.times(100).roundToInt()
+                    binding.pb.progress = norm
+                    binding.progressCardText.text = String.format("%d%%", norm)
+                }
             }
 
             val avgD = liveVM.estData.value
@@ -193,7 +199,7 @@ class LiveTravelFragment : CS_Fragment() {
 
                 if (absError > 3){
                     binding.trafficBanner.isVisible = true
-                    binding.deviationBanner.isVisible = false
+                    //binding.deviationBanner.isVisible = false
 
                     if (error > 0){
                         binding.trafficTitle.text = String.format("Tráfico: %d minutos", absError)
@@ -204,10 +210,16 @@ class LiveTravelFragment : CS_Fragment() {
                         binding.trafficCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus_500))
                         binding.trafficSub.setTextColor(ContextCompat.getColor(binding.root.context, android.R.color.holo_green_light))
                     }
-                }
+                } else binding.trafficBanner.isVisible = false
             } else binding.trafficBanner.isVisible = false
         }
 
+        liveVM.progressEntries.observe(viewLifecycleOwner) {
+            binding.progressChart.chart?.axisValuesOverrider = AxisValuesOverrider.fixed(minY = 0.0f, maxY = 1.0f, minX = 0.0f, maxX = 1.0f)
+            binding.progressChart.setModel(entryModelOf(it))
+        }
+
+        /*
         liveVM.deviation.observe(viewLifecycleOwner) {
             val ed = liveVM.estData.value
 
@@ -220,7 +232,7 @@ class LiveTravelFragment : CS_Fragment() {
                 binding.deviationTitle.text = String.format("Desviación del %.1f%%", it)
                 binding.deviationSub.text = String.format("Error de hasta %d minutos", timeError)
             }
-        }
+        }*/
 
         liveVM.endDistance.observe(viewLifecycleOwner) {
             basicSwitcher.replaceContent(String.format("Destino a %.1f km", it ?: 0.0), 3)
@@ -268,7 +280,7 @@ class LiveTravelFragment : CS_Fragment() {
                 }
 
                 // next combination
-                binding.nextTravelInfo.isVisible = false
+                //binding.nextTravelInfo.isVisible = false
 
                 /*
                 liveVM.nextTravel.value?.let { nextT ->
@@ -297,6 +309,7 @@ class LiveTravelFragment : CS_Fragment() {
 
             waitingVM.stopHere.value?.let { p ->
                 zoneSwitcher.replaceContent("Ahora: ${p.nombre}", 0)
+                liveVM.vibrate(140)
             }
 
             zoneSwitcher.start()
@@ -361,11 +374,12 @@ class LiveTravelFragment : CS_Fragment() {
         zoneSwitcher.clear()
         basicSwitcher.clear()
         binding.trafficBanner.isVisible = false
-        binding.nextTravelInfo.text = null
+        //binding.nextTravelInfo.text = null
         binding.minutesLeft.text = "..."
         binding.speedometerText.text = "--"
         binding.pb.progress = 0
         binding.rateText.text = "--"
+        binding.progressCardText.text = "--"
         rootVM.disableLoading()
     }
 

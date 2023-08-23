@@ -251,14 +251,14 @@ class LiveTravelFragment : CS_Fragment() {
         }
 
         liveVM.countdown.liveData.observe(viewLifecycleOwner) {
-            binding.centerData.text = String.format("%d' %d\"", it / 60, it % 60)
+            binding.nearMeTitle.text = String.format("Llegando en %d' %d\"", it / 60, it % 60)
         }
 
         liveVM.minutesToEnd.observe(viewLifecycleOwner) {
             binding.shareBtn.isVisible = it != null
             binding.editBtn.isVisible = it != null
 
-            if (it == null) binding.centerData.text = null
+            if (it == null) binding.nearMeTitle.text = null
             else {
                 val seconds = (it * 60).roundToInt()
                 val eta = Calendar.getInstance().apply { add(Calendar.SECOND, seconds) }
@@ -270,7 +270,6 @@ class LiveTravelFragment : CS_Fragment() {
 
                 // new design
                 //binding.nearMeTitle.text = String.format("Llegarías a las %s", Utils.hourFormat(eta))
-                binding.nearMeTitle.text = String.format("Llegarías en %d minutos", it.roundToInt())
                 binding.endTime.text = Utils.hourFormat(eta)
 
                 // arrival notification

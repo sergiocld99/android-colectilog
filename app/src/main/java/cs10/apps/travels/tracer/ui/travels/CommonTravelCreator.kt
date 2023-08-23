@@ -69,7 +69,7 @@ abstract class CommonTravelCreator : FormActivity() {
         subeHeader?.let {
            doInBackground {
                val df = DatabaseFinder(MiDB.getInstance(this))
-               val count = df.findLast2HoursQuantity(true)
+               val count = df.countTravelsLast2Hours(true)
                doInForeground { updateRedSubeHeader(it, count) }
            }
         }

@@ -80,10 +80,6 @@ public interface ViajesDao {
     @Query("SELECT MAX(id) from viaje")
     Long getLastTravelId();
 
-    @Query("SELECT COUNT(*) from viaje where year = :year and month = :month and day = :day " +
-            "and (startHour * 60 + startMinute between ((:hour - 2) * 60 + :minute) and :hour * 60 + :minute - 1)")
-    int last2HoursQuantity(int year, int month, int day, int hour, int minute);
-
     @Query("SELECT COUNT(*) FROM Viaje WHERE (tipo is not :exceptedType) and " +
             "year = :year and month = :month and day = :day " +
             "and (startHour * 60 + startMinute between :start and :end)")

@@ -28,6 +28,7 @@ import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
 import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
+import cs10.apps.travels.tracer.modules.live.model.SwitcherText
 import cs10.apps.travels.tracer.modules.live.viewmodel.LiveVM
 import cs10.apps.travels.tracer.modules.live.viewmodel.WaitingVM
 import cs10.apps.travels.tracer.notification.NotificationCenter
@@ -139,8 +140,10 @@ class LiveTravelFragment : CS_Fragment() {
         liveWaitingView.setVisibility(false)
         updateTabs(false)
 
-        basicSwitcher.replaceContent("Desde ${t.nombrePdaInicio}", 0)
-        basicSwitcher.replaceContent("Hasta ${t.nombrePdaFin}", 1)
+        //basicSwitcher.replaceContent("Desde ${t.nombrePdaInicio}", 0)
+        //basicSwitcher.replaceContent("Hasta ${t.nombrePdaFin}", 1)
+        basicSwitcher.replaceContent(SwitcherText("from", "Desde ${t.nombrePdaInicio}"))
+        basicSwitcher.replaceContent(SwitcherText("to", "Hasta ${t.nombrePdaFin}"))
         basicSwitcher.start()
 
         binding.lineTitle.text = t.lineInformation
@@ -159,9 +162,10 @@ class LiveTravelFragment : CS_Fragment() {
         }
 
         liveVM.minutesFromStart.observe(viewLifecycleOwner) {
-            // new design
-            if (it != null)
-                basicSwitcher.replaceContent("Inició hace ${it.roundToInt()} minutos", 2)
+            if (it == null) return@observe
+
+            //basicSwitcher.replaceContent("Inició hace ${it.roundToInt()} minutos", 2)
+            basicSwitcher.replaceContent(SwitcherText("started", "Inició hace ${it.roundToInt()} minutos"))
         }
 
         liveVM.estData.observe(viewLifecycleOwner) {
@@ -235,7 +239,8 @@ class LiveTravelFragment : CS_Fragment() {
         }*/
 
         liveVM.endDistance.observe(viewLifecycleOwner) {
-            basicSwitcher.replaceContent(String.format("Destino a %.1f km", it ?: 0.0), 3)
+            //basicSwitcher.replaceContent(String.format("Destino a %.1f km", it ?: 0.0), 3)
+            basicSwitcher.replaceContent(SwitcherText("endDist", String.format("Destino a %.1f km", it ?: 0.0)))
         }
 
         liveVM.finishData.observe(viewLifecycleOwner) {
@@ -308,7 +313,8 @@ class LiveTravelFragment : CS_Fragment() {
             }
 
             waitingVM.stopHere.value?.let { p ->
-                zoneSwitcher.replaceContent("Ahora: ${p.nombre}", 0)
+                //zoneSwitcher.replaceContent("Ahora: ${p.nombre}", 0)
+                zoneSwitcher.replaceContent(SwitcherText("now", "Ahora: ${p.nombre}"), 0)
                 liveVM.vibrate(140)
             }
 

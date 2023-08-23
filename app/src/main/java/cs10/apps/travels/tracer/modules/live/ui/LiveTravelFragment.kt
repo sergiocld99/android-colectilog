@@ -117,12 +117,6 @@ class LiveTravelFragment : CS_Fragment() {
             //binding.zoneInfo.text = zone
         }
 
-        // OCT 2022
-        locationVM.setSpeedObserver(viewLifecycleOwner) { speedKmH ->
-            if (speedKmH > 100) binding.speedometerText.text = "--"
-            else binding.speedometerText.text = NumberUtils.round(speedKmH, 5).toString()
-        }
-
         return binding.root
     }
 
@@ -142,9 +136,14 @@ class LiveTravelFragment : CS_Fragment() {
 
         //basicSwitcher.replaceContent("Desde ${t.nombrePdaInicio}", 0)
         //basicSwitcher.replaceContent("Hasta ${t.nombrePdaFin}", 1)
-        basicSwitcher.replaceContent(SwitcherText("from", "Desde ${t.nombrePdaInicio}"), 0)
-        basicSwitcher.replaceContent(SwitcherText("to", "Hasta ${t.nombrePdaFin}"), 1)
+        //basicSwitcher.replaceContent(SwitcherText("from", "Desde ${t.nombrePdaInicio}"), 0)
+        //basicSwitcher.replaceContent(SwitcherText("to", "Hasta ${t.nombrePdaFin}"), 1)
         basicSwitcher.start()
+
+        binding.startLocation.text = t.nombrePdaInicio
+        binding.startTime.text = Utils.hourFormat(t.startHour, t.startMinute)
+
+        binding.endLocation.text = t.nombrePdaFin
 
         binding.lineTitle.text = t.lineInformation
         binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(t.tipo, context))
@@ -164,8 +163,7 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.minutesFromStart.observe(viewLifecycleOwner) {
             if (it == null) return@observe
 
-            //basicSwitcher.replaceContent("Inició hace ${it.roundToInt()} minutos", 2)
-            basicSwitcher.replaceContent(SwitcherText("started", "Inició hace ${it.roundToInt()} minutos"))
+            //basicSwitcher.replaceContent(SwitcherText("started", "Inició hace ${it.roundToInt()} minutos"))
         }
 
         liveVM.estData.observe(viewLifecycleOwner) {
@@ -185,11 +183,15 @@ class LiveTravelFragment : CS_Fragment() {
 
         liveVM.progress.observe(viewLifecycleOwner) { prog ->
             when (prog) {
-                null -> binding.pb.progress = 0
+                null -> {
+                    binding.linearPbar.isIndeterminate = true
+                    //binding.pbar.progress = 0
+                }
                 // prog > 0.97 -> finishCurrentTravel()
                 else -> {
+                    binding.linearPbar.isIndeterminate = false
                     val norm = prog.times(100).roundToInt()
-                    binding.pb.progress = norm
+                    binding.linearPbar.progress = norm
                     binding.progressCardText.text = String.format("%d%%", norm)
                 }
             }
@@ -247,22 +249,16 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.finishData.observe(viewLifecycleOwner) {
             if (it) finishCurrentTravel()
         }
-        
-        liveVM.nearArrivals.observe(viewLifecycleOwner) {
-            binding.nearBoxInfo.isVisible = it.isNotEmpty()
-            nearStopAdapter.list = it
-            nearStopAdapter.notifyDataSetChanged()
-        }
 
         liveVM.countdown.liveData.observe(viewLifecycleOwner) {
-            binding.minutesLeft.text = String.format("%d' %d\"", it / 60, it % 60)
+            binding.centerData.text = String.format("%d' %d\"", it / 60, it % 60)
         }
 
         liveVM.minutesToEnd.observe(viewLifecycleOwner) {
             binding.shareBtn.isVisible = it != null
             binding.editBtn.isVisible = it != null
 
-            if (it == null) binding.minutesLeft.text = null
+            if (it == null) binding.centerData.text = null
             else {
                 val seconds = (it * 60).roundToInt()
                 val eta = Calendar.getInstance().apply { add(Calendar.SECOND, seconds) }
@@ -273,7 +269,9 @@ class LiveTravelFragment : CS_Fragment() {
                 binding.finishBtn.isVisible = it < 10
 
                 // new design
-                binding.nearMeTitle.text = String.format("Llegarías a las %s", Utils.hourFormat(eta))
+                //binding.nearMeTitle.text = String.format("Llegarías a las %s", Utils.hourFormat(eta))
+                binding.nearMeTitle.text = String.format("Llegarías en %d minutos", it.roundToInt())
+                binding.endTime.text = Utils.hourFormat(eta)
 
                 // arrival notification
                 liveVM.travel.value?.id?.let { id ->
@@ -309,14 +307,19 @@ class LiveTravelFragment : CS_Fragment() {
 
             if (it.isNullOrEmpty()) zoneSwitcher.purge()
 
-            it?.forEach { nz ->
-                zoneSwitcher.addContent("En ${nz.minutesLeft}' por ${nz.zone.name}")
-            }
+            //it?.forEach { nz ->
+            //    zoneSwitcher.addContent("En ${nz.minutesLeft}' por ${nz.zone.name}")
+            //}
 
             waitingVM.stopHere.value?.let { p ->
                 //zoneSwitcher.replaceContent("Ahora: ${p.nombre}", 0)
                 zoneSwitcher.replaceContent(SwitcherText("now", "Ahora: ${p.nombre}"), 0)
+                it?.removeFirstOrNull()
                 liveVM.vibrate(140)
+            }
+
+            it?.firstOrNull()?.let {nz ->
+                zoneSwitcher.addContent("En ${nz.minutesLeft}' por ${nz.zone.name}")
             }
 
             zoneSwitcher.start()
@@ -346,10 +349,6 @@ class LiveTravelFragment : CS_Fragment() {
 
         // on edit travel
         binding.editBtn.setOnClickListener { editCurrentTravel() }
-
-        // near stops adapter
-        binding.nearStopsRecycler.adapter = nearStopAdapter
-        binding.nearStopsRecycler.layoutManager = LinearLayoutManager(requireActivity())
 
     }
 
@@ -381,10 +380,7 @@ class LiveTravelFragment : CS_Fragment() {
         zoneSwitcher.clear()
         basicSwitcher.clear()
         binding.trafficBanner.isVisible = false
-        //binding.nextTravelInfo.text = null
-        binding.minutesLeft.text = "..."
-        binding.speedometerText.text = "--"
-        binding.pb.progress = 0
+        binding.linearPbar.isIndeterminate = true
         binding.rateText.text = "--"
         binding.progressCardText.text = "--"
         rootVM.disableLoading()

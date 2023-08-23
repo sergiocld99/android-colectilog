@@ -74,6 +74,89 @@
                 tools:visibility="visible"
                 android:id="@+id/travelling_layout">
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/linear_progress_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginHorizontal="15dp"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/linear_pbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:progress="40"
+                        android:scaleY="3"
+                        android:indeterminate="true"
+                        android:layout_marginVertical="10dp"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/center_data"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="78' 24''"
+                        app:layout_constraintTop_toTopOf="@id/start_data"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <LinearLayout
+                        android:id="@+id/start_data"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintTop_toBottomOf="@id/linear_pbar"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginVertical="10dp"
+                        android:layout_gravity="start">
+
+                        <TextView
+                            android:id="@+id/start_location"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="Arco de San Jorge"/>
+
+                        <TextView
+                            android:id="@+id/start_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="07:26"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/end_data"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintTop_toBottomOf="@id/linear_pbar"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginVertical="10dp"
+                        android:layout_gravity="end">
+
+                        <TextView
+                            android:id="@+id/end_location"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            tools:text="Arco de San Jorge"/>
+
+                        <TextView
+                            android:id="@+id/end_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            tools:text="07:26"/>
+
+                    </LinearLayout>
+
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
                 <!-- NEW DESIGN -->
                 <LinearLayout
                     android:id="@+id/new_design"
@@ -82,7 +165,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:layout_marginHorizontal="15dp"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toBottomOf="@id/linear_progress_content">
 
                     <!-- Banner general -->
                     <LinearLayout
@@ -314,95 +397,6 @@
 
                     </LinearLayout> -->
 
-                    <!-- Progress Bar and Near Trains -->
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <ProgressBar
-                            android:id="@+id/pb"
-                            android:layout_width="200dp"
-                            android:layout_height="200dp"
-                            android:indeterminateOnly="false"
-                            android:progressDrawable="@drawable/circle_green"
-                            tools:progress="60"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:layout_marginVertical="20dp"
-                            app:layout_constraintEnd_toStartOf="@id/near_box_info"/>
-
-                        <TextView
-                            android:id="@+id/minutes_left"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintBottom_toBottomOf="@id/pb"
-                            app:layout_constraintEnd_toEndOf="@id/pb"
-                            app:layout_constraintStart_toStartOf="@id/pb"
-                            app:layout_constraintTop_toTopOf="@+id/pb"
-                            android:textStyle="bold"
-                            android:textSize="30sp"
-                            tools:text="150'" />
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/speedometer_box"
-                            app:layout_constraintBottom_toBottomOf="@id/pb"
-                            app:layout_constraintEnd_toEndOf="@id/pb"
-                            android:layout_margin="8dp"
-                            android:layout_width="70dp"
-                            android:layout_height="70dp">
-
-                            <View
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/speedometer_bg"/>
-
-                            <TextView
-                                android:id="@+id/speedometer_text"
-                                tools:text="120"
-                                android:textColor="@color/black"
-                                android:textStyle="bold"
-                                android:textSize="24sp"
-                                android:gravity="center"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"/>
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <LinearLayout
-                            android:id="@+id/near_box_info"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="10dp"
-                            android:orientation="vertical"
-                            app:layout_constraintStart_toEndOf="@id/pb"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="@id/pb"
-                            app:layout_constraintBottom_toBottomOf="@id/pb">
-
-                            <TextView
-                                style="@style/TextAppearance.AppCompat.Large"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="En la zona"
-                                android:gravity="center"
-                                android:textStyle="bold"/>
-
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/near_stops_recycler"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                tools:listitem="@layout/item_near_stop"
-                                tools:itemCount="2"/>
-
-                        </LinearLayout>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
                 </LinearLayout>
 
 
@@ -413,7 +407,7 @@
                     android:id="@+id/action_buttons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="25dp"
                     app:layout_constraintTop_toBottomOf="@id/new_design"
                     android:orientation="horizontal">
 

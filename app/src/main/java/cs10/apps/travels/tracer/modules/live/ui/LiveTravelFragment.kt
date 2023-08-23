@@ -142,8 +142,8 @@ class LiveTravelFragment : CS_Fragment() {
 
         //basicSwitcher.replaceContent("Desde ${t.nombrePdaInicio}", 0)
         //basicSwitcher.replaceContent("Hasta ${t.nombrePdaFin}", 1)
-        basicSwitcher.replaceContent(SwitcherText("from", "Desde ${t.nombrePdaInicio}"))
-        basicSwitcher.replaceContent(SwitcherText("to", "Hasta ${t.nombrePdaFin}"))
+        basicSwitcher.replaceContent(SwitcherText("from", "Desde ${t.nombrePdaInicio}"), 0)
+        basicSwitcher.replaceContent(SwitcherText("to", "Hasta ${t.nombrePdaFin}"), 1)
         basicSwitcher.start()
 
         binding.lineTitle.text = t.lineInformation
@@ -172,6 +172,7 @@ class LiveTravelFragment : CS_Fragment() {
             if (it == null || it.totalMinutes == 0) binding.trafficSub.text = null
             else {
                 binding.trafficSub.text = String.format("El viaje normal dura %d minutos", it.totalMinutes)
+                basicSwitcher.replaceContent(SwitcherText("speed", "Velocidad est: ${it.speed} km/h"))
                 /*
                 if (it.fromAverage) binding.averageDuration.text =
                     "Duración promedio: ${it.totalMinutes} min. (${it.speed} km/h)"

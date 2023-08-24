@@ -142,6 +142,12 @@ public interface ViajesDao {
             "order by COUNT(*) desc limit 1")
     Viaje getLikelyTravelFrom(String targetStart, int sinceHour);
 
+    @Query("SELECT * FROM Viaje where tipo = :type and " +
+            "nombrePdaInicio = :targetStart and startHour >= :sinceHour " +
+            "group by linea, ramal, nombrePdaInicio, nombrePdaFin having count(*) > 2 " +
+            "order by COUNT(*) desc limit 1")
+    Viaje getLikelyTravelFromUsingType(String targetStart, int sinceHour, int type);
+
     @Query("SELECT DISTINCT ramal FROM Viaje where ramal like '___%' order by ramal")
     List<String> getAllRamals();
 

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.db.MiDB
+import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.modules.creator.model.LikelyTravel
@@ -53,7 +54,7 @@ class CreatorVM(application: Application) : AndroidViewModel(application) {
         var v: Viaje? = null
 
         for (p in startOnes){
-            v = db.viajesDao().getLikelyTravelFrom(p.nombre, h)
+            v = db.viajesDao().getLikelyTravelFromUsingType(p.nombre, h, TransportType.BUS.ordinal)
             if (v != null || startIndex == 4) break else startIndex++
         }
 

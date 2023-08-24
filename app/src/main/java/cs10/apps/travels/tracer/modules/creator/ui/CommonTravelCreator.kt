@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.travels
+package cs10.apps.travels.tracer.modules.creator.ui
 
 import android.view.View
 import android.widget.EditText

@@ -74,6 +74,10 @@ public interface ParadasDao {
             "GROUP BY P.nombre ORDER BY COUNT(V.id) desc ")
     List<Parada> getAllOrderedByTravelCount();
 
+    @Query("SELECT P.* FROM Parada P LEFT JOIN Viaje V ON P.nombre = V.nombrePdaFin " +
+            "GROUP BY P.nombre ORDER BY COUNT(V.id) desc ")
+    List<Parada> getAllOrderedByMostVisited();
+
 
     // ============================== LIVE WAITING ==========================
 

@@ -9,6 +9,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
@@ -28,6 +29,7 @@ import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
 import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
+import cs10.apps.travels.tracer.modules.live.adapter.StagesAdapter
 import cs10.apps.travels.tracer.modules.live.model.SwitcherText
 import cs10.apps.travels.tracer.modules.live.viewmodel.LiveVM
 import cs10.apps.travels.tracer.modules.live.viewmodel.WaitingVM
@@ -53,15 +55,6 @@ class LiveTravelFragment : CS_Fragment() {
     // View Binding
     private lateinit var binding: FragmentLiveTravelBinding
 
-    // adapters
-    private val nearStopAdapter = NearStopAdapter(mutableListOf()) {
-        val intent = Intent(activity, ServiceDetail::class.java)
-        intent.putExtra("station", it.station)
-        intent.putExtra("ramal", it.ramal)
-        intent.putExtra("id", it.service)
-        startActivity(intent)
-    }
-
     // Custom Views
     private lateinit var liveWaitingView: LiveWaitingView
 
@@ -69,6 +62,8 @@ class LiveTravelFragment : CS_Fragment() {
     private lateinit var basicSwitcher: BasicSwitcher
     private lateinit var zoneSwitcher: BasicSwitcher
 
+    // stages
+    private val stagesAdapter = StagesAdapter()
 
     /* ====================== MAIN FUNCTIONS ==================================== */
 
@@ -140,10 +135,13 @@ class LiveTravelFragment : CS_Fragment() {
         //basicSwitcher.replaceContent(SwitcherText("to", "Hasta ${t.nombrePdaFin}"), 1)
         basicSwitcher.start()
 
-        binding.startLocation.text = t.nombrePdaInicio
-        binding.startTime.text = Utils.hourFormat(t.startHour, t.startMinute)
+        binding.linearProgressContent.adapter = stagesAdapter
+        binding.linearProgressContent.layoutManager = LinearLayoutManager(requireContext())
 
-        binding.endLocation.text = t.nombrePdaFin
+        //binding.startLocation.text = t.nombrePdaInicio
+        //binding.startTime.text = Utils.hourFormat(t.startHour, t.startMinute)
+
+        //binding.endLocation.text = t.nombrePdaFin
 
         binding.lineTitle.text = t.lineInformation
         binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(t.tipo, context))
@@ -181,17 +179,23 @@ class LiveTravelFragment : CS_Fragment() {
             }
         }
 
+        liveVM.stages.observe(viewLifecycleOwner) {
+            stagesAdapter.data.clear()
+            stagesAdapter.data.addAll(it)
+            stagesAdapter.notifyDataSetChanged()
+        }
+
         liveVM.progress.observe(viewLifecycleOwner) { prog ->
             when (prog) {
                 null -> {
-                    binding.linearPbar.isIndeterminate = true
+                    //binding.linearPbar.isIndeterminate = true
                     //binding.pbar.progress = 0
                 }
                 // prog > 0.97 -> finishCurrentTravel()
                 else -> {
-                    binding.linearPbar.isIndeterminate = false
+                    //binding.linearPbar.isIndeterminate = false
                     val norm = prog.times(100).roundToInt()
-                    binding.linearPbar.progress = norm
+                    //binding.linearPbar.progress = norm
                     binding.progressCardText.text = String.format("%d%%", norm)
                 }
             }
@@ -270,7 +274,7 @@ class LiveTravelFragment : CS_Fragment() {
 
                 // new design
                 //binding.nearMeTitle.text = String.format("Llegarías a las %s", Utils.hourFormat(eta))
-                binding.endTime.text = Utils.hourFormat(eta)
+                //binding.endTime.text = Utils.hourFormat(eta)
 
                 // arrival notification
                 liveVM.travel.value?.id?.let { id ->
@@ -379,7 +383,7 @@ class LiveTravelFragment : CS_Fragment() {
         zoneSwitcher.clear()
         basicSwitcher.clear()
         binding.trafficBanner.isVisible = false
-        binding.linearPbar.isIndeterminate = true
+        //binding.linearPbar.isIndeterminate = true
         binding.rateText.text = "--"
         binding.progressCardText.text = "--"
         rootVM.disableLoading()

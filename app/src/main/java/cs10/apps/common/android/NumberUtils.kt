@@ -25,5 +25,9 @@ class NumberUtils {
         fun round(valueToRound: Double, precision: Double) : Double {
             return (valueToRound / precision).roundToInt() * precision
         }
+
+        fun between(target: Double, n0: Double, n1: Double) : Boolean {
+            return target > n0 && target < n1
+        }
     }
 }

@@ -22,6 +22,7 @@ class ProgressCorrector {
     private fun f0SE(prog: Double) = 2 * prog.pow(3) - 2.76 * prog.pow(2) + 1.76 * prog
     private fun f0NW(prog: Double) = 0.25 * prog.pow(3) - 1.05 * prog.pow(2) + 1.8 * prog
 
+    // Al sudeste, ramal nulo o belgrano, o bien, en el ultimo tramo
     private fun f1SET(prog: Double) : Double {
         return when {
             prog < 0.3 -> p4(prog, -1.8, 14.6, -6.25, 1.46, 0.0)

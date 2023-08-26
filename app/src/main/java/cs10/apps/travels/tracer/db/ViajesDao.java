@@ -102,12 +102,14 @@ public interface ViajesDao {
     TravelDistance getTravelDistanceFromId(long id);
 
     @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
-            "where ramal is null and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
-    int getAverageTravelDuration(String startStop, String endStop);
+            "where ramal is null and nombrePdaInicio = :startStop and nombrePdaFin = :endStop and " +
+            "startHour between :hour-2 and :hour+2")
+    int getAverageTravelDuration(String startStop, String endStop, int hour);
 
     @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
-            "where ramal = :ramal and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
-    int getAverageTravelDurationWithRamal(String startStop, String endStop, String ramal);
+            "where ramal = :ramal and nombrePdaInicio = :startStop and nombrePdaFin = :endStop and " +
+            "startHour between :hour-2 and :hour+2")
+    int getAverageTravelDurationWithRamal(String startStop, String endStop, String ramal, int hour);
 
     @Query("SELECT * FROM Viaje where endHour is not null and linea is not :excludedLine and " +
             "nombrePdaInicio = :startStop and nombrePdaFin is not :excludedEndStop " +

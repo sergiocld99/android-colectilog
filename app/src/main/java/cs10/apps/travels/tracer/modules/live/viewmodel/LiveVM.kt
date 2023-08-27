@@ -218,9 +218,18 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         progress.postValue(correctedProg)
                         finishData.postValue(shouldFinish)
 
-                        // update last stage
-                        val endTime = Utils.getCurrentTs() + minutesLeft.roundToInt()
-                        st.stages.last().endTime = endTime
+                        // update ETA stages
+                        val progsToCalculate = st.globalProgressAtStagesEnd()
+                        val etas = mutableListOf<Double>()
+
+                        for (p in progsToCalculate) {
+                            val cp = corrector.correct(startStop, endStop, 0.01 * p, t.ramal)
+                            val distFromCurrent = (0.01 * p).times(st.totalDist)
+                            val eta = minutesLeft - calculateMinutesLeft(speed, cp, distFromCurrent)
+                            etas.add(eta)
+                        }
+
+                        st.updateStagesETA(etas)
                         stages.postValue(st.stages)
 
                         // fourth action: find next zones to get in

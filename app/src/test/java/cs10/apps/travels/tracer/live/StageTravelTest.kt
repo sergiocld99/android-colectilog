@@ -33,6 +33,10 @@ class StageTravelTest {
             println("In $p, stage ${travel.stages.indexOf(r)}, prog ${r.progress}, pd ${r.primaryDirection}")
         }
 
+        travel.stages.forEachIndexed { index, _ ->
+            println("Stage $index relative prog is ${travel.relativeStageProg[index]}")
+        }
+
     }
 
 }

@@ -3,15 +3,20 @@ package cs10.apps.travels.tracer.modules.live.model
 import android.location.Location
 import cs10.apps.common.android.Localizable
 import cs10.apps.common.android.NumberUtils
+import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Point
 import cs10.apps.travels.tracer.model.Viaje
 import kotlin.Exception
+import kotlin.math.roundToInt
 
 class StagedTravel(val stages: List<Stage>) {
     val totalDist = (0.0).plus(stages.sumOf { it.kmDistance })
     val start = stages[0].start
     val end = stages.last().end
+
+    // how much represents this stage of total
+    val relativeStageProg = stages.map { 100.0 * it.kmDistance / totalDist }
 
     fun calculateCurrentStage(currentPos: Localizable) : Stage {
         val currentProg = currentProgress(currentPos)
@@ -40,6 +45,29 @@ class StagedTravel(val stages: List<Stage>) {
         val startDist = currentPos.coordsDistanceTo(start)
         val endDist = currentPos.coordsDistanceTo(end)
         return 100 * startDist / (startDist + endDist)
+    }
+
+    fun updateStagesETA(minutesLeftToEach: List<Double>) {
+        val currentTs = Utils.getCurrentTs()
+
+        stages.forEachIndexed { index, stage ->
+            stage.endTime = (currentTs +  minutesLeftToEach[index].roundToInt()) % 1440
+        }
+    }
+
+    /**
+     * @return travel progress between 0 and 100 at the end of each stage
+     */
+    fun globalProgressAtStagesEnd() : List<Double> {
+        val results = mutableListOf<Double>()
+        var sum = 0.0
+
+        for (prog in relativeStageProg){
+            sum += prog
+            results.add(sum)
+        }
+
+        return results
     }
 
     fun calculateCloserPoint(currentPos: Localizable) : Localizable {

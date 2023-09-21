@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- For Scheduled Notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.POST_NOTIFICATION" />
 
@@ -33,10 +34,6 @@
             android:name=".MapViewActivity"
             android:exported="false" />
 
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_api_key" />
-
         <activity
             android:name=".ui.balance.EditBalanceActivity"
             android:exported="false"
@@ -48,13 +45,13 @@
             android:name=".ui.coffee.CoffeeCreator"
             android:theme="@style/Theme.TravelTracer.Coffee" />
         <activity
-            android:name=".ui.travels.BusTravelCreator"
+            android:name=".modules.creator.ui.BusTravelCreator"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".ui.travels.TrainTravelCreator"
+            android:name=".modules.creator.ui.TrainTravelCreator"
             android:theme="@style/Theme.TravelTracer.Trains" />
         <activity
-            android:name=".ui.travels.CarTravelCreator"
+            android:name=".modules.creator.ui.CarTravelCreator"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity
             android:name=".ui.travels.BusTravelEditor"

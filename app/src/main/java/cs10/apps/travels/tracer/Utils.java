@@ -85,10 +85,6 @@ public class Utils {
         else return Math.round(value * 1000);
     }
 
-    public static int colorFor(Integer bus, Context context){
-        return ContextCompat.getColor(context, colorFor(bus));
-    }
-
     public static int colorForType(double type){
         return colorForType((int) Math.round(type));
     }
@@ -116,6 +112,7 @@ public class Utils {
             view.setBackgroundColor(color);
     }
 
+    @Deprecated
     public static int colorFor(Integer bus){
         if (bus == null) return R.color.black;
 

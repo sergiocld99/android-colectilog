@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.travels;
+package cs10.apps.travels.tracer.modules.creator.ui;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -22,6 +22,7 @@ import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ParadasDao;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.modules.creator.ui.CommonTravelCreator;
 
 public class TrainTravelCreator extends CommonTravelCreator {
     private ActivityTrainTravelCreatorBinding binding;

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
+import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.modules.lines.db.LinesDao
 import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
@@ -43,12 +44,23 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
                 }
             }
 
-            // calculate speed for trains (all by now)
-            val train = RatedBusLine(-1, -1, null, R.color.train, 0.0, 0)
-            val stats = rootVM.database.viajesDao().recentFinishedTravelsFromTrains
-            train.speed = Utils.calculateAverageSpeed(stats)
+            // TRAIN travels
+            val train = RatedBusLine(-1, -1, "Línea Roca", R.color.train,
+                avgUserRate = rootVM.database.travelsDao().getAverageRateForType(TransportType.TRAIN.ordinal),
+                reviewsCount = rootVM.database.travelsDao().getReviewsCountForType(TransportType.TRAIN.ordinal))
+            train.speed = Utils.calculateAverageSpeed(
+                rootVM.database.viajesDao().getRecentFinishedTravelsFromType(TransportType.TRAIN.ordinal))
             lines.add(train)
 
+            // CAR travels
+            val cars = RatedBusLine(-2, -1, "En Auto", R.color.bus_159,
+                avgUserRate = rootVM.database.travelsDao().getAverageRateForType(TransportType.CAR.ordinal),
+                reviewsCount = rootVM.database.travelsDao().getReviewsCountForType(TransportType.CAR.ordinal))
+            cars.speed = Utils.calculateAverageSpeed(
+                rootVM.database.viajesDao().getRecentFinishedTravelsFromType(TransportType.CAR.ordinal))
+            lines.add(cars)
+
+            // Sort everything by speed
             lines.sort()
             myLines.postValue(lines)
 

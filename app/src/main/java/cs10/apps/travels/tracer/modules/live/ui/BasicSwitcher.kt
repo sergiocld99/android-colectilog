@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.TextSwitcher
 import cs10.apps.travels.tracer.R
+import cs10.apps.travels.tracer.modules.live.model.SwitcherText
 
 class BasicSwitcher(private var textSwitcher: TextSwitcher, private val autoRepeat: Boolean = true) {
     private var handler: Handler? = null
@@ -13,16 +14,32 @@ class BasicSwitcher(private var textSwitcher: TextSwitcher, private val autoRepe
     private var ite = 0
 
     // content to show
-    private val mutableList = mutableListOf<String>()
+    private val mutableList = mutableListOf<SwitcherText>()
     private var lastTextShown: String? = null
 
+    /**
+     * Adds content to show using a auto-generated id
+     */
     fun addContent(text: String) {
-        mutableList.add(text)
+        mutableList.add(SwitcherText(text.hashCode().toString(), text))
     }
 
+
+    @Deprecated("Use SwitcherText instead of String")
     fun replaceContent(text: String, index: Int){
-        if (index >= mutableList.size) mutableList.add(text)
-        else mutableList[index] = text
+        val st = SwitcherText(index.toString(), text)
+
+        if (index >= mutableList.size) mutableList.add(st)
+        else mutableList[index] = st
+    }
+
+    fun replaceContent(text: SwitcherText, preferredIndex: Int = -1){
+        val i = mutableList.indexOf(text)
+
+        if (i == -1) {
+            if (preferredIndex != -1) mutableList.add(preferredIndex, text)
+            else mutableList.add(text)
+        } else mutableList[i] = text
     }
 
     fun start(){
@@ -33,11 +50,11 @@ class BasicSwitcher(private var textSwitcher: TextSwitcher, private val autoRepe
 
         runnable = Runnable {
             if (ite < mutableList.size){
-                slideUp(mutableList[ite])
+                slideUp(mutableList[ite].text)
                 ite++
                 scheduleNext(16000L / mutableList.size)
             } else {
-                slideDown(mutableList[0])
+                slideDown(mutableList[0].text)
                 ite = 1
                 if (autoRepeat) scheduleNext(20000L / mutableList.size)
             }
@@ -90,7 +107,7 @@ class BasicSwitcher(private var textSwitcher: TextSwitcher, private val autoRepe
         lastAction = LastAction.SLIDED_UP
     }
 
-    fun getContext() : Context {
+    private fun getContext() : Context {
         return textSwitcher.context
     }
 

@@ -17,7 +17,7 @@ class NotificationBroadcast : BroadcastReceiver() {
 
             when (it) {
                 NotificationCenter.ASK_FINISH_NOTIF_ID -> nc.createAskForFinishedTravelNotification(context)
-                NotificationCenter.BALANCE_SUMMARY_ID -> nc.createBalanceSummaryNotification(context)
+                //NotificationCenter.BALANCE_SUMMARY_ID -> nc.createBalanceSummaryNotification(context)
             }
         }
     }

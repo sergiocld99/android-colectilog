@@ -89,7 +89,7 @@ interface LinesDao {
     // --------------------- TRAIN ------------------------------
 
     @Query("SELECT DISTINCT wd, AVG(rate) as avgUserRate, COUNT(rate) as reviewsCount " +
-            "FROM Viaje WHERE rate is not null and linea is null GROUP BY wd")
+            "FROM Viaje WHERE rate is not null and tipo = 1 GROUP BY wd")
     suspend fun getDayStatsForTrain() : MutableList<TrainDayInfo>
 
     @Query("SELECT P1.latitud as start_x, P1.longitud as start_y, " +
@@ -98,8 +98,8 @@ interface LinesDao {
                 "(V.endHour * 60 + V.endMinute) as end_time " +
                 "FROM Viaje V INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
                 "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
-                "where linea is null and V.wd = :wd and endHour is not null " +
+                "where V.tipo = :type and V.wd = :weekDay and endHour is not null " +
                 "order by year desc, month desc, day desc limit 10")
-    suspend fun getRecentFinishedTrainTravelsOn(wd: Int): MutableList<TravelStats>
+    suspend fun getRecentFinishedTravelsOn(weekDay: Int, type: Int): MutableList<TravelStats>
 
 }

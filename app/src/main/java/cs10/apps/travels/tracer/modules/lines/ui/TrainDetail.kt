@@ -8,6 +8,7 @@ import cs10.apps.common.android.ui.FormActivity
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ActivityTrainDetailsBinding
 import cs10.apps.travels.tracer.db.MiDB
+import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.modules.lines.adapter.CommonLineInfoAdapter
 import cs10.apps.travels.tracer.modules.lines.model.TrainInfo
 import cs10.apps.travels.tracer.modules.lines.utils.SpeedCalculator
@@ -59,7 +60,7 @@ class TrainDetail : FormActivity(), TabLayout.OnTabSelectedListener {
         val data = db.linesDao().getDayStatsForTrain()
 
         data.forEach {
-            val stats = db.linesDao().getRecentFinishedTrainTravelsOn(it.wd)
+            val stats = db.linesDao().getRecentFinishedTravelsOn(it.wd, TransportType.TRAIN.ordinal)
             SpeedCalculator.calculate(it, stats)
         }
 

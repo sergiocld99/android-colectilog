@@ -17,6 +17,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
 
+import cs10.apps.common.android.NumberUtils;
 import cs10.apps.common.android.ui.CS_Fragment;
 import cs10.apps.travels.tracer.adapter.TravelAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentTravelsBinding;
@@ -25,6 +26,7 @@ import cs10.apps.travels.tracer.db.ViajesDao;
 import cs10.apps.travels.tracer.enums.TransportType;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.joins.ColoredTravel;
+import cs10.apps.travels.tracer.model.location.TravelDistance;
 import cs10.apps.travels.tracer.modules.AutoRater;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
 
@@ -143,6 +145,18 @@ public class MyTravelsFragment extends CS_Fragment {
         if (viajes == null) {
             viajes = dao.getAllPlusColors();
             filterAvailable = true;
+
+            // also add speed to the first 10 items
+            for(int i=0; i<10 && i<viajes.size(); i++){
+                Viaje v = viajes.get(i);
+                if (v.getRamal() == null && v.isFinished()){
+                    TravelDistance td = dao.getTravelDistanceFromId(v.getId());
+                    double km = td.getDistance();   // internally converts coords to km
+                    double h = NumberUtils.Companion.minutesToHours(v.getDuration());
+                    double speed = km/h;
+                    v.setRamal(Math.round(speed) + " km/h");
+                }
+            }
         }
 
         // Oct 15: calculate rate based on duration

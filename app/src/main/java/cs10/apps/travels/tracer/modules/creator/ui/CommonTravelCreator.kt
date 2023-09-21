@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.travels
+package cs10.apps.travels.tracer.modules.creator.ui
 
 import android.view.View
 import android.widget.EditText
@@ -9,6 +9,7 @@ import cs10.apps.common.android.ui.FormActivity
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding
+import cs10.apps.travels.tracer.db.DatabaseFinder
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.modules.RedSube.Companion.getPercentageToPay
@@ -67,8 +68,8 @@ abstract class CommonTravelCreator : FormActivity() {
         // sube header
         subeHeader?.let {
            doInBackground {
-               val db = MiDB.getInstance(this)
-               val count = db.viajesDao().last2HoursQuantity(year, month, day, hour, minute)
+               val df = DatabaseFinder(MiDB.getInstance(this))
+               val count = df.countTravelsLast2Hours(true)
                doInForeground { updateRedSubeHeader(it, count) }
            }
         }

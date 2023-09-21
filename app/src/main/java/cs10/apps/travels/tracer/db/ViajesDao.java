@@ -80,9 +80,10 @@ public interface ViajesDao {
     @Query("SELECT MAX(id) from viaje")
     Long getLastTravelId();
 
-    @Query("SELECT COUNT(*) from viaje where year = :year and month = :month and day = :day " +
-            "and (startHour * 60 + startMinute between ((:hour - 2) * 60 + :minute) and :hour * 60 + :minute - 1)")
-    int last2HoursQuantity(int year, int month, int day, int hour, int minute);
+    @Query("SELECT COUNT(*) FROM Viaje WHERE (tipo is not :exceptedType) and " +
+            "year = :year and month = :month and day = :day " +
+            "and (startHour * 60 + startMinute between :start and :end)")
+    int countTravelsInTimeRange(int year, int month, int day, int start, int end, int exceptedType);
 
     // ------------------------------- LIVE --------------------------------------------
 
@@ -101,12 +102,14 @@ public interface ViajesDao {
     TravelDistance getTravelDistanceFromId(long id);
 
     @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
-            "where ramal is null and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
-    int getAverageTravelDuration(String startStop, String endStop);
+            "where ramal is null and nombrePdaInicio = :startStop and nombrePdaFin = :endStop and " +
+            "startHour between :hour-2 and :hour+2")
+    int getAverageTravelDuration(String startStop, String endStop, int hour);
 
     @Query("SELECT AVG((endHour-startHour)*60 + (endMinute-startMinute)) FROM Viaje " +
-            "where ramal = :ramal and nombrePdaInicio = :startStop and nombrePdaFin = :endStop")
-    int getAverageTravelDurationWithRamal(String startStop, String endStop, String ramal);
+            "where ramal = :ramal and nombrePdaInicio = :startStop and nombrePdaFin = :endStop and " +
+            "startHour between :hour-2 and :hour+2")
+    int getAverageTravelDurationWithRamal(String startStop, String endStop, String ramal, int hour);
 
     @Query("SELECT * FROM Viaje where endHour is not null and linea is not :excludedLine and " +
             "nombrePdaInicio = :startStop and nombrePdaFin is not :excludedEndStop " +
@@ -130,7 +133,7 @@ public interface ViajesDao {
             "FROM Viaje V " +
             "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
             "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
-            "where linea is null and endHour is not null order by V.id DESC limit 1")
+            "where V.tipo = 1 and endHour is not null order by V.id DESC limit 1")
     TravelStats getLastFinishedTrainTravel();
 
     // ------------------------------ AUTOCOMPLETE CREATION -------------------------------------
@@ -140,6 +143,12 @@ public interface ViajesDao {
             "group by linea, ramal, nombrePdaInicio, nombrePdaFin having count(*) > 2 " +
             "order by COUNT(*) desc limit 1")
     Viaje getLikelyTravelFrom(String targetStart, int sinceHour);
+
+    @Query("SELECT * FROM Viaje where tipo = :type and " +
+            "nombrePdaInicio = :targetStart and startHour >= :sinceHour " +
+            "group by linea, ramal, nombrePdaInicio, nombrePdaFin having count(*) > 2 " +
+            "order by COUNT(*) desc limit 1")
+    Viaje getLikelyTravelFromUsingType(String targetStart, int sinceHour, int type);
 
     @Query("SELECT DISTINCT ramal FROM Viaje where ramal like '___%' order by ramal")
     List<String> getAllRamals();
@@ -170,9 +179,9 @@ public interface ViajesDao {
             "FROM Viaje V " +
             "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
             "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
-            "where linea is null and endHour is not null " +
+            "where V.tipo = :type and endHour is not null " +
             "order by year desc, month desc, day desc limit 10")
-    List<TravelStats> getRecentFinishedTravelsFromTrains();
+    List<TravelStats> getRecentFinishedTravelsFromType(int type);
 
     @Query("SELECT P1.latitud as start_x, P1.longitud as start_y, " +
             "P2.latitud as end_x, P2.longitud as end_y, " +
@@ -224,27 +233,5 @@ public interface ViajesDao {
             "where linea = :number and V.wd = :wd and endHour is not null " +
             "order by year desc, month desc, day desc limit 10")
     List<TravelStats> getRecentFinishedTravelsOn(int wd, int number);
-
-
-    // -------------------------- MONTH SUMMARY -------------------------------
-
-    @Query("SELECT SUM(costo) FROM viaje where linea is not null and id > :travelId")
-    double getSpentInBusesSince(long travelId);
-
-    @Query("SELECT SUM(costo) FROM viaje where linea is null and id > :travelId")
-    double getSpentInTrainsSince(long travelId);
-
-    @Query("SELECT SUM(costo) FROM viaje where linea is not null and month is :month and year is :year")
-    double getTotalSpentInBuses(int month, int year);
-
-    @Query("SELECT SUM(costo) FROM viaje where linea is null and month is :month and year is :year")
-    double getTotalSpentInTrains(int month, int year);
-
-    @Query("SELECT V.linea, L.color, SUM(V.costo) as suma FROM viaje V " +
-            "LEFT JOIN lines L ON V.linea = L.number " +
-            "where linea is not null and month is :month and year is :year " +
-            " group by linea order by 3 desc limit 3")
-    List<PriceSum> getMostExpensiveBus(int month, int year);
-
 
 }

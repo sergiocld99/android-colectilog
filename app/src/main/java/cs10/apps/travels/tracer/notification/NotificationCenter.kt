@@ -1,9 +1,13 @@
 package cs10.apps.travels.tracer.notification
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import cs10.apps.common.CanFail
@@ -37,6 +41,7 @@ class NotificationCenter {
         }
     }
 
+    @SuppressLint("ScheduleExactAlarm")
     private fun scheduleNotification(context: Context, delayMs: Long, id: Int){
         val intent = Intent(context.applicationContext, NotificationBroadcast::class.java)
         intent.putExtra(NotificationBroadcast.NOTIFICATION_ID_KEY, id)
@@ -110,12 +115,27 @@ class NotificationCenter {
 
         // show notification
         with(NotificationManagerCompat.from(context)){
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return
+            }
             notify(NEW_TRAVEL_NOTIF_ID, builder.build())
         }
     }
 
     // -------------------------  CALLED BY BROADCAST --------------------------------
 
+    /*
     @CanFail
     fun createBalanceSummaryNotification(context: Context){
         val prefs = context.getSharedPreferences("balance", Context.MODE_PRIVATE)
@@ -146,7 +166,7 @@ class NotificationCenter {
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.notify(ASK_FINISH_NOTIF_ID, notif)
         }.start()
-    }
+    } */
 
     fun createAskForFinishedTravelNotification(context: Context){
         // create intent to open screen when user touches notification

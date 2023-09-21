@@ -9,6 +9,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
@@ -28,6 +29,8 @@ import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
 import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
+import cs10.apps.travels.tracer.modules.live.adapter.StagesAdapter
+import cs10.apps.travels.tracer.modules.live.model.SwitcherText
 import cs10.apps.travels.tracer.modules.live.viewmodel.LiveVM
 import cs10.apps.travels.tracer.modules.live.viewmodel.WaitingVM
 import cs10.apps.travels.tracer.notification.NotificationCenter
@@ -52,15 +55,6 @@ class LiveTravelFragment : CS_Fragment() {
     // View Binding
     private lateinit var binding: FragmentLiveTravelBinding
 
-    // adapters
-    private val nearStopAdapter = NearStopAdapter(mutableListOf()) {
-        val intent = Intent(activity, ServiceDetail::class.java)
-        intent.putExtra("station", it.station)
-        intent.putExtra("ramal", it.ramal)
-        intent.putExtra("id", it.service)
-        startActivity(intent)
-    }
-
     // Custom Views
     private lateinit var liveWaitingView: LiveWaitingView
 
@@ -68,6 +62,8 @@ class LiveTravelFragment : CS_Fragment() {
     private lateinit var basicSwitcher: BasicSwitcher
     private lateinit var zoneSwitcher: BasicSwitcher
 
+    // stages
+    private val stagesAdapter = StagesAdapter()
 
     /* ====================== MAIN FUNCTIONS ==================================== */
 
@@ -116,12 +112,6 @@ class LiveTravelFragment : CS_Fragment() {
             //binding.zoneInfo.text = zone
         }
 
-        // OCT 2022
-        locationVM.setSpeedObserver(viewLifecycleOwner) { speedKmH ->
-            if (speedKmH > 100) binding.speedometerText.text = "--"
-            else binding.speedometerText.text = NumberUtils.round(speedKmH, 5).toString()
-        }
-
         return binding.root
     }
 
@@ -139,9 +129,19 @@ class LiveTravelFragment : CS_Fragment() {
         liveWaitingView.setVisibility(false)
         updateTabs(false)
 
-        basicSwitcher.replaceContent("Desde ${t.nombrePdaInicio}", 0)
-        basicSwitcher.replaceContent("Hasta ${t.nombrePdaFin}", 1)
+        //basicSwitcher.replaceContent("Desde ${t.nombrePdaInicio}", 0)
+        //basicSwitcher.replaceContent("Hasta ${t.nombrePdaFin}", 1)
+        //basicSwitcher.replaceContent(SwitcherText("from", "Desde ${t.nombrePdaInicio}"), 0)
+        //basicSwitcher.replaceContent(SwitcherText("to", "Hasta ${t.nombrePdaFin}"), 1)
         basicSwitcher.start()
+
+        binding.linearProgressContent.adapter = stagesAdapter
+        binding.linearProgressContent.layoutManager = LinearLayoutManager(requireContext())
+
+        //binding.startLocation.text = t.nombrePdaInicio
+        //binding.startTime.text = Utils.hourFormat(t.startHour, t.startMinute)
+
+        //binding.endLocation.text = t.nombrePdaFin
 
         binding.lineTitle.text = t.lineInformation
         binding.buttonDrawing.setImageDrawable(Utils.getTypeDrawable(t.tipo, context))
@@ -159,15 +159,16 @@ class LiveTravelFragment : CS_Fragment() {
         }
 
         liveVM.minutesFromStart.observe(viewLifecycleOwner) {
-            // new design
-            if (it != null)
-                basicSwitcher.replaceContent("Inició hace ${it.roundToInt()} minutos", 2)
+            if (it == null) return@observe
+
+            //basicSwitcher.replaceContent(SwitcherText("started", "Inició hace ${it.roundToInt()} minutos"))
         }
 
         liveVM.estData.observe(viewLifecycleOwner) {
             if (it == null || it.totalMinutes == 0) binding.trafficSub.text = null
             else {
                 binding.trafficSub.text = String.format("El viaje normal dura %d minutos", it.totalMinutes)
+                basicSwitcher.replaceContent(SwitcherText("speed", "Velocidad est: ${it.speed} km/h"))
                 /*
                 if (it.fromAverage) binding.averageDuration.text =
                     "Duración promedio: ${it.totalMinutes} min. (${it.speed} km/h)"
@@ -178,13 +179,23 @@ class LiveTravelFragment : CS_Fragment() {
             }
         }
 
+        liveVM.stages.observe(viewLifecycleOwner) {
+            stagesAdapter.data.clear()
+            stagesAdapter.data.addAll(it)
+            stagesAdapter.notifyDataSetChanged()
+        }
+
         liveVM.progress.observe(viewLifecycleOwner) { prog ->
             when (prog) {
-                null -> binding.pb.progress = 0
+                null -> {
+                    //binding.linearPbar.isIndeterminate = true
+                    //binding.pbar.progress = 0
+                }
                 // prog > 0.97 -> finishCurrentTravel()
                 else -> {
+                    //binding.linearPbar.isIndeterminate = false
                     val norm = prog.times(100).roundToInt()
-                    binding.pb.progress = norm
+                    //binding.linearPbar.progress = norm
                     binding.progressCardText.text = String.format("%d%%", norm)
                 }
             }
@@ -235,28 +246,23 @@ class LiveTravelFragment : CS_Fragment() {
         }*/
 
         liveVM.endDistance.observe(viewLifecycleOwner) {
-            basicSwitcher.replaceContent(String.format("Destino a %.1f km", it ?: 0.0), 3)
+            //basicSwitcher.replaceContent(String.format("Destino a %.1f km", it ?: 0.0), 3)
+            basicSwitcher.replaceContent(SwitcherText("endDist", String.format("Destino a %.1f km", it ?: 0.0)))
         }
 
         liveVM.finishData.observe(viewLifecycleOwner) {
             if (it) finishCurrentTravel()
         }
-        
-        liveVM.nearArrivals.observe(viewLifecycleOwner) {
-            binding.nearBoxInfo.isVisible = it.isNotEmpty()
-            nearStopAdapter.list = it
-            nearStopAdapter.notifyDataSetChanged()
-        }
 
         liveVM.countdown.liveData.observe(viewLifecycleOwner) {
-            binding.minutesLeft.text = String.format("%d' %d\"", it / 60, it % 60)
+            binding.nearMeTitle.text = String.format("Llegando en %d' %d\"", it / 60, it % 60)
         }
 
         liveVM.minutesToEnd.observe(viewLifecycleOwner) {
             binding.shareBtn.isVisible = it != null
             binding.editBtn.isVisible = it != null
 
-            if (it == null) binding.minutesLeft.text = null
+            if (it == null) binding.nearMeTitle.text = null
             else {
                 val seconds = (it * 60).roundToInt()
                 val eta = Calendar.getInstance().apply { add(Calendar.SECOND, seconds) }
@@ -267,7 +273,8 @@ class LiveTravelFragment : CS_Fragment() {
                 binding.finishBtn.isVisible = it < 10
 
                 // new design
-                binding.nearMeTitle.text = String.format("Llegarías a las %s", Utils.hourFormat(eta))
+                //binding.nearMeTitle.text = String.format("Llegarías a las %s", Utils.hourFormat(eta))
+                //binding.endTime.text = Utils.hourFormat(eta)
 
                 // arrival notification
                 liveVM.travel.value?.id?.let { id ->
@@ -303,13 +310,19 @@ class LiveTravelFragment : CS_Fragment() {
 
             if (it.isNullOrEmpty()) zoneSwitcher.purge()
 
-            it?.forEach { nz ->
-                zoneSwitcher.addContent("En ${nz.minutesLeft}' por ${nz.zone.name}")
-            }
+            //it?.forEach { nz ->
+            //    zoneSwitcher.addContent("En ${nz.minutesLeft}' por ${nz.zone.name}")
+            //}
 
             waitingVM.stopHere.value?.let { p ->
-                zoneSwitcher.replaceContent("Ahora: ${p.nombre}", 0)
+                //zoneSwitcher.replaceContent("Ahora: ${p.nombre}", 0)
+                zoneSwitcher.replaceContent(SwitcherText("now", "Ahora: ${p.nombre}"), 0)
+                it?.removeFirstOrNull()
                 liveVM.vibrate(140)
+            }
+
+            it?.firstOrNull()?.let {nz ->
+                zoneSwitcher.addContent("En ${nz.minutesLeft}' por ${nz.zone.name}")
             }
 
             zoneSwitcher.start()
@@ -339,10 +352,6 @@ class LiveTravelFragment : CS_Fragment() {
 
         // on edit travel
         binding.editBtn.setOnClickListener { editCurrentTravel() }
-
-        // near stops adapter
-        binding.nearStopsRecycler.adapter = nearStopAdapter
-        binding.nearStopsRecycler.layoutManager = LinearLayoutManager(requireActivity())
 
     }
 
@@ -374,10 +383,7 @@ class LiveTravelFragment : CS_Fragment() {
         zoneSwitcher.clear()
         basicSwitcher.clear()
         binding.trafficBanner.isVisible = false
-        //binding.nextTravelInfo.text = null
-        binding.minutesLeft.text = "..."
-        binding.speedometerText.text = "--"
-        binding.pb.progress = 0
+        //binding.linearPbar.isIndeterminate = true
         binding.rateText.text = "--"
         binding.progressCardText.text = "--"
         rootVM.disableLoading()

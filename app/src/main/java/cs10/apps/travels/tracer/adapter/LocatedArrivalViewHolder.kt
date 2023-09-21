@@ -8,10 +8,12 @@ import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.data.generator.Station
 import cs10.apps.travels.tracer.databinding.ItemArrivalBinding
+import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.ArriboTren
 import cs10.apps.travels.tracer.ui.stops.ETA_Switcher
+import cs10.apps.travels.tracer.utils.ColorUtils
 
 class LocatedArrivalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -48,7 +50,7 @@ class LocatedArrivalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         } else {
             // old method
             val color = if (viaje.tipo == 1 && !viaje.ramal.isNullOrEmpty() && viaje.ramal!!.contains("Directo")) R.color.bus_159
-            else Utils.colorFor(viaje.linea)
+            else ColorUtils.colorFor(viaje.linea, viaje.tipo)
             binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
         }
 

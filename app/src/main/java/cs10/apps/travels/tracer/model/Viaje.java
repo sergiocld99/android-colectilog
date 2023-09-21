@@ -273,4 +273,8 @@ public class Viaje implements Comparable<Viaje> {
     public void setPeopleCount(int peopleCount) {
         this.peopleCount = peopleCount;
     }
+
+    public boolean isFinished() {
+        return getEndHour() != null;
+    }
 }

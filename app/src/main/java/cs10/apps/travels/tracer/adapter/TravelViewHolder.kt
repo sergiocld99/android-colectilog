@@ -11,6 +11,7 @@ import cs10.apps.travels.tracer.databinding.ItemTravelBinding
 import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
+import cs10.apps.travels.tracer.utils.ColorUtils
 
 class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -60,7 +61,7 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         // COLOR
         if (viaje.color != null) binding.root.setBackgroundColor(viaje.color)
         else {
-            val selectedColor = Utils.colorFor(viaje.linea, viaje.tipo)
+            val selectedColor = ColorUtils.colorFor(viaje.linea, viaje.tipo)
             binding.root.background = AppCompatResources.getDrawable(binding.root.context, selectedColor)
         }
 

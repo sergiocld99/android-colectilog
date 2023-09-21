@@ -45,7 +45,9 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
             }
 
             // calculate speed for trains (all by now)
-            val train = RatedBusLine(-1, -1, null, R.color.train, 0.0, 0)
+            val train = RatedBusLine(-1, -1, null, R.color.train,
+                avgUserRate = rootVM.database.travelsDao().getAverageRateForType(TransportType.TRAIN.ordinal),
+                reviewsCount = rootVM.database.travelsDao().getReviewsCountForType(TransportType.TRAIN.ordinal))
             val stats = rootVM.database.viajesDao().getRecentFinishedTravelsFromType(TransportType.TRAIN.ordinal)
             train.speed = Utils.calculateAverageSpeed(stats)
             lines.add(train)

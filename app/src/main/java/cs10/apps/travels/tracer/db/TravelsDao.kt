@@ -23,4 +23,9 @@ interface TravelsDao {
             " group by linea order by 3 desc limit 3")
     suspend fun getMostSpentBusLineInMonth(month: Int, year: Int): List<PriceSum>
 
+    @Query("SELECT COUNT(rate) FROM Viaje where tipo = :type")
+    fun getReviewsCountForType(type: Int): Int
+
+    @Query("SELECT AVG(rate) FROM viaje where tipo = :type")
+    fun getAverageRateForType(type: Int): Double
 }

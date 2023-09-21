@@ -239,4 +239,5 @@ public abstract class MiDB extends RoomDatabase {
     public abstract ServicioDao servicioDao();
     public abstract LinesDao linesDao();
     public abstract ZonesDao zonesDao();
+    public  abstract TravelsDao travelsDao();
 }

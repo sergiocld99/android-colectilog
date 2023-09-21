@@ -133,7 +133,7 @@ public interface ViajesDao {
             "FROM Viaje V " +
             "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
             "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
-            "where linea is null and endHour is not null order by V.id DESC limit 1")
+            "where V.tipo = 1 and endHour is not null order by V.id DESC limit 1")
     TravelStats getLastFinishedTrainTravel();
 
     // ------------------------------ AUTOCOMPLETE CREATION -------------------------------------
@@ -179,9 +179,9 @@ public interface ViajesDao {
             "FROM Viaje V " +
             "INNER JOIN Parada P1 ON P1.nombre = V.nombrePdaInicio " +
             "INNER JOIN Parada P2 on P2.nombre = V.nombrePdaFin " +
-            "where linea is null and endHour is not null " +
+            "where V.tipo = :type and endHour is not null " +
             "order by year desc, month desc, day desc limit 10")
-    List<TravelStats> getRecentFinishedTravelsFromTrains();
+    List<TravelStats> getRecentFinishedTravelsFromType(int type);
 
     @Query("SELECT P1.latitud as start_x, P1.longitud as start_y, " +
             "P2.latitud as end_x, P2.longitud as end_y, " +
@@ -233,27 +233,5 @@ public interface ViajesDao {
             "where linea = :number and V.wd = :wd and endHour is not null " +
             "order by year desc, month desc, day desc limit 10")
     List<TravelStats> getRecentFinishedTravelsOn(int wd, int number);
-
-
-    // -------------------------- MONTH SUMMARY -------------------------------
-
-    @Query("SELECT SUM(costo) FROM viaje where linea is not null and id > :travelId")
-    double getSpentInBusesSince(long travelId);
-
-    @Query("SELECT SUM(costo) FROM viaje where linea is null and id > :travelId")
-    double getSpentInTrainsSince(long travelId);
-
-    @Query("SELECT SUM(costo) FROM viaje where linea is not null and month is :month and year is :year")
-    double getTotalSpentInBuses(int month, int year);
-
-    @Query("SELECT SUM(costo) FROM viaje where linea is null and month is :month and year is :year")
-    double getTotalSpentInTrains(int month, int year);
-
-    @Query("SELECT V.linea, L.color, SUM(V.costo) as suma FROM viaje V " +
-            "LEFT JOIN lines L ON V.linea = L.number " +
-            "where linea is not null and month is :month and year is :year " +
-            " group by linea order by 3 desc limit 3")
-    List<PriceSum> getMostExpensiveBus(int month, int year);
-
 
 }

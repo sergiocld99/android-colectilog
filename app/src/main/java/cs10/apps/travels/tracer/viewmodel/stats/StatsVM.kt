@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import cs10.apps.travels.tracer.db.MiDB
+import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.PriceSum
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import kotlinx.coroutines.*
@@ -39,8 +40,9 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch(Dispatchers.IO) {
             val coffee = async { database.coffeeDao().getTotalSpent(month, year) }
-            val buses = async { database.viajesDao().getTotalSpentInBuses(month, year) }
-            val trains = async { database.viajesDao().getTotalSpentInTrains(month, year) }
+            val buses = async { database.travelsDao().getTotalSpentInMonthInType(month, year, TransportType.BUS.ordinal) }
+            val trains = async { database.travelsDao().getTotalSpentInMonthInType(month, year, TransportType.TRAIN.ordinal) }
+            val sumQuery = async {database.travelsDao().getMostSpentBusLineInMonth(month, year)}
 
             val genStats = async {
                 val (c,b,t) = awaitAll(coffee, buses, trains)
@@ -49,10 +51,10 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
             }
 
             val busesStats = async {
-                val sums = database.viajesDao().getMostExpensiveBus(month, year)
                 val b = buses.await()
+                val sums = sumQuery.await()
 
-                if (sums.size > 0) setBus1Stat(sums[0], b)
+                if (sums.isNotEmpty()) setBus1Stat(sums[0], b)
                 if (sums.size > 1) setBus2Stat(sums[1], b)
                 if (sums.size > 2) setBus3Stat(sums[2], b)
             }
@@ -63,8 +65,8 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
                 val chargeId = prefs.getLong("chargeId", 0)
                 val savedBalance = prefs.getFloat("balance", 0f)
 
-                val sinceBuses = database.viajesDao().getSpentInBusesSince(travelId)
-                val sinceTrains = database.viajesDao().getSpentInTrainsSince(travelId)
+                val sinceBuses = database.travelsDao().getTotalSpentInTypeSince(travelId, TransportType.BUS.ordinal)
+                val sinceTrains = database.travelsDao().getTotalSpentInTypeSince(travelId, TransportType.TRAIN.ordinal)
                 val sinceCoffee = database.coffeeDao().getSpentSince(coffeeId)
                 val charges = database.recargaDao().getTotalChargedSince(chargeId)
 
@@ -72,7 +74,7 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
                 setBalance(money)
             }
 
-            delay(1000)
+            delay(300)
             awaitAll(genStats, busesStats, balanceStat)
             rootVM.disableLoading()
         }

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
+import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.modules.lines.db.LinesDao
 import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
@@ -45,7 +46,7 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
 
             // calculate speed for trains (all by now)
             val train = RatedBusLine(-1, -1, null, R.color.train, 0.0, 0)
-            val stats = rootVM.database.viajesDao().recentFinishedTravelsFromTrains
+            val stats = rootVM.database.viajesDao().getRecentFinishedTravelsFromType(TransportType.TRAIN.ordinal)
             train.speed = Utils.calculateAverageSpeed(stats)
             lines.add(train)
 

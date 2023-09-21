@@ -14,17 +14,26 @@ class LineViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val binding = ItemLineBinding.bind(view)
 
     fun render(item: RatedBusLine, onLineClickListener: (CustomBusLine) -> Unit){
+        binding.title.text = ""
+        binding.suggestedName.text = ""
+        binding.rateText.text = ""
+        binding.speedText.text = ""
+        binding.card.setCardBackgroundColor(null)
+
         item.number?.let { n ->
-            binding.title.text = if (n >= 0) "Linea $n" else "Linea Roca"
+            binding.title.text = if (n >= 0) "Linea $n" else item.name
             binding.icon.setImageDrawable(ContextCompat.getDrawable(binding.root.context,
-                    if (n >= 0) R.drawable.ic_bus else R.drawable.ic_train
+                    if (n >= 0) R.drawable.ic_bus
+                    else if (item.id == -1) R.drawable.ic_train
+                    else R.drawable.ic_car
                 ))
         }
 
-        item.name?.let { n -> binding.suggestedName.text = "- $n" }
+        if (item.number != -1) item.name?.let { n -> binding.suggestedName.text = "- $n" }
         item.speed?.let { n -> binding.speedText.text = String.format("%.1f km/h", n) }
 
-        Utils.paintBusColor(item.color, binding.card)
+        if (item.id >= 0) Utils.paintBusColor(item.color, binding.card)
+        else binding.card.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, item.color))
 
         binding.rateText.text = "${Utils.rateFormat(item.avgUserRate)} (${item.reviewsCount} reviews)"
 

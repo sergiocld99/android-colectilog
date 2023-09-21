@@ -72,8 +72,10 @@ class LineManagerFragment : CS_Fragment() {
             if (n >= 0){
                 intent = Intent(requireActivity(), LineDetail::class.java)
                 intent.putExtra("number", customBusLine.number)
-            } else {
+            } else if (customBusLine.id == -1) {
                 intent = Intent(requireActivity(), TrainDetail::class.java)
+            } else {
+                return
             }
 
             startActivity(intent)

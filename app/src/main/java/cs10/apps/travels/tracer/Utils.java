@@ -85,10 +85,6 @@ public class Utils {
         else return Math.round(value * 1000);
     }
 
-    public static int colorFor(Integer bus, Context context){
-        return ContextCompat.getColor(context, colorFor(bus));
-    }
-
     public static int colorForType(double type){
         return colorForType((int) Math.round(type));
     }
@@ -116,6 +112,33 @@ public class Utils {
             view.setBackgroundColor(color);
     }
 
+    public static int colorFor(Integer busNumber, int type){
+        if (busNumber == null) return colorForType(type);
+        else switch (busNumber){
+            case 202:
+                return R.color.bus_202;
+            case 324:
+                return R.color.bus_324;
+            case 160:
+            case 178:
+            case 414:
+                return R.color.bus_414;
+            case 159:
+            case 603:
+                return R.color.bus_159;
+            case 383:
+            case 500:
+            case 508:
+                return R.color.bus_500;
+            case 98:
+            case 148:
+                return R.color.bus_98;
+            default:
+                return R.color.bus;
+        }
+    }
+
+    @Deprecated
     public static int colorFor(Integer bus){
         if (bus == null) return R.color.black;
 

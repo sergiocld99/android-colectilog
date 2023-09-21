@@ -312,7 +312,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
         val start = Point(startStop.getX(), startStop.getY())
         val end = Point(endStop.getX(), endStop.getY())
         val current = Point(currentLocation.latitude, currentLocation.longitude)
-        val n = 8 // ((1 - currentProg) * 10).roundToInt()
+        val n = 3 // ((1 - currentProg) * 10).roundToInt()
         val nextPoints = calculateNextPoints(current, end, n)
         // var nextFound = false
 

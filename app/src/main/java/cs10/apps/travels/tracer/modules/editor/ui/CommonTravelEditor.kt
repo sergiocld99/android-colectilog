@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.travels
+package cs10.apps.travels.tracer.modules.editor.ui
 
 import android.view.Menu
 import android.view.MenuItem
@@ -14,11 +14,16 @@ import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.modules.RedSube
-import kotlinx.coroutines.*
+import cs10.apps.travels.tracer.modules.editor.model.MeasuredTravel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 
 abstract class CommonTravelEditor : FormActivity() {
 
-    protected lateinit var viaje: Viaje
+    protected lateinit var mt: MeasuredTravel
     protected var paradas: List<Parada> = mutableListOf()
     protected lateinit var startAdapter: ArrayAdapter<Parada>
     protected lateinit var endAdapter: ArrayAdapter<Parada>
@@ -53,23 +58,28 @@ abstract class CommonTravelEditor : FormActivity() {
                 endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             }
 
-            viaje = db.viajesDao().getById(travelId)
+            val viaje = db.viajesDao().getById(travelId)
+            val count = RedSube(applicationContext).getLast2HoursQuantity(viaje)
 
-            val b = async {
-                val count = RedSube(applicationContext).getLast2HoursQuantity(viaje)
-                CoroutineScope(Dispatchers.Main).launch{ updateRedSubeHeader(count, moduleRedSubeBinding) }
-            }
+            // calcular distancia y velocidad
+            val td = db.viajesDao().getTravelDistanceFromId(viaje.id)
+            this@CommonTravelEditor.mt = MeasuredTravel(viaje, td.distance)
 
             awaitAll(a)
 
             CoroutineScope(Dispatchers.Main).launch {
+                updateRedSubeHeader(count, moduleRedSubeBinding)
                 setSpinners()
                 retrieve()
             }
         }
     }
 
+    /**
+     * A partir del viaje recuperado de la DB, actualiza los text fields y demas vistas
+     */
     abstract fun retrieve()
+
     abstract fun setSpinners()
     abstract fun onCheckEntries(viaje: Viaje) : Int
 
@@ -91,20 +101,25 @@ abstract class CommonTravelEditor : FormActivity() {
     }
 
     private fun performDone(){
-        val result = onCheckEntries(viaje)
+        val result = onCheckEntries(getViaje())
 
         if (result == 0) CoroutineScope(Dispatchers.IO).launch {
             val dao = MiDB.getInstance(applicationContext).viajesDao()
-            dao.update(viaje)
+            dao.update(getViaje())
             CoroutineScope(Dispatchers.Main).launch { finish() }
         }
 
         Toast.makeText(applicationContext, messages[result], Toast.LENGTH_LONG).show()
     }
 
+    fun getViaje(): Viaje {
+        return mt.viaje
+    }
+
     // ---------------------- PICKER FRAGMENTS --------------------
 
     fun createDatePicker(){
+        val viaje = getViaje()
         val picker = DatePickerFragment(viaje.day, viaje.month, viaje.year) { day, month, year ->
             onDateSet(day, month, year)
             viaje.day = day

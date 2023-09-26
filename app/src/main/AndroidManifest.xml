@@ -54,10 +54,10 @@
             android:name=".modules.creator.ui.CarTravelCreator"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity
-            android:name=".ui.travels.BusTravelEditor"
+            android:name=".modules.editor.ui.BusTravelEditor"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".ui.travels.TrainTravelEditor"
+            android:name=".modules.editor.ui.TrainTravelEditor"
             android:theme="@style/Theme.TravelTracer.Trains" />
         <activity
             android:name=".ui.stops.StopCreator"

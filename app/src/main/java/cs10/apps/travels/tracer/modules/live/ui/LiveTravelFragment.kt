@@ -9,7 +9,6 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
@@ -19,12 +18,10 @@ import com.google.android.material.tabs.TabLayout
 import com.patrykandpatrick.vico.core.chart.values.AxisValuesOverrider
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import cs10.apps.common.android.Emoji
-import cs10.apps.common.android.NumberUtils
 import cs10.apps.common.android.ui.CS_Fragment
 import cs10.apps.rater.HappyRater
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
-import cs10.apps.travels.tracer.adapter.NearStopAdapter
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
 import cs10.apps.travels.tracer.enums.TransportType
@@ -34,9 +31,8 @@ import cs10.apps.travels.tracer.modules.live.model.SwitcherText
 import cs10.apps.travels.tracer.modules.live.viewmodel.LiveVM
 import cs10.apps.travels.tracer.modules.live.viewmodel.WaitingVM
 import cs10.apps.travels.tracer.notification.NotificationCenter
-import cs10.apps.travels.tracer.ui.service.ServiceDetail
-import cs10.apps.travels.tracer.ui.travels.BusTravelEditor
-import cs10.apps.travels.tracer.ui.travels.TrainTravelEditor
+import cs10.apps.travels.tracer.modules.editor.ui.BusTravelEditor
+import cs10.apps.travels.tracer.modules.editor.ui.TrainTravelEditor
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import java.util.Calendar

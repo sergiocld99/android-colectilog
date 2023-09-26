@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.travels;
+package cs10.apps.travels.tracer.modules.editor.ui;
 
 import android.os.Bundle;
 import android.view.View;
@@ -53,6 +53,7 @@ public class TrainTravelEditor extends CommonTravelEditor {
 
     @Override
     public void retrieve() {
+        Viaje viaje = getViaje();
         if (viaje.getCosto() != 0) content.etPrice.setText(String.valueOf(viaje.getCosto()));
         content.etDate.setText(Utils.dateFormat(viaje.getDay(), viaje.getMonth(), viaje.getYear()));
         content.etStartHour.setText(Utils.hourFormat(viaje.getStartHour(), viaje.getStartMinute()));

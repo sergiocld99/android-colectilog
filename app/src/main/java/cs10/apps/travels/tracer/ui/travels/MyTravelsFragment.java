@@ -28,6 +28,8 @@ import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.joins.ColoredTravel;
 import cs10.apps.travels.tracer.model.location.TravelDistance;
 import cs10.apps.travels.tracer.modules.AutoRater;
+import cs10.apps.travels.tracer.modules.editor.ui.BusTravelEditor;
+import cs10.apps.travels.tracer.modules.editor.ui.TrainTravelEditor;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
 
 public class MyTravelsFragment extends CS_Fragment {

@@ -1,4 +1,4 @@
-package cs10.apps.travels.tracer.ui.travels;
+package cs10.apps.travels.tracer.modules.editor.ui;
 
 import android.os.Bundle;
 import android.view.View;
@@ -8,13 +8,14 @@ import androidx.annotation.NonNull;
 
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
-import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding;
+import cs10.apps.travels.tracer.databinding.ActivityBusTravelEditorBinding;
 import cs10.apps.travels.tracer.databinding.ContentBusTravelCreatorBinding;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
 
 public class BusTravelEditor extends CommonTravelEditor {
     private ContentBusTravelCreatorBinding content;
+    private ActivityBusTravelEditorBinding binding;
     private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
     private int startIndex, endIndex;
 
@@ -22,7 +23,7 @@ public class BusTravelEditor extends CommonTravelEditor {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityTravelCreatorBinding binding = ActivityTravelCreatorBinding.inflate(getLayoutInflater());
+        binding = ActivityBusTravelEditorBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
 
@@ -57,6 +58,7 @@ public class BusTravelEditor extends CommonTravelEditor {
 
     @Override
     public void retrieve() {
+        Viaje viaje = getViaje();
         if (viaje.getLinea() != null) content.etLine.setText(String.valueOf(viaje.getLinea()));
         if (viaje.getRamal() != null) content.etRamal.setText(viaje.getRamal());
         if (viaje.getCosto() != 0) content.etPrice.setText(String.valueOf(viaje.getCosto()));
@@ -74,6 +76,10 @@ public class BusTravelEditor extends CommonTravelEditor {
 
         content.selectorStartPlace.setSelection(startIndex);
         content.selectorEndPlace.setSelection(endIndex);
+
+        // top card
+        binding.distanceText.setText(getString(R.string.linear_distance_km, getMt().getDistanceKm()));
+        binding.speedText.setText(getString(R.string.speed_kmh, getMt().getSpeedKmH()));
     }
 
     private int getPosFor(String stopName){

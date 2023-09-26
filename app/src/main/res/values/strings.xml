@@ -112,4 +112,6 @@
     <string name="car_travel">Viaje en auto</string>
     <string name="new_travel_by_car">Nuevo viaje en Auto</string>
     <string name="from_stop">Desde %1$s</string>
+    <string name="speed_kmh">Velocidad: %1$.1f km/h</string>
+    <string name="linear_distance_km">Distancia recta: %1$.1f km</string>
 </resources>

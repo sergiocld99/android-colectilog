@@ -8,13 +8,14 @@ import androidx.annotation.NonNull;
 
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
-import cs10.apps.travels.tracer.databinding.ActivityTrainTravelCreatorBinding;
+import cs10.apps.travels.tracer.databinding.ActivityTrainTravelEditorBinding;
 import cs10.apps.travels.tracer.databinding.ContentTrainTravelCreatorBinding;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
 
 public class TrainTravelEditor extends CommonTravelEditor {
     private ContentTrainTravelCreatorBinding content;
+    private ActivityTrainTravelEditorBinding binding;
     private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
     private int startIndex, endIndex;
 
@@ -22,11 +23,11 @@ public class TrainTravelEditor extends CommonTravelEditor {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityTrainTravelCreatorBinding binding = ActivityTrainTravelCreatorBinding.inflate(getLayoutInflater());
+        binding = ActivityTrainTravelEditorBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
 
-        content = binding.content;
+        content = binding.contentTravelCreator;
         onStartPlaceSelected = new OnStartPlaceSelected();
         onEndPlaceSelected = new OnEndPlaceSelected();
 
@@ -67,6 +68,10 @@ public class TrainTravelEditor extends CommonTravelEditor {
 
         content.selectorStartPlace.setSelection(startIndex);
         content.selectorEndPlace.setSelection(endIndex);
+
+        // top card
+        binding.distanceText.setText(getString(R.string.linear_distance_km, getMt().getDistanceKm()));
+        binding.speedText.setText(getString(R.string.speed_kmh, getMt().getSpeedKmH()));
     }
 
     private int getPosFor(String stopName) {

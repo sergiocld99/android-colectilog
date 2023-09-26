@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".modules.editor.ui.BusTravelEditor">
+    tools:context=".modules.editor.ui.TrainTravelEditor">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -29,7 +28,7 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:id="@+id/appbar_image"
-                android:scrollY="0dp"
+                android:scrollY="50dp"
                 app:layout_collapseMode="pin"/>
 
             <!-- Side note: scrollY < 0 for show move to top -->
@@ -96,7 +95,7 @@
 
         <include
             android:id="@+id/content_travel_creator"
-            layout="@layout/content_bus_travel_creator" />
+            layout="@layout/content_train_travel_creator" />
 
     </LinearLayout>
 
@@ -109,15 +108,5 @@
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/done"
         app:srcCompat="@drawable/ic_done" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_stop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="96dp"
-        android:contentDescription="@string/new_stop"
-        app:srcCompat="@drawable/ic_edit_location" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

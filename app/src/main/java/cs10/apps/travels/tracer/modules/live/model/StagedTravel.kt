@@ -1,13 +1,9 @@
 package cs10.apps.travels.tracer.modules.live.model
 
-import android.location.Location
 import cs10.apps.common.android.Localizable
-import cs10.apps.common.android.NumberUtils
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.model.Point
 import cs10.apps.travels.tracer.model.Viaje
-import kotlin.Exception
 import kotlin.math.roundToInt
 
 class StagedTravel(val stages: List<Stage>) {
@@ -98,22 +94,25 @@ class StagedTravel(val stages: List<Stage>) {
             val end = db.paradasDao().getByName(endName)
 
             if (start.nombre == "Cruce Varela" && end.nombre == "Av. 1 y 48") {
-                val alpargatas = db.paradasDao().getByName("Alpargatas")
-                val pzaItalia = db.paradasDao().getByName("Plaza Italia")
+                val alpargatas = db.safeStopsDao().getStopByName("Alpargatas")
+                val pzaItalia = db.safeStopsDao().getStopByName("Plaza Italia")
+                if (alpargatas == null || pzaItalia == null) return defaultSt(start, end)
                 return withStops(arrayOf(start, alpargatas, pzaItalia, end))
             }
 
             if (start.nombre == "Estación La Plata" && end.nombre == "Estación Varela"){
-                val bera = db.paradasDao().getByName("Estación Berazategui")
-                return withStops(arrayOf(start, bera, end))
+                val bera = db.safeStopsDao().getStopByName("Estación Berazategui")
+                bera?.let { return withStops(arrayOf(start, it, end)) }
+                return defaultSt(start, end)
             }
 
             if (start.nombre == "Km 26" && end.nombre == "Estación Adrogué"){
-                val temperley = db.paradasDao().getByName("Estación Temperley")
-                return withStops(arrayOf(start, temperley, end))
+                val temperley = db.safeStopsDao().getStopByName("Estación Temperley")
+                temperley?.let { return withStops(arrayOf(start, it, end)) }
+                return defaultSt(start, end)
             }
 
-            return StagedTravel(listOf(Stage(start, end)))
+            return defaultSt(start, end)
         }
 
         fun withStops(pdas: Array<Localizable>) : StagedTravel {
@@ -123,6 +122,10 @@ class StagedTravel(val stages: List<Stage>) {
 
             for (i in 1 until n) stages.add(Stage(pdas[i-1], pdas[i]))
             return StagedTravel(stages)
+        }
+
+        private fun defaultSt(start: Localizable, end: Localizable) : StagedTravel {
+            return StagedTravel(listOf(Stage(start, end)))
         }
     }
 }

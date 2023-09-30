@@ -232,6 +232,7 @@ public abstract class MiDB extends RoomDatabase {
     };
 
     // DAOs
+    public abstract SafeStopsDao safeStopsDao();
     public abstract ParadasDao paradasDao();
     public abstract ViajesDao viajesDao();
     public abstract CoffeeDao coffeeDao();

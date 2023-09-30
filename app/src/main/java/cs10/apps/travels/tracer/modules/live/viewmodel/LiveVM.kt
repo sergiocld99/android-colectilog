@@ -241,13 +241,12 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         calculateNextPoints(startStop, endStop, location, minutesLeft, speed)
 
                         // fifth action: calculate expected rating
-                        minDuration.value?.let { bestDuration ->
-                            if (bestDuration > 0){
-                                val currentDuration = it + minutesLeft
-
-                                if (currentDuration <= bestDuration) rate.postValue(5.0)
-                                else rate.postValue(5.0 * bestDuration / currentDuration)
-                            } else rate.postValue(null)
+                        val bestDuration = minDuration.value
+                        if (bestDuration == null || bestDuration <= 0) rate.postValue(3.0)
+                        else {
+                            val currentDuration = it + minutesLeft
+                            if (currentDuration <= bestDuration) rate.postValue(5.0)
+                            else rate.postValue(5.0 * bestDuration / currentDuration)
                         }
 
                         // sixth action: build progress chart

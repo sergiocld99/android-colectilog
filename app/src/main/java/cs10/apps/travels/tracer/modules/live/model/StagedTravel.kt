@@ -54,10 +54,10 @@ class StagedTravel(val stages: List<Stage>) {
      */
     fun currentKmDistanceToFinish(currentPos: Localizable) : Double {
         return stages.sumOf {
-            if (it.isFinished()){
-                0.0
-            } else {
-                currentPos.kmDistanceTo(it.end)
+            when {
+                it.isFinished() -> 0.0
+                it.isStarted() -> currentPos.kmDistanceTo(it.end)
+                else -> it.kmDistance
             }
         }
     }
@@ -134,8 +134,9 @@ class StagedTravel(val stages: List<Stage>) {
             if (start.nombre == "Cruce Varela" && end.nombre == "Av. 1 y 48") {
                 val alpargatas = db.safeStopsDao().getStopByName("Alpargatas")
                 val pzaItalia = db.safeStopsDao().getStopByName("Plaza Italia")
-                if (alpargatas == null || pzaItalia == null) return defaultSt(start, end)
-                return withStops(arrayOf(start, alpargatas, pzaItalia, end))
+                val terminal = db.safeStopsDao().getStopByName("Terminal La Plata")
+                if (alpargatas == null || pzaItalia == null || terminal == null) return defaultSt(start, end)
+                return withStops(arrayOf(start, alpargatas, pzaItalia, terminal, end))
             }
 
             if (start.nombre == "Estación La Plata" && end.nombre == "Estación Varela"){
@@ -144,8 +145,8 @@ class StagedTravel(val stages: List<Stage>) {
                 return defaultSt(start, end)
             }
 
-            if (start.nombre == "Km 26" && end.nombre == "Estación Adrogué"){
-                val temperley = db.safeStopsDao().getStopByName("Estación Temperley")
+            if (start.nombre == "Dorrego" && end.nombre == "Colegio de Adrogué"){
+                val temperley = db.safeStopsDao().getStopByName("Cruce Varela")
                 temperley?.let { return withStops(arrayOf(start, it, end)) }
                 return defaultSt(start, end)
             }*/

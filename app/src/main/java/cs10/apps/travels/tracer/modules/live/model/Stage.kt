@@ -61,4 +61,6 @@ data class Stage(val start: Localizable, val end: Localizable, var progress: Int
     }
 
     fun isFinished(): Boolean = progress == 100
+
+    fun isStarted(): Boolean = progress > 0
 }

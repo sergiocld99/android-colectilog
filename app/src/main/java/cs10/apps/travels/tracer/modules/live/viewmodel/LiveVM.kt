@@ -200,7 +200,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 val startStop = st.start
                 val endStop = st.end
                 val prog = st.currentProgress(currentPoint) / 100
-                val endKmDistance = endStop.kmDistanceTo(currentPoint)
+                val endKmDistance = st.currentKmDistanceToFinish(currentPoint)
 
                 // estimate time to arrive
                 minutesFromStart.value?.let {

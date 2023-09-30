@@ -49,6 +49,19 @@ class StagedTravel(val stages: List<Stage>) {
         return 100 * startDist / (startDist + endDist)
     }
 
+    /**
+     * Ejecutar una vez calculado el stage actual
+     */
+    fun currentKmDistanceToFinish(currentPos: Localizable) : Double {
+        return stages.sumOf {
+            if (it.isFinished()){
+                0.0
+            } else {
+                currentPos.kmDistanceTo(it.end)
+            }
+        }
+    }
+
     fun updateStagesETA(minutesLeftToEach: List<Double>) {
         val currentTs = Utils.getCurrentTs()
 

@@ -4,6 +4,7 @@ import cs10.apps.common.android.Localizable
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.modules.live.utils.MediumStopsManager
 import kotlin.math.roundToInt
 
 class StagedTravel(val stages: List<Stage>) {
@@ -35,6 +36,11 @@ class StagedTravel(val stages: List<Stage>) {
 
         found?.let { return it }
         return stages.last()
+    }
+
+    fun getCurrentStage(): Stage? {
+        val filtered = stages.filter { it.progress in 10..90 }
+        return filtered.firstOrNull()
     }
 
     fun currentProgress(currentPos: Localizable) : Double {
@@ -83,8 +89,26 @@ class StagedTravel(val stages: List<Stage>) {
 
     companion object {
 
-        fun from(t: Viaje, db: MiDB) : StagedTravel {
-            val st = from(t.nombrePdaInicio, t.nombrePdaFin, db)
+        suspend fun from(t: Viaje, db: MiDB) : StagedTravel {
+            val mediumStopsManager = MediumStopsManager(t)
+            mediumStopsManager.buildStops(db)
+
+            val st: StagedTravel = if (mediumStopsManager.stops.size == 2){
+                // classic mode
+                from(t.nombrePdaInicio, t.nombrePdaFin, db)
+            } else {
+                // find locations
+                val locations = mutableListOf<Localizable>()
+
+                for (stopName in mediumStopsManager.stops){
+                    db.safeStopsDao().getStopByName(stopName)?.let { locations.add(it) }
+                }
+
+                // build stages
+                withStops(locations.toTypedArray())
+            }
+
+            // set global start time
             st.stages[0].startTime = t.startHour * 60 + t.startMinute
             return st
         }
@@ -93,6 +117,7 @@ class StagedTravel(val stages: List<Stage>) {
             val start = db.paradasDao().getByName(startName)
             val end = db.paradasDao().getByName(endName)
 
+            /*
             if (start.nombre == "Cruce Varela" && end.nombre == "Av. 1 y 48") {
                 val alpargatas = db.safeStopsDao().getStopByName("Alpargatas")
                 val pzaItalia = db.safeStopsDao().getStopByName("Plaza Italia")
@@ -110,7 +135,7 @@ class StagedTravel(val stages: List<Stage>) {
                 val temperley = db.safeStopsDao().getStopByName("Estación Temperley")
                 temperley?.let { return withStops(arrayOf(start, it, end)) }
                 return defaultSt(start, end)
-            }
+            }*/
 
             return defaultSt(start, end)
         }

@@ -26,12 +26,13 @@ import cs10.apps.travels.tracer.model.prices.TarifaTren;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 import cs10.apps.travels.tracer.model.roca.ServicioTren;
 import cs10.apps.travels.tracer.modules.lines.db.LinesDao;
+import cs10.apps.travels.tracer.modules.live.entity.MediumStop;
 
 @Database(entities = {Circuito.class, Comunicacion.class, Estacion.class, FormacionCircuito.class,
         Tren.class, Horario.class, Parada.class, Viaje.class, TarifaBus.class, TarifaTren.class,
         Coffee.class, Recarga.class, ServicioTren.class, HorarioTren.class, CustomBusLine.class,
-        Zone.class
-}, version = 21)
+        Zone.class, MediumStop.class
+}, version = 22)
 public abstract class MiDB extends RoomDatabase {
     private static MiDB instance;
 
@@ -43,7 +44,7 @@ public abstract class MiDB extends RoomDatabase {
                     ADD_COSTO_TO_VIAJE, CREATE_COFFEE_TABLE, CREATE_RECARGA_TABLE,
                     CREATE_ROCA_TABLES, FIX_HORARIOS_TABLE, ADD_RAMAL_COLUMN_TO_SERVICIOS,
                     ADD_WEEK_DAY_COLUMN_TO_TRAVELS, ADD_RATE_COLUMN_TO_TRAVELS, CREATE_LINES_TABLE,
-                    CREATE_ZONES_TABLE
+                    CREATE_ZONES_TABLE, CREATE_MEDIUM_STOPS_TABLE
             };
 
             instance = Room.databaseBuilder(context.getApplicationContext(), MiDB.class,
@@ -228,6 +229,17 @@ public abstract class MiDB extends RoomDatabase {
             database.execSQL("CREATE TABLE Zone (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
                     "name TEXT NOT NULL, x0 REAL NOT NULL, x1 REAL NOT NULL, " +
                     "y0 REAL NOT NULL, y1 REAL NOT NULL )");
+        }
+    };
+
+    private static final Migration CREATE_MEDIUM_STOPS_TABLE = new Migration(21, 22) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase supportSQLiteDatabase) {
+            supportSQLiteDatabase.execSQL("CREATE TABLE MediumStop (" +
+                    "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                    "type INTEGER NOT NULL, line INTEGER, ramal TEXT, " +
+                    "prev TEXT NOT NULL, name TEXT NOT NULL, next TEXT NOT NULL, " +
+                    "destination TEXT NOT NULL)");
         }
     };
 

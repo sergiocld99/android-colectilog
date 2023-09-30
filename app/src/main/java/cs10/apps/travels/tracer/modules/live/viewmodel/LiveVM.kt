@@ -37,6 +37,7 @@ import cs10.apps.travels.tracer.modules.live.model.EstimationData
 import cs10.apps.travels.tracer.modules.live.model.Stage
 import cs10.apps.travels.tracer.modules.live.model.StagedTravel
 import cs10.apps.travels.tracer.modules.live.utils.AutoTravelFinisher
+import cs10.apps.travels.tracer.modules.live.utils.MediumStopsManager
 import cs10.apps.travels.tracer.modules.live.utils.ProgressCorrector
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import kotlinx.coroutines.Dispatchers
@@ -99,8 +100,11 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     private val finisher = AutoTravelFinisher()
 
     // staged travel
-    private var stagedTravel: StagedTravel? = null
+    var stagedTravel: StagedTravel? = null
     val stages = MutableLiveData(listOf<Stage>())
+
+    // medium stops
+    var mediumStopsManager: MediumStopsManager? = null
 
     // --------------------------- FUNCTIONS ---------------------------------
 
@@ -116,7 +120,8 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 travel.postValue(t)
 
                 stagedTravel = StagedTravel.from(t, database)
-                //stages.postValue(stagedTravel?.stages)
+                mediumStopsManager = MediumStopsManager(t)
+                mediumStopsManager?.buildStops(db = database)
 
                 delay(500)
 

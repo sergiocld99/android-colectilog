@@ -9,6 +9,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
@@ -336,8 +337,14 @@ class LiveTravelFragment : CS_Fragment() {
                                 .setMessage(question)
                                 .setNeutralButton("No", null)
                                 .setPositiveButton("Sí") { _, _ ->
-                                    launch(Dispatchers.IO) {
-                                        msm.add(candidate, currentStage, db)
+                                    // lifecycleScope es obligatorio para que se ejecute
+                                    lifecycleScope.launch(Dispatchers.IO) {
+                                        val success = msm.add(candidate, currentStage, db)
+
+                                        launch(Dispatchers.Main) {
+                                            if (success) Toast.makeText(activity, "Añadido con éxito", Toast.LENGTH_SHORT).show()
+                                            else Toast.makeText(activity, "Fallo al agregar intermedio", Toast.LENGTH_LONG).show()
+                                        }
                                     }
                                 }
 

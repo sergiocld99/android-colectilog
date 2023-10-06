@@ -130,6 +130,14 @@ class StagedTravel(val stages: List<Stage>) {
             val start = db.paradasDao().getByName(startName)
             val end = db.paradasDao().getByName(endName)
 
+            if (start.nombre.contains("Adrogué") && end.nombre.contains("Claypole")){
+                db.safeStopsDao().getStopByName("Estación Burzaco")?.let {
+                    return withStops(arrayOf(start, it, end))
+                }
+
+                return defaultSt(start, end)
+            }
+
             /*
             if (start.nombre == "Cruce Varela" && end.nombre == "Av. 1 y 48") {
                 val alpargatas = db.safeStopsDao().getStopByName("Alpargatas")

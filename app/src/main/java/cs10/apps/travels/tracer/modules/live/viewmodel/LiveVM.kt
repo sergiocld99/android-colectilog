@@ -34,6 +34,7 @@ import cs10.apps.travels.tracer.model.roca.RamalSchedule
 import cs10.apps.travels.tracer.modules.ZoneData
 import cs10.apps.travels.tracer.modules.live.model.Countdown
 import cs10.apps.travels.tracer.modules.live.model.EstimationData
+import cs10.apps.travels.tracer.modules.live.model.PredictionBase
 import cs10.apps.travels.tracer.modules.live.model.Stage
 import cs10.apps.travels.tracer.modules.live.model.StagedTravel
 import cs10.apps.travels.tracer.modules.live.utils.AutoTravelFinisher
@@ -115,11 +116,15 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             if (t == null) resetAllButTravel()
             else {
                 // general estimation for buses or trains
-                estData.postValue(DatabaseFinder(database).findAverageDuration(t))
+                val estimation = DatabaseFinder(database).findAverageDuration(t)
+                val st = StagedTravel.from(t, database)
+                val pred = PredictionBase(estimation, st)
+
+                estData.postValue(EstimationData(pred.getAverageDuration(), pred.getEstimatedSpeed().toInt(), true))
                 minDuration.postValue(DatabaseFinder(database).findMinimalDuration(t))
                 travel.postValue(t)
 
-                stagedTravel = StagedTravel.from(t, database)
+                stagedTravel = st
                 mediumStopsManager = MediumStopsManager(t)
                 mediumStopsManager?.buildStops(db = database)
 

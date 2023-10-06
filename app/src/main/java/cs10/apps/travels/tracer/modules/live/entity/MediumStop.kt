@@ -1,10 +1,11 @@
 package cs10.apps.travels.tracer.modules.live.entity
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@Entity(primaryKeys = ["id"])
+@Entity(tableName = "MediumStop")
 data class MediumStop(
-    val id: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long,
     val type: Int,
     val line: Int?,
     val ramal: String?,

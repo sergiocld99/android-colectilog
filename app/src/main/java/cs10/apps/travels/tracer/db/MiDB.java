@@ -32,7 +32,7 @@ import cs10.apps.travels.tracer.modules.live.entity.MediumStop;
         Tren.class, Horario.class, Parada.class, Viaje.class, TarifaBus.class, TarifaTren.class,
         Coffee.class, Recarga.class, ServicioTren.class, HorarioTren.class, CustomBusLine.class,
         Zone.class, MediumStop.class
-}, version = 22)
+}, version = 23)
 public abstract class MiDB extends RoomDatabase {
     private static MiDB instance;
 
@@ -44,7 +44,7 @@ public abstract class MiDB extends RoomDatabase {
                     ADD_COSTO_TO_VIAJE, CREATE_COFFEE_TABLE, CREATE_RECARGA_TABLE,
                     CREATE_ROCA_TABLES, FIX_HORARIOS_TABLE, ADD_RAMAL_COLUMN_TO_SERVICIOS,
                     ADD_WEEK_DAY_COLUMN_TO_TRAVELS, ADD_RATE_COLUMN_TO_TRAVELS, CREATE_LINES_TABLE,
-                    CREATE_ZONES_TABLE, CREATE_MEDIUM_STOPS_TABLE
+                    CREATE_ZONES_TABLE, CREATE_MEDIUM_STOPS_TABLE, DROP_MEDIUM_STOPS
             };
 
             instance = Room.databaseBuilder(context.getApplicationContext(), MiDB.class,
@@ -240,6 +240,13 @@ public abstract class MiDB extends RoomDatabase {
                     "type INTEGER NOT NULL, line INTEGER, ramal TEXT, " +
                     "prev TEXT NOT NULL, name TEXT NOT NULL, next TEXT NOT NULL, " +
                     "destination TEXT NOT NULL)");
+        }
+    };
+
+    private static final Migration DROP_MEDIUM_STOPS = new Migration(22, 23) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+
         }
     };
 

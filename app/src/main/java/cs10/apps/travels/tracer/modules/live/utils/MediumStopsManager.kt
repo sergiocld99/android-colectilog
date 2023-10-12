@@ -9,10 +9,10 @@ import cs10.apps.travels.tracer.modules.live.model.Stage
 class MediumStopsManager(val travel: Viaje) {
     val start = travel.nombrePdaInicio
     val end = travel.nombrePdaFin
-    val stops = mutableListOf(start, end)
-    val candidatesAsked = mutableListOf<String>()
+    var stops = mutableListOf(start, end)
+    private val candidatesAsked = mutableListOf<String>()
 
-    suspend fun buildStops(db: MiDB) {
+    suspend fun buildStops(db: MiDB) : MediumStopsManager {
         if (stops.size == 2){
             if (travel.tipo == TransportType.BUS.ordinal){
                 travel.linea?.let {
@@ -20,6 +20,13 @@ class MediumStopsManager(val travel: Viaje) {
                 }
             }
         }
+
+        return this
+    }
+
+    suspend fun rebuildStops(db: MiDB) {
+        stops = mutableListOf(start, end)
+        buildStops(db)
     }
 
     private suspend fun buildStopsForBusRamal(line: Int, ramal: String?, dest: String, db: MiDB){
@@ -30,7 +37,11 @@ class MediumStopsManager(val travel: Viaje) {
 
         while (!finish){
             val target = all.filter { it.prev == stops[i] }
-            if (target.size > 1) throw Exception("Unable to build path: multiple target found")
+            if (target.size > 1) {
+                for(j in 1 until target.size) db.safeStopsDao().deleteMediumStop(target[j])
+                throw Exception("Multiple target for ${stops[i]}, deleted all but ${target.first()}")
+            }
+
             if (target.isEmpty()) finish = true        // no more medium stops...
             else {
                 stops.add(i+1, target.first().name)
@@ -39,7 +50,9 @@ class MediumStopsManager(val travel: Viaje) {
             }
         }
 
-        if (aux.isNotEmpty() && aux.last().next != end) throw Exception("Incomplete path: last 2 stops unmatched")
+        if (aux.isNotEmpty() && aux.last().next != end) {
+            throw Exception("Incomplete path: last 2 stops unmatched - $all")
+        }
     }
 
     fun checkIfCanAdd(candidate: String): Boolean {
@@ -68,6 +81,12 @@ class MediumStopsManager(val travel: Viaje) {
 
         db.safeStopsDao().insertMediumStop(ms)
         stops.add(place, candidate)
+
+        // FIX: ALSO MODIFY NEXT MEDIUM STOP
+        if (travel.tipo == TransportType.BUS.ordinal) travel.linea?.let {
+            db.safeStopsDao().updateNextBusMediumStop(it, travel.ramal, travel.nombrePdaFin, ms.next, ms.name)
+        }
+
         return true
     }
 
@@ -78,4 +97,6 @@ class MediumStopsManager(val travel: Viaje) {
 
         return add(candidate, prevName, nextName, db)
     }
+
+    fun countStops() : Int = stops.size
 }

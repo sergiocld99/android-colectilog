@@ -13,4 +13,9 @@ data class MediumStop(
     val name: String,
     val next: String,
     val destination: String
-)
+) {
+
+    override fun toString(): String {
+        return "{$prev > $name > $next}"
+    }
+}

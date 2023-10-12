@@ -12,7 +12,8 @@ dependencyResolutionManagement {
         mavenCentral()
 
         // v2.18: CHARTS
-        maven { url 'https://jitpack.io' }
+        maven {url 'https://jitpack.io'}
+        maven {url 'https://oss.sonatype.org/content/repositories/snapshots'}
     }
 }
 rootProject.name = "Travel Tracer"

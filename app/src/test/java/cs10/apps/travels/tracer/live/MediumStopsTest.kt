@@ -7,6 +7,7 @@ import cs10.apps.travels.tracer.db.SafeStopsDao
 import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.modules.live.entity.MediumStop
 import cs10.apps.travels.tracer.modules.live.utils.MediumStopsManager
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -93,6 +94,34 @@ class MediumStopsTest {
             // levantar paradas intermedias
             mediumStopsManager.rebuildStops(db)
             assert(mediumStopsManager.countStops() == 4)
+        }
+    }
+
+    @Test
+    fun deleteTest(){
+        runBlocking {
+            val ms1 = MediumStop(0, BUS_TYPE, 338, null, "Cruce Varela",
+                "Luján y RP36", "Alpargatas", "Av. 1 y 48")
+
+            val ms2 = MediumStop(0, BUS_TYPE, 338, null, "Luján y RP36",
+                "Alpargatas", "Av. 1 y 48", "Av. 1 y 48")
+
+            val msFake = MediumStop(0, BUS_TYPE, 343, null, "Cruce Varela",
+                "Luján y RP36", "Av. 1 y 48", "Av. 1 y 48")
+
+            // insertar y contar
+            val id = db.safeStopsDao().insertMediumStop(ms1)
+            db.safeStopsDao().insertMediumStop(ms2)
+            db.safeStopsDao().insertMediumStop(msFake)
+            assert(db.safeStopsDao().getMediumStopsCreatedForBusTo(338, null, "Av. 1 y 48").size == 2)
+
+            // actualizar id
+            val ms3 = MediumStop(id, BUS_TYPE, 338, null, "Cruce Varela",
+                "Luján y RP36", "Alpargatas", "Av. 1 y 48")
+
+            // borrar y contar
+            db.safeStopsDao().deleteMediumStop(ms3)
+            assert(db.safeStopsDao().getMediumStopsCreatedForBusTo(338, null, "Av. 1 y 48").size == 1)
         }
     }
 

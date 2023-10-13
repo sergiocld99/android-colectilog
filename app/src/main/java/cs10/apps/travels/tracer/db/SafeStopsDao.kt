@@ -11,7 +11,7 @@ import cs10.apps.travels.tracer.modules.live.entity.MediumStop
 interface SafeStopsDao {
 
     @Insert
-    suspend fun insertMediumStop(mediumStop: MediumStop)
+    suspend fun insertMediumStop(mediumStop: MediumStop) : Long
 
     @Delete
     suspend fun deleteMediumStop(mediumStop: MediumStop)

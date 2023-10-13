@@ -10,8 +10,12 @@ import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.PriceSum
 import cs10.apps.travels.tracer.viewmodel.RootVM
-import kotlinx.coroutines.*
-import java.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.Calendar
 import kotlin.math.max
 
 class StatsVM(application: Application) : AndroidViewModel(application) {
@@ -39,9 +43,9 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
         val year = calendar[Calendar.YEAR]
 
         viewModelScope.launch(Dispatchers.IO) {
-            val coffee = async { database.coffeeDao().getTotalSpent(month, year) }
-            val buses = async { database.travelsDao().getTotalSpentInMonthInType(month, year, TransportType.BUS.ordinal) }
-            val trains = async { database.travelsDao().getTotalSpentInMonthInType(month, year, TransportType.TRAIN.ordinal) }
+            val coffee = async { database.coffeeDao().getTotalSpent(month, year) ?: 0.0 }
+            val buses = async { database.travelsDao().getTotalSpentInMonthInType(month, year, TransportType.BUS.ordinal) ?: 0.0 }
+            val trains = async { database.travelsDao().getTotalSpentInMonthInType(month, year, TransportType.TRAIN.ordinal) ?: 0.0 }
             val sumQuery = async {database.travelsDao().getMostSpentBusLineInMonth(month, year)}
 
             val genStats = async {
@@ -65,10 +69,10 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
                 val chargeId = prefs.getLong("chargeId", 0)
                 val savedBalance = prefs.getFloat("balance", 0f)
 
-                val sinceBuses = database.travelsDao().getTotalSpentInTypeSince(travelId, TransportType.BUS.ordinal)
-                val sinceTrains = database.travelsDao().getTotalSpentInTypeSince(travelId, TransportType.TRAIN.ordinal)
-                val sinceCoffee = database.coffeeDao().getSpentSince(coffeeId)
-                val charges = database.recargaDao().getTotalChargedSince(chargeId)
+                val sinceBuses = database.travelsDao().getTotalSpentInTypeSince(travelId, TransportType.BUS.ordinal) ?: 0.0
+                val sinceTrains = database.travelsDao().getTotalSpentInTypeSince(travelId, TransportType.TRAIN.ordinal) ?: 0.0
+                val sinceCoffee = database.coffeeDao().getSpentSince(coffeeId) ?: 0.0
+                val charges = database.recargaDao().getTotalChargedSince(chargeId) ?: 0.0
 
                 val money = savedBalance - sinceBuses - sinceTrains - sinceCoffee + charges
                 setBalance(money)

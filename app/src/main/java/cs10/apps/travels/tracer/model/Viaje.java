@@ -9,6 +9,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import cs10.apps.travels.tracer.Utils;
+import cs10.apps.travels.tracer.enums.TransportType;
 
 @Entity(foreignKeys = {
         @ForeignKey(entity = Parada.class, parentColumns = "nombre", childColumns = "nombrePdaInicio"),
@@ -51,6 +52,30 @@ public class Viaje implements Comparable<Viaje> {
     // Auxiliar temp variable for multiple travel creation
     @Ignore
     private int peopleCount = 1;
+
+    public Viaje fillMandatoryFields(int day, int month, int year, int startHour, int startMinute,
+                                      int tipo, String nombrePdaInicio, String nombrePdaFin,
+                                      double costo, int weekDay){
+        this.day = day;
+        this.month = month;
+        this.year = year;
+        this.startHour = startHour;
+        this.startMinute = startMinute;
+        this.tipo = tipo;
+        this.nombrePdaInicio = nombrePdaInicio;
+        this.nombrePdaFin = nombrePdaFin;
+        this.costo = costo;
+        this.weekDay = weekDay;
+        return this;
+    }
+
+    public Viaje fillMandatoryBusFields(int day, int month, int year, int startHour, int startMinute,
+                                        int linea, String nombrePdaInicio, String nombrePdaFin,
+                                        double costo, int weekDay){
+        this.linea = linea;
+        return fillMandatoryFields(day, month, year, startHour, startMinute,
+                TransportType.BUS.ordinal(), nombrePdaInicio, nombrePdaFin, costo, weekDay);
+    }
 
     public double getCosto() {
         return costo;

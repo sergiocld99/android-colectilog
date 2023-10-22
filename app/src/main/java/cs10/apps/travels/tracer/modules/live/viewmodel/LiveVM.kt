@@ -34,9 +34,11 @@ import cs10.apps.travels.tracer.model.roca.RamalSchedule
 import cs10.apps.travels.tracer.modules.ZoneData
 import cs10.apps.travels.tracer.modules.live.model.Countdown
 import cs10.apps.travels.tracer.modules.live.model.EstimationData
+import cs10.apps.travels.tracer.modules.live.model.PredictionBase
 import cs10.apps.travels.tracer.modules.live.model.Stage
 import cs10.apps.travels.tracer.modules.live.model.StagedTravel
 import cs10.apps.travels.tracer.modules.live.utils.AutoTravelFinisher
+import cs10.apps.travels.tracer.modules.live.utils.MediumStopsManager
 import cs10.apps.travels.tracer.modules.live.utils.ProgressCorrector
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import kotlinx.coroutines.Dispatchers
@@ -99,8 +101,11 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     private val finisher = AutoTravelFinisher()
 
     // staged travel
-    private var stagedTravel: StagedTravel? = null
+    var stagedTravel: StagedTravel? = null
     val stages = MutableLiveData(listOf<Stage>())
+
+    // medium stops
+    var mediumStopsManager: MediumStopsManager? = null
 
     // --------------------------- FUNCTIONS ---------------------------------
 
@@ -111,12 +116,17 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             if (t == null) resetAllButTravel()
             else {
                 // general estimation for buses or trains
-                estData.postValue(DatabaseFinder(database).findAverageDuration(t))
+                val estimation = DatabaseFinder(database).findAverageDuration(t)
+                val st = StagedTravel.from(t, database)
+                val pred = PredictionBase(estimation, st)
+
+                estData.postValue(EstimationData(pred.getAverageDuration(), pred.getEstimatedSpeed().toInt(), true))
                 minDuration.postValue(DatabaseFinder(database).findMinimalDuration(t))
                 travel.postValue(t)
 
-                stagedTravel = StagedTravel.from(t, database)
-                //stages.postValue(stagedTravel?.stages)
+                stagedTravel = st
+                mediumStopsManager = MediumStopsManager(t)
+                mediumStopsManager?.buildStops(db = database)
 
                 delay(500)
 
@@ -195,7 +205,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 val startStop = st.start
                 val endStop = st.end
                 val prog = st.currentProgress(currentPoint) / 100
-                val endKmDistance = endStop.kmDistanceTo(currentPoint)
+                val endKmDistance = st.currentKmDistanceToFinish(currentPoint)
 
                 // estimate time to arrive
                 minutesFromStart.value?.let {
@@ -236,13 +246,12 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         calculateNextPoints(startStop, endStop, location, minutesLeft, speed)
 
                         // fifth action: calculate expected rating
-                        minDuration.value?.let { bestDuration ->
-                            if (bestDuration > 0){
-                                val currentDuration = it + minutesLeft
-
-                                if (currentDuration <= bestDuration) rate.postValue(5.0)
-                                else rate.postValue(5.0 * bestDuration / currentDuration)
-                            } else rate.postValue(null)
+                        val bestDuration = minDuration.value
+                        if (bestDuration == null || bestDuration <= 0) rate.postValue(3.0)
+                        else {
+                            val currentDuration = it + minutesLeft
+                            if (currentDuration <= bestDuration) rate.postValue(5.0)
+                            else rate.postValue(5.0 * bestDuration / currentDuration)
                         }
 
                         // sixth action: build progress chart

@@ -19,12 +19,12 @@ class AutoTravelFinisher {
 
     private fun f0SW(currentDistanceToEnd: Double, totalDistance: Double): Boolean {
         val distanceToEndNeeded = 0.084 * totalDistance       // 500 -> 300m to Home
-        return currentDistanceToEnd < distanceToEndNeeded
+        return currentDistanceToEnd < distanceToEndNeeded || currentDistanceToEnd < 0.2
     }
 
     private fun f0SE(currentDistanceToEnd: Double, totalDistance: Double): Boolean {
         val distanceToEndNeeded = 0.024 * totalDistance       // 338 -> 750m to Av. 1 y 48
-        return currentDistanceToEnd < distanceToEndNeeded
+        return currentDistanceToEnd < distanceToEndNeeded || currentDistanceToEnd < 0.3
     }
 
     private fun f0NW(currentDistanceToEnd: Double, totalDistance: Double): Boolean {
@@ -34,6 +34,6 @@ class AutoTravelFinisher {
 
     private fun f0NE(currentDistanceToEnd: Double, totalDistance: Double): Boolean {
         val distanceToEndNeeded = 0.12 * totalDistance       // 500 -> 450m to Cruce Varela
-        return currentDistanceToEnd < distanceToEndNeeded
+        return currentDistanceToEnd < distanceToEndNeeded || currentDistanceToEnd < 0.2
     }
 }

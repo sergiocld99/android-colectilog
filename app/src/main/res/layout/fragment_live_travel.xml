@@ -340,43 +340,67 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
 
-                    <Button
+                    <androidx.cardview.widget.CardView
                         android:id="@+id/share_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Share"
-                        android:textColor="@color/white"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        app:cardBackgroundColor="@color/bus"
+                        app:cardCornerRadius="30dp"
                         android:visibility="gone"
-                        tools:visibility="visible"
-                        android:backgroundTint="@color/bus"/>
+                        tools:visibility="visible">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_margin="10dp"
+                            android:contentDescription="@string/edit_travel"
+                            android:src="@drawable/ic_share"/>
+
+                    </androidx.cardview.widget.CardView>
 
                     <View android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
 
-                    <Button
+                    <androidx.cardview.widget.CardView
                         android:id="@+id/finish_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Finish"
-                        android:textColor="@color/white"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        app:cardBackgroundColor="@color/bus_414"
+                        app:cardCornerRadius="30dp"
                         android:visibility="gone"
-                        tools:visibility="visible"
-                        android:backgroundTint="@color/bus_414"/>
+                        tools:visibility="visible">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_margin="10dp"
+                            android:contentDescription="@string/edit_travel"
+                            android:src="@drawable/ic_done"/>
+
+                    </androidx.cardview.widget.CardView>
 
                     <View android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
 
-                    <Button
+                    <androidx.cardview.widget.CardView
                         android:id="@+id/edit_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Edit"
-                        android:textColor="@color/white"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        app:cardBackgroundColor="@color/bus_500"
+                        app:cardCornerRadius="30dp"
                         android:visibility="gone"
-                        tools:visibility="visible"
-                        android:backgroundTint="@color/bus_500"/>
+                        tools:visibility="visible">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_margin="10dp"
+                            android:contentDescription="@string/edit_travel"
+                            android:src="@drawable/ic_edit"/>
+
+                    </androidx.cardview.widget.CardView>
 
                     <View android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -390,7 +414,7 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/action_buttons"
                     android:gravity="center_horizontal"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="28dp"
                     android:orientation="horizontal">
 
                     <!-- Estimated Rating -->

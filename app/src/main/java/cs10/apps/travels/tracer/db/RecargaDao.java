@@ -13,7 +13,7 @@ public interface RecargaDao {
     void insert(Recarga recarga);
 
     @Query("SELECT SUM(mount) FROM Recarga WHERE id > :id")
-    double getTotalChargedSince(long id);
+    Double getTotalChargedSince(long id);
 
     @Query("SELECT * FROM Recarga ORDER BY id DESC LIMIT 1")
     Recarga getLastInserted();

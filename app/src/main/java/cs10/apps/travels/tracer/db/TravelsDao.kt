@@ -12,10 +12,10 @@ import cs10.apps.travels.tracer.model.joins.PriceSum
 interface TravelsDao {
 
     @Query("SELECT SUM(costo) FROM viaje where tipo = :type and id > :travelId")
-    suspend fun getTotalSpentInTypeSince(travelId: Long, type: Int) : Double
+    suspend fun getTotalSpentInTypeSince(travelId: Long, type: Int) : Double?
 
     @Query("SELECT SUM(costo) FROM viaje where tipo = :type and year = :year and month = :month")
-    suspend fun getTotalSpentInMonthInType(month: Int, year: Int, type: Int) : Double
+    suspend fun getTotalSpentInMonthInType(month: Int, year: Int, type: Int) : Double?
 
     @Query("SELECT V.linea, L.color, SUM(V.costo) as suma FROM viaje V " +
             "LEFT JOIN lines L ON V.linea = L.number " +

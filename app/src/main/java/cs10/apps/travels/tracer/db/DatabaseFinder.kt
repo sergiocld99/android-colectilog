@@ -6,7 +6,6 @@ import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.joins.TravelStats
 import cs10.apps.travels.tracer.modules.live.model.EstimationData
 import java.util.Calendar
-import kotlin.math.exp
 import kotlin.math.roundToInt
 
 class DatabaseFinder(val db: MiDB) {

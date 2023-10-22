@@ -9,9 +9,11 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
@@ -24,17 +26,20 @@ import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
+import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
+import cs10.apps.travels.tracer.modules.editor.ui.BusTravelEditor
+import cs10.apps.travels.tracer.modules.editor.ui.TrainTravelEditor
 import cs10.apps.travels.tracer.modules.live.adapter.StagesAdapter
 import cs10.apps.travels.tracer.modules.live.model.SwitcherText
 import cs10.apps.travels.tracer.modules.live.viewmodel.LiveVM
 import cs10.apps.travels.tracer.modules.live.viewmodel.WaitingVM
 import cs10.apps.travels.tracer.notification.NotificationCenter
-import cs10.apps.travels.tracer.modules.editor.ui.BusTravelEditor
-import cs10.apps.travels.tracer.modules.editor.ui.TrainTravelEditor
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -315,6 +320,38 @@ class LiveTravelFragment : CS_Fragment() {
                 zoneSwitcher.replaceContent(SwitcherText("now", "Ahora: ${p.nombre}"), 0)
                 it?.removeFirstOrNull()
                 liveVM.vibrate(140)
+
+                // check if add
+                liveVM.mediumStopsManager?.let { msm ->
+                    val candidate = p.nombre
+                    val check = msm.checkIfCanAdd(candidate)
+                    val currentStage = liveVM.stagedTravel?.getCurrentStage()
+
+                    if (check && currentStage != null) lifecycleScope.launch(Dispatchers.IO) {
+                        val db = MiDB.getInstance(activity)
+                        val question = msm.getAddQuestion(candidate, currentStage, db)
+
+                        launch(Dispatchers.Main) {
+                            val builder = AlertDialog.Builder(activity)
+                                .setTitle("Sugerencia")
+                                .setMessage(question)
+                                .setNeutralButton("No", null)
+                                .setPositiveButton("Sí") { _, _ ->
+                                    // lifecycleScope es obligatorio para que se ejecute
+                                    lifecycleScope.launch(Dispatchers.IO) {
+                                        val success = msm.add(candidate, currentStage, db)
+
+                                        launch(Dispatchers.Main) {
+                                            if (success) Toast.makeText(activity, "Añadido con éxito", Toast.LENGTH_SHORT).show()
+                                            else Toast.makeText(activity, "Fallo al agregar intermedio", Toast.LENGTH_LONG).show()
+                                        }
+                                    }
+                                }
+
+                            builder.show()
+                        }
+                    }
+                }
             }
 
             it?.firstOrNull()?.let {nz ->

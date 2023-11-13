@@ -30,6 +30,7 @@ import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.modules.editor.ui.BusTravelEditor
+import cs10.apps.travels.tracer.modules.editor.ui.CarTravelEditor
 import cs10.apps.travels.tracer.modules.editor.ui.TrainTravelEditor
 import cs10.apps.travels.tracer.modules.live.adapter.StagesAdapter
 import cs10.apps.travels.tracer.modules.live.model.SwitcherText
@@ -513,10 +514,14 @@ class LiveTravelFragment : CS_Fragment() {
 
     private fun editCurrentTravel() {
         liveVM.travel.value?.let { viaje ->
-            if (viaje.tipo == TransportType.CAR.ordinal) return
+            // if (viaje.tipo == TransportType.CAR.ordinal) return
 
             val intent = Intent(activity,
-                if (viaje.tipo == 0) BusTravelEditor::class.java else TrainTravelEditor::class.java
+                when(TransportType.fromOrdinal(viaje.tipo)){
+                    TransportType.BUS -> BusTravelEditor::class.java
+                    TransportType.CAR -> CarTravelEditor::class.java
+                    TransportType.TRAIN -> TrainTravelEditor::class.java
+                }
             )
 
             intent.putExtra("travelId", viaje.id)

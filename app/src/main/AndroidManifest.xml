@@ -57,6 +57,9 @@
             android:name=".modules.editor.ui.BusTravelEditor"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
+            android:name=".modules.editor.ui.CarTravelEditor"
+            android:theme="@style/Theme.TravelTracer.NoActionBar" />
+        <activity
             android:name=".modules.editor.ui.TrainTravelEditor"
             android:theme="@style/Theme.TravelTracer.Trains" />
         <activity

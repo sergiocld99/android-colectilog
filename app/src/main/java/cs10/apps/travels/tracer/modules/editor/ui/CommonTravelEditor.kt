@@ -83,6 +83,9 @@ abstract class CommonTravelEditor : FormActivity() {
     abstract fun setSpinners()
     abstract fun onCheckEntries(viaje: Viaje) : Int
 
+    /**
+     * Asigna la función común performDone() al FAB pasado por parámetro
+     */
     protected fun setFabBehavior(fab: FloatingActionButton) = fab.setOnClickListener { performDone() }
 
     private fun updateRedSubeHeader(count: Int, moduleRedSubeBinding: ModuleRedSubeBinding){

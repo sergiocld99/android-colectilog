@@ -29,6 +29,7 @@ import cs10.apps.travels.tracer.model.joins.ColoredTravel;
 import cs10.apps.travels.tracer.model.location.TravelDistance;
 import cs10.apps.travels.tracer.modules.AutoRater;
 import cs10.apps.travels.tracer.modules.editor.ui.BusTravelEditor;
+import cs10.apps.travels.tracer.modules.editor.ui.CarTravelEditor;
 import cs10.apps.travels.tracer.modules.editor.ui.TrainTravelEditor;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
 
@@ -197,9 +198,23 @@ public class MyTravelsFragment extends CS_Fragment {
     }
 
     public void onEditTravel(Viaje viaje) {
-        if (viaje.getTipo() > 1) return;    // disable car travels edition
+        Class<?> target;
 
-        Intent intent = new Intent(getActivity(), viaje.getTipo() == 0 ? BusTravelEditor.class : TrainTravelEditor.class);
+        switch (TransportType.Companion.fromOrdinal(viaje.getTipo())){
+            case BUS:
+                target = BusTravelEditor.class;
+                break;
+            case CAR:
+                target = CarTravelEditor.class;
+                break;
+            case TRAIN:
+                target = TrainTravelEditor.class;
+                break;
+            default:
+                return;
+        }
+
+        Intent intent = new Intent(getActivity(), target);
         intent.putExtra("travelId", viaje.getId());
         startActivity(intent);
     }

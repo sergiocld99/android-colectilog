@@ -88,6 +88,7 @@ public class TrainTravelEditor extends CommonTravelEditor {
     @Override
     public int onCheckEntries(@NonNull Viaje viaje) {
         if (getParadas().isEmpty()) return 6;
+        if (startIndex == endIndex) return 2;
 
         String date = content.etDate.getText().toString();
         String startHour = content.etStartHour.getText().toString();
@@ -95,11 +96,9 @@ public class TrainTravelEditor extends CommonTravelEditor {
         String price = content.etPrice.getText().toString();
         Parada startPlace = getParadas().get(startIndex);
         Parada endPlace = getParadas().get(endIndex);
-
         String[] hourParams, endHourParams = null;
 
         if (date.isEmpty() || startHour.isEmpty()) return 1;
-        if (startPlace.equals(endPlace)) return 2;
 
         hourParams = startHour.split(":");
         if (hourParams.length != 2) {

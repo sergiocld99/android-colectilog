@@ -61,6 +61,7 @@ class MediumStopsManager(val travel: Viaje) {
     }
 
     fun checkIfCanAdd(candidate: String): Boolean {
+        if (countStops() >= 4) return false
         if (candidate == start || candidate == end) return false
         if (stops.contains(candidate)) return false
         return !candidatesAsked.contains(candidate)

@@ -1,12 +1,10 @@
 package cs10.apps.travels.tracer.modules.live.adapter
 
-import android.content.ReceiverCallNotAllowedException
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.modules.live.model.Stage
-import cs10.apps.travels.tracer.modules.live.model.StagedTravel
 
 class StagesAdapter(val data: MutableList<Stage> = mutableListOf()) : RecyclerView.Adapter<StageVH>() {
 
@@ -18,7 +16,7 @@ class StagesAdapter(val data: MutableList<Stage> = mutableListOf()) : RecyclerVi
     override fun getItemCount(): Int = data.size
 
     override fun onBindViewHolder(holder: StageVH, position: Int) {
-        holder.render(data[position])
+        holder.render(data[position], data.firstOrNull()?.startTime)
     }
 }
 

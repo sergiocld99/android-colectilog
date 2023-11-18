@@ -10,7 +10,7 @@ import cs10.apps.travels.tracer.modules.live.model.Stage
 class StageVH(view: View) : RecyclerView.ViewHolder(view) {
     private val binding = ItemStageProgressBinding.bind(view)
 
-    fun render(stage: Stage) {
+    fun render(stage: Stage, travelStartTime: Int?) {
         binding.linearPbar.isIndeterminate = false
         binding.linearPbar.progress = stage.progress
         binding.startTime.text = null
@@ -24,8 +24,7 @@ class StageVH(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         stage.endTime?.let {
-            val start = stage.startTime
-            if (start != null && it <= start) binding.endTime.text = null
+            if (travelStartTime != null && it <= travelStartTime) binding.endTime.text = null
             else binding.endTime.text = Utils.hourFormat(it / 60, it % 60)
         }
     }

@@ -160,24 +160,11 @@ class LiveTravelFragment : CS_Fragment() {
             else showTravellingView(it)
         }
 
-        liveVM.minutesFromStart.observe(viewLifecycleOwner) {
-            if (it == null) return@observe
-
-            //basicSwitcher.replaceContent(SwitcherText("started", "Inició hace ${it.roundToInt()} minutos"))
-        }
-
         liveVM.estData.observe(viewLifecycleOwner) {
             if (it == null || it.totalMinutes == 0) binding.trafficSub.text = null
             else {
                 binding.trafficSub.text = String.format("El viaje normal dura %d minutos", it.totalMinutes)
-                basicSwitcher.replaceContent(SwitcherText("speed", String.format("Velocidad est: %.1f km/h", it.speed)))
-                /*
-                if (it.fromAverage) binding.averageDuration.text =
-                    "Duración promedio: ${it.totalMinutes} min. (${it.speed} km/h)"
-                else binding.averageDuration.text =
-                    "Duración esperada: ${it.totalMinutes} min. (${it.speed} km/h)"
-
-                 */
+                basicSwitcher.replaceContent(SwitcherText("speed", String.format("Histórico: %.1f km/h", it.speed)))
             }
         }
 
@@ -250,6 +237,13 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.endDistance.observe(viewLifecycleOwner) {
             //basicSwitcher.replaceContent(String.format("Destino a %.1f km", it ?: 0.0), 3)
             basicSwitcher.replaceContent(SwitcherText("endDist", String.format("Destino a %.1f km", it ?: 0.0)))
+
+            liveVM.stagedTravel?.let { st ->
+                val linearSpeed = st.getLinearSpeed()
+                if (linearSpeed != null) {
+                    basicSwitcher.replaceContent(SwitcherText("linearSpeed", String.format("Velocidad: %.1f km/h", linearSpeed)))
+                }
+            }
         }
 
         liveVM.finishData.observe(viewLifecycleOwner) {

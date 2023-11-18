@@ -19,12 +19,12 @@ class StageTravelTest {
         val travel = StagedTravel.withStops(arrayOf(cruceVarela, alpargatas, pzaItalia, facultad))
         val minDistance = cruceVarela.kmDistanceTo(facultad)
 
-        assert(travel.totalDist > minDistance)
+        assert(travel.totalKmDist > minDistance)
         assert(travel.calculateCurrentStage(cruceVarela) == travel.stages[0])
         assert(travel.calculateCloserPoint(terminal) == pzaItalia)
 
         println("Linear distance start-end: $minDistance km")
-        println("Total distance: ${travel.totalDist} km")
+        println("Total distance: ${travel.totalKmDist} km")
 
         val places = listOf(cruceVarela, lujan, alpargatas, pzaPaso, pzaItalia, terminal, facultad)
 

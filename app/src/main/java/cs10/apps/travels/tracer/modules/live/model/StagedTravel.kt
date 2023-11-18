@@ -8,12 +8,12 @@ import cs10.apps.travels.tracer.modules.live.utils.MediumStopsManager
 import kotlin.math.roundToInt
 
 class StagedTravel(val stages: List<Stage>) {
-    val totalDist = (0.0).plus(stages.sumOf { it.kmDistance })
+    val totalKmDist = (0.0).plus(stages.sumOf { it.kmDistance })
     val start = stages[0].start
     val end = stages.last().end
 
     // how much represents this stage of total
-    val relativeStageProg = stages.map { 100.0 * it.kmDistance / totalDist }
+    val relativeStageProg = stages.map { 100.0 * it.kmDistance / totalKmDist }
 
     fun calculateCurrentStage(currentPos: Localizable) : Stage {
         val currentProg = currentProgress(currentPos)
@@ -98,6 +98,22 @@ class StagedTravel(val stages: List<Stage>) {
         }
 
         return minPoint
+    }
+
+    fun getLinearSpeed(): Double? {
+        if (stages.isNotEmpty()){
+            val endTs = stages.last().endTime
+            val startTs = stages.first().startTime
+            if (startTs != null && endTs != null) {
+                var totalMinutes = endTs - startTs
+                if (totalMinutes < 0) totalMinutes += 24 * 60
+
+                val h = totalMinutes / 60.0
+                return totalKmDist / h
+            }
+        }
+
+        return null
     }
 
     companion object {

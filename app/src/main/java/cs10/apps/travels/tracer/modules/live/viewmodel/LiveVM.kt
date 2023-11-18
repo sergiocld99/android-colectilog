@@ -234,7 +234,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
 
                         for (p in progsToCalculate) {
                             val cp = corrector.correct(startStop, endStop, 0.01 * p, t.ramal)
-                            val distFromCurrent = (0.01 * p).times(st.totalDist)
+                            val distFromCurrent = (0.01 * p).times(st.totalKmDist)
                             val eta = minutesLeft - calculateMinutesLeft(speed, cp, distFromCurrent)
                             etas.add(eta)
                         }

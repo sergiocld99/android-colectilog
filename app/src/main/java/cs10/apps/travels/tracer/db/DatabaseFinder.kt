@@ -55,7 +55,7 @@ class DatabaseFinder(val db: MiDB) {
 
         duration?.let {
             val speed = td.distance / NumberUtils.minutesToHours(duration)
-            return EstimationData(duration, speed.roundToInt(), true)
+            return EstimationData(duration, speed, true)
         }
 
         return null

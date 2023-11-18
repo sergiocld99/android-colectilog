@@ -120,7 +120,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 val st = StagedTravel.from(t, database)
                 val pred = PredictionBase(estimation, st)
 
-                estData.postValue(EstimationData(pred.getAverageDuration(), pred.getEstimatedSpeed().toInt(), true))
+                estData.postValue(EstimationData(pred.getAverageDuration(), pred.getEstimatedSpeed(), true))
                 minDuration.postValue(DatabaseFinder(database).findMinimalDuration(t))
                 travel.postValue(t)
 

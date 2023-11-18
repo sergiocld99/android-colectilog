@@ -170,7 +170,7 @@ class LiveTravelFragment : CS_Fragment() {
             if (it == null || it.totalMinutes == 0) binding.trafficSub.text = null
             else {
                 binding.trafficSub.text = String.format("El viaje normal dura %d minutos", it.totalMinutes)
-                basicSwitcher.replaceContent(SwitcherText("speed", "Velocidad est: ${it.speed} km/h"))
+                basicSwitcher.replaceContent(SwitcherText("speed", String.format("Velocidad est: %.1f km/h", it.speed)))
                 /*
                 if (it.fromAverage) binding.averageDuration.text =
                     "Duración promedio: ${it.totalMinutes} min. (${it.speed} km/h)"
@@ -257,7 +257,8 @@ class LiveTravelFragment : CS_Fragment() {
         }
 
         liveVM.countdown.liveData.observe(viewLifecycleOwner) {
-            binding.nearMeTitle.text = String.format("Llegando en %d' %d\"", it / 60, it % 60)
+            if (it < 600) binding.nearMeTitle.text = String.format("Llegando en %d' %d\"", it / 60, it % 60)
+            else binding.nearMeTitle.text = String.format("Llegando en %d min." , it / 60)
         }
 
         liveVM.minutesToEnd.observe(viewLifecycleOwner) {

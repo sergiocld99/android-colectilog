@@ -9,9 +9,9 @@ data class MediumStop(
     val type: Int,
     val line: Int?,
     val ramal: String?,
-    val prev: String,
+    var prev: String,
     val name: String,
-    val next: String,
+    var next: String,
     val destination: String
 ) {
 

@@ -6,7 +6,7 @@ import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.modules.live.entity.MediumStop
 import cs10.apps.travels.tracer.modules.live.model.Stage
 
-class MediumStopsManager(val travel: Viaje) {
+class MediumStopsManager(val travel: Viaje, private val allowAutoDeletion: Boolean = true) {
     val start = travel.nombrePdaInicio
     val end = travel.nombrePdaFin
     var stops = mutableListOf(start, end)
@@ -58,6 +58,30 @@ class MediumStopsManager(val travel: Viaje) {
         lastMS?.let {
             if (it.next != end) throw Exception("Incomplete path: last 2 stops unmatched - $allMS")
         }
+
+        // maximum size is 4 stops
+        if (allowAutoDeletion) while (countStops() > 4) {
+            val targetName = getRandomMediumStopName()
+            val targetMS = allMS.first { it.name == targetName }
+
+            // update previous to target (if null, prev is start)
+            val prevMS = allMS.firstOrNull { it.next == targetName }
+            if (prevMS != null){
+                prevMS.next = targetMS.next
+                db.safeStopsDao().updateMediumStop(prevMS)
+            }
+
+            // update next to target (if null, next is end)
+            val nextMS = allMS.firstOrNull { it.prev == targetName }
+            if (nextMS != null){
+                nextMS.prev = targetMS.prev
+                db.safeStopsDao().updateMediumStop(nextMS)
+            }
+
+            // delete target
+            db.safeStopsDao().deleteMediumStop(targetMS)
+            stops.remove(targetName)
+        }
     }
 
     fun checkIfCanAdd(candidate: String): Boolean {
@@ -104,6 +128,12 @@ class MediumStopsManager(val travel: Viaje) {
         if (prevName == null || nextName == null) return false
 
         return add(candidate, prevName, nextName, db)
+    }
+
+    private fun getRandomMediumStopName() : String {
+        var chosen = stops.random()
+        while (chosen == start || chosen == end) chosen = stops.random()
+        return chosen
     }
 
     fun countStops() : Int = stops.size

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.modules.live.entity.MediumStop
 
@@ -12,6 +13,9 @@ interface SafeStopsDao {
 
     @Insert
     suspend fun insertMediumStop(mediumStop: MediumStop) : Long
+
+    @Update
+    suspend fun updateMediumStop(mediumStop: MediumStop)
 
     @Delete
     suspend fun deleteMediumStop(mediumStop: MediumStop)

@@ -126,9 +126,35 @@ class MediumStopsTest {
     }
 
     @Test
+    fun automaticDeletionManyMS(){
+        runBlocking {
+            val msm = MediumStopsManager(viajecito).buildStops(db)
+            val candidates = listOf("Senzabello y RP36", "Thevenet y RP36", "El Ombú", "Luján y RP36", "Alpargatas")
+
+            // agregar todas las paradas intermedias (unas 5)
+            msm.add(candidates[0], msm.start, msm.end, db)
+
+            for (i in 1 until candidates.size){
+                msm.add(candidates[i], candidates[i-1], msm.end, db)
+            }
+
+            // comparar antes de correccion
+            assert(msm.countStops() == candidates.size + 2)
+
+            // reconstruir y comparar
+            msm.rebuildStops(db)
+            assert(msm.countStops() == 4)
+
+            // reconstruir y comparar
+            msm.rebuildStops(db)
+            assert(msm.countStops() == 4)
+        }
+    }
+
+    @Test
     fun addingSeveralInRandomOrder() {
         runBlocking {
-            val man = MediumStopsManager(viajecito).buildStops(db)
+            val man = MediumStopsManager(viajecito, allowAutoDeletion = false).buildStops(db)
 
             // agregar parada intermedia
             man.add("419 y Belgrano", "Cruce Varela", "Av. 1 y 48", db)

@@ -20,6 +20,9 @@ interface SafeStopsDao {
             "WHERE line = :line and ramal is :ramal and destination is :dest and name is :target")
     suspend fun updateNextBusMediumStop(line: Int, ramal: String?, dest: String, target: String, inserted: String)
 
+    @Query("UPDATE MediumStop SET prev = :inserted WHERE type is :type and destination is :dest and name is :target")
+    suspend fun updateNextMediumStopForType(type: Int, dest: String, target: String, inserted: String)
+
     @Query("SELECT * FROM parada where nombre is :name LIMIT 1")
     fun getStopByName(name: String): Parada?
 
@@ -28,6 +31,9 @@ interface SafeStopsDao {
 
     @Query("SELECT * FROM MediumStop where line = :line and ramal is :ramal and destination is :dest")
     suspend fun getMediumStopsCreatedForBusTo(line: Int, ramal: String?, dest: String): List<MediumStop>
+
+    @Query("SELECT * FROM MediumStop where type = :type and destination is :dest")
+    suspend fun getMediumStopsCreatedForTypeTo(type: Int, dest: String): List<MediumStop>
 
     @Query("SELECT * FROM MediumStop where type = :type")
     suspend fun getMediumStopsCreatedForType(type: Int): List<MediumStop>

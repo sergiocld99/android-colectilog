@@ -21,7 +21,7 @@ class MediumStopsTest {
     private lateinit var db: MiDB
     private lateinit var dao: SafeStopsDao
     private lateinit var viajecito: Viaje
-    private val BUS_TYPE = TransportType.BUS.ordinal
+    private val busType = TransportType.BUS.ordinal
 
     @Before
     fun setup() {
@@ -31,8 +31,8 @@ class MediumStopsTest {
         dao = db.safeStopsDao()
 
         // crear paradas
-        val p1 = Parada().fillMandatoryFields("Cruce Varela", -34.8, -58.6, BUS_TYPE)
-        val p2 = Parada().fillMandatoryFields("Av. 1 y 48", -35.0, -57.9, BUS_TYPE)
+        val p1 = Parada().fillMandatoryFields("Cruce Varela", -34.8, -58.6, busType)
+        val p2 = Parada().fillMandatoryFields("Av. 1 y 48", -35.0, -57.9, busType)
         db.paradasDao().insert(p1)
         db.paradasDao().insert(p2)
 
@@ -100,13 +100,13 @@ class MediumStopsTest {
     @Test
     fun deleteTest(){
         runBlocking {
-            val ms1 = MediumStop(0, BUS_TYPE, 338, null, "Cruce Varela",
+            val ms1 = MediumStop(0, busType, 338, null, "Cruce Varela",
                 "Luján y RP36", "Alpargatas", "Av. 1 y 48")
 
-            val ms2 = MediumStop(0, BUS_TYPE, 338, null, "Luján y RP36",
+            val ms2 = MediumStop(0, busType, 338, null, "Luján y RP36",
                 "Alpargatas", "Av. 1 y 48", "Av. 1 y 48")
 
-            val msFake = MediumStop(0, BUS_TYPE, 343, null, "Cruce Varela",
+            val msFake = MediumStop(0, busType, 343, null, "Cruce Varela",
                 "Luján y RP36", "Av. 1 y 48", "Av. 1 y 48")
 
             // insertar y contar
@@ -116,7 +116,7 @@ class MediumStopsTest {
             assert(db.safeStopsDao().getMediumStopsCreatedForBusTo(338, null, "Av. 1 y 48").size == 2)
 
             // actualizar id
-            val ms3 = MediumStop(id, BUS_TYPE, 338, null, "Cruce Varela",
+            val ms3 = MediumStop(id, busType, 338, null, "Cruce Varela",
                 "Luján y RP36", "Alpargatas", "Av. 1 y 48")
 
             // borrar y contar

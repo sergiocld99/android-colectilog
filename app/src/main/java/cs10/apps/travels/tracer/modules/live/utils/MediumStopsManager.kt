@@ -16,8 +16,14 @@ class MediumStopsManager(val travel: Viaje) {
         if (stops.size == 2){
             if (travel.tipo == TransportType.BUS.ordinal){
                 travel.linea?.let {
-                    buildStopsForBusRamal(it, travel.ramal, travel.nombrePdaFin, db)
+                    // buildStopsForBusRamal(it, travel.ramal, travel.nombrePdaFin, db)
+                    val all = db.safeStopsDao().getMediumStopsCreatedForBusTo(it, travel.ramal, travel.nombrePdaFin)
+                    buildStopsFromData(all, db)
                 }
+            } else {
+                // buildStopsForType(travel.tipo, travel.nombrePdaFin, db)
+                val allMS = db.safeStopsDao().getMediumStopsCreatedForTypeTo(travel.tipo, travel.nombrePdaFin)
+                buildStopsFromData(allMS, db)
             }
         }
 
@@ -29,29 +35,28 @@ class MediumStopsManager(val travel: Viaje) {
         buildStops(db)
     }
 
-    private suspend fun buildStopsForBusRamal(line: Int, ramal: String?, dest: String, db: MiDB){
-        val all = db.safeStopsDao().getMediumStopsCreatedForBusTo(line, ramal, dest)
-        val aux = mutableListOf<MediumStop>()
+    private suspend fun buildStopsFromData(allMS: List<MediumStop>, db: MiDB){
+        var lastMS: MediumStop? = null
         var finish = false
         var i = 0
 
         while (!finish){
-            val target = all.filter { it.prev == stops[i] }
+            val target = allMS.filter { it.prev == stops[i] }
             if (target.size > 1) {
                 for(j in 1 until target.size) db.safeStopsDao().deleteMediumStop(target[j])
                 throw Exception("Multiple target for ${stops[i]}, deleted all but ${target.first()}")
             }
 
-            if (target.isEmpty()) finish = true        // no more medium stops...
+            if (target.isEmpty()) finish = true
             else {
-                stops.add(i+1, target.first().name)
-                aux.add(target.first())
                 i++
+                stops.add(i, target.first().name)       // en la posición correcta
+                lastMS = target.first()
             }
         }
 
-        if (aux.isNotEmpty() && aux.last().next != end) {
-            throw Exception("Incomplete path: last 2 stops unmatched - $all")
+        lastMS?.let {
+            if (it.next != end) throw Exception("Incomplete path: last 2 stops unmatched - $allMS")
         }
     }
 
@@ -85,6 +90,8 @@ class MediumStopsManager(val travel: Viaje) {
         // FIX: ALSO MODIFY NEXT MEDIUM STOP
         if (travel.tipo == TransportType.BUS.ordinal) travel.linea?.let {
             db.safeStopsDao().updateNextBusMediumStop(it, travel.ramal, travel.nombrePdaFin, ms.next, ms.name)
+        } else {
+            db.safeStopsDao().updateNextMediumStopForType(travel.tipo, travel.nombrePdaFin, ms.next, ms.name)
         }
 
         return true

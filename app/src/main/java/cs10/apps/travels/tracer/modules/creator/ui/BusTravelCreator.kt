@@ -274,8 +274,8 @@ class BusTravelCreator : CommonTravelCreator() {
                         val tab3 = it.newTab().setText("Otro")
 
                         // add new ones
-                        it.addTab(tab1)
-                        it.addTab(tab2)
+                        it.addTab(tab2)     // tarifa normal
+                        it.addTab(tab1)     // tarifa social
                         it.addTab(tab3)
                     }
                 } else {

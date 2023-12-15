@@ -114,4 +114,7 @@
     <string name="from_stop">Desde %1$s</string>
     <string name="speed_kmh">Velocidad: %1$.1f km/h</string>
     <string name="linear_distance_km">Distancia recta: %1$.1f km</string>
+    <string name="waiting">Esperando</string>
+    <string name="travelling">En viaje</string>
+    <string name="arriving">Llegando</string>
 </resources>

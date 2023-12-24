@@ -35,7 +35,7 @@ class LineViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         if (item.id >= 0) Utils.paintBusColor(item.color, binding.card)
         else binding.card.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, item.color))
 
-        binding.rateText.text = "${Utils.rateFormat(item.avgUserRate)} (${item.reviewsCount} reviews)"
+        binding.rateText.text = "${Utils.rateFormat(item.correctUserRate())} (${item.reviewsCount} reviews)"
 
         // visibility
         binding.suggestedName.isVisible = (item.name != null)

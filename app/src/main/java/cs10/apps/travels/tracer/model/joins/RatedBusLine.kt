@@ -15,10 +15,18 @@ class RatedBusLine(
     @Ignore
     var speed: Double? = null
 
+    fun correctUserRate(): Double {
+        return if (reviewsCount > 4) avgUserRate
+        else {
+            val aux = avgUserRate * reviewsCount + 3.0 * (5-reviewsCount)
+            aux / 5
+        }
+    }
+
     override fun compareTo(other: CustomBusLine): Int {
 
         if (other is RatedBusLine){
-            var comp = (other.speed ?: 0.0).compareTo(this.speed ?: 0.0)
+            var comp = (other.correctUserRate() ?: 0.0).compareTo(this.correctUserRate() ?: 0.0)
 
             if (comp == 0) comp = other.reviewsCount.compareTo(this.reviewsCount)
             if (comp != 0) return comp

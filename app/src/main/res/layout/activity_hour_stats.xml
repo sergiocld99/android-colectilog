@@ -66,7 +66,7 @@
             android:id="@+id/first_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="12dp"
@@ -75,7 +75,7 @@
         <com.patrykandpatrick.vico.views.chart.ChartView
             android:id="@+id/first_chart"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="350dp"
             app:chart="line"
             app:showStartAxis="true"
             app:showBottomAxis="true" />
@@ -84,7 +84,7 @@
             android:id="@+id/second_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="12dp"
@@ -94,7 +94,7 @@
         <com.patrykandpatrick.vico.views.chart.ChartView
             android:id="@+id/second_chart"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="350dp"
             app:chart="line"
             app:showStartAxis="true"
             app:showBottomAxis="true" />

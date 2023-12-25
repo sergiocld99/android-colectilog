@@ -11,7 +11,6 @@ import com.patrykandpatrick.vico.core.chart.values.AxisValuesOverrider
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import cs10.apps.common.android.ui.FormActivity
-import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.constants.ErrorCodes
 import cs10.apps.travels.tracer.constants.Extras
@@ -41,7 +40,7 @@ class HourStatsActivity : FormActivity() {
 
         doInBackground {
             val dao = MiDB.getInstance(this).linesDao()
-            val topStopsFrom = dao.getTopStopsFrom(line)
+            val topStopsFrom = dao.getFrequentTravelsFromLine(line)
             if (topStopsFrom.size < 2) return@doInBackground
 
             // vico charts
@@ -51,14 +50,14 @@ class HourStatsActivity : FormActivity() {
             var max = 0.0
 
             // first chart
-            dao.getHourStatsFromStop(line, topStopsFrom[0]).forEach { stat ->
+            dao.getHourStatsForTravel(line, topStopsFrom[0].nombrePdaInicio, topStopsFrom[0].nombrePdaFin).forEach { stat ->
                 firstEntries.add(FloatEntry(stat.hour.toFloat(), stat.averageRate.toFloat()))
                 if (min > stat.averageRate) min = stat.averageRate
                 if (max < stat.averageRate) max = stat.averageRate
             }
 
             // second chart
-            dao.getHourStatsFromStop(line, topStopsFrom[1]).forEach { stat ->
+            dao.getHourStatsForTravel(line, topStopsFrom[1].nombrePdaInicio, topStopsFrom[1].nombrePdaFin).forEach { stat ->
                 secondEntries.add(FloatEntry(stat.hour.toFloat(), stat.averageRate.toFloat()))
                 if (min > stat.averageRate) min = stat.averageRate
                 if (max < stat.averageRate) max = stat.averageRate
@@ -76,13 +75,13 @@ class HourStatsActivity : FormActivity() {
                 min = (min / 10).toInt() * 10.0
                 max = ((max / 10).toInt() + 1) * 10.0
 
-                binding.firstTitle.text = binding.root.context.getString(R.string.from_stop, topStopsFrom[0])
+                binding.firstTitle.text = topStopsFrom[0].toString()
                 //binding.firstChart.chart?.axisValuesOverrider = AxisValuesOverrider.fixed(0f, 23f, 0f, 100f)
                 (binding.firstChart.startAxis as Axis<AxisPosition.Vertical.Start>).valueFormatter = vaf
                 binding.firstChart.chart?.axisValuesOverrider = AxisValuesOverrider.fixed(minY = min.toFloat(), maxY = max.toFloat())
                 binding.firstChart.setModel(entryModelOf(firstEntries))
 
-                binding.secondTitle.text = binding.root.context.getString(R.string.from_stop, topStopsFrom[1])
+                binding.secondTitle.text = topStopsFrom[1].toString()
                 (binding.secondChart.startAxis as Axis<AxisPosition.Vertical.Start>).valueFormatter = vaf
                 binding.secondChart.chart?.axisValuesOverrider = AxisValuesOverrider.fixed(minY = min.toFloat(), maxY = max.toFloat())
                 binding.secondChart.setModel(entryModelOf(secondEntries))

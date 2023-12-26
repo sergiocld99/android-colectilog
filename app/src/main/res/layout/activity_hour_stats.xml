@@ -62,42 +62,12 @@
         android:paddingVertical="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/first_title"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="12dp"
-            tools:text="Desde Arco de San Jorge"/>
-
-        <com.patrykandpatrick.vico.views.chart.ChartView
-            android:id="@+id/first_chart"
-            android:layout_width="match_parent"
-            android:layout_height="350dp"
-            app:chart="line"
-            app:showStartAxis="true"
-            app:showBottomAxis="true" />
-
-        <TextView
-            android:id="@+id/second_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="12dp"
-            android:layout_marginTop="32dp"
-            tools:text="Desde Plaza del San Juan"/>
-
-        <com.patrykandpatrick.vico.views.chart.ChartView
-            android:id="@+id/second_chart"
-            android:layout_width="match_parent"
-            android:layout_height="350dp"
-            app:chart="line"
-            app:showStartAxis="true"
-            app:showBottomAxis="true" />
+            android:layout_marginTop="8dp"
+            tools:listitem="@layout/item_hour_chart"/>
 
     </LinearLayout>
 

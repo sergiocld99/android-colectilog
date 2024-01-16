@@ -6,8 +6,16 @@ abstract class CommonLineInfo: Comparable<CommonLineInfo> {
     var reviewsCount = 0
     var speed: Double? = null
 
+    fun correctUserRate(): Double {
+        return if (reviewsCount > 4) avgUserRate
+        else {
+            val aux = avgUserRate * reviewsCount + 3.0 * (5-reviewsCount)
+            aux / 5
+        }
+    }
+
     override fun compareTo(other: CommonLineInfo): Int {
-        val comp = (other.speed ?: 0.0).compareTo(speed ?: 0.0)
+        val comp = other.correctUserRate().compareTo(this.correctUserRate())
         if (comp == 0) return other.reviewsCount.compareTo(reviewsCount)
         return comp
     }

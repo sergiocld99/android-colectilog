@@ -27,7 +27,7 @@ class CommonLineInfoVH(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         binding.title.text = item.getIdentifier()
-        binding.rateText.text = String.format("%s (%d reviews)", Utils.rateFormat(item.avgUserRate), item.reviewsCount)
+        binding.rateText.text = String.format("%s (%d reviews)", Utils.rateFormat(item.correctUserRate()), item.reviewsCount)
 
         // visibility
         binding.suggestedName.isVisible = false

@@ -1,11 +1,11 @@
 package cs10.apps.travels.tracer.data.generator;
 
-public class TarifaData {
+public class FareData {
     private final int[][] SECCION_DATA = new int[Station.values().length][Station.values().length];
-    private final double[] SECCION_TARIFA = new double[]{18.02, 23.32, 28.62, 19.00};
+    private final double[] SECCION_TARIFA = new double[]{130, 169, 208, 19.00};
 
     // se asignan las tarifas que son distintas de la sección 0
-    public TarifaData(){
+    public FareData(){
         // Universitario
         setRange(Station.LA_PLATA, Station.ARQUI, Station.POLICLINICO, 3);
         setRange(Station.ARQUI, Station.INFO, Station.POLICLINICO, 3);

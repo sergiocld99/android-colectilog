@@ -72,6 +72,9 @@ public class Utils {
         return stationName.replace("Estación","").trim();
     }
 
+    /**
+     * Updates the distance of each stop and sorts the list from closest to farthest
+     */
     public static void orderByProximity(@NonNull List<Parada> list, Double latitude, Double longitude){
         for (Parada p : list) p.updateDistance(latitude, longitude);
 

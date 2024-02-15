@@ -27,6 +27,7 @@ import cs10.apps.travels.tracer.model.roca.HorarioTren;
 import cs10.apps.travels.tracer.model.roca.ServicioTren;
 import cs10.apps.travels.tracer.modules.lines.db.LinesDao;
 import cs10.apps.travels.tracer.modules.live.entity.MediumStop;
+import cs10.apps.travels.tracer.modules.stops.db.TrainsDao;
 
 @Database(entities = {Circuito.class, Comunicacion.class, Estacion.class, FormacionCircuito.class,
         Tren.class, Horario.class, Parada.class, Viaje.class, TarifaBus.class, TarifaTren.class,
@@ -260,4 +261,5 @@ public abstract class MiDB extends RoomDatabase {
     public abstract LinesDao linesDao();
     public abstract ZonesDao zonesDao();
     public  abstract TravelsDao travelsDao();
+    public abstract TrainsDao trainsDao();
 }

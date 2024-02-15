@@ -1,6 +1,5 @@
 package cs10.apps.travels.tracer.ui.stops;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,7 +10,6 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 
 import cs10.apps.common.android.ui.CSActivity;
-import cs10.apps.travels.tracer.MapViewActivity;
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.databinding.ActivityStopCreatorBinding;
 import cs10.apps.travels.tracer.databinding.ContentStopCreatorBinding;
@@ -77,6 +75,8 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
     }
 
     private void onOpenMap() {
+
+        /*
         String latitude = content.etLatitude.getText().toString().trim();
         String longitude = content.etLongitude.getText().toString().trim();
         String stopName = content.etStopName.getText().toString().trim();
@@ -91,7 +91,7 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
             startActivity(intent);
         } catch (NumberFormatException e){
             showShortToast("No se ingresaron coordenadas válidas");
-        }
+        } */
     }
 
     @Override

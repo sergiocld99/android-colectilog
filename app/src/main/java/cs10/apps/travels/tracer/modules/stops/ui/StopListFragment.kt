@@ -9,15 +9,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import cs10.apps.common.android.ui.CS_Fragment
 import cs10.apps.travels.tracer.databinding.FragmentStopsBinding
+import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.modules.stops.adapter.StopAdapter
 import cs10.apps.travels.tracer.modules.stops.viewmodel.StopsVM
-import cs10.apps.travels.tracer.ui.stops.StopEditor
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
 
 class StopListFragment : CS_Fragment() {
     private lateinit var binding: FragmentStopsBinding
-    private var adapter = StopAdapter(mutableListOf()) { onEditStop(it.nombre) }
+    private var adapter = StopAdapter(mutableListOf()) { onClickStop(it) }
 
     // view models
     private lateinit var locationVM: LocationVM
@@ -58,14 +58,16 @@ class StopListFragment : CS_Fragment() {
                 rootVM.enableLoading()
                 stopsVM.findAll(it.location)
             } else {
+                // POTENTIAL RISK: CONCURRENT MODIFICATION EXCEPTION
                 stopsVM.updateDistances(it.location)
             }
         }
     }
 
-    private fun onEditStop(stopName: String) {
-        val intent = Intent(activity, StopEditor::class.java)
-        intent.putExtra("stopName", stopName)
+    private fun onClickStop(item: Parada) {
+        val intent = Intent(activity, StopInfoActivity::class.java)
+        intent.putExtra("stopName", item.nombre)
+        intent.putExtra("type", item.tipo)
         startActivity(intent)
     }
 }

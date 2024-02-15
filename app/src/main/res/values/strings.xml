@@ -117,4 +117,5 @@
     <string name="waiting">Esperando</string>
     <string name="travelling">En viaje</string>
     <string name="arriving">Llegando</string>
+    <string name="edit">Editar</string>
 </resources>

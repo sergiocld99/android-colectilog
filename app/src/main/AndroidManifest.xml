@@ -108,6 +108,10 @@
         <activity
             android:name=".MainActivity"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
+
+        <!-- 2024 -->
+        <activity android:name=".modules.stops.ui.StopInfoActivity"
+            android:theme="@style/Theme.TravelTracer.Buses" />
     </application>
 
 </manifest>

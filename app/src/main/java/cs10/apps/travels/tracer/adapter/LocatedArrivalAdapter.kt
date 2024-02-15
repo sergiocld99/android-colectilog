@@ -11,7 +11,8 @@ import cs10.apps.travels.tracer.model.roca.ArriboTren
 
 class LocatedArrivalAdapter(
     var list: MutableList<ColoredTravel>,
-    private val onClickListener: (ArriboTren) -> Unit
+    private val etaAnimation: Boolean = true,
+    private val onClickListener: (ArriboTren) -> Unit,
 ) : RecyclerView.Adapter<LocatedArrivalViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocatedArrivalViewHolder {
@@ -20,7 +21,7 @@ class LocatedArrivalAdapter(
     }
 
     override fun onBindViewHolder(holder: LocatedArrivalViewHolder, position: Int) {
-        holder.render(list[position], position == 0, onClickListener) { viaje ->
+        holder.render(list[position], etaAnimation && position == 0, onClickListener) { viaje ->
             if (itemCount > 0 && list[0] == viaje) {
                 list.removeAt(0)
                 notifyItemRemoved(0)

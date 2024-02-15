@@ -32,8 +32,10 @@ class StopsVM(application: Application) : AndroidViewModel(application) {
     fun updateDistances(location: Location){
         viewModelScope.launch(Dispatchers.IO) {
             data.value?.let { stops ->
-                Utils.orderByProximity(stops, location.latitude, location.longitude)
-                data.postValue(stops)
+                val auxiliarCopy = mutableListOf<Parada>()
+                auxiliarCopy.addAll(stops)
+                auxiliarCopy.forEach { it.updateDistance(location) }
+                data.postValue(auxiliarCopy)
             }
         }
     }

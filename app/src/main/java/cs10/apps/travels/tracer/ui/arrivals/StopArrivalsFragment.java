@@ -48,7 +48,7 @@ public class StopArrivalsFragment extends CS_Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        adapter = new LocatedArrivalAdapter(new LinkedList<>(), arriboTren -> {
+        adapter = new LocatedArrivalAdapter(new LinkedList<>(), true, arriboTren -> {
             onServiceSelected(arriboTren.getServiceId(), arriboTren.getRamal());
             return null;
         });

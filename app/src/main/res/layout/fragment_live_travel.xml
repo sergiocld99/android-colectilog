@@ -38,17 +38,17 @@
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Esperando"/>
+                    android:text="@string/waiting"/>
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="En viaje"/>
+                    android:text="@string/travelling"/>
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Llegando"/>
+                    android:text="@string/arriving"/>
 
             </com.google.android.material.tabs.TabLayout>
 

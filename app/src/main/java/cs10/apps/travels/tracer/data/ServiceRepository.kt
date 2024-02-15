@@ -3,12 +3,12 @@ package cs10.apps.travels.tracer.data
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.data.generator.Ramal
 import cs10.apps.travels.tracer.data.generator.Station
-import cs10.apps.travels.tracer.data.generator.TarifaData
+import cs10.apps.travels.tracer.data.generator.FareData
 import cs10.apps.travels.tracer.model.roca.HorarioTren
 
 class ServiceRepository(val db: MiDB) {
 
-    private val tarifaData = TarifaData()
+    private val fareData = FareData()
 
     suspend fun getService(id: Long, targetStop: String): List<HorarioTren>? {
         val horarios = db.servicioDao().getRecorrido(id)
@@ -20,7 +20,7 @@ class ServiceRepository(val db: MiDB) {
 
         for (horario in horarios) {
             horario.service = if (horario.station == targetStop) 1 else 0
-            horario.tarifa = tarifaData.getTarifa(targetStation, horario.station)
+            horario.tarifa = fareData.getTarifa(targetStation, horario.station)
 
             // combinations
             if (horario.station == Station.BERA.nombre) {

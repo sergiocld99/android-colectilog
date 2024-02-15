@@ -2,17 +2,22 @@ package cs10.apps.travels.tracer.modules.live.utils
 
 import cs10.apps.common.android.Localizable
 import cs10.apps.travels.tracer.Utils
+import cs10.apps.travels.tracer.enums.TransportType
 import kotlin.math.pow
 
 class ProgressCorrector {
 
-    fun correct(start: Localizable, end: Localizable, prog: Double, ramal: String?): Double {
+    fun correct(start: Localizable, end: Localizable, prog: Double, ramal: String?, type: Int): Double {
         return when (Utils.getDirection(start, end)) {
             Utils.Direction.SOUTH_WEST -> f4SO(prog)
-            Utils.Direction.SOUTH_EAST -> f4SE(prog, ramal)
-            Utils.Direction.NORTH_WEST -> f4NW(prog)
+            Utils.Direction.SOUTH_EAST -> f5SE(prog, ramal, type)
+            Utils.Direction.NORTH_WEST -> f4NW(prog, type)
             else -> prog
         }
+    }
+
+    private fun p3(x: Double, b: Double, c: Double, d: Double, e: Double) : Double {
+        return b * x.pow(3) + c * x.pow(2) + d * x + e
     }
 
     private fun p4(x: Double, a: Double, b: Double, c: Double, d: Double, e: Double) : Double {
@@ -31,7 +36,13 @@ class ProgressCorrector {
         }
     }
 
-    private fun f4NW(prog: Double) = p4(prog, -1.78, 5.43, -5.29, 2.59, 0.03)
+    // feb 10: added roca la plata to varela (f5se opposite)
+    private fun f4NW(prog: Double, type: Int) : Double {
+        return if (type == TransportType.BUS.ordinal)
+            p4(prog, -1.78, 5.43, -5.29, 2.59, 0.03)
+        else p3(prog, 1.25, -1.0, 0.75, 0.0)
+    }
+
     private fun f4SO(prog: Double) = p4(prog, -5.46, 9.84, -4.44, 1.05, 0.0)
 
     // june 23 correction: belgrano vs centenario, and after plaza italia
@@ -40,4 +51,9 @@ class ProgressCorrector {
         else return p4(prog, 3.0, -4.18, 1.52, 0.62, 0.0)
     }
 
+    // feb 10: added roca varela to la plata
+    private fun f5SE(prog: Double, ramal: String?, type: Int) : Double {
+        return if (type == TransportType.BUS.ordinal) f4SE(prog, ramal)
+        else p3(prog, 1.25, -2.75, 2.5, 0.0)
+    }
 }

@@ -16,13 +16,12 @@ import java.util.List;
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.data.generator.Station;
-import cs10.apps.travels.tracer.data.generator.TarifaData;
+import cs10.apps.travels.tracer.data.generator.FareData;
 import cs10.apps.travels.tracer.databinding.ActivityTrainTravelCreatorBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ParadasDao;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
-import cs10.apps.travels.tracer.modules.creator.ui.CommonTravelCreator;
 
 public class TrainTravelCreator extends CommonTravelCreator {
     private ActivityTrainTravelCreatorBinding binding;
@@ -139,7 +138,7 @@ public class TrainTravelCreator extends CommonTravelCreator {
 
             if (s1 != null && s2 != null){
                 // use tarifa data
-                TarifaData data = new TarifaData();
+                FareData data = new FareData();
                 double price = data.getTarifa(s1, s2);
                 binding.content.etPrice.setText(Utils.priceFormat(price));
             } else binding.content.etPrice.setText(null);

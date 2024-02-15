@@ -24,7 +24,7 @@ import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.adapter.TrainScheduleAdapter;
 import cs10.apps.travels.tracer.data.generator.Ramal;
 import cs10.apps.travels.tracer.data.generator.Station;
-import cs10.apps.travels.tracer.data.generator.TarifaData;
+import cs10.apps.travels.tracer.data.generator.FareData;
 import cs10.apps.travels.tracer.databinding.ActivityServiceDetailBinding;
 import cs10.apps.travels.tracer.db.DynamicQuery;
 import cs10.apps.travels.tracer.db.MiDB;
@@ -172,7 +172,7 @@ public class ServiceDetail extends AppCompatActivity {
 
     private void findService() {
         new Thread(() -> {
-            TarifaData tarifaData = new TarifaData();
+            FareData fareData = new FareData();
             ServicioDao dao = MiDB.getInstance(this).servicioDao();
             final List<HorarioTren> horarios = dao.getRecorrido(id);
             final String start = horarios.get(0).getStation();
@@ -181,7 +181,7 @@ public class ServiceDetail extends AppCompatActivity {
 
             for (HorarioTren h : horarios) {
                 h.setService(h.getStation().equals(stopName) ? 1 : 0);
-                h.setTarifa(tarifaData.getTarifa(current, h.getStation()));
+                h.setTarifa(fareData.getTarifa(current, h.getStation()));
 
                 // CASO COMBINACIÓN VIA CIRCUITO > LA PLATA
                 if (equals(h.getStation(), Station.BERA)) {

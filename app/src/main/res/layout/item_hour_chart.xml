@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingVertical="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="4dp"
+        tools:text="Origen > destino"/>
+
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="12dp"
+        tools:text="Promedio: 40 minutos"/>
+
+    <com.patrykandpatrick.vico.views.chart.ChartView
+        android:id="@+id/chart"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        app:chart="line"
+        app:showStartAxis="true"
+        app:showBottomAxis="true" />
+
+</LinearLayout>

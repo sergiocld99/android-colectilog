@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ColectiLog</string>
 
-    <string name="nav_header_title">ColectiLog v2.40</string>
+    <string name="nav_header_title">ColectiLog v2.41</string>
     <string name="nav_header_subtitle">sergio.calderon@alu.ing.unlp.edu.ar</string>
 
     <string name="action_settings">Settings</string>
@@ -114,4 +114,8 @@
     <string name="from_stop">Desde %1$s</string>
     <string name="speed_kmh">Velocidad: %1$.1f km/h</string>
     <string name="linear_distance_km">Distancia recta: %1$.1f km</string>
+    <string name="waiting">Esperando</string>
+    <string name="travelling">En viaje</string>
+    <string name="arriving">Llegando</string>
+    <string name="edit">Editar</string>
 </resources>

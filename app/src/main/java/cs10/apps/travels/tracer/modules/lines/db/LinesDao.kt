@@ -8,6 +8,7 @@ import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.joins.TravelStats
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
 import cs10.apps.travels.tracer.model.lines.HourBusStat
+import cs10.apps.travels.tracer.modules.lines.entity.FrequentTravel
 import cs10.apps.travels.tracer.modules.lines.model.BusDayInfo
 import cs10.apps.travels.tracer.modules.lines.model.BusDestinationInfo
 import cs10.apps.travels.tracer.modules.lines.model.BusRamalInfo
@@ -37,6 +38,14 @@ interface LinesDao {
     @Query("SELECT * FROM lines WHERE number = :number limit 1")
     fun getByNumber(number: Int) : CustomBusLine?
 
+    @Query("SELECT nombrePdaInicio FROM Viaje WHERE linea = :number and endHour is not null " +
+            "GROUP BY nombrePdaInicio ORDER BY COUNT(*) DESC LIMIT 2")
+    fun getTopStopsFrom(number: Int) : List<String>
+
+    @Query("SELECT nombrePdaInicio,nombrePdaFin FROM Viaje WHERE linea = :number and endHour is not null " +
+            "GROUP BY nombrePdaInicio, nombrePdaFin ORDER BY COUNT(*) DESC LIMIT 4")
+    fun getFrequentTravelsFromLine(number: Int) : List<FrequentTravel>
+
     @Query("SELECT linea as number, startHour as hour, AVG(rate) as averageRate " +
             "FROM viaje WHERE linea = :number and rate is not null " +
             "GROUP BY startHour ORDER BY startHour")
@@ -54,9 +63,11 @@ interface LinesDao {
             "GROUP BY startHour ORDER BY startHour")
     fun getHourStatsFromStop(number: Int, stop: String) : List<HourBusStat>
 
-    @Query("SELECT nombrePdaInicio FROM Viaje WHERE linea = :number and endHour is not null " +
-            "GROUP BY nombrePdaInicio ORDER BY COUNT(*) DESC LIMIT 2")
-    fun getTopStopsFrom(number: Int) : List<String>
+    @Query("SELECT linea as number, startHour as hour, " +
+            "AVG(endHour * 60 + endMinute - startHour * 60 - startMinute) as averageRate " +
+            "FROM Viaje WHERE linea = :number and endHour is not null and nombrePdaInicio is :start " +
+            "and nombrePdaFin is :end GROUP BY startHour ORDER BY startHour")
+    fun getHourStatsForTravel(number: Int, start: String, end: String): List<HourBusStat>
 
     // --------------------- JOINS -----------------------------
 

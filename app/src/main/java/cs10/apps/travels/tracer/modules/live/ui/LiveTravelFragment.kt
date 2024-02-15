@@ -338,8 +338,10 @@ class LiveTravelFragment : CS_Fragment() {
                                         val success = msm.add(candidate, currentStage, db)
 
                                         launch(Dispatchers.Main) {
-                                            if (success) Toast.makeText(activity, "Añadido con éxito", Toast.LENGTH_SHORT).show()
-                                            else Toast.makeText(activity, "Fallo al agregar intermedio", Toast.LENGTH_LONG).show()
+                                            if (success) {
+                                                Toast.makeText(activity, "Añadido con éxito", Toast.LENGTH_SHORT).show()
+                                                reloadData()
+                                            } else Toast.makeText(activity, "Fallo al agregar intermedio", Toast.LENGTH_LONG).show()
                                         }
                                     }
                                 }
@@ -388,7 +390,7 @@ class LiveTravelFragment : CS_Fragment() {
         super.onResume()
 
         resetViews()
-        liveVM.findLastTravel(locationVM) { rootVM.disableLoading() }
+        reloadData()
 
         // New design
         basicSwitcher.start()
@@ -402,8 +404,11 @@ class LiveTravelFragment : CS_Fragment() {
         zoneSwitcher.purge()
     }
 
-
     // ------------------------------- DONE -------------------------------
+
+    private fun reloadData(){
+        liveVM.findLastTravel(locationVM) { rootVM.disableLoading() }
+    }
 
     private fun resetViews() {
         binding.travellingLayout.isVisible = false

@@ -8,7 +8,6 @@ import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.data.generator.Station
 import cs10.apps.travels.tracer.databinding.ItemArrivalBinding
-import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.ArriboTren
@@ -72,6 +71,7 @@ class LocatedArrivalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             binding.root.alpha = alpha
             binding.rateText.text = Utils.rateFormat(it)
         }
+
         // ETA animation
         if (top && viaje is ArriboTren){
             etaSwitcher.setItem(viaje)

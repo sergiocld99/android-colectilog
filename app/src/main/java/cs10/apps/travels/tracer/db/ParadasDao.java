@@ -29,6 +29,9 @@ public interface ParadasDao {
     @Query("SELECT * FROM parada ORDER BY nombre")
     List<Parada> getAll();
 
+    @Query("SELECT * FROM parada WHERE tipo = :type")
+    List<Parada> getAllByType(int type);
+
     @Query("SELECT * FROM (select p.*, linea, ramal, L.color, startHour, startMinute, nombrePdaFin " +
             "from parada p inner join viaje v on v.nombrePdaInicio = p.nombre " +
             "LEFT JOIN lines L ON v.linea = L.number " +

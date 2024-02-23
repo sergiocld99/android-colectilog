@@ -1,17 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.stops.NextArrivalsFragment">
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".modules.stops.ui.StopListFragment">
+
+    <include layout="@layout/tabs_travel_type"
+        android:id="@+id/type_filter"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"
         tools:listitem="@layout/item_stop" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:layout_marginTop="12dp"
+        android:layout_width="match_parent"
+        app:shimmer_auto_start="true"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:id="@+id/viewLoading"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/item_loading_stop" />
+            <include layout="@layout/item_loading_stop" />
+            <include layout="@layout/item_loading_stop" />
+            <include layout="@layout/item_loading_stop" />
+            <include layout="@layout/item_loading_stop" />
+            <include layout="@layout/item_loading_stop" />
+            <include layout="@layout/item_loading_stop" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+</LinearLayout>

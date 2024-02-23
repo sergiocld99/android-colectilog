@@ -69,7 +69,7 @@ public class MyTravelsFragment extends CS_Fragment {
         rv.setAdapter(adapter);
 
         // Filter
-        binding.roundedTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        binding.typeFilter.roundedTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 String constraint;
@@ -105,7 +105,7 @@ public class MyTravelsFragment extends CS_Fragment {
         binding.recycler.setVisibility(View.VISIBLE);
         binding.viewLoading.setVisibility(View.GONE);
 
-        binding.tabsBox.setVisibility(filterAvailable ? View.VISIBLE : View.GONE);
+        binding.typeFilter.tabsBox.setVisibility(filterAvailable ? View.VISIBLE : View.GONE);
     }
 
     private void showLoading() {
@@ -122,7 +122,7 @@ public class MyTravelsFragment extends CS_Fragment {
 
         // rootVM.enableLoading();
         doInBackground(this::buildData);
-        binding.roundedTabs.selectTab(binding.roundedTabs.getTabAt(0));
+        binding.typeFilter.roundedTabs.selectTab(binding.typeFilter.roundedTabs.getTabAt(0));
     }
 
     private void buildData() {

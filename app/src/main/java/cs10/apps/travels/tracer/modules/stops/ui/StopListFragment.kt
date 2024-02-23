@@ -7,8 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import cs10.apps.common.android.ui.CS_Fragment
 import cs10.apps.travels.tracer.databinding.FragmentStopsBinding
+import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.modules.stops.adapter.StopAdapter
 import cs10.apps.travels.tracer.modules.stops.viewmodel.StopsVM
@@ -44,18 +47,51 @@ class StopListFragment : CS_Fragment() {
         stopsVM = ViewModelProvider(requireActivity())[StopsVM::class.java]
 
         stopsVM.getLiveData().observe(viewLifecycleOwner) {
-            rootVM.disableLoading()
+            //rootVM.disableLoading()
+            showContent()
             adapter.paradasList = it
             adapter.notifyDataSetChanged()
         }
+
+        // filter
+        binding.typeFilter.roundedTabs.addOnTabSelectedListener(object : OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                showLoading()
+
+                adapter.itemCount.let {
+                    if (it > 0) {
+                        adapter.paradasList = mutableListOf()
+                        adapter.notifyItemRangeRemoved(0, it)
+                    }
+                }
+
+                val constraint: TransportType? = when (tab!!.position) {
+                    1 -> TransportType.BUS
+                    2 -> TransportType.TRAIN
+                    else -> null
+                }
+
+                stopsVM.filter(constraint)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+        })
     }
 
     override fun onResume() {
         super.onResume()
 
         locationVM.getLiveData().observe(viewLifecycleOwner) {
-            if (adapter.itemCount == 0) {
-                rootVM.enableLoading()
+            if (adapter.itemCount == 0 && binding.typeFilter.roundedTabs.selectedTabPosition == 0) {
+                //rootVM.enableLoading()
+                showLoading()
                 stopsVM.findAll(it.location)
             } else {
                 // POTENTIAL RISK: CONCURRENT MODIFICATION EXCEPTION
@@ -69,5 +105,16 @@ class StopListFragment : CS_Fragment() {
         intent.putExtra("stopName", item.nombre)
         intent.putExtra("type", item.tipo)
         startActivity(intent)
+    }
+
+    private fun showContent() {
+        binding.recycler.visibility = View.VISIBLE
+        binding.viewLoading.visibility = View.GONE
+        //binding.typeFilter.tabsBox.visibility = if (filterAvailable) View.VISIBLE else View.GONE
+    }
+
+    private fun showLoading() {
+        binding.recycler.visibility = View.GONE
+        binding.viewLoading.visibility = View.VISIBLE
     }
 }

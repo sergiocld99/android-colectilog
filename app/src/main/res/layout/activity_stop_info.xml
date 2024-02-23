@@ -57,11 +57,32 @@
         android:paddingVertical="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hour"
+                android:layout_marginHorizontal="16dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+            <Spinner
+                android:id="@+id/spinner_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            tools:itemCount="3"
+            tools:listitem="@layout/item_arrival"/>
 
     </LinearLayout>
 

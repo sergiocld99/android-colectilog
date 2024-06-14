@@ -20,6 +20,7 @@ import cs10.apps.travels.tracer.data.generator.FareData;
 import cs10.apps.travels.tracer.databinding.ActivityTrainTravelCreatorBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.db.ParadasDao;
+import cs10.apps.travels.tracer.enums.TransportType;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
 
@@ -111,7 +112,7 @@ public class TrainTravelCreator extends CommonTravelCreator {
         }
 
         try {
-            viaje.setTipo(1);
+            viaje.setTipo(TransportType.TRAIN.ordinal());
             viaje.setStartHour(Integer.parseInt(hourParams[0]));
             viaje.setStartMinute(Integer.parseInt(hourParams[1]));
             viaje.setDay(Integer.parseInt(dateParams[0]));

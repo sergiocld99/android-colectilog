@@ -134,7 +134,7 @@ class CarTravelCreator : CommonTravelCreator() {
         val endPlace = endParadas[endIndex]
 
         if (date.isEmpty() || startHour.isEmpty() || peopleCount.isEmpty()) return 1
-        if (startPlace == endPlace) return 2
+        if (startPlace.nombre == endPlace.nombre) return 2
 
         val startTimeParams = startHour.split(":").toTypedArray()
         if (startTimeParams.size != 2) {

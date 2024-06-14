@@ -221,6 +221,11 @@ public class Utils {
                 .memoryPolicy(MemoryPolicy.NO_CACHE).into(iv);
     }
 
+    public static void loadMetroBanner(ImageView iv){
+        Picasso.get().load("https://buenosaires.gob.ar/sites/default/files/styles/card_img_top/public/2023-06/L%C3%ADnea%20A_0.jpg?itok=Ij83SMOT"
+        ).memoryPolicy(MemoryPolicy.NO_CACHE).into(iv);
+    }
+
     public static void loadBusBanner(ImageView iv){
         Picasso.get().load("https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/d037df20161495.562e68da93c72.jpg")
                 .memoryPolicy(MemoryPolicy.NO_CACHE).into(iv);

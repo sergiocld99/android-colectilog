@@ -26,6 +26,12 @@
         <item name="colorSecondary">#757EAF</item>
     </style>
 
+    <style name="Theme.TravelTracer.Subways" parent="Theme.TravelTracer.NoActionBar">
+        <item name="colorPrimary">@color/bus_148</item>
+        <item name="colorPrimaryVariant">#B39C29</item>
+        <item name="colorSecondary">#AFA175</item>
+    </style>
+
     <style name="Theme.TravelTracer.Coffee" parent="Theme.TravelTracer.NoActionBar">
         <item name="colorPrimary">#B5643F</item>
         <item name="colorPrimaryVariant">#B37529</item>

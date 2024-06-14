@@ -120,4 +120,5 @@
     <string name="edit">Editar</string>
     <string name="metro">Subte</string>
     <string name="car">Auto</string>
+    <string name="metro_travel">Viaje en Subte</string>
 </resources>

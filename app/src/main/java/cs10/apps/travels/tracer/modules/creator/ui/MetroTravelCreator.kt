@@ -3,7 +3,6 @@ package cs10.apps.travels.tracer.modules.creator.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -26,7 +25,7 @@ import cs10.apps.travels.tracer.ui.stops.StopCreator
 import java.util.*
 import kotlin.math.roundToInt
 
-class BusTravelCreator : CommonTravelCreator() {
+class MetroTravelCreator : CommonTravelCreator() {
     private lateinit var content: ContentBusTravelCreatorBinding
     private lateinit var startAdapter: ArrayAdapter<out Parada>
     private lateinit var endAdapter: ArrayAdapter<out Parada>
@@ -44,7 +43,7 @@ class BusTravelCreator : CommonTravelCreator() {
 
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        Utils.loadBusBanner(binding.appbarImage)
+        Utils.loadMetroBanner(binding.appbarImage)
         binding.toolbarLayout.title = getString(R.string.new_travel)
 
         content = binding.contentTravelCreator
@@ -59,9 +58,11 @@ class BusTravelCreator : CommonTravelCreator() {
         super.setCurrentTime(content.etDate, content.etStartHour, content.redSubeHeader)
         content.etEndHour.isEnabled = false
 
-        // hint values
-        // content.etRamal.setOnClickListener { autoFillRamals() }
-        Handler(mainLooper).postDelayed({ autoFillRamals() }, 700)
+        // hide line and ramal
+        content.etLine.isVisible = false
+        content.etRamal.isVisible = false
+        content.tvLine.isVisible = false
+        content.tvRamal.isVisible = false
 
         // order stops by last location
         client = LocationServices.getFusedLocationProviderClient(this)
@@ -82,70 +83,10 @@ class BusTravelCreator : CommonTravelCreator() {
         if (Utils.checkPermissions(this)){
             client.lastLocation.addOnSuccessListener {
                 //loadStops(it)
-                creatorVM.loadInBackground(it)
+                creatorVM.loadInBackground(it, TransportType.METRO)
             }
         }
     }
-
-    private fun autoFillRamals() {
-        doInBackground {
-            var ramals: MutableList<String>
-
-            content.etLine.text.toString().let {
-                ramals = if (it.isEmpty()) MiDB.getInstance(this).viajesDao().allRamals
-                else MiDB.getInstance(this).viajesDao().getAllRamalsFromLine(it.toInt())
-            }
-
-            doInForeground {
-                val ra = ArrayAdapter(this, android.R.layout.simple_list_item_1, ramals)
-                content.etRamal.setAdapter(ra)
-            }
-        }
-    }
-
-    /*
-    private fun loadStops(location: Location?) {
-        doInBackground {
-            val db = MiDB.getInstance(this)
-
-            // get ordered by name and travel count
-            startParadas = db.paradasDao().all
-            endParadas = db.paradasDao().allOrderedByTravelCount
-
-            // control
-            if (startParadas.size != endParadas.size) throw Exception("Paradas count dismatch")
-
-            // order start
-            location?.let { Utils.orderByProximity(startParadas, it.latitude, it.longitude) }
-
-            // update spinners
-            doInForeground { setSpinners() }
-
-            // part 2: autocomplete likely travel
-            val currentHour = Calendar.getInstance()[Calendar.HOUR_OF_DAY]
-            if (startParadas.isNotEmpty()) {
-                val viaje = db.viajesDao().getLikelyTravelFrom(startParadas.first().nombre, currentHour)
-                viaje?.let { runOnUiThread { autoFillLikelyTravel(it) } }
-            }
-        }
-    } */
-
-    /*
-    private fun autoFillLikelyTravel(viaje: Viaje) {
-        viaje.linea?.let { content.etLine.setText(it.toString()) }
-        viaje.ramal?.let { content.etRamal.setText(it) }
-
-        // find end index
-        var endIndex = 0
-        for (p in endParadas) {
-            if (p.nombre == viaje.nombrePdaFin) break else endIndex++
-        }
-
-        content.selectorEndPlace.setSelection(endIndex, true)
-
-        // in case user wants to select another ramal
-        // autoFillRamals()
-    } */
 
     private fun defineObservers(){
         creatorVM.startParadas.observe(this) {
@@ -177,28 +118,12 @@ class BusTravelCreator : CommonTravelCreator() {
         }
     }
 
-    /*
-    private fun setSpinners() {
-        startAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, startParadas)
-        endAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, endParadas)
-
-        startAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-        content.selectorStartPlace.adapter = startAdapter
-        content.selectorEndPlace.adapter = endAdapter
-        content.selectorStartPlace.onItemSelectedListener = onStartPlaceSelected
-        content.selectorEndPlace.onItemSelectedListener = onEndPlaceSelected
-    } */
-
     override fun onCheckEntries(viaje: Viaje): Int {
         val startParadas = creatorVM.startParadas.value
         val endParadas = creatorVM.endParadas.value
 
         if (startParadas.isNullOrEmpty() || endParadas.isNullOrEmpty()) return 6
 
-        val line = content.etLine.text.toString().trim()
-        val ramal = content.etRamal.text.toString().trim()
         val date = content.etDate.text.toString().trim()
         val startHour = content.etStartHour.text.toString().trim()
         val peopleCount = content.etPeopleCount.text.toString().trim()
@@ -207,7 +132,7 @@ class BusTravelCreator : CommonTravelCreator() {
         val startPlace = startParadas[startIndex]
         val endPlace = endParadas[endIndex]
 
-        if (date.isEmpty() || startHour.isEmpty() || line.isEmpty() || peopleCount.isEmpty()) return 1
+        if (date.isEmpty() || startHour.isEmpty() || peopleCount.isEmpty()) return 1
         if (startPlace.nombre == endPlace.nombre) return 2
 
         val hourParams = startHour.split(":").toTypedArray()
@@ -223,7 +148,7 @@ class BusTravelCreator : CommonTravelCreator() {
         }
 
         try {
-            viaje.tipo = TransportType.BUS.ordinal
+            viaje.tipo = TransportType.METRO.ordinal
             viaje.startHour = hourParams[0].toInt()
             viaje.startMinute = hourParams[1].toInt()
             viaje.day = dateParams[0].toInt()
@@ -232,11 +157,11 @@ class BusTravelCreator : CommonTravelCreator() {
             viaje.nombrePdaInicio = startPlace.nombre
             viaje.nombrePdaFin = endPlace.nombre
             Utils.setWeekDay(viaje)
-            viaje.linea = line.toInt()
+            viaje.linea = null
+            viaje.ramal = null
             viaje.peopleCount = peopleCount.toInt()
             if (viaje.peopleCount <= 0 || viaje.peopleCount >= 10) return 7
             if (price.isNotEmpty()) viaje.costo = price.toDouble()
-            if (ramal.isNotEmpty()) viaje.ramal = ramal
 
             // save rating if defined
             content.ratingBar.rating.let { if (it > 0) viaje.rate = it.roundToInt() }

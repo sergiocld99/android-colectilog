@@ -32,7 +32,7 @@ class MetroTravelEditor : CommonTravelEditor() {
         // top image and title
         setSupportActionBar(binding.toolbar)
         binding.toolbarLayout.title = getString(R.string.edit_travel)
-        Utils.loadBusBanner(binding.appbarImage)
+        Utils.loadMetroBanner(binding.appbarImage)
 
         // content
         with (binding.contentTravelCreator){

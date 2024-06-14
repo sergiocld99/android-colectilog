@@ -22,15 +22,15 @@ class CreatorVM(application: Application) : AndroidViewModel(application) {
     val endParadas = MutableLiveData(listOf<Parada>())
     val likelyTravel = MutableLiveData<LikelyTravel?>(null)
 
-    fun loadInBackground(location: Location?){
+    fun loadInBackground(location: Location?, type: TransportType? = null){
         viewModelScope.launch(Dispatchers.IO){
-            loadStops(location)
+            loadStops(location, type)
         }
     }
 
-    private fun loadStops(location: Location?){
-        val startOnes = db.paradasDao().all
-        val endOnes = db.paradasDao().allOrderedByMostVisited
+    private fun loadStops(location: Location?, type: TransportType?){
+        val startOnes = db.paradasDao().all.filter { p -> type == null || p.tipo == type.ordinal }
+        val endOnes = db.paradasDao().allOrderedByMostVisited.filter { p -> type == null || p.tipo == type.ordinal }
 
         // order start ones by proximity
         location?.let { Utils.orderByProximity(startOnes, it.latitude, it.longitude) }

@@ -41,6 +41,7 @@ import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.enums.SelectOption;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.modules.creator.ui.MetroTravelCreator;
 import cs10.apps.travels.tracer.ui.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.ui.stops.DatabaseCallback;
 import cs10.apps.travels.tracer.ui.stops.StopCreator;
@@ -79,6 +80,7 @@ public class DrawerActivity extends CSActivity implements DatabaseCallback {
                 case BUS_TRAVEL: return new Intent(DrawerActivity.this, BusTravelCreator.class);
                 case TRAIN_TRAVEL: return new Intent(DrawerActivity.this, TrainTravelCreator.class);
                 case CAR_TRAVEL: return new Intent(DrawerActivity.this, CarTravelCreator.class);
+                case METRO_TRAVEL: return new Intent(DrawerActivity.this, MetroTravelCreator.class);
                 case STOP: return new Intent(DrawerActivity.this, StopCreator.class);
                 case ZONE: return new Intent(DrawerActivity.this, ZoneCreator.class);
                 default: return null;

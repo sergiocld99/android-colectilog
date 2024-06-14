@@ -24,6 +24,7 @@ class SelectTravelType : AppCompatActivity() {
         renderBusButton(binding.btn1)
         renderTrainButton(binding.btn2)
         renderCarButton(binding.btn5)
+        renderSubwayButton(binding.btn6)
         renderStopButton(binding.btn3)
         renderZoneButton(binding.btn4)
     }
@@ -47,6 +48,13 @@ class SelectTravelType : AppCompatActivity() {
         btn.buttonCard.setCardBackgroundColor(ContextCompat.getColor(this, R.color.bus_159))
         btn.buttonLabel.text = getString(R.string.car_travel)
         btn.root.setOnClickListener { returnType(SelectOption.CAR_TRAVEL) }
+    }
+
+    private fun renderSubwayButton(btn: ButtonSelectTypeBinding) {
+        btn.buttonDrawing.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_railway))
+        btn.buttonCard.setCardBackgroundColor(ContextCompat.getColor(this, R.color.bus_148))
+        btn.buttonLabel.text = getString(R.string.metro_travel)
+        btn.root.setOnClickListener { returnType(SelectOption.METRO_TRAVEL) }
     }
 
     private fun renderStopButton(btn: ButtonSelectTypeBinding) {

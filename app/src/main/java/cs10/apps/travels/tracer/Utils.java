@@ -202,6 +202,9 @@ public class Utils {
             case CAR:
                 drawableId = R.drawable.ic_car;
                 break;
+            case METRO:
+                drawableId = R.drawable.ic_railway;
+                break;
             default:
                 return null;
         }

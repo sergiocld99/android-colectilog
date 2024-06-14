@@ -13,6 +13,7 @@
     <color name="bus">@android:color/holo_blue_dark</color>
     <color name="train">#3F51B5</color>
     <color name="bus_98">#B3C314</color>
+    <color name="bus_148">#9B8E1C</color>
     <color name="bus_159">#009688</color>
     <color name="bus_202">#FF8F07</color>
     <color name="bus_324">#AE6A1E</color>

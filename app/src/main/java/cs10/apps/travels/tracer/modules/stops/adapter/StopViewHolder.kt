@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ItemStopBinding
+import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
 
 class StopViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -36,25 +37,23 @@ class StopViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             binding.root.context.getString(R.string.coords, parada.latitud, parada.longitud)
 
         // Colocar icono y color que corresponda
-        val color: Int
-
-        if (parada.tipo == 0) {
-            color = when {
-                parada.doubleHistory.currentIsLess() -> R.color.bus_500
-                parada.doubleHistory.currentIsGreater() -> R.color.bus_414
-                else -> R.color.bus
+        val color: Int = when (parada.tipo) {
+            TransportType.BUS.ordinal -> R.color.bus
+            TransportType.TRAIN.ordinal -> R.color.train
+            TransportType.CAR.ordinal -> R.color.bus_159
+            TransportType.METRO.ordinal -> {
+                if (parada.nombre.endsWith("(A)")) R.color.bus
+                else if (parada.nombre.endsWith("(B)")) R.color.bus_414
+                else if (parada.nombre.endsWith("(C)")) R.color.train
+                else if (parada.nombre.endsWith("(D)")) R.color.bus_500
+                else if (parada.nombre.endsWith("(E)")) R.color.purple_500
+                else if (parada.nombre.endsWith("(H)")) R.color.bus_148
+                else R.color.black
             }
-
-            binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
-        } else {
-            color = when {
-                parada.doubleHistory.currentIsLess() -> R.color.bus_159
-                parada.doubleHistory.currentIsGreater() -> R.color.bus_324
-                else -> R.color.train
-            }
-
-            binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
+            else -> R.color.bus
         }
+
+        binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
 
         // Icono según tipo de parada
         binding.ivType.setImageDrawable(Utils.getTypeDrawable(parada.tipo, binding.root.context))

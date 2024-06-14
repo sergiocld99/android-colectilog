@@ -81,6 +81,9 @@ public class MyTravelsFragment extends CS_Fragment {
                     case 2:
                         constraint = TransportType.TRAIN.toString();
                         break;
+                    case 3:
+                        constraint = TransportType.METRO.toString();
+                        break;
                     default:
                         constraint = null;
                         break;

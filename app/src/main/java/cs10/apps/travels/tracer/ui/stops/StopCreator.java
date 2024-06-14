@@ -48,7 +48,7 @@ public class StopCreator extends CSActivity implements AdapterView.OnItemSelecte
         content.tvTitle.setText(getString(R.string.new_stop));
 
         // Selector
-        String[] options = {"Colectivo", "Tren"};
+        String[] options = {getString(R.string.bus), getString(R.string.train), getString(R.string.car), getString(R.string.metro)};
         ArrayAdapter<String> aa = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item, options);
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         content.selectorType.setAdapter(aa);

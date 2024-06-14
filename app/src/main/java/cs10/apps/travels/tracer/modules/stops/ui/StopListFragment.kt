@@ -68,6 +68,7 @@ class StopListFragment : CS_Fragment() {
                 val constraint: TransportType? = when (tab!!.position) {
                     1 -> TransportType.BUS
                     2 -> TransportType.TRAIN
+                    3 -> TransportType.METRO
                     else -> null
                 }
 

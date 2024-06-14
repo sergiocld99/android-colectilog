@@ -1,7 +1,7 @@
 package cs10.apps.travels.tracer.enums
 
 enum class TransportType {
-    BUS, TRAIN, CAR;
+    BUS, TRAIN, CAR, METRO;
 
     companion object {
         fun fromOrdinal(ordinal: Int): TransportType {
@@ -9,6 +9,7 @@ enum class TransportType {
                 0 -> BUS
                 1 -> TRAIN
                 2 -> CAR
+                3 -> METRO
                 else -> BUS
             }
         }

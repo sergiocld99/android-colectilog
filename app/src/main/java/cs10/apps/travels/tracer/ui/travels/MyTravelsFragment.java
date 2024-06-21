@@ -19,6 +19,7 @@ import java.util.List;
 
 import cs10.apps.common.android.NumberUtils;
 import cs10.apps.common.android.ui.CS_Fragment;
+import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.adapter.TravelAdapter;
 import cs10.apps.travels.tracer.databinding.FragmentTravelsBinding;
 import cs10.apps.travels.tracer.db.MiDB;
@@ -30,6 +31,7 @@ import cs10.apps.travels.tracer.model.location.TravelDistance;
 import cs10.apps.travels.tracer.modules.AutoRater;
 import cs10.apps.travels.tracer.modules.editor.ui.BusTravelEditor;
 import cs10.apps.travels.tracer.modules.editor.ui.CarTravelEditor;
+import cs10.apps.travels.tracer.modules.editor.ui.MetroTravelEditor;
 import cs10.apps.travels.tracer.modules.editor.ui.TrainTravelEditor;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
 
@@ -196,7 +198,7 @@ public class MyTravelsFragment extends CS_Fragment {
             doInForeground(() -> adapter.remove(pos));
         }));
 
-        builder.setNeutralButton("Volver", (dialogInterface, i) -> dialogInterface.cancel());
+        builder.setNeutralButton(getString(R.string.go_back), (dialogInterface, i) -> dialogInterface.cancel());
         builder.create().show();
     }
 
@@ -212,6 +214,9 @@ public class MyTravelsFragment extends CS_Fragment {
                 break;
             case TRAIN:
                 target = TrainTravelEditor.class;
+                break;
+            case METRO:
+                target = MetroTravelEditor.class;
                 break;
             default:
                 return;

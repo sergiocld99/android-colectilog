@@ -33,7 +33,8 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         // line sublabel
         binding.tvLineNumber.text = when {
             viaje.tipo == TransportType.TRAIN.ordinal -> "Roca"
-            viaje.tipo == TransportType.CAR.ordinal -> "Auto"
+            viaje.tipo == TransportType.CAR.ordinal -> binding.root.context.getString(R.string.car)
+            viaje.tipo == TransportType.METRO.ordinal -> binding.root.context.getString(R.string.metro)
             viaje.linea != null -> viaje.linea.toString()
             else -> ""
         }
@@ -61,7 +62,7 @@ class TravelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         // COLOR
         if (viaje.color != null) binding.root.setBackgroundColor(viaje.color)
         else {
-            val selectedColor = ColorUtils.colorFor(viaje.linea, viaje.tipo)
+            val selectedColor = ColorUtils.colorFor(viaje.linea, viaje.tipo, viaje.nombrePdaInicio)
             binding.root.background = AppCompatResources.getDrawable(binding.root.context, selectedColor)
         }
 

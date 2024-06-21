@@ -9,6 +9,7 @@ import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ItemStopBinding
 import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
+import cs10.apps.travels.tracer.utils.ColorUtils
 
 class StopViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -41,15 +42,7 @@ class StopViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             TransportType.BUS.ordinal -> R.color.bus
             TransportType.TRAIN.ordinal -> R.color.train
             TransportType.CAR.ordinal -> R.color.bus_159
-            TransportType.METRO.ordinal -> {
-                if (parada.nombre.endsWith("(A)")) R.color.bus
-                else if (parada.nombre.endsWith("(B)")) R.color.bus_414
-                else if (parada.nombre.endsWith("(C)")) R.color.train
-                else if (parada.nombre.endsWith("(D)")) R.color.bus_500
-                else if (parada.nombre.endsWith("(E)")) R.color.purple_500
-                else if (parada.nombre.endsWith("(H)")) R.color.bus_148
-                else R.color.black
-            }
+            TransportType.METRO.ordinal -> ColorUtils.metroColorFor(parada.nombre)
             else -> R.color.bus
         }
 

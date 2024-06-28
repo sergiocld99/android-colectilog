@@ -214,7 +214,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         val speed = 0.5 * (startStop.kmDistanceTo(currentPoint) / hours) + 12.5
 
                         // calc direction and apply correction to progress
-                        val correctedProg = corrector.correct(startStop, endStop, prog, t.ramal, t.tipo)
+                        val correctedProg = corrector.correct(startStop, endStop, prog, t)
                         val minutesLeft = calculateMinutesLeft(speed, correctedProg, endKmDistance)
 
                         // evaluate if travel should be finished
@@ -233,7 +233,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         val etas = mutableListOf<Double>()
 
                         for (p in progsToCalculate) {
-                            val cp = corrector.correct(startStop, endStop, 0.01 * p, t.ramal, t.tipo)
+                            val cp = corrector.correct(startStop, endStop, 0.01 * p, t)
                             val distFromCurrent = (0.01 * p).times(st.totalKmDist)
                             val eta = minutesLeft - calculateMinutesLeft(speed, cp, distFromCurrent)
                             etas.add(eta)
@@ -262,7 +262,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                             if (x + 0.1 < prog) continue
 
                             val x2 = x + (prog % 0.1) * (1.0 - x)
-                            val y = corrector.correct(startStop, endStop, x2, t.ramal, t.tipo)
+                            val y = corrector.correct(startStop, endStop, x2, t)
                             entries.add(FloatEntry(x.toFloat(), y.toFloat()))
                         }
 
@@ -338,7 +338,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 val distanceFromStart = z.getCoordsDistanceTo(start)
                 val distanceToEnd = z.getCoordsDistanceTo(end)
                 val prog = calculateProgress(distanceFromStart, distanceToEnd)
-                val correctedProg = corrector.correct(start, end, prog, t.ramal, t.tipo)
+                val correctedProg = corrector.correct(start, end, prog, t)
 
                 //val distance = z.getCoordsDistanceTo(location)
                 //val kmDistance = NumberUtils.coordsDistanceToKm(distance)

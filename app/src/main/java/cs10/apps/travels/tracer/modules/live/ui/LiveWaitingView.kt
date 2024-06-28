@@ -1,9 +1,11 @@
 package cs10.apps.travels.tracer.modules.live.ui
 
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.databinding.ContentLiveWaitingBinding
+import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
 
 class LiveWaitingView(private val binding: ContentLiveWaitingBinding) {
@@ -61,6 +63,13 @@ class LiveWaitingView(private val binding: ContentLiveWaitingBinding) {
                 disableAnimation()
             } else -> {
                 binding.currentStopTv.text = "Esperando en ${stopHere.nombre}"
+                binding.centeredIcon.setImageDrawable(
+                    AppCompatResources.getDrawable(binding.root.context, when(stopHere.tipo) {
+                        TransportType.METRO.ordinal -> R.drawable.ic_railway
+                        TransportType.TRAIN.ordinal -> R.drawable.ic_train
+                        else -> R.drawable.ic_bus
+                    })
+                )
                 enableAnimation()
             }
         }

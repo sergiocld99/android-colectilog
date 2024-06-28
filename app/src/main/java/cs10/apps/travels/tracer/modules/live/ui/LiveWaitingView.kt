@@ -1,12 +1,20 @@
 package cs10.apps.travels.tracer.modules.live.ui
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import cs10.apps.travels.tracer.R
+import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ContentLiveWaitingBinding
 import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
+import cs10.apps.travels.tracer.modules.creator.ui.BusTravelCreator
+import cs10.apps.travels.tracer.modules.creator.ui.CarTravelCreator
+import cs10.apps.travels.tracer.modules.creator.ui.MetroTravelCreator
+import cs10.apps.travels.tracer.modules.creator.ui.TrainTravelCreator
+import cs10.apps.travels.tracer.utils.ColorUtils
 
 class LiveWaitingView(private val binding: ContentLiveWaitingBinding) {
     private var expanded = false
@@ -56,7 +64,7 @@ class LiveWaitingView(private val binding: ContentLiveWaitingBinding) {
         else hide()
     }
 
-    fun setStopHere(stopHere: Parada?){
+    fun setStopHere(stopHere: Parada?, activity: Activity){
         when (stopHere) {
             null -> {
                 binding.currentStopTv.text = null
@@ -70,6 +78,22 @@ class LiveWaitingView(private val binding: ContentLiveWaitingBinding) {
                         else -> R.drawable.ic_bus
                     })
                 )
+                binding.circularCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context,
+                    ColorUtils.colorFor(null, stopHere.tipo, stopHere.nombre))
+                )
+
+                binding.circularCard.setOnClickListener {
+                    val screen = when(stopHere.tipo) {
+                        TransportType.METRO.ordinal -> MetroTravelCreator::class.java
+                        TransportType.TRAIN.ordinal -> TrainTravelCreator::class.java
+                        TransportType.BUS.ordinal -> BusTravelCreator::class.java
+                        else -> CarTravelCreator::class.java
+                    }
+
+                    val intent = Intent(activity, screen)
+                    activity.startActivity(intent)
+                }
+
                 enableAnimation()
             }
         }
@@ -84,7 +108,7 @@ class LiveWaitingView(private val binding: ContentLiveWaitingBinding) {
     private fun enableAnimation(){
         if (!enabled){
             enabled = true
-            binding.circularCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus))
+            //binding.circularCard.setCardBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.bus))
             animateButton()
         }
     }

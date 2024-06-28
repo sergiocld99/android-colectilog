@@ -97,7 +97,7 @@ class LiveTravelFragment : CS_Fragment() {
         observeLiveVM()
 
         waitingVM.stopHere.observe(viewLifecycleOwner) {
-            liveWaitingView.setStopHere(it)
+            liveWaitingView.setStopHere(it, requireActivity())
         }
 
         locationVM.getLiveData().observe(viewLifecycleOwner) {

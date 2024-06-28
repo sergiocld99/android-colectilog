@@ -26,7 +26,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:cardCornerRadius="150dp"
-        app:cardBackgroundColor="@color/bus">
+        tools:cardBackgroundColor="@color/bus">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

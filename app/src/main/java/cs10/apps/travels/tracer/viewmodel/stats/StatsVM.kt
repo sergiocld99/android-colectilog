@@ -32,6 +32,7 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
     val busStat = MutableLiveData<Stat>()
     val trainStat = MutableLiveData<Stat>()
     val coffeeStat = MutableLiveData<Stat>()
+    val metroStat = MutableLiveData<Stat>()
 
     val bus1Stat = MutableLiveData<LineStat>()
     val bus2Stat = MutableLiveData<LineStat>()
@@ -46,12 +47,13 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
             val coffee = async { database.coffeeDao().getTotalSpent(month, year) ?: 0.0 }
             val buses = async { database.travelsDao().getTotalSpentInMonthInType(month, year, TransportType.BUS.ordinal) ?: 0.0 }
             val trains = async { database.travelsDao().getTotalSpentInMonthInType(month, year, TransportType.TRAIN.ordinal) ?: 0.0 }
+            val subways = async { database.travelsDao().getTotalSpentInMonthInType(month, year, TransportType.METRO.ordinal) ?: 0.0 }
             val sumQuery = async {database.travelsDao().getMostSpentBusLineInMonth(month, year)}
 
             val genStats = async {
-                val (c,b,t) = awaitAll(coffee, buses, trains)
-                val total = max(c+b+t, 1.0)
-                setTypeStats(b,t,c,total)
+                val (c,b,t,s) = awaitAll(coffee, buses, trains, subways)
+                val total = max(c+b+t+s, 1.0)
+                setTypeStats(b,t,c,s,total)
             }
 
             val busesStats = async {
@@ -100,9 +102,10 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
         bus3Stat.postValue(LineStat(priceSum.linea, priceSum.color, priceSum.suma, total))
     }
 
-    private fun setTypeStats(buses: Double, trains: Double, coffee: Double, total: Double) {
+    private fun setTypeStats(buses: Double, trains: Double, coffee: Double, subways: Double, total: Double) {
         busStat.postValue(Stat(buses, total))
         trainStat.postValue(Stat(trains, total))
         coffeeStat.postValue(Stat(coffee, total))
+        metroStat.postValue(Stat(subways, total))
     }
 }

@@ -65,6 +65,12 @@ class MetroTravelEditor : CommonTravelEditor() {
         endIndex = paradas.indexOfFirst { it.nombre == v.nombrePdaFin }
         binding.contentTravelCreator.selectorStartPlace.setSelection(startIndex)
         binding.contentTravelCreator.selectorEndPlace.setSelection(endIndex)
+
+        // rating
+        v.rate?.let { binding.contentTravelCreator.ratingBar.rating = it.toFloat() }
+
+        // price
+        if (v.costo > 0) binding.contentTravelCreator.etPrice.setText("${v.costo}")
     }
 
     override fun setSpinners() {

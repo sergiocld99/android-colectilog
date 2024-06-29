@@ -9,7 +9,7 @@ import kotlin.math.pow
 class ProgressCorrector {
 
     fun correct(start: Localizable, end: Localizable, prog: Double, t: Viaje): Double {
-        if (t.tipo == TransportType.CAR.ordinal || (t.linea != null && t.linea!! <= 200)) {
+        if (t.tipo == TransportType.CAR.ordinal || t.tipo == TransportType.METRO.ordinal || (t.linea != null && t.linea!! <= 200)) {
             return prog
         }
 

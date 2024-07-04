@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.core.view.isVisible
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import cs10.apps.travels.tracer.R
@@ -46,7 +47,13 @@ class CarTravelCreator : CommonTravelCreator() {
         // default config init
         super.setDoneFabBehavior(binding.fab)
         super.setCurrentTime(content.etDate, content.etStartHour, null)
-        content.etPrice.setText(String.format("0.00"))
+
+        with(content) {
+            this.tvPrice.isVisible = false
+            this.etPrice.isVisible = false
+            this.tvTimes.isVisible = false
+            this.etPeopleCount.isVisible = false
+        }
 
         // order stops by last location
         client = LocationServices.getFusedLocationProviderClient(this)

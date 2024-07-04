@@ -71,12 +71,10 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
                 val chargeId = prefs.getLong("chargeId", 0)
                 val savedBalance = prefs.getFloat("balance", 0f)
 
-                val sinceBuses = database.travelsDao().getTotalSpentInTypeSince(travelId, TransportType.BUS.ordinal) ?: 0.0
-                val sinceTrains = database.travelsDao().getTotalSpentInTypeSince(travelId, TransportType.TRAIN.ordinal) ?: 0.0
+                val sinceTravel = database.travelsDao().getTotalSpentSince(travelId) ?: 0.0
                 val sinceCoffee = database.coffeeDao().getSpentSince(coffeeId) ?: 0.0
                 val charges = database.recargaDao().getTotalChargedSince(chargeId) ?: 0.0
-
-                val money = savedBalance - sinceBuses - sinceTrains - sinceCoffee + charges
+                val money = savedBalance - sinceTravel - sinceCoffee + charges
                 setBalance(money)
             }
 

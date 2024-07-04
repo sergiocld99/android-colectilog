@@ -11,6 +11,9 @@ import cs10.apps.travels.tracer.model.joins.PriceSum
 @Dao
 interface TravelsDao {
 
+    @Query("SELECT SUM(costo) FROM viaje where id > :travelId")
+    suspend fun getTotalSpentSince(travelId: Long) : Double?
+
     @Query("SELECT SUM(costo) FROM viaje where tipo = :type and id > :travelId")
     suspend fun getTotalSpentInTypeSince(travelId: Long, type: Int) : Double?
 

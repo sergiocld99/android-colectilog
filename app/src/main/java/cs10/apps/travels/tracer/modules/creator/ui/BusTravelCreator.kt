@@ -57,7 +57,9 @@ class BusTravelCreator : CommonTravelCreator() {
         // default config init
         super.setDoneFabBehavior(binding.fab)
         super.setCurrentTime(content.etDate, content.etStartHour, content.redSubeHeader)
-        content.etEndHour.isEnabled = false
+
+        // 2024-07-18: users can now set end hour on travel creation
+        //content.etEndHour.isEnabled = false
 
         // hint values
         // content.etRamal.setOnClickListener { autoFillRamals() }
@@ -103,50 +105,6 @@ class BusTravelCreator : CommonTravelCreator() {
         }
     }
 
-    /*
-    private fun loadStops(location: Location?) {
-        doInBackground {
-            val db = MiDB.getInstance(this)
-
-            // get ordered by name and travel count
-            startParadas = db.paradasDao().all
-            endParadas = db.paradasDao().allOrderedByTravelCount
-
-            // control
-            if (startParadas.size != endParadas.size) throw Exception("Paradas count dismatch")
-
-            // order start
-            location?.let { Utils.orderByProximity(startParadas, it.latitude, it.longitude) }
-
-            // update spinners
-            doInForeground { setSpinners() }
-
-            // part 2: autocomplete likely travel
-            val currentHour = Calendar.getInstance()[Calendar.HOUR_OF_DAY]
-            if (startParadas.isNotEmpty()) {
-                val viaje = db.viajesDao().getLikelyTravelFrom(startParadas.first().nombre, currentHour)
-                viaje?.let { runOnUiThread { autoFillLikelyTravel(it) } }
-            }
-        }
-    } */
-
-    /*
-    private fun autoFillLikelyTravel(viaje: Viaje) {
-        viaje.linea?.let { content.etLine.setText(it.toString()) }
-        viaje.ramal?.let { content.etRamal.setText(it) }
-
-        // find end index
-        var endIndex = 0
-        for (p in endParadas) {
-            if (p.nombre == viaje.nombrePdaFin) break else endIndex++
-        }
-
-        content.selectorEndPlace.setSelection(endIndex, true)
-
-        // in case user wants to select another ramal
-        // autoFillRamals()
-    } */
-
     private fun defineObservers(){
         creatorVM.startParadas.observe(this) {
             startAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, it)
@@ -177,20 +135,6 @@ class BusTravelCreator : CommonTravelCreator() {
         }
     }
 
-    /*
-    private fun setSpinners() {
-        startAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, startParadas)
-        endAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, endParadas)
-
-        startAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-        content.selectorStartPlace.adapter = startAdapter
-        content.selectorEndPlace.adapter = endAdapter
-        content.selectorStartPlace.onItemSelectedListener = onStartPlaceSelected
-        content.selectorEndPlace.onItemSelectedListener = onEndPlaceSelected
-    } */
-
     override fun onCheckEntries(viaje: Viaje): Int {
         val startParadas = creatorVM.startParadas.value
         val endParadas = creatorVM.endParadas.value
@@ -201,6 +145,7 @@ class BusTravelCreator : CommonTravelCreator() {
         val ramal = content.etRamal.text.toString().trim()
         val date = content.etDate.text.toString().trim()
         val startHour = content.etStartHour.text.toString().trim()
+        val endHour = content.etEndHour.text.toString().trim()
         val peopleCount = content.etPeopleCount.text.toString().trim()
         val price = content.etPrice.text.toString().trim()
 
@@ -210,25 +155,44 @@ class BusTravelCreator : CommonTravelCreator() {
         if (date.isEmpty() || startHour.isEmpty() || line.isEmpty() || peopleCount.isEmpty()) return 1
         if (startPlace.nombre == endPlace.nombre) return 2
 
-        val hourParams = startHour.split(":").toTypedArray()
-        if (hourParams.size != 2) {
-            content.etStartHour.error = "Ingrese una hora válida"
-            return 3
+        // mandatory start time
+        startHour.split(":").toTypedArray().let {
+            if (it.size != 2 || it[0].toIntOrNull() == null || it[1].toIntOrNull() == null) {
+                content.etStartHour.error = "Ingrese una hora válida"
+                return 3
+            }
+
+            viaje.startHour = it[0].toInt()
+            viaje.startMinute = it[1].toInt()
         }
 
-        val dateParams = date.split("/").toTypedArray()
-        if (dateParams.size != 3) {
-            content.etDate.error = "Ingrese una fecha válida"
-            return 4
+        // if user entered end hour...
+        if (endHour.isNotEmpty()) {
+            endHour.split(":").toTypedArray().let {
+                if (it.size != 2 || it[0].toIntOrNull() == null || it[1].toIntOrNull() == null) {
+                    content.etEndHour.error = "Dejar vacío o ingresar hora válida"
+                    return 3
+                }
+
+                viaje.endHour = it[0].toInt()
+                viaje.endMinute = it[1].toInt()
+            }
+        }
+
+        // mandatory date
+        date.split("/").toTypedArray().let {
+            if (it.size != 3 || it[0].toIntOrNull() == null || it[1].toIntOrNull() == null || it[2].toIntOrNull() == null) {
+                content.etDate.error = "Ingrese una fecha válida"
+                return 4
+            }
+
+            viaje.day = it[0].toInt()
+            viaje.month = it[1].toInt()
+            viaje.year = it[2].toInt()
         }
 
         try {
             viaje.tipo = TransportType.BUS.ordinal
-            viaje.startHour = hourParams[0].toInt()
-            viaje.startMinute = hourParams[1].toInt()
-            viaje.day = dateParams[0].toInt()
-            viaje.month = dateParams[1].toInt()
-            viaje.year = dateParams[2].toInt()
             viaje.nombrePdaInicio = startPlace.nombre
             viaje.nombrePdaFin = endPlace.nombre
             Utils.setWeekDay(viaje)

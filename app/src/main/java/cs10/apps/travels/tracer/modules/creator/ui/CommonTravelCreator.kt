@@ -89,8 +89,8 @@ abstract class CommonTravelCreator : FormActivity() {
             // Update DEC 2022: now you can create travels of +1 people
             for (i in 1..viaje.peopleCount) dao.insert(viaje)
 
-            // create notification
-            with(NotificationCenter()){
+            // create notification (only if travel is unfinished)
+            if (viaje.endHour == null) with(NotificationCenter()){
                 createChannel(this@CommonTravelCreator)
                 createNewStartedTravelNotification(this@CommonTravelCreator)
                 scheduleBalanceSummary(this@CommonTravelCreator)

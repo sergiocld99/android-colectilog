@@ -9,6 +9,7 @@ import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
+import cs10.apps.travels.tracer.modules.history.TravelViewHolder
 
 class TravelAdapter(
     private val onClickListener: (Viaje) -> Unit,

@@ -212,7 +212,7 @@ public class Viaje implements Comparable<Viaje> {
         CharSequence start = Utils.hourFormat(getStartHour(), getStartMinute());
         CharSequence end = getEndHour() != null ? Utils.hourFormat(getEndHour(), getEndMinute()) : null;
 
-        return day + " - " + start + (end != null ? " / " + end : "");
+        return day + " - " + start + (end != null ? "  >  " + end : "");
     }
 
     public String getStartAndEnd() {

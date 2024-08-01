@@ -25,7 +25,8 @@ class LineViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             binding.icon.setImageDrawable(ContextCompat.getDrawable(binding.root.context,
                     if (n >= 0) R.drawable.ic_bus
                     else if (item.id == -1) R.drawable.ic_train
-                    else R.drawable.ic_car
+                    else if (item.id == -2) R.drawable.ic_car
+                    else R.drawable.ic_railway
                 ))
         }
 

@@ -60,7 +60,7 @@
             android:id="@+id/coffee_icon"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/ic_coffee"
+            android:src="@drawable/ic_railway"
             app:layout_constraintTop_toTopOf="@id/bus_icon"
             app:layout_constraintBottom_toBottomOf="@id/bus_icon"
             app:layout_constraintStart_toStartOf="@id/coffee_pb"

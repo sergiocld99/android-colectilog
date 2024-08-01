@@ -30,7 +30,7 @@ class CreatorVM(application: Application) : AndroidViewModel(application) {
 
     private fun loadStops(location: Location?, type: TransportType?){
         val startOnes = db.paradasDao().all.filter { p -> type == null || p.tipo == type.ordinal }
-        val endOnes = db.paradasDao().allOrderedByMostVisited.filter { p -> type == null || p.tipo == type.ordinal }
+        val endOnes = db.paradasDao().all.filter { p -> type == null || p.tipo == type.ordinal }
 
         // order start ones by proximity
         location?.let { Utils.orderByProximity(startOnes, it.latitude, it.longitude) }

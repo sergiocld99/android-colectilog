@@ -212,7 +212,7 @@ public class Viaje implements Comparable<Viaje> {
         CharSequence start = Utils.hourFormat(getStartHour(), getStartMinute());
         CharSequence end = getEndHour() != null ? Utils.hourFormat(getEndHour(), getEndMinute()) : null;
 
-        return day + " - " + start + (end != null ? " / " + end : "");
+        return day + " - " + start + (end != null ? "  >  " + end : "");
     }
 
     public String getStartAndEnd() {
@@ -221,8 +221,10 @@ public class Viaje implements Comparable<Viaje> {
 
     public String getLineInformation() {
         if (getLinea() == null) {
-            if (tipo == 1) return "Línea Roca";
-            else return "En Auto";
+            if (tipo == TransportType.TRAIN.ordinal()) return "En Tren";
+            else if (tipo == TransportType.CAR.ordinal()) return "En Auto";
+            else if (tipo == TransportType.METRO.ordinal()) return "En Subte";
+            else return "En Viaje";
         }
         return getLinea() + (getRamal() != null ? " - " + getRamal() : "");
     }

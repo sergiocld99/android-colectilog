@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
-import androidx.core.view.isVisible
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.databinding.ActivityTrainTravelEditorBinding
@@ -13,6 +12,7 @@ import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.utils.SafeUtils
+import kotlin.math.roundToInt
 
 class MetroTravelEditor : CommonTravelEditor() {
 
@@ -35,14 +35,7 @@ class MetroTravelEditor : CommonTravelEditor() {
         Utils.loadMetroBanner(binding.appbarImage)
 
         // content
-        with (binding.contentTravelCreator){
-            this.etPrice.isEnabled = false
-            this.etPrice.isEnabled = false
-            this.tvPrice.isVisible = false
-            this.etPrice.isVisible = false
-            this.tvTimes.isVisible = false
-            this.etPeopleCount.isVisible = false
-        }
+        binding.contentTravelCreator.etPeopleCount.isEnabled = false
 
         // fab
         super.setFabBehavior(binding.fab)
@@ -72,6 +65,12 @@ class MetroTravelEditor : CommonTravelEditor() {
         endIndex = paradas.indexOfFirst { it.nombre == v.nombrePdaFin }
         binding.contentTravelCreator.selectorStartPlace.setSelection(startIndex)
         binding.contentTravelCreator.selectorEndPlace.setSelection(endIndex)
+
+        // rating
+        v.rate?.let { binding.contentTravelCreator.ratingBar.rating = it.toFloat() }
+
+        // price
+        if (v.costo > 0) binding.contentTravelCreator.etPrice.setText("${v.costo}")
     }
 
     override fun setSpinners() {
@@ -92,6 +91,7 @@ class MetroTravelEditor : CommonTravelEditor() {
             val date = this.etDate.text.toString().trim()
             val startTime = this.etStartHour.text.toString().trim()
             val endTime = this.etEndHour.text.toString().trim()
+            val price = this.etPrice.text.toString().trim()
             if (date.isEmpty() || startTime.isEmpty()) return 1
 
             startTime.split(":").let {
@@ -133,6 +133,12 @@ class MetroTravelEditor : CommonTravelEditor() {
             viaje.nombrePdaInicio = paradas[startIndex].nombre
             viaje.nombrePdaFin = paradas[endIndex].nombre
             viaje.tipo = TransportType.METRO.ordinal
+            viaje.costo = price.toDoubleOrNull() ?: 0.0
+
+            with(this.ratingBar.rating){
+                if (this > 0) viaje.rate = this.roundToInt()
+                else viaje.rate = null
+            }
         }
 
         return 0

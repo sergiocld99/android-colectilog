@@ -19,7 +19,6 @@ import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
@@ -29,10 +28,13 @@ import cs10.apps.travels.tracer.enums.TransportType;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.joins.TravelStats;
+import cs10.apps.travels.tracer.utils.LocaleDecimalFormat;
+
 
 public class Utils {
-    private static final DecimalFormat df = new DecimalFormat("0.00");
-    private static final DecimalFormat rf = new DecimalFormat("0.0");
+    private static final LocaleDecimalFormat df = new LocaleDecimalFormat(2);
+
+    private static final LocaleDecimalFormat rf = new LocaleDecimalFormat(1);
 
     @NonNull
     public static String twoDecimals(int value) {

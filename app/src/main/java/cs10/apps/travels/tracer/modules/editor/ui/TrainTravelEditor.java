@@ -10,6 +10,7 @@ import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.Utils;
 import cs10.apps.travels.tracer.databinding.ActivityTrainTravelEditorBinding;
 import cs10.apps.travels.tracer.databinding.ContentTrainTravelCreatorBinding;
+import cs10.apps.travels.tracer.enums.TransportType;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
 
@@ -72,6 +73,9 @@ public class TrainTravelEditor extends CommonTravelEditor {
         // top card
         binding.distanceText.setText(getString(R.string.linear_distance_km, getMt().getDistanceKm()));
         binding.speedText.setText(getString(R.string.speed_kmh, getMt().getSpeedKmH()));
+        
+        // rating
+        if (viaje.getRate() != null) content.ratingBar.setRating(viaje.getRate());
     }
 
     private int getPosFor(String stopName) {
@@ -129,7 +133,9 @@ public class TrainTravelEditor extends CommonTravelEditor {
             viaje.setNombrePdaInicio(startPlace.getNombre());
             viaje.setNombrePdaFin(endPlace.getNombre());
             Utils.setWeekDay(viaje);
+
             if (!price.isEmpty()) viaje.setCosto(Double.parseDouble(price));
+            else viaje.setCosto(0.0);
 
             if (endHourParams == null) {
                 viaje.setEndHour(null);
@@ -140,8 +146,15 @@ public class TrainTravelEditor extends CommonTravelEditor {
             }
 
             // train type
-            viaje.setTipo(1);
+            viaje.setTipo(TransportType.TRAIN.ordinal());
             viaje.setLinea(null);
+
+            // rating
+            if (content.ratingBar.getRating() > 0){
+                viaje.setRate(Math.round(content.ratingBar.getRating()));
+            } else {
+                viaje.setRate(null);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return 5;

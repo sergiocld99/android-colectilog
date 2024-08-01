@@ -155,7 +155,7 @@ public class BusTravelEditor extends CommonTravelEditor {
             viaje.setLinea(Integer.parseInt(line));
 
             if (content.ratingBar.getRating() > 0) viaje.setRate(Math.round(content.ratingBar.getRating()));
-            else viaje.setRate(0);
+            else viaje.setRate(null);
 
             viaje.setTipo(0);
         } catch (Exception e){

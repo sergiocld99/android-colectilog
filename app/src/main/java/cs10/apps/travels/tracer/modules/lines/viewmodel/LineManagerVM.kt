@@ -45,7 +45,7 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
             }
 
             // TRAIN travels
-            val train = RatedBusLine(-1, -1, "Línea Roca", R.color.train,
+            val train = RatedBusLine(-1, -1, "En Tren", R.color.train,
                 avgUserRate = rootVM.database.travelsDao().getAverageRateForType(TransportType.TRAIN.ordinal),
                 reviewsCount = rootVM.database.travelsDao().getReviewsCountForType(TransportType.TRAIN.ordinal))
             train.speed = Utils.calculateAverageSpeed(
@@ -59,6 +59,14 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
             cars.speed = Utils.calculateAverageSpeed(
                 rootVM.database.viajesDao().getRecentFinishedTravelsFromType(TransportType.CAR.ordinal))
             lines.add(cars)
+
+            // METRO travels
+            val subways = RatedBusLine(-3, -1, "En Subte", R.color.bus_148,
+                rootVM.database.travelsDao().getAverageRateForType(TransportType.METRO.ordinal),
+                rootVM.database.travelsDao().getReviewsCountForType(TransportType.METRO.ordinal))
+
+            subways.speed = Utils.calculateAverageSpeed(rootVM.database.viajesDao().getRecentFinishedTravelsFromType(TransportType.METRO.ordinal))
+            lines.add(subways)
 
             // Sort everything by speed
             lines.sort()

@@ -3,15 +3,20 @@ package cs10.apps.travels.tracer.modules.live.utils
 import cs10.apps.common.android.Localizable
 import cs10.apps.travels.tracer.Utils
 import cs10.apps.travels.tracer.enums.TransportType
+import cs10.apps.travels.tracer.model.Viaje
 import kotlin.math.pow
 
 class ProgressCorrector {
 
-    fun correct(start: Localizable, end: Localizable, prog: Double, ramal: String?, type: Int): Double {
+    fun correct(start: Localizable, end: Localizable, prog: Double, t: Viaje): Double {
+        if (t.tipo == TransportType.CAR.ordinal || t.tipo == TransportType.METRO.ordinal || (t.linea != null && t.linea!! <= 200)) {
+            return prog
+        }
+
         return when (Utils.getDirection(start, end)) {
             Utils.Direction.SOUTH_WEST -> f4SO(prog)
-            Utils.Direction.SOUTH_EAST -> f5SE(prog, ramal, type)
-            Utils.Direction.NORTH_WEST -> f4NW(prog, type)
+            Utils.Direction.SOUTH_EAST -> f5SE(prog, t.ramal, t.tipo)
+            Utils.Direction.NORTH_WEST -> f4NW(prog, t.tipo)
             else -> prog
         }
     }

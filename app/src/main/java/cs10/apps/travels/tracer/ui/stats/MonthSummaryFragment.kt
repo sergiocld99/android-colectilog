@@ -32,7 +32,7 @@ class MonthSummaryFragment : CS_Fragment() {
         statsVM.balance.observe(viewLifecycleOwner) { updateCurrency(it) }
         statsVM.busStat.observe(viewLifecycleOwner) { updateTypeStat(it, binding.busPb) }
         statsVM.trainStat.observe(viewLifecycleOwner) { updateTypeStat(it, binding.trainsPb) }
-        statsVM.coffeeStat.observe(viewLifecycleOwner) { updateTypeStat(it, binding.coffeePb) }
+        statsVM.metroStat.observe(viewLifecycleOwner) { updateTypeStat(it, binding.coffeePb) }
         statsVM.bus1Stat.observe(viewLifecycleOwner) { updateLineStat(it, binding.bus1Pb, binding.vli1)}
         statsVM.bus2Stat.observe(viewLifecycleOwner) { updateLineStat(it, binding.bus2Pb, binding.vli2)}
         statsVM.bus3Stat.observe(viewLifecycleOwner) { updateLineStat(it, binding.bus3Pb, binding.vli3) }
@@ -65,6 +65,7 @@ class MonthSummaryFragment : CS_Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.busPb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_bus)
         binding.trainsPb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_bus)
+        binding.coffeePb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_bus)
         binding.bus2Pb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_yellow)
         binding.bus3Pb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_green)
 

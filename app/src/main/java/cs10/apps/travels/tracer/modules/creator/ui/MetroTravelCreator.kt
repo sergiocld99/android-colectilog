@@ -56,7 +56,6 @@ class MetroTravelCreator : CommonTravelCreator() {
         // default config init
         super.setDoneFabBehavior(binding.fab)
         super.setCurrentTime(content.etDate, content.etStartHour, content.redSubeHeader)
-        content.etEndHour.isEnabled = false
 
         // hide line and ramal
         content.etLine.isVisible = false
@@ -126,6 +125,7 @@ class MetroTravelCreator : CommonTravelCreator() {
 
         val date = content.etDate.text.toString().trim()
         val startHour = content.etStartHour.text.toString().trim()
+        val endHour = content.etEndHour.text.toString().trim()
         val peopleCount = content.etPeopleCount.text.toString().trim()
         val price = content.etPrice.text.toString().trim()
 
@@ -135,25 +135,44 @@ class MetroTravelCreator : CommonTravelCreator() {
         if (date.isEmpty() || startHour.isEmpty() || peopleCount.isEmpty()) return 1
         if (startPlace.nombre == endPlace.nombre) return 2
 
-        val hourParams = startHour.split(":").toTypedArray()
-        if (hourParams.size != 2) {
-            content.etStartHour.error = "Ingrese una hora válida"
-            return 3
+        // mandatory start time
+        startHour.split(":").toTypedArray().let {
+            if (it.size != 2 || it[0].toIntOrNull() == null || it[1].toIntOrNull() == null) {
+                content.etStartHour.error = "Ingrese una hora válida"
+                return 3
+            }
+
+            viaje.startHour = it[0].toInt()
+            viaje.startMinute = it[1].toInt()
         }
 
-        val dateParams = date.split("/").toTypedArray()
-        if (dateParams.size != 3) {
-            content.etDate.error = "Ingrese una fecha válida"
-            return 4
+        // if user entered end hour...
+        if (endHour.isNotEmpty()) {
+            endHour.split(":").toTypedArray().let {
+                if (it.size != 2 || it[0].toIntOrNull() == null || it[1].toIntOrNull() == null) {
+                    content.etEndHour.error = "Dejar vacío o ingresar hora válida"
+                    return 3
+                }
+
+                viaje.endHour = it[0].toInt()
+                viaje.endMinute = it[1].toInt()
+            }
+        }
+
+        // mandatory date
+        date.split("/").toTypedArray().let {
+            if (it.size != 3 || it[0].toIntOrNull() == null || it[1].toIntOrNull() == null || it[2].toIntOrNull() == null) {
+                content.etDate.error = "Ingrese una fecha válida"
+                return 4
+            }
+
+            viaje.day = it[0].toInt()
+            viaje.month = it[1].toInt()
+            viaje.year = it[2].toInt()
         }
 
         try {
             viaje.tipo = TransportType.METRO.ordinal
-            viaje.startHour = hourParams[0].toInt()
-            viaje.startMinute = hourParams[1].toInt()
-            viaje.day = dateParams[0].toInt()
-            viaje.month = dateParams[1].toInt()
-            viaje.year = dateParams[2].toInt()
             viaje.nombrePdaInicio = startPlace.nombre
             viaje.nombrePdaFin = endPlace.nombre
             Utils.setWeekDay(viaje)

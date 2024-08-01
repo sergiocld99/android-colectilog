@@ -31,17 +31,24 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
     val balance = MutableLiveData<Double>()
     val busStat = MutableLiveData<Stat>()
     val trainStat = MutableLiveData<Stat>()
-    val coffeeStat = MutableLiveData<Stat>()
+    private val coffeeStat = MutableLiveData<Stat>()
     val metroStat = MutableLiveData<Stat>()
 
-    val bus1Stat = MutableLiveData<LineStat>()
-    val bus2Stat = MutableLiveData<LineStat>()
-    val bus3Stat = MutableLiveData<LineStat>()
+    val bus1Stat = MutableLiveData<LineStat?>()
+    val bus2Stat = MutableLiveData<LineStat?>()
+    val bus3Stat = MutableLiveData<LineStat?>()
 
-    fun fillData(rootVM: RootVM){
+    fun fillData(rootVM: RootVM, monthsBefore: Int = 0){
         val calendar = Calendar.getInstance()
+        calendar.add(Calendar.MONTH, -monthsBefore)
+
         val month = calendar[Calendar.MONTH] + 1
         val year = calendar[Calendar.YEAR]
+
+        // clean stats
+        bus1Stat.postValue(null)
+        bus2Stat.postValue(null)
+        bus3Stat.postValue(null)
 
         viewModelScope.launch(Dispatchers.IO) {
             val coffee = async { database.coffeeDao().getTotalSpent(month, year) ?: 0.0 }

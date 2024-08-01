@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ColectiLog</string>
+    <string name="previous">Previous</string>
+    <string name="this_month_balance">Month Summary</string>
+    <string name="current_money">Balance: %1$s</string>
+    <string name="path">Path</string>
+    <string name="this_month">This month</string>
+    <string name="colectivos">Buses</string>
+    <string name="confirm">Confirm</string>
+    <string name="live">Live</string>
+    <string name="manage_lines">Manage lines</string>
+    <string name="alternative_name">Alias</string>
+    <string name="manage_zones">Manage zones</string>
+    <string name="open_map">Open map</string>
+    <string name="waiting">Wait</string>
+    <string name="travelling">Moving</string>
+    <string name="combining">Connect</string>
+</resources>

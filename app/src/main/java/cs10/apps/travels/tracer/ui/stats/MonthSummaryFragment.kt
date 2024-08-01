@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import cs10.apps.common.android.ui.CS_Fragment
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
@@ -54,7 +56,13 @@ class MonthSummaryFragment : CS_Fragment() {
         v.root.visibility = View.VISIBLE
     }
 
-    private fun updateLineStat(stat: LineStat, v1: ViewCircularPbWithLegendBinding, v2: ViewLineIndicatorBinding) {
+    private fun updateLineStat(stat: LineStat?, v1: ViewCircularPbWithLegendBinding, v2: ViewLineIndicatorBinding) {
+        if (stat == null){
+            v1.root.visibility = View.INVISIBLE
+            v2.root.visibility = View.INVISIBLE
+            return
+        }
+
         updateTypeStat(stat, v1)
         Utils.paintBusColor(stat.color, v2.root)
         v2.textLineNumber.text = stat.line.toString()
@@ -74,6 +82,24 @@ class MonthSummaryFragment : CS_Fragment() {
         binding.ivEdit.setOnClickListener {
             startActivity(Intent(context, EditBalanceActivity::class.java))
         }
+
+        // listen period tabs
+        binding.roundedTabs.addOnTabSelectedListener(object : OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                tab?.let {
+                    statsVM.fillData(rootVM, it.position)
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+        })
     }
 
     override fun onResume() {

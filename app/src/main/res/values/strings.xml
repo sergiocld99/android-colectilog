@@ -2,14 +2,14 @@
     <string name="app_name">ColectiLog</string>
 
     <string name="nav_header_title">ColectiLog v2.41</string>
-    <string name="nav_header_subtitle">sergio.calderon@alu.ing.unlp.edu.ar</string>
+    <string name="nav_header_subtitle" translatable="false">sergio.calderon@alu.ing.unlp.edu.ar</string>
 
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
-    <string name="previous">Previous</string>
+    <string name="previous">Anterior</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
@@ -67,7 +67,7 @@
     <string name="service_title">%1$d - %2$s</string>
     <string name="destination_full">A %1$s (%2$s)</string>
     <string name="arrival_time">Hora %1$s</string>
-    <string name="default_train_line">Roca</string>
+    <string name="default_train_line" translatable="false">Roca</string>
     <string name="next_ones_in">Próximos en %1$s</string>
     <string name="coords">%1$f, %2$f</string>
     <string name="distance_km">Distancia: %1$s</string>
@@ -123,4 +123,5 @@
     <string name="metro_travel">Viaje en Subte</string>
     <string name="go_back">Volver</string>
     <string name="combining">Combinar</string>
+    <string name="this_month">Este mes</string>
 </resources>

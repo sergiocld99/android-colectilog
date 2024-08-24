@@ -8,6 +8,7 @@ import cs10.apps.common.android.ui.DatePickerFragment
 import cs10.apps.common.android.ui.FormActivity
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.Utils
+import cs10.apps.travels.tracer.constants.ResultCodes
 import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding
 import cs10.apps.travels.tracer.db.DatabaseFinder
 import cs10.apps.travels.tracer.db.MiDB
@@ -89,11 +90,13 @@ abstract class CommonTravelCreator : FormActivity() {
             // Update DEC 2022: now you can create travels of +1 people
             for (i in 1..viaje.peopleCount) dao.insert(viaje)
 
-            // create notification (only if travel is unfinished)
-            if (viaje.endHour == null) with(NotificationCenter()){
+            // create notification (only if travel is unfinished and day equals current)
+            val today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+
+            if (viaje.endHour == null && viaje.day == today) with(NotificationCenter()){
                 createChannel(this@CommonTravelCreator)
                 createNewStartedTravelNotification(this@CommonTravelCreator)
-                //scheduleBalanceSummary(this@CommonTravelCreator)
+                setResult(ResultCodes.OPEN_LIVE_FRAGMENT)
             }
 
             doInForeground { finish() }

@@ -32,6 +32,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
 
 import cs10.apps.common.android.ui.CSActivity;
+import cs10.apps.travels.tracer.constants.ResultCodes;
 import cs10.apps.travels.tracer.data.generator.DelayData;
 import cs10.apps.travels.tracer.data.generator.GlewFiller;
 import cs10.apps.travels.tracer.data.generator.LaPlataFiller;
@@ -63,6 +64,9 @@ public class DrawerActivity extends CSActivity implements DatabaseCallback {
     private LocationVM locationVM;
     private RootVM rootVM;
 
+    // UI
+    private NavController navController;
+
     // Results
     ActivityResultLauncher<Object> fabLauncher = registerForActivityResult(new ActivityResultContract<Object, Intent>() {
         @NonNull
@@ -87,7 +91,7 @@ public class DrawerActivity extends CSActivity implements DatabaseCallback {
             }
         }
     }, result -> {
-        if (result != null) startActivity(result);
+        if (result != null) startActivityForResult(result, ResultCodes.CREATION_REQUEST);
     });
 
     @Override
@@ -116,7 +120,7 @@ public class DrawerActivity extends CSActivity implements DatabaseCallback {
                 .setOpenableLayout(binding.drawerLayout)
                 .build();
 
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_drawer);
+        this.navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_drawer);
 
         // setup drawer layout
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
@@ -208,16 +212,26 @@ public class DrawerActivity extends CSActivity implements DatabaseCallback {
         // process intent
         Intent intent = getIntent();
         if (intent.getBooleanExtra("openLive", false)){
-            showShortToast("Abriendo sección \"En vivo\"");
-            navController.navigate(R.id.nav_live);
+            switchToLiveFragment();
         }
-
-        // run tests
-        runTests();
     }
 
-    private void runTests() {
-        // new NotificationCenter().scheduleNotification(this, 15000, NotificationCenter.BALANCE_SUMMARY_ID);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ResultCodes.CREATION_REQUEST){
+            if (resultCode == ResultCodes.OPEN_LIVE_FRAGMENT) {
+                switchToLiveFragment();
+            }
+        }
+    }
+
+    private void switchToLiveFragment(){
+        showShortToast("Abriendo sección \"En vivo\"");
+
+        // Home item is selectable using the following sentence instead of navController.navigate()
+        binding.navView.getMenu().performIdentifierAction(R.id.nav_live, 0);
     }
 
     @Override
@@ -246,8 +260,6 @@ public class DrawerActivity extends CSActivity implements DatabaseCallback {
     protected void onResume() {
         super.onResume();
         startLocationUpdates();
-
-
     }
 
     @Override

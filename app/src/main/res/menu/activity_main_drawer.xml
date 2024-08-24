@@ -40,19 +40,9 @@
             android:icon="@drawable/ic_edit_location"/>
 
         <item
-            android:id="@+id/nav_proximos"
-            android:title="@string/next_ones"
-            android:icon="@drawable/ic_schedule"/>
-
-        <item
-            android:id="@+id/nav_prox_destinos"
-            android:title="@string/next_ones_to"
-            android:icon="@drawable/ic_directions"/>
-
-        <item
-            android:id="@+id/nav_charge"
-            android:title="@string/charge"
-            android:icon="@drawable/ic_money"/>
+            android:id="@+id/nav_paths"
+            android:title="@string/paths"
+            android:icon="@drawable/ic_near_me" />
 
     </group>
 </menu>

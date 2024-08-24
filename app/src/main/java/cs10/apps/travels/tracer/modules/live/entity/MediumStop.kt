@@ -2,6 +2,7 @@ package cs10.apps.travels.tracer.modules.live.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import cs10.apps.travels.tracer.enums.TransportType
 
 @Entity(tableName = "MediumStop")
 data class MediumStop(
@@ -16,6 +17,6 @@ data class MediumStop(
 ) {
 
     override fun toString(): String {
-        return "{$prev > $name > $next}"
+        return " ${TransportType.fromOrdinal(type)} $line $ramal to $destination: {$prev > $name > $next}"
     }
 }

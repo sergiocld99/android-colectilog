@@ -14,7 +14,7 @@ import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.modules.RedSube.Companion.getPercentageToPay
 import cs10.apps.travels.tracer.notification.NotificationCenter
-import java.util.*
+import java.util.Calendar
 
 abstract class CommonTravelCreator : FormActivity() {
 
@@ -93,7 +93,7 @@ abstract class CommonTravelCreator : FormActivity() {
             if (viaje.endHour == null) with(NotificationCenter()){
                 createChannel(this@CommonTravelCreator)
                 createNewStartedTravelNotification(this@CommonTravelCreator)
-                scheduleBalanceSummary(this@CommonTravelCreator)
+                //scheduleBalanceSummary(this@CommonTravelCreator)
             }
 
             doInForeground { finish() }

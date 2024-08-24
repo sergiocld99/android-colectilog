@@ -44,6 +44,7 @@ import cs10.apps.travels.tracer.viewmodel.RootVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -271,7 +272,8 @@ class LiveTravelFragment : CS_Fragment() {
                     val prefs = requireContext().getSharedPreferences("eta_notified", Context.MODE_PRIVATE)
                     val scheduled = prefs.getLong("last_id", -1)
                     if (scheduled != id) {
-                        NotificationCenter().scheduleAskNotification(requireContext(), (it * 60000).toLong())
+                        NotificationCenter().scheduleAskNotification(requireContext(), TimeUnit.MINUTES.toMillis(it.toLong() - 4L))
+                        if (it > 20) NotificationCenter().scheduleNotifyOthersReminder(requireContext(), TimeUnit.MINUTES.toMillis(it.toLong() + 10L))
                         prefs.edit().putLong("last_id", id).apply()
                     }
                 }

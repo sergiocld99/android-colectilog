@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.modules.live.entity.MediumStop
+import cs10.apps.travels.tracer.modules.path.entity.PathGroup
 
 @Dao
 interface SafeStopsDao {
@@ -26,6 +27,9 @@ interface SafeStopsDao {
 
     @Query("UPDATE MediumStop SET prev = :inserted WHERE type is :type and destination is :dest and name is :target")
     suspend fun updateNextMediumStopForType(type: Int, dest: String, target: String, inserted: String)
+
+    @Query("SELECT * FROM MediumStop")
+    suspend fun getAllMediumStops(): List<MediumStop>
 
     @Query("SELECT * FROM parada where nombre is :name LIMIT 1")
     fun getStopByName(name: String): Parada?
@@ -47,4 +51,9 @@ interface SafeStopsDao {
 
     @Query("SELECT * FROM MediumStop where next is :target")
     suspend fun getMediumStopsJustBefore(target: String): List<MediumStop>
+
+    /* MEDIUM STOPS GROUP BY LINE, RAMAL, DESTINATION */
+    @Query("SELECT line, ramal, destination, COUNT(*) as length FROM MediumStop where type = :type " +
+            "and line is not null GROUP BY line, ramal, destination")
+    suspend fun getPathGroups(type: Int): List<PathGroup>
 }

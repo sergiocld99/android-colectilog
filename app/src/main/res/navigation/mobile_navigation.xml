@@ -64,4 +64,9 @@
         android:name="cs10.apps.travels.tracer.ui.charge.ChargeFragment"
         android:label="@string/charge"
         tools:layout="@layout/fragment_charge"/>
+
+    <fragment
+        android:id="@+id/nav_paths"
+        android:name="cs10.apps.travels.tracer.modules.path.PathsManager"
+        android:label="@string/paths" />
 </navigation>

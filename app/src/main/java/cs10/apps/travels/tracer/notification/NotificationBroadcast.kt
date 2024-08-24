@@ -16,7 +16,8 @@ class NotificationBroadcast : BroadcastReceiver() {
             val nc = NotificationCenter()
 
             when (it) {
-                NotificationCenter.ASK_FINISH_NOTIF_ID -> nc.createAskForFinishedTravelNotification(context)
+                NotificationCenter.ASK_FINISH_NOTIF_ID -> nc.createAskForFinishedTravelNotification(context, "El viaje está por terminar. Puedes finalizarlo por adelantado desde la sección \"En vivo\"")
+                NotificationCenter.NOTIFY_OTHERS_ABOUT_ARRIVAL -> nc.createAskForFinishedTravelNotification(context, "No olvides avisar que llegaste!")
                 //NotificationCenter.BALANCE_SUMMARY_ID -> nc.createBalanceSummaryNotification(context)
             }
         }

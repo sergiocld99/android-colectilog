@@ -10,10 +10,8 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import cs10.apps.common.CanFail
 import cs10.apps.travels.tracer.DrawerActivity
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.db.MiDB
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -23,6 +21,7 @@ class NotificationCenter {
         const val NEW_TRAVEL_NOTIF_ID = 1
         const val ASK_FINISH_NOTIF_ID = 2
         const val BALANCE_SUMMARY_ID = 3
+        const val NOTIFY_OTHERS_ABOUT_ARRIVAL = 4
     }
 
     fun createChannel(activity: Activity) {
@@ -63,6 +62,10 @@ class NotificationCenter {
 
     fun scheduleAskNotification(context: Context, delayMs: Long){
         scheduleNotification(context, delayMs, ASK_FINISH_NOTIF_ID)
+    }
+
+    fun scheduleNotifyOthersReminder(context: Context, delayMs: Long){
+        scheduleNotification(context, delayMs, NOTIFY_OTHERS_ABOUT_ARRIVAL )
     }
 
     /**
@@ -168,7 +171,7 @@ class NotificationCenter {
         }.start()
     } */
 
-    fun createAskForFinishedTravelNotification(context: Context){
+    fun createAskForFinishedTravelNotification(context: Context, msg: String){
         // create intent to open screen when user touches notification
         val intent = Intent(context, DrawerActivity::class.java)
         intent.apply {
@@ -182,17 +185,18 @@ class NotificationCenter {
         else 0
 
         val pendingIntent = PendingIntent.getActivity(context, 0, intent, flag)
+        val vibrationPattern: Array<Long> = arrayOf(2000L, 500L, 500L)
 
         // build notification
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         builder.apply {
-            setContentTitle("Posible viaje terminado")
-            setContentText("Ya pasó el tiempo estimado de llegada. " +
-                    "Marca el viaje como finalizado desde la sección \"En vivo\"")
+            setContentTitle("Recordatorio!")
+            setContentText(msg)
             setSmallIcon(R.drawable.ic_bus)
             setContentIntent(pendingIntent)
             setAutoCancel(true)
-            priority = NotificationCompat.PRIORITY_DEFAULT
+            priority = NotificationCompat.PRIORITY_MAX
+            setVibrate(vibrationPattern.toLongArray())
         }
 
         val notif = builder.build()

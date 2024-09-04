@@ -28,6 +28,9 @@ class MonthSummaryFragment : CS_Fragment() {
     private lateinit var statsVM: StatsVM
     private lateinit var rootVM: RootVM
 
+    // selected tab
+    private var selectedTab = 0
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentBusesBinding.inflate(inflater, container, false)
 
@@ -98,9 +101,8 @@ class MonthSummaryFragment : CS_Fragment() {
         // listen period tabs
         binding.roundedTabs.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                tab?.let {
-                    statsVM.fillData(rootVM, it.position)
-                }
+                selectedTab = tab?.position ?: 0
+                updateUI()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -116,7 +118,11 @@ class MonthSummaryFragment : CS_Fragment() {
 
     override fun onResume() {
         super.onResume()
+        updateUI()
+    }
 
-        statsVM.fillData(rootVM)
+    // update UI with the selected tab
+    private fun updateUI(){
+        statsVM.fillData(rootVM, selectedTab)
     }
 }

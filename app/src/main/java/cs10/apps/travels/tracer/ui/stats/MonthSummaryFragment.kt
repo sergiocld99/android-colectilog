@@ -21,6 +21,7 @@ import cs10.apps.travels.tracer.viewmodel.RootVM
 import cs10.apps.travels.tracer.viewmodel.stats.LineStat
 import cs10.apps.travels.tracer.viewmodel.stats.Stat
 import cs10.apps.travels.tracer.viewmodel.stats.StatsVM
+import java.util.Calendar
 
 class MonthSummaryFragment : CS_Fragment() {
     private lateinit var binding: FragmentBusesBinding
@@ -41,6 +42,17 @@ class MonthSummaryFragment : CS_Fragment() {
 
         rootVM = ViewModelProvider(requireActivity())[RootVM::class.java]
         rootVM.loading.observe(requireActivity()) { binding.root.isVisible = !it }
+
+        // get current month
+        var currentMonthNumber = Calendar.getInstance().get(Calendar.MONTH) + 1
+
+        // repeat 3 times: add tab with month name starting from current month and going back
+        for (i in 0..2) {
+            val month = Utils.getShortMonthName(currentMonthNumber)
+            binding.roundedTabs.addTab(binding.roundedTabs.newTab().setText(month))
+            currentMonthNumber--
+            if (currentMonthNumber == 0) currentMonthNumber = 12
+        }
 
         return binding.root
     }

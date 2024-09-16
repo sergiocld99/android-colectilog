@@ -26,7 +26,7 @@ class RatedBusLine(
     override fun compareTo(other: CustomBusLine): Int {
 
         if (other is RatedBusLine){
-            var comp = (other.correctUserRate() ?: 0.0).compareTo(this.correctUserRate() ?: 0.0)
+            var comp = other.correctUserRate().compareTo(this.correctUserRate())
 
             if (comp == 0) comp = other.reviewsCount.compareTo(this.reviewsCount)
             if (comp != 0) return comp

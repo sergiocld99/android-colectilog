@@ -11,6 +11,7 @@ import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.modules.editor.components.EditorTopCard
 import cs10.apps.travels.tracer.utils.SafeUtils
 import kotlin.math.roundToInt
 
@@ -52,8 +53,7 @@ class MetroTravelEditor : CommonTravelEditor() {
         val v = getViaje()
 
         // distance and speed info
-        binding.distanceText.text = getString(R.string.linear_distance_km, mt.distanceKm)
-        binding.speedText.text = getString(R.string.speed_kmh, mt.getSpeedKmH())
+        EditorTopCard(binding.topCard).render(mt)
 
         // fecha y hora
         binding.contentTravelCreator.etDate.setText(Utils.dateFormat(v.day, v.month, v.year))

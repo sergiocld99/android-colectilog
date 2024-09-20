@@ -63,7 +63,8 @@ abstract class CommonTravelEditor : FormActivity() {
 
             // calcular distancia y velocidad
             val td = db.viajesDao().getTravelDistanceFromId(viaje.id)
-            this@CommonTravelEditor.mt = MeasuredTravel(viaje, td.distance)
+            val direction = td.calculateDirection()
+            this@CommonTravelEditor.mt = MeasuredTravel(viaje, td.distance, direction)
 
             awaitAll(a)
 

@@ -129,4 +129,9 @@
     <string name="paths">Recorridos</string>
     <string name="current_month">Mes actual</string>
     <string name="last_month">Mes pasado</string>
+    <string name="direction">Sentido %1$s</string>
+    <string name="north">Norte</string>
+    <string name="west">Oeste</string>
+    <string name="east">Este</string>
+    <string name="south">Sur</string>
 </resources>

@@ -9,7 +9,6 @@ import java.util.List;
 
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.model.joins.ColoredTravel;
-import cs10.apps.travels.tracer.model.joins.PriceSum;
 import cs10.apps.travels.tracer.model.joins.TravelStats;
 import cs10.apps.travels.tracer.model.location.TravelDistance;
 
@@ -94,7 +93,7 @@ public interface ViajesDao {
             "order by startHour desc, startMinute desc limit 1")
     ColoredTravel getCurrentTravel(int y, int m, int d, int currentTs);
 
-    @Query("SELECT v.id, (p1.latitud - p2.latitud) as xDiff, (p1.longitud - p2.longitud) as yDiff " +
+    @Query("SELECT v.id, (p2.latitud - p1.latitud) as xDiff, (p2.longitud - p1.longitud) as yDiff " +
             "FROM Viaje v " +
             "inner join Parada p1 on v.nombrePdaInicio = p1.nombre " +
             "inner join Parada p2 on v.nombrePdaFin = p2.nombre " +

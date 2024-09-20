@@ -13,6 +13,7 @@ import cs10.apps.travels.tracer.databinding.ContentTrainTravelCreatorBinding;
 import cs10.apps.travels.tracer.enums.TransportType;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.modules.editor.components.EditorTopCard;
 
 public class TrainTravelEditor extends CommonTravelEditor {
     private ContentTrainTravelCreatorBinding content;
@@ -71,8 +72,7 @@ public class TrainTravelEditor extends CommonTravelEditor {
         content.selectorEndPlace.setSelection(endIndex);
 
         // top card
-        binding.distanceText.setText(getString(R.string.linear_distance_km, getMt().getDistanceKm()));
-        binding.speedText.setText(getString(R.string.speed_kmh, getMt().getSpeedKmH()));
+        new EditorTopCard(binding.topCard).render(getMt());
         
         // rating
         if (viaje.getRate() != null) content.ratingBar.setRating(viaje.getRate());

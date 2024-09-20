@@ -12,6 +12,7 @@ import cs10.apps.travels.tracer.databinding.ActivityBusTravelEditorBinding;
 import cs10.apps.travels.tracer.databinding.ContentBusTravelCreatorBinding;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.modules.editor.components.EditorTopCard;
 
 public class BusTravelEditor extends CommonTravelEditor {
     private ContentBusTravelCreatorBinding content;
@@ -78,8 +79,7 @@ public class BusTravelEditor extends CommonTravelEditor {
         content.selectorEndPlace.setSelection(endIndex);
 
         // top card
-        binding.distanceText.setText(getString(R.string.linear_distance_km, getMt().getDistanceKm()));
-        binding.speedText.setText(getString(R.string.speed_kmh, getMt().getSpeedKmH()));
+        new EditorTopCard(binding.topCard).render(getMt());
     }
 
     private int getPosFor(String stopName){

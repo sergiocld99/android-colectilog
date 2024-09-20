@@ -29,7 +29,7 @@
     <string name="write_stop_name">Ingrese un nombre único</string>
     <string name="stop_name_example">Parada Av. 1 y 50</string>
     <string name="write_latitude">Ingrese latitud</string>
-    <string name="double_value_example">0.0</string>
+    <string name="double_value_example" translatable="false">0.0</string>
     <string name="write_longitude">Ingrese longitud</string>
     <string name="stops">Paradas</string>
     <string name="editing_stop">Editando Parada</string>
@@ -69,7 +69,7 @@
     <string name="arrival_time">Hora %1$s</string>
     <string name="default_train_line" translatable="false">Roca</string>
     <string name="next_ones_in">Próximos en %1$s</string>
-    <string name="coords">%1$f, %2$f</string>
+    <string name="coords" translatable="false">%1$f, %2$f</string>
     <string name="distance_km">Distancia: %1$s</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="train_price">Tarifa: %1$s</string>

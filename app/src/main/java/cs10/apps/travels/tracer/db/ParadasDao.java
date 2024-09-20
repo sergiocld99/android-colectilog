@@ -56,6 +56,11 @@ public interface ParadasDao {
             "group by nombre order by count(*) desc limit 8")
     List<Parada> getFavouriteStops(int current);
 
+    @Query("SELECT p.* FROM parada p " +
+            "inner join viaje v on v.nombrePdaInicio = p.nombre where v.wd = :currentWd and v.year = :currentYear " +
+            "and v.month >= :startMonth group by nombre order by count(*) desc limit 8")
+    List<Parada> getRecentFavouriteStops(int currentWd, int currentYear, int startMonth);
+
     @Query("SELECT COUNT(*) + 1 " +
             "FROM (select * from viaje group by nombrePdaInicio having count(*) > :travelsInCurrent)")
     int getRank(int travelsInCurrent);

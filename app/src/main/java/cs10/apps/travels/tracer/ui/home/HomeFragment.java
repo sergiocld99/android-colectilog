@@ -79,8 +79,10 @@ public class HomeFragment extends CS_Fragment {
             // this month favorites
             Calendar calendar = Calendar.getInstance();
             int currentWeekDay = calendar.get(Calendar.DAY_OF_WEEK);
+            int currentYear = calendar.get(Calendar.YEAR);
+            int startMonth = calendar.get(Calendar.MONTH) - 4;
 
-            List<Parada> favoriteStops = miDB.paradasDao().getFavouriteStops(currentWeekDay);
+            List<Parada> favoriteStops = miDB.paradasDao().getRecentFavouriteStops(currentWeekDay, currentYear, startMonth);
             if (favoriteStops.isEmpty()) favoriteStops = miDB.paradasDao().getGeneralFavouriteStops();
 
             Utils.orderByProximity(favoriteStops, location.getLatitude(), location.getLongitude());

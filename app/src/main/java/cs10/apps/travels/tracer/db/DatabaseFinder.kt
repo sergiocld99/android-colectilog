@@ -1,10 +1,10 @@
 package cs10.apps.travels.tracer.db
 
 import cs10.apps.common.android.NumberUtils
-import cs10.apps.travels.tracer.enums.TransportType
+import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.joins.TravelStats
-import cs10.apps.travels.tracer.modules.live.model.EstimationData
+import cs10.apps.travels.tracer.pages.live.model.EstimationData
 import java.util.Calendar
 import kotlin.math.roundToInt
 

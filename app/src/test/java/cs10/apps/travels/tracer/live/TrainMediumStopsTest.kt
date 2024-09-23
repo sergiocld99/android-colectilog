@@ -3,11 +3,11 @@ package cs10.apps.travels.tracer.live
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.db.SafeStopsDao
-import cs10.apps.travels.tracer.enums.TransportType
+import cs10.apps.travels.tracer.pages.stops.db.SafeStopsDao
+import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
-import cs10.apps.travels.tracer.modules.live.utils.MediumStopsManager
+import cs10.apps.travels.tracer.pages.live.utils.MediumStopsManager
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before

@@ -1,8 +1,7 @@
 package cs10.apps.travels.tracer.utils
 
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.Utils
-import cs10.apps.travels.tracer.enums.TransportType
+import cs10.apps.travels.tracer.common.enums.TransportType
 
 class ColorUtils {
 

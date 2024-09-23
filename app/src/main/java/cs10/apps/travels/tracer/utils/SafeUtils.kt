@@ -1,7 +1,5 @@
 package cs10.apps.travels.tracer.utils
 
-import cs10.apps.travels.tracer.Utils
-
 class SafeUtils {
 
     companion object {

@@ -1,6 +1,6 @@
 package cs10.apps.common.android
 
-import cs10.apps.travels.tracer.enums.PrimaryDirection
+import cs10.apps.travels.tracer.common.enums.PrimaryDirection
 import kotlin.math.abs
 
 abstract class Localizable {

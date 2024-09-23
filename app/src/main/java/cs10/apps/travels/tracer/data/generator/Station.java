@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import cs10.apps.travels.tracer.modules.ZoneData;
-
 public enum Station {
     PLAZA("Plaza Constitución", -34.62, -58.38),
     YRIGOYEN("Estación H. Yrigoyen", -34.65, -58.37),

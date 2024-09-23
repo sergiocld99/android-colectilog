@@ -25,9 +25,17 @@ import cs10.apps.travels.tracer.model.prices.TarifaBus;
 import cs10.apps.travels.tracer.model.prices.TarifaTren;
 import cs10.apps.travels.tracer.model.roca.HorarioTren;
 import cs10.apps.travels.tracer.model.roca.ServicioTren;
-import cs10.apps.travels.tracer.modules.lines.db.LinesDao;
-import cs10.apps.travels.tracer.modules.live.entity.MediumStop;
-import cs10.apps.travels.tracer.modules.stops.db.TrainsDao;
+import cs10.apps.travels.tracer.pages.coffee.db.CoffeeDao;
+import cs10.apps.travels.tracer.pages.home.db.ServicioDao;
+import cs10.apps.travels.tracer.pages.manage_lines.db.LinesDao;
+import cs10.apps.travels.tracer.pages.live.entity.MediumStop;
+import cs10.apps.travels.tracer.pages.manage_zones.db.ZonesDao;
+import cs10.apps.travels.tracer.pages.month_summary.db.RecargaDao;
+import cs10.apps.travels.tracer.pages.registry.db.TravelsDao;
+import cs10.apps.travels.tracer.pages.stops.db.ParadasDao;
+import cs10.apps.travels.tracer.pages.stops.db.SafeStopsDao;
+import cs10.apps.travels.tracer.pages.registry.db.ViajesDao;
+import cs10.apps.travels.tracer.pages.stops.db.TrainsDao;
 
 @Database(entities = {Circuito.class, Comunicacion.class, Estacion.class, FormacionCircuito.class,
         Tren.class, Horario.class, Parada.class, Viaje.class, TarifaBus.class, TarifaTren.class,

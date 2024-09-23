@@ -7,66 +7,66 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="cs10.apps.travels.tracer.ui.home.HomeFragment"
+        android:name="cs10.apps.travels.tracer.pages.home.Home"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_live"
-        android:name="cs10.apps.travels.tracer.modules.live.ui.LiveTravelFragment"
+        android:name="cs10.apps.travels.tracer.pages.live.LiveTravelFragment"
         android:label="@string/live"
         tools:layout="@layout/fragment_live_travel" />
 
     <fragment
         android:id="@+id/nav_colectivos"
-        android:name="cs10.apps.travels.tracer.ui.stats.MonthSummaryFragment"
+        android:name="cs10.apps.travels.tracer.pages.month_summary.MonthSummaryFragment"
         android:label="@string/this_month_balance"
         tools:layout="@layout/fragment_buses" />
 
     <fragment
         android:id="@+id/nav_lines"
-        android:name="cs10.apps.travels.tracer.modules.lines.ui.LineManagerFragment"
+        android:name="cs10.apps.travels.tracer.pages.manage_lines.LineManagerFragment"
         android:label="@string/manage_lines"
         tools:layout="@layout/fragment_manage_lines"/>
 
     <fragment
         android:id="@+id/nav_zones"
-        android:name="cs10.apps.travels.tracer.ui.zones.ZoneManagerFragment"
+        android:name="cs10.apps.travels.tracer.pages.manage_zones.ZoneManagerFragment"
         android:label="@string/manage_zones"
         tools:layout="@layout/fragment_manage_zones"/>
 
     <fragment
         android:id="@+id/nav_trenes"
-        android:name="cs10.apps.travels.tracer.ui.travels.MyTravelsFragment"
+        android:name="cs10.apps.travels.tracer.pages.registry.MyTravelsFragment"
         android:label="@string/travels"
         tools:layout="@layout/fragment_travels" />
 
     <fragment
         android:id="@+id/nav_proximos"
-        android:name="cs10.apps.travels.tracer.ui.stops.NextArrivalsFragment"
+        android:name="cs10.apps.travels.tracer.legacy.next.NextArrivalsFragment"
         android:label="@string/next_ones"
         tools:layout="@layout/fragment_stops" />
 
     <fragment
         android:id="@+id/nav_prox_destinos"
-        android:name="cs10.apps.travels.tracer.ui.stops.NextDestinationsFragment"
+        android:name="cs10.apps.travels.tracer.legacy.next.NextDestinationsFragment"
         android:label="@string/next_ones_to"
         tools:layout="@layout/fragment_stops" />
 
     <fragment
         android:id="@+id/nav_paradas"
-        android:name="cs10.apps.travels.tracer.modules.stops.ui.StopListFragment"
+        android:name="cs10.apps.travels.tracer.pages.stops.StopListFragment"
         android:label="@string/stops"
         tools:layout="@layout/fragment_stops" />
 
     <fragment
         android:id="@+id/nav_charge"
-        android:name="cs10.apps.travels.tracer.ui.charge.ChargeFragment"
+        android:name="cs10.apps.travels.tracer.legacy.charge.ChargeFragment"
         android:label="@string/charge"
         tools:layout="@layout/fragment_charge"/>
 
     <fragment
         android:id="@+id/nav_paths"
-        android:name="cs10.apps.travels.tracer.modules.path.PathsManager"
+        android:name="cs10.apps.travels.tracer.development.path.PathsManager"
         android:label="@string/paths" />
 </navigation>

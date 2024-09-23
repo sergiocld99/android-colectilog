@@ -31,78 +31,78 @@
             android:enabled="true" />
 
         <activity
-            android:name=".MapViewActivity"
+            android:name=".pages.stops.creator.MapViewActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ui.balance.EditBalanceActivity"
+            android:name=".pages.month_summary.EditBalanceActivity"
             android:exported="false"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".SelectTravelType"
+            android:name=".pages.SelectTravelType"
             android:label="Seleccione el objeto a crear" />
         <activity
-            android:name=".ui.coffee.CoffeeCreator"
+            android:name=".pages.coffee.CoffeeCreator"
             android:theme="@style/Theme.TravelTracer.Coffee" />
         <activity
-            android:name=".modules.creator.ui.BusTravelCreator"
+            android:name=".pages.registry.creator.BusTravelCreator"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".modules.creator.ui.TrainTravelCreator"
+            android:name=".pages.registry.creator.TrainTravelCreator"
             android:theme="@style/Theme.TravelTracer.Trains" />
         <activity
-            android:name=".modules.creator.ui.CarTravelCreator"
+            android:name=".pages.registry.creator.CarTravelCreator"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity
-            android:name=".modules.creator.ui.MetroTravelCreator"
+            android:name=".pages.registry.creator.MetroTravelCreator"
             android:theme="@style/Theme.TravelTracer.Subways" />
         <activity
-            android:name=".modules.editor.ui.BusTravelEditor"
+            android:name=".pages.registry.editor.BusTravelEditor"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".modules.editor.ui.CarTravelEditor"
+            android:name=".pages.registry.editor.CarTravelEditor"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity
-            android:name=".modules.editor.ui.TrainTravelEditor"
+            android:name=".pages.registry.editor.TrainTravelEditor"
             android:theme="@style/Theme.TravelTracer.Trains" />
         <activity
-            android:name=".modules.editor.ui.MetroTravelEditor"
+            android:name=".pages.registry.editor.MetroTravelEditor"
             android:theme="@style/Theme.TravelTracer.Subways" />
         <activity
-            android:name=".ui.stops.StopCreator"
+            android:name=".pages.stops.creator.StopCreator"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity
-            android:name=".ui.stops.StopEditor"
+            android:name=".pages.stops.editor.StopEditor"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity
-            android:name=".ui.service.ServiceDetail"
+            android:name=".pages.home.ServiceDetail"
             android:theme="@style/Theme.TravelTracer.Trains" />
         <activity
-            android:name=".modules.lines.ui.TrainDetail"
+            android:name=".pages.manage_lines.TrainDetail"
             android:theme="@style/Theme.TravelTracer.Trains" />
         <activity
-            android:name=".modules.lines.ui.LineDetail"
+            android:name=".pages.manage_lines.LineDetail"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".modules.lines.ui.HourStatsActivity"
+            android:name=".pages.manage_lines.HourStatsActivity"
             android:exported="false"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".ui.zones.ZoneCreator"
+            android:name=".pages.manage_zones.ZoneCreator"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".ui.zones.ZoneEditor"
+            android:name=".pages.manage_zones.ZoneEditor"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".modules.lines.ui.FilteredTravelsActivity"
+            android:name=".pages.manage_lines.FilteredTravelsActivity"
             android:label="@string/travels"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".DrawerActivity"
+            android:name=".pages.DrawerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
         <activity
-            android:name=".ui.LauncherActivity"
+            android:name=".LauncherActivity"
             android:exported="true"
             android:theme="@style/SplashScreen">
             <intent-filter>
@@ -112,11 +112,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".legacy.MainActivity"
             android:theme="@style/Theme.TravelTracer.NoActionBar" />
 
         <!-- 2024 -->
-        <activity android:name=".modules.stops.ui.StopInfoActivity"
+        <activity android:name=".pages.stops.StopInfoActivity"
             android:theme="@style/Theme.TravelTracer.Buses" />
     </application>
 

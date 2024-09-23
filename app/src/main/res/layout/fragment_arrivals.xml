@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingVertical="8dp"
-    tools:context=".ui.arrivals.StopArrivalsFragment">
+    tools:context=".pages.home.components.StopArrivalsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

@@ -10,7 +10,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import cs10.apps.travels.tracer.DrawerActivity
+import cs10.apps.travels.tracer.pages.DrawerActivity
 import cs10.apps.travels.tracer.R
 import java.util.*
 import java.util.concurrent.TimeUnit

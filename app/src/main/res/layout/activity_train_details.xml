@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".modules.lines.ui.TrainDetail">
+    tools:context=".pages.manage_lines.TrainDetail">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"

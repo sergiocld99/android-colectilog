@@ -1,7 +1,7 @@
 package cs10.apps.travels.tracer.live
 
 import cs10.apps.travels.tracer.model.Point
-import cs10.apps.travels.tracer.modules.live.model.StagedTravel
+import cs10.apps.travels.tracer.pages.live.model.StagedTravel
 import org.junit.Test
 
 class StageTravelTest {

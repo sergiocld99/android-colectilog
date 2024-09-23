@@ -38,4 +38,9 @@
     <string name="west">West</string>
     <string name="east">East</string>
     <string name="south">South</string>
+    <string name="trenes">Trains</string>
+    <string name="stops">Stops</string>
+    <string name="travels">Registry</string>
+    <string name="take_in">Take on %1$s</string>
+    <string name="unknown_zone">Unknown zone</string>
 </resources>

@@ -2,7 +2,7 @@ package cs10.apps.travels.tracer.model.location
 
 import androidx.room.Ignore
 import cs10.apps.common.android.NumberUtils
-import cs10.apps.travels.tracer.enums.PrimaryDirection
+import cs10.apps.travels.tracer.common.enums.PrimaryDirection
 import kotlin.math.abs
 
 data class TravelDistance(val id: Long, val xDiff: Double, val yDiff: Double) :

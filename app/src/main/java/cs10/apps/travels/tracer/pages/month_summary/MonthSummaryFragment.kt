@@ -15,11 +15,11 @@ import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.databinding.FragmentBusesBinding
 import cs10.apps.travels.tracer.databinding.ViewCircularPbWithLegendBinding
 import cs10.apps.travels.tracer.databinding.ViewLineIndicatorBinding
-import cs10.apps.travels.tracer.viewmodel.RootVM
 import cs10.apps.travels.tracer.pages.month_summary.model.LineStat
 import cs10.apps.travels.tracer.pages.month_summary.model.Stat
 import cs10.apps.travels.tracer.pages.month_summary.viewmodel.StatsVM
 import cs10.apps.travels.tracer.utils.Utils
+import cs10.apps.travels.tracer.viewmodel.RootVM
 import java.util.Calendar
 
 class MonthSummaryFragment : CS_Fragment() {
@@ -38,9 +38,9 @@ class MonthSummaryFragment : CS_Fragment() {
         statsVM.busStat.observe(viewLifecycleOwner) { updateTypeStat(it, binding.busPb) }
         statsVM.trainStat.observe(viewLifecycleOwner) { updateTypeStat(it, binding.trainsPb) }
         statsVM.metroStat.observe(viewLifecycleOwner) { updateTypeStat(it, binding.coffeePb) }
-        statsVM.bus1Stat.observe(viewLifecycleOwner) { updateLineStat(it, binding.bus1Pb, binding.vli1)}
-        statsVM.bus2Stat.observe(viewLifecycleOwner) { updateLineStat(it, binding.bus2Pb, binding.vli2)}
-        statsVM.bus3Stat.observe(viewLifecycleOwner) { updateLineStat(it, binding.bus3Pb, binding.vli3) }
+        statsVM.bus1Stat.observe(viewLifecycleOwner) { updateLineStat(it, binding.line1.busPb, binding.line1.vli)}
+        statsVM.bus2Stat.observe(viewLifecycleOwner) { updateLineStat(it, binding.line2.busPb, binding.line2.vli)}
+        statsVM.bus3Stat.observe(viewLifecycleOwner) { updateLineStat(it, binding.line3.busPb, binding.line3.vli) }
 
         rootVM = ViewModelProvider(requireActivity())[RootVM::class.java]
         rootVM.loading.observe(requireActivity()) { binding.root.isVisible = !it }
@@ -88,8 +88,8 @@ class MonthSummaryFragment : CS_Fragment() {
         binding.busPb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_bus)
         binding.trainsPb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_bus)
         binding.coffeePb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_bus)
-        binding.bus2Pb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_yellow)
-        binding.bus3Pb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_green)
+        binding.line2.busPb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_yellow)
+        binding.line3.busPb.pb.progressDrawable = ContextCompat.getDrawable(view.context, R.drawable.circle_green)
 
         rootVM.enableLoading()
 

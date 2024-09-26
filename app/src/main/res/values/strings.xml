@@ -134,4 +134,7 @@
     <string name="west">Oeste</string>
     <string name="east">Este</string>
     <string name="south">Sur</string>
+    <string name="spent_by_line">Gasto por línea</string>
+    <string name="time_by_line">Tiempo por línea</string>
+    <string name="line_number">Línea %1$d</string>
 </resources>

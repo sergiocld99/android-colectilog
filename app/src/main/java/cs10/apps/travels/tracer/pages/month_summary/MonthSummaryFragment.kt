@@ -15,6 +15,7 @@ import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.databinding.FragmentBusesBinding
 import cs10.apps.travels.tracer.databinding.ViewCircularPbWithLegendBinding
 import cs10.apps.travels.tracer.databinding.ViewLineIndicatorBinding
+import cs10.apps.travels.tracer.pages.month_summary.adapter.LineTimeSpentAdapter
 import cs10.apps.travels.tracer.pages.month_summary.model.LineStat
 import cs10.apps.travels.tracer.pages.month_summary.model.Stat
 import cs10.apps.travels.tracer.pages.month_summary.viewmodel.StatsVM
@@ -26,12 +27,12 @@ class MonthSummaryFragment : CS_Fragment() {
     private lateinit var binding: FragmentBusesBinding
     private lateinit var statsVM: StatsVM
     private lateinit var rootVM: RootVM
-
-    // selected tab
+    private val adapter = LineTimeSpentAdapter()
     private var selectedTab = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentBusesBinding.inflate(inflater, container, false)
+        binding.rvTimeByLine.adapter = adapter
 
         statsVM = ViewModelProvider(this)[StatsVM::class.java]
         statsVM.balance.observe(viewLifecycleOwner) { updateCurrency(it) }
@@ -41,6 +42,10 @@ class MonthSummaryFragment : CS_Fragment() {
         statsVM.bus1Stat.observe(viewLifecycleOwner) { updateLineStat(it, binding.line1.busPb, binding.line1.vli)}
         statsVM.bus2Stat.observe(viewLifecycleOwner) { updateLineStat(it, binding.line2.busPb, binding.line2.vli)}
         statsVM.bus3Stat.observe(viewLifecycleOwner) { updateLineStat(it, binding.line3.busPb, binding.line3.vli) }
+
+        statsVM.timeStats.observe(viewLifecycleOwner) {
+            adapter.updateData(it)
+        }
 
         rootVM = ViewModelProvider(requireActivity())[RootVM::class.java]
         rootVM.loading.observe(requireActivity()) { binding.root.isVisible = !it }

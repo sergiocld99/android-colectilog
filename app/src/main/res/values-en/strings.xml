@@ -29,6 +29,7 @@
     <string name="end">End</string>
     <string name="destinations">Destinations</string>
     <string name="speed_kmh">Speed: %1$.1f km/h</string>
+    <string name="linear_distance_km">Linear Distance: %1$.1f km</string>
     <string name="waiting">Wait</string>
     <string name="travelling">Moving</string>
     <string name="edit">Edit</string>
@@ -43,4 +44,7 @@
     <string name="travels">Registry</string>
     <string name="take_in">Take on %1$s</string>
     <string name="unknown_zone">Unknown zone</string>
+    <string name="spent_by_line">Spent by line</string>
+    <string name="time_by_line">Time by line</string>
+    <string name="line_number">Line %1$d</string>
 </resources>

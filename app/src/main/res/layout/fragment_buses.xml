@@ -54,108 +54,172 @@
         app:layout_constraintStart_toEndOf="@id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/title"
-        app:layout_constraintBottom_toBottomOf="@id/title"/>
+        app:layout_constraintBottom_toBottomOf="@id/title"
+        android:contentDescription="@string/edit" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl1"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/title">
-
-        <ImageView
-            android:id="@+id/bus_icon"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginVertical="32dp"
-            android:src="@drawable/ic_bus"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/bus_pb"
-            app:layout_constraintStart_toStartOf="@id/bus_pb" />
-
-        <ImageView
-            android:id="@+id/train_icon"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_train"
-            app:layout_constraintTop_toTopOf="@id/bus_icon"
-            app:layout_constraintBottom_toBottomOf="@id/bus_icon"
-            app:layout_constraintStart_toStartOf="@id/trains_pb"
-            app:layout_constraintEnd_toEndOf="@id/trains_pb"/>
-
-        <ImageView
-            android:id="@+id/coffee_icon"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_railway"
-            app:layout_constraintTop_toTopOf="@id/bus_icon"
-            app:layout_constraintBottom_toBottomOf="@id/bus_icon"
-            app:layout_constraintStart_toStartOf="@id/coffee_pb"
-            app:layout_constraintEnd_toEndOf="@id/coffee_pb"/>
-
-        <include
-            android:id="@+id/bus_pb"
-            layout="@layout/view_circular_pb_with_legend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/bus_icon"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/trains_pb"/>
-
-        <include
-            android:id="@+id/trains_pb"
-            layout="@layout/view_circular_pb_with_legend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/bus_pb"
-            app:layout_constraintStart_toEndOf="@id/bus_pb"
-            app:layout_constraintEnd_toStartOf="@id/coffee_pb"
-            app:layout_constraintBottom_toBottomOf="@id/bus_pb"/>
-
-        <include
-            android:id="@+id/coffee_pb"
-            layout="@layout/view_circular_pb_with_legend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/bus_pb"
-            app:layout_constraintStart_toEndOf="@id/trains_pb"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/bus_pb"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        app:layout_constraintTop_toBottomOf="@id/cl1"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <include
-            layout="@layout/component_line_money_spent"
-            android:id="@+id/line1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/line2"/>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <include
-            layout="@layout/component_line_money_spent"
-            android:id="@+id/line2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/line1"
-            app:layout_constraintEnd_toStartOf="@id/line3"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <include
-            layout="@layout/component_line_money_spent"
-            android:id="@+id/line3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/line2"
-            app:layout_constraintEnd_toEndOf="parent"/>
+                <ImageView
+                    android:id="@+id/bus_icon"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginVertical="32dp"
+                    android:src="@drawable/ic_bus"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/bus_pb"
+                    app:layout_constraintStart_toStartOf="@id/bus_pb" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/train_icon"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_train"
+                    app:layout_constraintTop_toTopOf="@id/bus_icon"
+                    app:layout_constraintBottom_toBottomOf="@id/bus_icon"
+                    app:layout_constraintStart_toStartOf="@id/trains_pb"
+                    app:layout_constraintEnd_toEndOf="@id/trains_pb"/>
+
+                <ImageView
+                    android:id="@+id/coffee_icon"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_railway"
+                    app:layout_constraintTop_toTopOf="@id/bus_icon"
+                    app:layout_constraintBottom_toBottomOf="@id/bus_icon"
+                    app:layout_constraintStart_toStartOf="@id/coffee_pb"
+                    app:layout_constraintEnd_toEndOf="@id/coffee_pb"/>
+
+                <include
+                    android:id="@+id/bus_pb"
+                    layout="@layout/view_circular_pb_with_legend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/bus_icon"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/trains_pb"/>
+
+                <include
+                    android:id="@+id/trains_pb"
+                    layout="@layout/view_circular_pb_with_legend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@id/bus_pb"
+                    app:layout_constraintStart_toEndOf="@id/bus_pb"
+                    app:layout_constraintEnd_toStartOf="@id/coffee_pb"
+                    app:layout_constraintBottom_toBottomOf="@id/bus_pb"/>
+
+                <include
+                    android:id="@+id/coffee_pb"
+                    layout="@layout/view_circular_pb_with_legend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@id/bus_pb"
+                    app:layout_constraintStart_toEndOf="@id/trains_pb"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/bus_pb"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                app:layout_constraintTop_toBottomOf="@id/cl1">
+
+                <TextView
+                    android:id="@+id/spent_by_line_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/spent_by_line"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:paddingBottom="20dp"
+                    android:layout_marginHorizontal="20dp"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <include
+                    layout="@layout/component_line_money_spent"
+                    android:id="@+id/line1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/spent_by_line_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/line2"/>
+
+                <include
+                    layout="@layout/component_line_money_spent"
+                    android:id="@+id/line2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/spent_by_line_title"
+                    app:layout_constraintStart_toEndOf="@id/line1"
+                    app:layout_constraintEnd_toStartOf="@id/line3"/>
+
+                <include
+                    layout="@layout/component_line_money_spent"
+                    android:id="@+id/line3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/spent_by_line_title"
+                    app:layout_constraintStart_toEndOf="@id/line2"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                app:layout_constraintTop_toBottomOf="@id/cl2">
+
+                <TextView
+                    android:id="@+id/time_by_line_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/time_by_line"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:paddingBottom="20dp"
+                    android:layout_marginHorizontal="20dp"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/rv_time_by_line"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintTop_toBottomOf="@id/time_by_line_title"
+                    tools:listitem="@layout/component_line_time_spent"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    app:layout_constraintTop_toBottomOf="@id/rv_time_by_line"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

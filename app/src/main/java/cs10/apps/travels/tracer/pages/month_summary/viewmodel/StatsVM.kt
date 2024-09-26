@@ -6,11 +6,12 @@ import android.content.SharedPreferences
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.common.enums.TransportType
+import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.joins.PriceSum
 import cs10.apps.travels.tracer.pages.month_summary.model.LineStat
 import cs10.apps.travels.tracer.pages.month_summary.model.Stat
+import cs10.apps.travels.tracer.pages.month_summary.model.TimeLineStat
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -39,6 +40,8 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
     val bus1Stat = MutableLiveData<LineStat?>()
     val bus2Stat = MutableLiveData<LineStat?>()
     val bus3Stat = MutableLiveData<LineStat?>()
+
+    val timeStats = MutableLiveData<List<TimeLineStat>>()
 
     fun fillData(rootVM: RootVM, monthsBefore: Int = 0){
         val calendar = Calendar.getInstance()
@@ -87,8 +90,13 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
                 setBalance(money)
             }
 
+            val timeStats = async {
+                val timeSpent = database.travelsDao().getTimeSpentInMonth(month, year)
+                timeStats.postValue(timeSpent)
+            }
+
             delay(300)
-            awaitAll(genStats, busesStats, balanceStat)
+            awaitAll(genStats, busesStats, balanceStat, timeStats)
             rootVM.disableLoading()
         }
     }

@@ -7,11 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.utils.Utils
 import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
 import cs10.apps.travels.tracer.pages.manage_lines.db.LinesDao
+import cs10.apps.travels.tracer.utils.Utils
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

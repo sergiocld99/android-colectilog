@@ -3,6 +3,7 @@ package cs10.apps.travels.tracer.pages.registry.db
 import androidx.room.Dao
 import androidx.room.Query
 import cs10.apps.travels.tracer.model.joins.PriceSum
+import cs10.apps.travels.tracer.pages.month_summary.model.TimeLineStat
 
 /** ViajesDao implementado en Kotlin
  *
@@ -31,4 +32,10 @@ interface TravelsDao {
 
     @Query("SELECT AVG(rate) FROM viaje where tipo = :type")
     fun getAverageRateForType(type: Int): Double
+
+    @Query("SELECT SUM(endHour * 60 + endMinute - startHour * 60 - startMinute) as timeSpent, " +
+            "linea as lineNumber FROM viaje " +
+            "where year = :year and month = :month and endHour not null and lineNumber > 0 " +
+            "GROUP BY lineNumber ORDER BY timeSpent DESC LIMIT 5")
+    suspend fun getTimeSpentInMonth(month: Int, year: Int): List<TimeLineStat>
 }

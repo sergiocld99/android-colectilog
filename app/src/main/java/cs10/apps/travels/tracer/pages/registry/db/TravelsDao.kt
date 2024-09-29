@@ -12,6 +12,12 @@ import cs10.apps.travels.tracer.pages.month_summary.model.TimeLineStat
 @Dao
 interface TravelsDao {
 
+    @Query("UPDATE Viaje SET nombrePdaInicio = :newName WHERE nombrePdaInicio = :oldName")
+    suspend fun renameStartPlaces(oldName: String, newName: String)
+
+    @Query("UPDATE Viaje SET nombrePdaFin = :newName WHERE nombrePdaFin = :oldName")
+    suspend fun renameEndPlaces(oldName: String, newName: String)
+
     @Query("SELECT SUM(costo) FROM viaje where id > :travelId")
     suspend fun getTotalSpentSince(travelId: Long) : Double?
 

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ColectiLog</string>
 
-    <string name="nav_header_title">ColectiLog v2.41</string>
+    <string name="nav_header_title">ColectiLog v2.42.0</string>
     <string name="nav_header_subtitle" translatable="false">sergio.calderon@alu.ing.unlp.edu.ar</string>
 
     <string name="action_settings">Settings</string>

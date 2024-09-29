@@ -11,22 +11,24 @@ import androidx.annotation.NonNull;
 
 import cs10.apps.common.android.ui.CSActivity;
 import cs10.apps.travels.tracer.R;
+import cs10.apps.travels.tracer.common.enums.TransportType;
 import cs10.apps.travels.tracer.databinding.ActivityStopCreatorBinding;
 import cs10.apps.travels.tracer.databinding.ContentStopCreatorBinding;
 import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.pages.stops.db.ParadasDao;
 import cs10.apps.travels.tracer.model.Parada;
 
 public class StopEditor extends CSActivity implements AdapterView.OnItemSelectedListener {
+    public static final int REQUEST_CODE = 1;
+    public static final int RESULT_RENAMED = 2;
     private ContentStopCreatorBinding content;
-    private ParadasDao dao;
+    private MiDB db;
     private String originalName;
     private int type;
 
     private final String[] messages = {
             "Parada actualizada con éxito",
             "Por favor complete todos los campos para continuar",
-            "El nombre de parada no se puede cambiar",
+            "El nombre propuesto ya se encuentra en uso",
             "Formato inválido de latitud y/o longitud",
             "Hubo un problema al escribir en la base de datos"
     };
@@ -42,19 +44,19 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
         content = binding.contentStopCreator;
 
         binding.fab.setOnClickListener(view -> new Thread(this::performDone, "performDone").start());
-        binding.fabOpenMap.setOnClickListener(v -> onOpenMap());
+        //binding.fabOpenMap.setOnClickListener(v -> onOpenMap());
         content.tvTitle.setText(getString(R.string.editing_stop));
 
         originalName = getIntent().getExtras().getString("stopName");
         content.etStopName.setText(originalName);
 
         doInBackground(() -> {
-            dao = MiDB.getInstance(getApplicationContext()).paradasDao();
-            Parada parada = dao.getByName(originalName);
+            db = MiDB.getInstance(getApplicationContext());
+            Parada parada = db.paradasDao().getByName(originalName);
 
             // rank
-            int travelCount = dao.getTravelCount(originalName);
-            int rank = dao.getRank(travelCount);
+            int travelCount = db.paradasDao().getTravelCount(originalName);
+            int rank = db.paradasDao().getRank(travelCount);
 
             doInForeground(() -> {
                 content.etLatitude.setText(String.valueOf(parada.getLatitud()));
@@ -67,31 +69,11 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
         });
 
         // Selector
-        String[] options = {"Colectivo", "Tren"};
+        String[] options = TransportType.Companion.getTypesStr();
         ArrayAdapter<String> aa = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item, options);
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         content.selectorType.setAdapter(aa);
         content.selectorType.setOnItemSelectedListener(this);
-    }
-
-    private void onOpenMap() {
-
-        /*
-        String latitude = content.etLatitude.getText().toString().trim();
-        String longitude = content.etLongitude.getText().toString().trim();
-        String stopName = content.etStopName.getText().toString().trim();
-
-        try {
-            double x = Double.parseDouble(latitude);
-            double y = Double.parseDouble(longitude);
-            Intent intent = new Intent(this, MapViewActivity.class);
-            intent.putExtra("lat", x);
-            intent.putExtra("long", y);
-            intent.putExtra("name", stopName);
-            startActivity(intent);
-        } catch (NumberFormatException e){
-            showShortToast("No se ingresaron coordenadas válidas");
-        } */
     }
 
     @Override
@@ -104,7 +86,7 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_delete){
             doInBackground(() -> {
-                dao.delete(originalName);
+                db.paradasDao().delete(originalName);
                 doInForeground(this::finish);
             });
 
@@ -132,16 +114,23 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
 
         try {
             Parada parada = new Parada();
-            parada.setNombre(stopName);
+            parada.setNombre(originalName);
             parada.setLatitud(Double.parseDouble(latitude));
             parada.setLongitud(Double.parseDouble(longitude));
             parada.setTipo(type);
 
-            if (originalName.equals(stopName)) dao.update(parada);
+            if (originalName.equals(stopName)) db.paradasDao().update(parada);
             else {
-                dao.delete(originalName);
-                dao.insert(parada);
+                // check if the new name already exists
+                if (db.paradasDao().getByName(stopName) != null) return 2;
+
+                parada.setNombre(stopName);
+                db.safeStopsDao().renameStop(originalName, stopName);
+                StopRenamer.Companion.applyChanges(originalName, stopName, db);
+                setResult(RESULT_RENAMED);
             }
+
+
         } catch(NumberFormatException e){
             e.printStackTrace();
             return 3;

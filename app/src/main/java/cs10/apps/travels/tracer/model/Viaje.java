@@ -8,12 +8,12 @@ import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import cs10.apps.travels.tracer.utils.Utils;
 import cs10.apps.travels.tracer.common.enums.TransportType;
+import cs10.apps.travels.tracer.utils.Utils;
 
 @Entity(foreignKeys = {
-        @ForeignKey(entity = Parada.class, parentColumns = "nombre", childColumns = "nombrePdaInicio"),
-        @ForeignKey(entity = Parada.class, parentColumns = "nombre", childColumns = "nombrePdaFin")
+        @ForeignKey(entity = Parada.class, parentColumns = "nombre", childColumns = "nombrePdaInicio", onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.CASCADE),
+        @ForeignKey(entity = Parada.class, parentColumns = "nombre", childColumns = "nombrePdaFin", onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.CASCADE)
 })
 public class Viaje implements Comparable<Viaje> {
 

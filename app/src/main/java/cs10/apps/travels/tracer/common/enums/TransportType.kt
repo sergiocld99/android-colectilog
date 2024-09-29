@@ -13,5 +13,7 @@ enum class TransportType {
                 else -> BUS
             }
         }
+
+        fun getTypesStr() = arrayOf("Bus", "Tren", "Auto", "Metro")
     }
 }

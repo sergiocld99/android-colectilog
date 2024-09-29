@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import cs10.apps.common.android.ui.CS_Fragment
-import cs10.apps.travels.tracer.databinding.FragmentStopsBinding
 import cs10.apps.travels.tracer.common.enums.TransportType
+import cs10.apps.travels.tracer.databinding.FragmentStopsBinding
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.pages.stops.adapter.StopAdapter
 import cs10.apps.travels.tracer.pages.stops.viewmodel.StopsVM
@@ -57,22 +57,7 @@ class StopListFragment : CS_Fragment() {
         binding.typeFilter.roundedTabs.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 showLoading()
-
-                adapter.itemCount.let {
-                    if (it > 0) {
-                        adapter.paradasList = mutableListOf()
-                        adapter.notifyItemRangeRemoved(0, it)
-                    }
-                }
-
-                val constraint: TransportType? = when (tab!!.position) {
-                    1 -> TransportType.BUS
-                    2 -> TransportType.TRAIN
-                    3 -> TransportType.METRO
-                    else -> null
-                }
-
-                stopsVM.filter(constraint)
+                updateContent(tab?.position ?: 0)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -86,8 +71,28 @@ class StopListFragment : CS_Fragment() {
         })
     }
 
+    private fun updateContent(tabPosition: Int) {
+        adapter.itemCount.let {
+            if (it > 0) {
+                adapter.paradasList = mutableListOf()
+                adapter.notifyItemRangeRemoved(0, it)
+            }
+        }
+
+        val constraint: TransportType? = when (tabPosition) {
+            1 -> TransportType.BUS
+            2 -> TransportType.TRAIN
+            3 -> TransportType.METRO
+            else -> null
+        }
+
+        stopsVM.filter(constraint)
+    }
+
     override fun onResume() {
         super.onResume()
+        adapter.paradasList = mutableListOf()
+        binding.typeFilter.roundedTabs.selectTab(binding.typeFilter.roundedTabs.getTabAt(0))
 
         locationVM.getLiveData().observe(viewLifecycleOwner) {
             if (adapter.itemCount == 0 && binding.typeFilter.roundedTabs.selectedTabPosition == 0) {

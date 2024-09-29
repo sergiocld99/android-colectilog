@@ -9,9 +9,9 @@ import android.widget.ArrayAdapter
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import cs10.apps.common.android.ui.FormActivity
+import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.databinding.ActivityStopInfoBinding
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.ArriboTren
 import cs10.apps.travels.tracer.pages.home.ServiceDetail
@@ -62,7 +62,7 @@ class StopInfoActivity : FormActivity(), OnItemSelectedListener {
         binding.fab.setOnClickListener {
             val intent = Intent(this, StopEditor::class.java)
             intent.putExtra("stopName", stopName)
-            startActivity(intent)
+            startActivityForResult(intent, StopEditor.REQUEST_CODE)
         }
     }
 
@@ -135,6 +135,14 @@ class StopInfoActivity : FormActivity(), OnItemSelectedListener {
                 adapter.list = arrivals
                 adapter.notifyItemRangeInserted(0, arrivals.size)
             }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == StopEditor.REQUEST_CODE && resultCode == StopEditor.RESULT_RENAMED){
+            finish()
         }
     }
 

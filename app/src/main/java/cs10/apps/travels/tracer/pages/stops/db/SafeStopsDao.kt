@@ -5,8 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.development.path.entity.PathGroup
+import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.pages.live.entity.MediumStop
 
 @Dao
@@ -20,6 +20,21 @@ interface SafeStopsDao {
 
     @Delete
     suspend fun deleteMediumStop(mediumStop: MediumStop)
+
+    @Query("UPDATE Parada SET nombre = :newName WHERE nombre = :oldName")
+    fun renameStop(oldName: String, newName: String)
+
+    @Query("UPDATE MediumStop SET destination = :newName WHERE destination = :oldName")
+    fun renameDestinations(oldName: String, newName: String)
+
+    @Query("UPDATE MediumStop SET prev = :newName WHERE prev = :oldName")
+    fun renamePrevStops(oldName: String, newName: String)
+
+    @Query("UPDATE MediumStop SET name = :newName WHERE name = :oldName")
+    fun renameCurrentStops(oldName: String, newName: String)
+
+    @Query("UPDATE MediumStop SET next = :newName WHERE next = :oldName")
+    fun renameNextStops(oldName: String, newName: String)
 
     @Query("UPDATE MediumStop SET prev = :inserted " +
             "WHERE line = :line and ramal is :ramal and destination is :dest and name is :target")

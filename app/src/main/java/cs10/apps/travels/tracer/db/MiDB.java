@@ -41,7 +41,7 @@ import cs10.apps.travels.tracer.pages.stops.db.TrainsDao;
         Tren.class, Horario.class, Parada.class, Viaje.class, TarifaBus.class, TarifaTren.class,
         Coffee.class, Recarga.class, ServicioTren.class, HorarioTren.class, CustomBusLine.class,
         Zone.class, MediumStop.class
-}, version = 23)
+}, version = 24)
 public abstract class MiDB extends RoomDatabase {
     private static MiDB instance;
 
@@ -53,7 +53,8 @@ public abstract class MiDB extends RoomDatabase {
                     ADD_COSTO_TO_VIAJE, CREATE_COFFEE_TABLE, CREATE_RECARGA_TABLE,
                     CREATE_ROCA_TABLES, FIX_HORARIOS_TABLE, ADD_RAMAL_COLUMN_TO_SERVICIOS,
                     ADD_WEEK_DAY_COLUMN_TO_TRAVELS, ADD_RATE_COLUMN_TO_TRAVELS, CREATE_LINES_TABLE,
-                    CREATE_ZONES_TABLE, CREATE_MEDIUM_STOPS_TABLE, DROP_MEDIUM_STOPS
+                    CREATE_ZONES_TABLE, CREATE_MEDIUM_STOPS_TABLE, DROP_MEDIUM_STOPS,
+                    ADD_CASCADE_TO_VIAJE
             };
 
             instance = Room.databaseBuilder(context.getApplicationContext(), MiDB.class,
@@ -256,6 +257,30 @@ public abstract class MiDB extends RoomDatabase {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
 
+        }
+    };
+
+    private static final Migration ADD_CASCADE_TO_VIAJE = new Migration(23, 24) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE Viaje6 (" +
+                    "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                    "day INTEGER NOT NULL, month INTEGER NOT NULL, year INTEGER NOT NULL," +
+                    "startHour INTEGER NOT NULL, startMinute INTEGER NOT NULL," +
+                    "endHour INTEGER, endMinute INTEGER, " +
+                    "tipo INTEGER NOT NULL, linea INTEGER, ramal TEXT, " +
+                    "nombrePdaInicio TEXT NOT NULL, nombrePdaFin TEXT NOT NULL, " +
+                    "wd INTEGER NOT NULL, rate INTEGER, costo REAL NOT NULL, " +
+                    "FOREIGN KEY(nombrePdaInicio) REFERENCES Parada(nombre) ON UPDATE CASCADE ON DELETE CASCADE," +
+                    "FOREIGN KEY(nombrePdaFin) REFERENCES Parada(nombre) ON UPDATE CASCADE ON DELETE CASCADE)");
+
+            database.execSQL("INSERT INTO Viaje6 (id, day, month, year, startHour, startMinute, endHour, endMinute, " +
+                    "tipo, linea, ramal, nombrePdaInicio, nombrePdaFin, wd, rate, costo) " +
+                    "SELECT id, day, month, year, startHour, startMinute, endHour, endMinute, " +
+                    "tipo, linea, ramal, nombrePdaInicio, nombrePdaFin, wd, rate, costo FROM Viaje");
+
+            database.execSQL("DROP TABLE Viaje");
+            database.execSQL("ALTER TABLE Viaje6 RENAME TO Viaje");
         }
     };
 

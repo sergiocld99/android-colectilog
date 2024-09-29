@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import cs10.apps.common.android.ui.FormActivity
+import cs10.apps.travels.tracer.common.constants.RequestCodes
+import cs10.apps.travels.tracer.common.constants.ResultCodes
 import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.databinding.ActivityStopInfoBinding
 import cs10.apps.travels.tracer.db.MiDB
@@ -62,7 +64,7 @@ class StopInfoActivity : FormActivity(), OnItemSelectedListener {
         binding.fab.setOnClickListener {
             val intent = Intent(this, StopEditor::class.java)
             intent.putExtra("stopName", stopName)
-            startActivityForResult(intent, StopEditor.REQUEST_CODE)
+            startActivityForResult(intent, RequestCodes.STOP_EDITION)
         }
     }
 
@@ -141,12 +143,17 @@ class StopInfoActivity : FormActivity(), OnItemSelectedListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == StopEditor.REQUEST_CODE){
+        if (requestCode == RequestCodes.STOP_EDITION){
             when(resultCode){
-                StopEditor.RESULT_DELETED -> finish()
-                StopEditor.RESULT_RENAMED -> finish()
+                ResultCodes.STOP_DELETED -> finishWithResultCode(resultCode)
+                ResultCodes.STOP_RENAMED -> finishWithResultCode(resultCode)
             }
         }
+    }
+
+    private fun finishWithResultCode(resultCode: Int){
+        setResult(resultCode)
+        finish()
     }
 
     // -------- LISTENERS

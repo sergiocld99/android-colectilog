@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 
 import cs10.apps.common.android.ui.CSActivity;
 import cs10.apps.travels.tracer.R;
+import cs10.apps.travels.tracer.common.constants.ResultCodes;
 import cs10.apps.travels.tracer.common.enums.TransportType;
 import cs10.apps.travels.tracer.databinding.ActivityStopCreatorBinding;
 import cs10.apps.travels.tracer.databinding.ContentStopCreatorBinding;
@@ -18,9 +19,7 @@ import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Parada;
 
 public class StopEditor extends CSActivity implements AdapterView.OnItemSelectedListener {
-    public static final int REQUEST_CODE = 1;
-    public static final int RESULT_RENAMED = 2;
-    public static final int RESULT_DELETED = 3;
+
     private ContentStopCreatorBinding content;
     private MiDB db;
     private String originalName;
@@ -70,7 +69,7 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
         });
 
         // Selector
-        String[] options = TransportType.Companion.getTypesStr();
+        String[] options = TransportType.Companion.getTypesStr(this);
         ArrayAdapter<String> aa = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item, options);
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         content.selectorType.setAdapter(aa);
@@ -86,10 +85,7 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_delete){
-            doInBackground(() -> {
-                db.paradasDao().delete(originalName);
-                doInForeground(this::finish);
-            });
+            doInBackground(this::onDelete);
 
             return true;
         }
@@ -97,10 +93,10 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void finish() {
-        setResult(RESULT_DELETED);
-        super.finish();
+    private void onDelete(){
+        db.paradasDao().delete(originalName);
+        setResult(ResultCodes.STOP_DELETED);
+        finish();
     }
 
     private void performDone(){
@@ -134,7 +130,7 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
                 parada.setNombre(stopName);
                 db.safeStopsDao().renameStop(originalName, stopName);
                 StopRenamer.Companion.applyChanges(originalName, stopName, db);
-                setResult(RESULT_RENAMED);
+                setResult(ResultCodes.STOP_RENAMED);
             }
 
 

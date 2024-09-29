@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import cs10.apps.common.android.ui.CS_Fragment
+import cs10.apps.travels.tracer.common.constants.RequestCodes
+import cs10.apps.travels.tracer.common.constants.ResultCodes
 import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.databinding.FragmentStopsBinding
 import cs10.apps.travels.tracer.model.Parada
@@ -91,8 +93,6 @@ class StopListFragment : CS_Fragment() {
 
     override fun onResume() {
         super.onResume()
-        adapter.paradasList = mutableListOf()
-        binding.typeFilter.roundedTabs.selectTab(binding.typeFilter.roundedTabs.getTabAt(0))
 
         locationVM.getLiveData().observe(viewLifecycleOwner) {
             if (adapter.itemCount == 0 && binding.typeFilter.roundedTabs.selectedTabPosition == 0) {
@@ -106,11 +106,27 @@ class StopListFragment : CS_Fragment() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RequestCodes.STOP_VIEW_DETAILS) {
+            when (resultCode) {
+                ResultCodes.STOP_DELETED -> resetContent()
+                ResultCodes.STOP_RENAMED -> resetContent()
+            }
+        }
+    }
+
+    private fun resetContent() {
+        adapter.paradasList = mutableListOf()
+        binding.typeFilter.roundedTabs.selectTab(binding.typeFilter.roundedTabs.getTabAt(0))
+    }
+
     private fun onClickStop(item: Parada) {
         val intent = Intent(activity, StopInfoActivity::class.java)
         intent.putExtra("stopName", item.nombre)
         intent.putExtra("type", item.tipo)
-        startActivity(intent)
+        startActivityForResult(intent, RequestCodes.STOP_VIEW_DETAILS)
     }
 
     private fun showContent() {

@@ -16,13 +16,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import cs10.apps.common.android.Clock
+import cs10.apps.common.android.Compass
 import cs10.apps.common.android.Localizable
 import cs10.apps.common.android.TimedLocation
 import cs10.apps.rater.HappyRater
 import cs10.apps.travels.tracer.data.generator.Station
+import cs10.apps.travels.tracer.data.generator.ZoneData
 import cs10.apps.travels.tracer.db.DatabaseFinder
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.pages.live.hooks.GetCurrentTravelUseCase
 import cs10.apps.travels.tracer.model.NextZone
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Point
@@ -30,7 +31,7 @@ import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.Zone
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.RamalSchedule
-import cs10.apps.travels.tracer.data.generator.ZoneData
+import cs10.apps.travels.tracer.pages.live.hooks.GetCurrentTravelUseCase
 import cs10.apps.travels.tracer.pages.live.model.Countdown
 import cs10.apps.travels.tracer.pages.live.model.EstimationData
 import cs10.apps.travels.tracer.pages.live.model.PredictionBase
@@ -88,6 +89,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     private val deviation = MutableLiveData(0.0)
     val progressEntries = MutableLiveData<MutableList<FloatEntry>>()
     val finishData = MutableLiveData(false)
+    val angle = MutableLiveData<Double>()
 
     // timer 1: update minutes from start every 30 seconds
     private var minuteClock: Clock? = null
@@ -187,25 +189,17 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
             viewModelScope.launch(Dispatchers.IO) {
                 val currentPoint = Point(location.latitude, location.longitude)
 
-                /*
-                val startStop = database.paradasDao().getByName(t.nombrePdaInicio)
-                val endStop = database.paradasDao().getByName(t.nombrePdaFin)
-
-                // calc distances internally (in km)
-                startStop.updateDistance(location)
-                endStop.updateDistance(location)
-                calculateDeviation(startStop, endStop)
-
-                // update values for UI
-                val prog = calculateProgress(startStop.distance, endStop.distance) */
                 val st = stagedTravel ?: return@launch
                 st.calculateCurrentStage(currentPoint)
-                //stages.postValue(st.stages)
 
                 val startStop = st.start
                 val endStop = st.end
                 val prog = st.currentProgress(currentPoint) / 100
                 val endKmDistance = st.currentKmDistanceToFinish(currentPoint)
+
+                // angle
+                val compass = Compass(startStop.getX(), startStop.getY(), location, endStop)
+                angle.postValue(compass.getAngleToDestination())
 
                 // estimate time to arrive
                 minutesFromStart.value?.let {

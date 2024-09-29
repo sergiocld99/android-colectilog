@@ -17,21 +17,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
-import com.patrykandpatrick.vico.core.chart.values.AxisValuesOverrider
-import com.patrykandpatrick.vico.core.entry.entryModelOf
 import cs10.apps.common.android.Emoji
 import cs10.apps.common.android.ui.CS_Fragment
 import cs10.apps.rater.HappyRater
 import cs10.apps.travels.tracer.R
+import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.databinding.FragmentLiveTravelBinding
 import cs10.apps.travels.tracer.databinding.SimpleImageBinding
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
-import cs10.apps.travels.tracer.pages.registry.editor.BusTravelEditor
-import cs10.apps.travels.tracer.pages.registry.editor.CarTravelEditor
-import cs10.apps.travels.tracer.pages.registry.editor.MetroTravelEditor
-import cs10.apps.travels.tracer.pages.registry.editor.TrainTravelEditor
 import cs10.apps.travels.tracer.notification.NotificationCenter
 import cs10.apps.travels.tracer.pages.live.adapter.StagesAdapter
 import cs10.apps.travels.tracer.pages.live.components.BasicSwitcher
@@ -39,6 +33,10 @@ import cs10.apps.travels.tracer.pages.live.components.LiveWaitingView
 import cs10.apps.travels.tracer.pages.live.model.SwitcherText
 import cs10.apps.travels.tracer.pages.live.viewmodel.LiveVM
 import cs10.apps.travels.tracer.pages.live.viewmodel.WaitingVM
+import cs10.apps.travels.tracer.pages.registry.editor.BusTravelEditor
+import cs10.apps.travels.tracer.pages.registry.editor.CarTravelEditor
+import cs10.apps.travels.tracer.pages.registry.editor.MetroTravelEditor
+import cs10.apps.travels.tracer.pages.registry.editor.TrainTravelEditor
 import cs10.apps.travels.tracer.utils.ColorUtils
 import cs10.apps.travels.tracer.utils.Utils
 import cs10.apps.travels.tracer.viewmodel.LocationVM
@@ -210,24 +208,9 @@ class LiveTravelFragment : CS_Fragment() {
             } else binding.trafficBanner.isVisible = false
         }
 
-        liveVM.progressEntries.observe(viewLifecycleOwner) {
+        /*liveVM.progressEntries.observe(viewLifecycleOwner) {
             binding.progressChart.chart?.axisValuesOverrider = AxisValuesOverrider.fixed(minY = 0.0f, maxY = 1.0f, minX = 0.0f, maxX = 1.0f)
             binding.progressChart.setModel(entryModelOf(it))
-        }
-
-        /*
-        liveVM.deviation.observe(viewLifecycleOwner) {
-            val ed = liveVM.estData.value
-
-            if (it == null || it < 0.4 || ed == null || !binding.trafficBanner.isVisible){
-                binding.deviationBanner.isVisible = false
-            } else if (binding.trafficBanner.isVisible) {
-                val timeError = (ed.totalMinutes * it / 100).roundToInt()
-                binding.deviationBanner.isVisible = true
-                binding.trafficBanner.isVisible = false
-                binding.deviationTitle.text = String.format("Desviación del %.1f%%", it)
-                binding.deviationSub.text = String.format("Error de hasta %d minutos", timeError)
-            }
         }*/
 
         liveVM.endDistance.observe(viewLifecycleOwner) {
@@ -249,6 +232,11 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.countdown.liveData.observe(viewLifecycleOwner) {
             if (it < 600) binding.nearMeTitle.text = String.format("Llegando en %d' %d\"", it / 60, it % 60)
             else binding.nearMeTitle.text = String.format("Llegando en %d min." , it / 60)
+        }
+
+        liveVM.angle.observe(viewLifecycleOwner) {
+            binding.compass.rotation = 45f - it.toFloat()
+            binding.compass.isVisible = it != null
         }
 
         liveVM.minutesToEnd.observe(viewLifecycleOwner) {

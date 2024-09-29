@@ -27,7 +27,7 @@ class StopsVM(application: Application) : AndroidViewModel(application) {
             // find zones
             stops.forEach {
                 it.zone = db.zonesDao().findFirstZoneIn(it.latitud, it.longitud)
-                it.angle = Compass(location, it).getAngleToDestination().toFloat()
+                it.angle = Compass.buildWithoutStart(location, it).getAngleToDestination().toFloat()
             }
 
             delay(400)

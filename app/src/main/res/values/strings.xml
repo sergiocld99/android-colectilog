@@ -137,4 +137,5 @@
     <string name="spent_by_line">Gasto por línea</string>
     <string name="time_by_line">Tiempo por línea</string>
     <string name="line_number">Línea %1$d</string>
+    <string name="compass">Brújula</string>
 </resources>

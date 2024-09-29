@@ -18,7 +18,7 @@
     <string name="mount">Amount</string>
     <string name="confirm">Confirm</string>
     <string name="destination_full">To %1$s (%2$s)</string>
-    <string name="arrival_time">At %1%s</string>
+    <string name="arrival_time">At %1$s</string>
     <string name="distance_km">Distance: %1$s</string>
     <string name="train_price">Fare: %1$s</string>
     <string name="train">Train</string>

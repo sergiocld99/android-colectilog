@@ -33,6 +33,9 @@ public class Parada extends Localizable implements Comparable<Parada> {
     @Ignore
     private Zone zone;
 
+    @Ignore
+    public float angle;
+
     public Parada fillMandatoryFields(String nombre, double latitud, double longitud, int tipo){
         this.nombre = nombre;
         this.latitud = latitud;

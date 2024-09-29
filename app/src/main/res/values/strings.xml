@@ -74,7 +74,7 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="train_price">Tarifa: %1$s</string>
     <string name="proximity_porcentage">%1$.2f%% de cercania</string>
-    <string name="bus">Bus</string>
+    <string name="bus" translatable="false">Bus</string>
     <string name="train">Tren</string>
     <string name="new_train_travel">Nuevo viaje en Tren</string>
     <string name="ingrese_nuevo_valor">Ingrese el nuevo valor</string>

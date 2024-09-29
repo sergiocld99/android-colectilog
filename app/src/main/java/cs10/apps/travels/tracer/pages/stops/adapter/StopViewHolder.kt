@@ -5,9 +5,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.utils.Utils
-import cs10.apps.travels.tracer.databinding.ItemStopBinding
 import cs10.apps.travels.tracer.common.enums.TransportType
+import cs10.apps.travels.tracer.databinding.ItemStopBinding
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.utils.ColorUtils
 
@@ -24,16 +23,6 @@ class StopViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         binding.tvStartCount.text =
             parada.zone?.name ?: binding.root.context.getString(R.string.unknown_zone)
 
-        /*
-         if (adapterPosition == 0) {
-             val diff = Utils.bestRound(parada.doubleHistory.diffSum)
-             binding.tvLocation.text = when {
-                parada.doubleHistory.currentIsGreater() -> "Te alejaste $diff metros"
-                else -> "Te acercaste " + (-diff) + " metros"
-             }
-
-         */
-
         binding.tvLocation.text =
             binding.root.context.getString(R.string.coords, parada.latitud, parada.longitud)
 
@@ -49,7 +38,8 @@ class StopViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         binding.root.setBackgroundColor(ContextCompat.getColor(binding.root.context, color))
 
         // Icono según tipo de parada
-        binding.ivType.setImageDrawable(Utils.getTypeDrawable(parada.tipo, binding.root.context))
+        //binding.ivType.setImageDrawable(Utils.getTypeDrawable(parada.tipo, binding.root.context))
+        binding.ivType.rotation = 45f - parada.angle
 
         // Establecer listener para el item actual
         binding.root.setOnClickListener { onClickListener(parada) }

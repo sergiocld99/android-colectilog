@@ -21,7 +21,7 @@
         app:layout_constraintEnd_toEndOf="@id/tv_line"
         app:layout_constraintBottom_toTopOf="@id/tv_line"
         android:contentDescription="@string/stops"
-        tools:src="@drawable/ic_train"/>
+        android:src="@drawable/ic_near_me"/>
 
     <TextView
         android:id="@+id/tv_line"

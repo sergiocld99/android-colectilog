@@ -5,10 +5,11 @@ import android.location.Location
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import cs10.apps.travels.tracer.utils.Utils
-import cs10.apps.travels.tracer.db.MiDB
+import cs10.apps.common.android.Compass
 import cs10.apps.travels.tracer.common.enums.TransportType
+import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Parada
+import cs10.apps.travels.tracer.utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -26,6 +27,7 @@ class StopsVM(application: Application) : AndroidViewModel(application) {
             // find zones
             stops.forEach {
                 it.zone = db.zonesDao().findFirstZoneIn(it.latitud, it.longitud)
+                it.angle = Compass(location, it).getAngleToDestination().toFloat()
             }
 
             delay(400)

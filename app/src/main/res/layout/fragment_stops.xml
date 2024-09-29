@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".pages.stops.StopListFragment">
+    tools:context=".pages.stops.StopsFragment">
 
     <include layout="@layout/tabs_travel_type"
         android:id="@+id/type_filter"/>

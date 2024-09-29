@@ -20,4 +20,9 @@ open class CSActivity : AppCompatActivity() {
     fun showShortToast(message: String){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
+
+    open fun finishWithResult(resultCode: Int){
+        setResult(resultCode)
+        finish()
+    }
 }

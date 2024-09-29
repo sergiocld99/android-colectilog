@@ -145,15 +145,10 @@ class StopInfoActivity : FormActivity(), OnItemSelectedListener {
 
         if (requestCode == RequestCodes.STOP_EDITION){
             when(resultCode){
-                ResultCodes.STOP_DELETED -> finishWithResultCode(resultCode)
-                ResultCodes.STOP_RENAMED -> finishWithResultCode(resultCode)
+                ResultCodes.STOP_DELETED -> finishWithResult(resultCode)
+                ResultCodes.STOP_RENAMED -> finishWithResult(resultCode)
             }
         }
-    }
-
-    private fun finishWithResultCode(resultCode: Int){
-        setResult(resultCode)
-        finish()
     }
 
     // -------- LISTENERS

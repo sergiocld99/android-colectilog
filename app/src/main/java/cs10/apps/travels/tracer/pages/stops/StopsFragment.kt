@@ -20,7 +20,7 @@ import cs10.apps.travels.tracer.pages.stops.viewmodel.StopsVM
 import cs10.apps.travels.tracer.viewmodel.LocationVM
 import cs10.apps.travels.tracer.viewmodel.RootVM
 
-class StopListFragment : CS_Fragment() {
+class StopsFragment : CS_Fragment() {
     private lateinit var binding: FragmentStopsBinding
     private var adapter = StopAdapter(mutableListOf()) { onClickStop(it) }
 
@@ -94,6 +94,10 @@ class StopListFragment : CS_Fragment() {
     override fun onResume() {
         super.onResume()
 
+        if (binding.typeFilter.roundedTabs.selectedTabPosition == 0) {
+            resetContent()
+        }
+
         locationVM.getLiveData().observe(viewLifecycleOwner) {
             if (adapter.itemCount == 0 && binding.typeFilter.roundedTabs.selectedTabPosition == 0) {
                 //rootVM.enableLoading()
@@ -109,15 +113,21 @@ class StopListFragment : CS_Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == RequestCodes.STOP_VIEW_DETAILS) {
-            when (resultCode) {
-                ResultCodes.STOP_DELETED -> resetContent()
-                ResultCodes.STOP_RENAMED -> resetContent()
-            }
+        if (resultMakesChanges(requestCode, resultCode)) {
+            resetContent()
         }
     }
 
-    private fun resetContent() {
+    private fun resultMakesChanges(requestCode: Int, resultCode: Int): Boolean {
+        return when(requestCode) {
+            RequestCodes.STOP_VIEW_DETAILS -> {
+                resultCode == ResultCodes.STOP_DELETED || resultCode == ResultCodes.STOP_RENAMED
+            }
+            else -> false
+        }
+    }
+
+    fun resetContent() {
         adapter.paradasList = mutableListOf()
         binding.typeFilter.roundedTabs.selectTab(binding.typeFilter.roundedTabs.getTabAt(0))
     }

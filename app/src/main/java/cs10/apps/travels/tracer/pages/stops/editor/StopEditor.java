@@ -43,8 +43,7 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
         setSupportActionBar(binding.toolbar);
         content = binding.contentStopCreator;
 
-        binding.fab.setOnClickListener(view -> new Thread(this::performDone, "performDone").start());
-        //binding.fabOpenMap.setOnClickListener(v -> onOpenMap());
+        binding.fab.setOnClickListener(view -> doInBackground(this::performDone));
         content.tvTitle.setText(getString(R.string.editing_stop));
 
         originalName = getIntent().getExtras().getString("stopName");
@@ -86,7 +85,6 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_delete){
             doInBackground(this::onDelete);
-
             return true;
         }
 
@@ -95,8 +93,7 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
 
     private void onDelete(){
         db.paradasDao().delete(originalName);
-        setResult(ResultCodes.STOP_DELETED);
-        finish();
+        finishWithResult(ResultCodes.STOP_DELETED);
     }
 
     private void performDone(){

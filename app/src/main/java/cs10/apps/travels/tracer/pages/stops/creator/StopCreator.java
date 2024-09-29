@@ -1,6 +1,5 @@
 package cs10.apps.travels.tracer.pages.stops.creator;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,12 +11,14 @@ import com.google.android.gms.location.LocationServices;
 
 import cs10.apps.common.android.ui.CSActivity;
 import cs10.apps.travels.tracer.R;
+import cs10.apps.travels.tracer.common.constants.ResultCodes;
+import cs10.apps.travels.tracer.common.enums.TransportType;
 import cs10.apps.travels.tracer.databinding.ActivityStopCreatorBinding;
-import cs10.apps.travels.tracer.utils.Utils;
 import cs10.apps.travels.tracer.databinding.ContentStopCreatorBinding;
 import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.pages.stops.db.ParadasDao;
 import cs10.apps.travels.tracer.model.Parada;
+import cs10.apps.travels.tracer.pages.stops.db.ParadasDao;
+import cs10.apps.travels.tracer.utils.Utils;
 
 public class StopCreator extends CSActivity implements AdapterView.OnItemSelectedListener {
     private ContentStopCreatorBinding content;
@@ -42,12 +43,11 @@ public class StopCreator extends CSActivity implements AdapterView.OnItemSelecte
         setSupportActionBar(binding.toolbar);
         content = binding.contentStopCreator;
 
-        binding.fab.setOnClickListener(view -> new Thread(this::performDone, "performDone").start());
-        binding.fabOpenMap.setOnClickListener(v -> onOpenMap());
+        binding.fab.setOnClickListener(view -> doInBackground(this::performDone));
         content.tvTitle.setText(getString(R.string.new_stop));
 
         // Selector
-        String[] options = {getString(R.string.bus), getString(R.string.train), getString(R.string.car), getString(R.string.metro)};
+        String[] options = TransportType.Companion.getTypesStr(this);
         ArrayAdapter<String> aa = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item, options);
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         content.selectorType.setAdapter(aa);
@@ -55,24 +55,6 @@ public class StopCreator extends CSActivity implements AdapterView.OnItemSelecte
 
         client = LocationServices.getFusedLocationProviderClient(this);
         getLocation();
-    }
-
-    private void onOpenMap() {
-        String latitude = content.etLatitude.getText().toString().trim();
-        String longitude = content.etLongitude.getText().toString().trim();
-        String stopName = content.etStopName.getText().toString().trim();
-
-        try {
-            double x = Double.parseDouble(latitude);
-            double y = Double.parseDouble(longitude);
-            Intent intent = new Intent(this, MapViewActivity.class);
-            intent.putExtra("lat", x);
-            intent.putExtra("long", y);
-            intent.putExtra("name", stopName);
-            startActivity(intent);
-        } catch (NumberFormatException e){
-            showShortToast("No se ingresaron coordenadas válidas");
-        }
     }
 
     private void getLocation() throws SecurityException {
@@ -87,19 +69,21 @@ public class StopCreator extends CSActivity implements AdapterView.OnItemSelecte
         int result = onCreateStop();
 
         runOnUiThread(() -> {
-            if (result == 0) finish();
+            if (result == 0) finishWithResult(ResultCodes.STOP_CREATED);
             Toast.makeText(getApplicationContext(), messages[result], Toast.LENGTH_LONG).show();
         });
     }
 
     private int onCreateStop(){
         String stopName = content.etStopName.getText().toString().trim();
-        String latitude = content.etLatitude.getText().toString();
-        String longitude = content.etLongitude.getText().toString();
+        String latitude = content.etLatitude.getText().toString().trim();
+        String longitude = content.etLongitude.getText().toString().trim();
 
         if (stopName.isEmpty() || latitude.isEmpty() || longitude.isEmpty()) return 1;
 
         ParadasDao dao = MiDB.getInstance(getApplicationContext()).paradasDao();
+        
+        // check if the new name already exists
         if (dao.getByName(stopName) != null) {
             runOnUiThread(() -> content.etStopName.setError("Intente con otro nombre"));
             return 2;

@@ -16,9 +16,9 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -33,7 +33,9 @@ import com.google.android.gms.location.SettingsClient;
 
 import cs10.apps.common.android.ui.CSActivity;
 import cs10.apps.travels.tracer.R;
+import cs10.apps.travels.tracer.common.constants.RequestCodes;
 import cs10.apps.travels.tracer.common.constants.ResultCodes;
+import cs10.apps.travels.tracer.common.enums.SelectOption;
 import cs10.apps.travels.tracer.data.generator.DelayData;
 import cs10.apps.travels.tracer.data.generator.GlewFiller;
 import cs10.apps.travels.tracer.data.generator.LaPlataFiller;
@@ -41,15 +43,15 @@ import cs10.apps.travels.tracer.data.generator.UniversitarioFiller;
 import cs10.apps.travels.tracer.data.generator.ViaCircuitoFiller;
 import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
 import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.common.enums.SelectOption;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.pages.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.pages.manage_zones.ZoneCreator;
 import cs10.apps.travels.tracer.pages.registry.creator.BusTravelCreator;
 import cs10.apps.travels.tracer.pages.registry.creator.CarTravelCreator;
 import cs10.apps.travels.tracer.pages.registry.creator.MetroTravelCreator;
 import cs10.apps.travels.tracer.pages.registry.creator.TrainTravelCreator;
+import cs10.apps.travels.tracer.pages.stops.StopsFragment;
 import cs10.apps.travels.tracer.pages.stops.creator.StopCreator;
-import cs10.apps.travels.tracer.pages.coffee.CoffeeCreator;
 import cs10.apps.travels.tracer.utils.Utils;
 import cs10.apps.travels.tracer.viewmodel.LocationVM;
 import cs10.apps.travels.tracer.viewmodel.RootVM;
@@ -92,7 +94,7 @@ public class DrawerActivity extends CSActivity {
             }
         }
     }, result -> {
-        if (result != null) startActivityForResult(result, ResultCodes.CREATION_REQUEST);
+        if (result != null) startActivityForResult(result, RequestCodes.CREATION_REQUEST);
     });
 
     @Override
@@ -126,13 +128,6 @@ public class DrawerActivity extends CSActivity {
         // setup drawer layout
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
-
-        NavOptions options = new NavOptions.Builder()
-                .setEnterAnim(androidx.navigation.ui.R.anim.nav_default_enter_anim)
-                .setExitAnim(androidx.navigation.ui.R.anim.nav_default_exit_anim)
-                .setPopEnterAnim(androidx.navigation.ui.R.anim.nav_default_pop_enter_anim)
-                .setPopExitAnim(androidx.navigation.ui.R.anim.nav_default_pop_exit_anim)
-                .build();
 
         client = getFusedLocationProviderClient(this);
         Utils.checkPermissions(this);
@@ -221,11 +216,23 @@ public class DrawerActivity extends CSActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == ResultCodes.CREATION_REQUEST){
+        if (requestCode == RequestCodes.CREATION_REQUEST){
             if (resultCode == ResultCodes.OPEN_LIVE_FRAGMENT) {
                 switchToLiveFragment();
+            } else if (resultCode == ResultCodes.STOP_CREATED){
+                Fragment currentFragment = getForegroundFragment();
+                if (currentFragment instanceof StopsFragment){
+                    StopsFragment stopsFragment = (StopsFragment) currentFragment;
+                    stopsFragment.resetContent();
+                }
             }
         }
+    }
+
+    @Nullable
+    public Fragment getForegroundFragment(){
+        Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_drawer);
+        return navHostFragment == null ? null : navHostFragment.getChildFragmentManager().getFragments().get(0);
     }
 
     private void switchToLiveFragment(){

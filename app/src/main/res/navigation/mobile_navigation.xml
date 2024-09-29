@@ -55,7 +55,7 @@
 
     <fragment
         android:id="@+id/nav_paradas"
-        android:name="cs10.apps.travels.tracer.pages.stops.StopListFragment"
+        android:name="cs10.apps.travels.tracer.pages.stops.StopsFragment"
         android:label="@string/stops"
         tools:layout="@layout/fragment_stops" />
 

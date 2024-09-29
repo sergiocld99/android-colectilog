@@ -141,8 +141,11 @@ class StopInfoActivity : FormActivity(), OnItemSelectedListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == StopEditor.REQUEST_CODE && resultCode == StopEditor.RESULT_RENAMED){
-            finish()
+        if (requestCode == StopEditor.REQUEST_CODE){
+            when(resultCode){
+                StopEditor.RESULT_DELETED -> finish()
+                StopEditor.RESULT_RENAMED -> finish()
+            }
         }
     }
 

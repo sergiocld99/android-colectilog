@@ -20,6 +20,7 @@ import cs10.apps.travels.tracer.model.Parada;
 public class StopEditor extends CSActivity implements AdapterView.OnItemSelectedListener {
     public static final int REQUEST_CODE = 1;
     public static final int RESULT_RENAMED = 2;
+    public static final int RESULT_DELETED = 3;
     private ContentStopCreatorBinding content;
     private MiDB db;
     private String originalName;
@@ -94,6 +95,12 @@ public class StopEditor extends CSActivity implements AdapterView.OnItemSelected
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void finish() {
+        setResult(RESULT_DELETED);
+        super.finish();
     }
 
     private void performDone(){

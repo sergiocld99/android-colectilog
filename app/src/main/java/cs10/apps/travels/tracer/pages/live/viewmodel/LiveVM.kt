@@ -198,7 +198,9 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 val endKmDistance = st.currentKmDistanceToFinish(currentPoint)
 
                 // angle
-                val compass = Compass(startStop.getX(), startStop.getY(), location, endStop)
+                val start = st.getCurrentStage()?.start ?: startStop
+                val end = st.getCurrentStage()?.end ?: endStop
+                val compass = Compass(start.getX(), start.getY(), location, end)
                 angle.postValue(compass.getAngleToDestination())
 
                 // estimate time to arrive

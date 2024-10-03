@@ -1,7 +1,8 @@
 package cs10.apps.travels.tracer.pages.live.utils
 
-import cs10.apps.travels.tracer.db.MiDB
+import cs10.apps.common.android.Compass
 import cs10.apps.travels.tracer.common.enums.TransportType
+import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.pages.live.entity.MediumStop
 import cs10.apps.travels.tracer.pages.live.model.Stage
@@ -84,8 +85,8 @@ class MediumStopsManager(val travel: Viaje, private val allowAutoDeletion: Boole
         }
     }
 
-    fun checkIfCanAdd(candidate: String): Boolean {
-        if (countStops() >= 4) return false
+    fun checkIfCanAdd(candidate: String, currentAngle: Double?): Boolean {
+        if (currentAngle != null && Compass.isForward(currentAngle)) return false
         if (candidate == start || candidate == end) return false
         if (stops.contains(candidate)) return false
         return !candidatesAsked.contains(candidate)

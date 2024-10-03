@@ -5,14 +5,14 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.utils.Utils
+import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.databinding.ActivityTrainTravelEditorBinding
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.pages.registry.editor.components.EditorTopCard
 import cs10.apps.travels.tracer.utils.SafeUtils
+import cs10.apps.travels.tracer.utils.Utils
 import kotlin.math.roundToInt
 
 class MetroTravelEditor : CommonTravelEditor() {

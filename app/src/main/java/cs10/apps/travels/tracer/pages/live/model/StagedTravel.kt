@@ -1,10 +1,10 @@
 package cs10.apps.travels.tracer.pages.live.model
 
 import cs10.apps.common.android.Localizable
-import cs10.apps.travels.tracer.utils.Utils
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.pages.live.utils.MediumStopsManager
+import cs10.apps.travels.tracer.utils.Utils
 import kotlin.math.roundToInt
 
 class StagedTravel(val stages: List<Stage>) {
@@ -39,8 +39,7 @@ class StagedTravel(val stages: List<Stage>) {
     }
 
     fun getCurrentStage(): Stage? {
-        val filtered = stages.filter { it.progress in 10..90 }
-        return filtered.firstOrNull()
+        return stages.find { it.progress in 10..90 }
     }
 
     fun currentProgress(currentPos: Localizable) : Double {

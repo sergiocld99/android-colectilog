@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
+import cs10.apps.common.android.Compass
 import cs10.apps.common.android.Emoji
 import cs10.apps.common.android.ui.CS_Fragment
 import cs10.apps.rater.HappyRater
@@ -235,8 +236,21 @@ class LiveTravelFragment : CS_Fragment() {
         }
 
         liveVM.angle.observe(viewLifecycleOwner) {
-            binding.compass.rotation = 45f - it.toFloat()
-            binding.compass.isVisible = it != null
+            if (it == null) binding.compass.isVisible = false
+            else {
+                binding.compass.rotation = 45f - it.toFloat()
+                binding.compass.isVisible = true
+
+                if (Compass.isForward(it)) {
+                    binding.compassText.text = "Sigue derecho"
+                } else if (it > 0 && it < 90) {
+                    val angleToRight = 90f - it.toFloat()
+                    binding.compassText.text = String.format("Girar a la derecha %.0f°", angleToRight)
+                } else if (it > 90 && it < 180) {
+                    val angleToLeft = it.toFloat() - 90f
+                    binding.compassText.text = String.format("Girar a la izquierda %.0f°", angleToLeft)
+                }
+            }
         }
 
         liveVM.minutesToEnd.observe(viewLifecycleOwner) {
@@ -305,7 +319,7 @@ class LiveTravelFragment : CS_Fragment() {
                 // check if add
                 liveVM.mediumStopsManager?.let { msm ->
                     val candidate = p.nombre
-                    val check = msm.checkIfCanAdd(candidate)
+                    val check = msm.checkIfCanAdd(candidate, liveVM.angle.value)
                     val currentStage = liveVM.stagedTravel?.getCurrentStage()
 
                     if (check && currentStage != null) lifecycleScope.launch(Dispatchers.IO) {

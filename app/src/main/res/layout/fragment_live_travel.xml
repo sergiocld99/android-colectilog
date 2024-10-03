@@ -376,6 +376,15 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
+                <TextView
+                    android:id="@+id/compass_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="12° hacia la derecha"
+                    app:layout_constraintTop_toBottomOf="@id/compass"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
                 <LinearLayout
                     android:id="@+id/estimated_cards"
                     android:layout_width="match_parent"
@@ -383,7 +392,7 @@
                     android:layout_marginTop="28dp"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal"
-                    app:layout_constraintTop_toBottomOf="@id/compass">
+                    app:layout_constraintTop_toBottomOf="@id/compass_text">
 
                     <!-- Estimated Rating -->
                     <androidx.cardview.widget.CardView

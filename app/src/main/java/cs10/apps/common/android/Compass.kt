@@ -9,6 +9,8 @@ class Compass(val startX: Double, val startY: Double, val currentLocation: Locat
         fun buildWithoutStart(currentLocation: Location, end: Localizable) : Compass {
             return Compass(currentLocation.latitude, currentLocation.longitude, currentLocation, end)
         }
+
+        fun isForward(angle: Double) = angle in 70.0..110.0
     }
 
     fun getAngle(diffLatitude: Double, diffLongitude: Double) : Double {
@@ -35,7 +37,7 @@ class Compass(val startX: Double, val startY: Double, val currentLocation: Locat
         return getAngle(diffLatitude, diffLongitude)
     }
 
-    private fun hasMovedFromStart(minimalKm: Double = 0.4) : Boolean {
+    private fun hasMovedFromStart(minimalKm: Double = 0.15) : Boolean {
         val diffLatitude = currentLocation.latitude - startX
         val diffLongitude = currentLocation.longitude - startY
         val coordsDist = NumberUtils.hyp(diffLatitude, diffLongitude)

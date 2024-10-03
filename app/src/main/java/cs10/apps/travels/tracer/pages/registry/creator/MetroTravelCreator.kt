@@ -12,16 +12,16 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.tabs.TabLayout
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.utils.Utils
+import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding
 import cs10.apps.travels.tracer.databinding.ContentBusTravelCreatorBinding
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
-import cs10.apps.travels.tracer.pages.registry.utils.RedSube.Companion.getPercentageToPay
 import cs10.apps.travels.tracer.pages.registry.creator.viewmodel.CreatorVM
+import cs10.apps.travels.tracer.pages.registry.utils.RedSube.Companion.getPercentageToPay
 import cs10.apps.travels.tracer.pages.stops.creator.StopCreator
+import cs10.apps.travels.tracer.utils.Utils
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -111,9 +111,13 @@ class MetroTravelCreator : CommonTravelCreator() {
             startIndex = lt.startIndex
             endIndex = lt.endIndex
 
-            // update spinners selection
-            content.selectorStartPlace.setSelection(startIndex, true)
-            content.selectorEndPlace.setSelection(endIndex, true)
+            try {
+                // update spinners selection
+                content.selectorStartPlace.setSelection(startIndex, true)
+                content.selectorEndPlace.setSelection(endIndex, true)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

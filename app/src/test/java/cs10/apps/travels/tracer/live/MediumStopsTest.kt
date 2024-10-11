@@ -2,13 +2,13 @@ package cs10.apps.travels.tracer.live
 
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
-import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.pages.stops.db.SafeStopsDao
 import cs10.apps.travels.tracer.common.enums.TransportType
+import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.pages.live.entity.MediumStop
 import cs10.apps.travels.tracer.pages.live.utils.MediumStopsManager
+import cs10.apps.travels.tracer.pages.stops.db.SafeStopsDao
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -126,28 +126,17 @@ class MediumStopsTest {
     }
 
     @Test
-    fun automaticDeletionManyMS(){
+    fun deleteIfShouldTest() {
+        addingInFirstHalf()
+
         runBlocking {
             val msm = MediumStopsManager(viajecito).buildStops(db)
-            val candidates = listOf("Senzabello y RP36", "Thevenet y RP36", "El Ombú", "Luján y RP36", "Alpargatas")
 
-            // agregar todas las paradas intermedias (unas 5)
-            msm.add(candidates[0], msm.start, msm.end, db)
+            msm.deleteIfShould("Luján y RP36", db)
+            val mediumStops = msm.getMediumStopsFromDb(db)
 
-            for (i in 1 until candidates.size){
-                msm.add(candidates[i], candidates[i-1], msm.end, db)
-            }
-
-            // comparar antes de correccion
-            assert(msm.countStops() == candidates.size + 2)
-
-            // reconstruir y comparar
-            msm.rebuildStops(db)
-            assert(msm.countStops() == 4)
-
-            // reconstruir y comparar
-            msm.rebuildStops(db)
-            assert(msm.countStops() == 4)
+            assert(mediumStops[0].next == "Av. 1 y 48")
+            assert(mediumStops[0].name == "Thevenet y RP36")
         }
     }
 

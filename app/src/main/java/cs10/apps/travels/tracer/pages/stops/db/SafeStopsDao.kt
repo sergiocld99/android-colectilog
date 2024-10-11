@@ -43,6 +43,12 @@ interface SafeStopsDao {
     @Query("UPDATE MediumStop SET prev = :inserted WHERE type is :type and destination is :dest and name is :target")
     suspend fun updateNextMediumStopForType(type: Int, dest: String, target: String, inserted: String)
 
+    @Query("UPDATE MediumStop SET next = :updatedNext WHERE id = :id")
+    suspend fun updateMediumStopNextField(id: Long, updatedNext: String)
+
+    @Query("UPDATE MediumStop SET prev = :updatedPrev WHERE id = :id")
+    suspend fun updateMediumStopPrevField(id: Long, updatedPrev: String)
+
     @Query("SELECT * FROM MediumStop")
     suspend fun getAllMediumStops(): List<MediumStop>
 

@@ -7,25 +7,25 @@ import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.pages.live.entity.MediumStop
 import cs10.apps.travels.tracer.pages.live.model.Stage
 
-class MediumStopsManager(val travel: Viaje, private val allowAutoDeletion: Boolean = true) {
+class MediumStopsManager(val travel: Viaje, private val allowAutoDeletion: Boolean = false) {
     val start = travel.nombrePdaInicio
     val end = travel.nombrePdaFin
     var stops = mutableListOf(start, end)
     private val candidatesAsked = mutableListOf<String>()
 
+    suspend fun getMediumStopsFromDb(db: MiDB) : List<MediumStop> {
+        return if (travel.tipo == TransportType.BUS.ordinal){
+            if (travel.linea == null) throw Exception("Line should be defined for bus travels")
+            db.safeStopsDao().getMediumStopsCreatedForBusTo(travel.linea!!, travel.ramal, travel.nombrePdaFin)
+        } else {
+            db.safeStopsDao().getMediumStopsCreatedForTypeTo(travel.tipo, travel.nombrePdaFin)
+        }
+    }
+
     suspend fun buildStops(db: MiDB) : MediumStopsManager {
         if (stops.size == 2){
-            if (travel.tipo == TransportType.BUS.ordinal){
-                travel.linea?.let {
-                    // buildStopsForBusRamal(it, travel.ramal, travel.nombrePdaFin, db)
-                    val all = db.safeStopsDao().getMediumStopsCreatedForBusTo(it, travel.ramal, travel.nombrePdaFin)
-                    buildStopsFromData(all, db)
-                }
-            } else {
-                // buildStopsForType(travel.tipo, travel.nombrePdaFin, db)
-                val allMS = db.safeStopsDao().getMediumStopsCreatedForTypeTo(travel.tipo, travel.nombrePdaFin)
-                buildStopsFromData(allMS, db)
-            }
+            val allMS = getMediumStopsFromDb(db)
+            buildStopsFromData(allMS, db)
         }
 
         return this
@@ -114,13 +114,17 @@ class MediumStopsManager(val travel: Viaje, private val allowAutoDeletion: Boole
         stops.add(place, candidate)
 
         // FIX: ALSO MODIFY NEXT MEDIUM STOP
+        updateNextMediumStop(ms, db)
+
+        return true
+    }
+
+    private suspend fun updateNextMediumStop(ms: MediumStop, db: MiDB) {
         if (travel.tipo == TransportType.BUS.ordinal) travel.linea?.let {
             db.safeStopsDao().updateNextBusMediumStop(it, travel.ramal, travel.nombrePdaFin, ms.next, ms.name)
         } else {
             db.safeStopsDao().updateNextMediumStopForType(travel.tipo, travel.nombrePdaFin, ms.next, ms.name)
         }
-
-        return true
     }
 
     suspend fun add(candidate: String, currentStage: Stage, db: MiDB): Boolean {
@@ -138,4 +142,30 @@ class MediumStopsManager(val travel: Viaje, private val allowAutoDeletion: Boole
     }
 
     fun countStops() : Int = stops.size
+
+    fun checkIfShouldDelete(candidate: String, currentAngle: Double?) : Boolean {
+        if (currentAngle == null) return false
+        if (!Compass.isForward(currentAngle)) return false
+        if (!stops.contains(candidate)) return false
+        return true
+    }
+
+    suspend fun deleteIfShould(candidate: String, db: MiDB): Boolean {
+        val mediumStops = getMediumStopsFromDb(db)
+        val deletionTarget = mediumStops.first { it.name == candidate }
+        db.safeStopsDao().deleteMediumStop(deletionTarget)
+
+        // Fix former stop
+        mediumStops.find { it.next == candidate }?.let {
+            db.safeStopsDao().updateMediumStopNextField(it.id, deletionTarget.next)
+        }
+
+        // Fix following stop
+        mediumStops.find { it.prev == candidate }?.let {
+            db.safeStopsDao().updateMediumStopPrevField(it.id, deletionTarget.prev)
+        }
+
+        stops.remove(candidate)
+        return true
+    }
 }

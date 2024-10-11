@@ -95,7 +95,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     private var minuteClock: Clock? = null
 
     // DECEMBER 2022 - MVVM Architecture
-    private val database: MiDB = MiDB.getInstance(getApplication<Application>().applicationContext)
+    val database: MiDB = MiDB.getInstance(getApplication<Application>().applicationContext)
     private var getCurrentTravelUseCase: GetCurrentTravelUseCase = GetCurrentTravelUseCase(database)
 
     // utils

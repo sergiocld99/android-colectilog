@@ -138,4 +138,5 @@
     <string name="time_by_line">Tiempo por línea</string>
     <string name="line_number">Línea %1$d</string>
     <string name="compass">Brújula</string>
+    <string name="continue_straight">Sigue derecho</string>
 </resources>

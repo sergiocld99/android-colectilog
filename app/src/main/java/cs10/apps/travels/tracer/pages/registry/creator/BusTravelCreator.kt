@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
@@ -13,28 +11,25 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.tabs.TabLayout
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.utils.Utils
+import cs10.apps.travels.tracer.common.components.Dropdown
+import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding
 import cs10.apps.travels.tracer.databinding.ContentBusTravelCreatorBinding
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
-import cs10.apps.travels.tracer.pages.registry.utils.RedSube.Companion.getPercentageToPay
 import cs10.apps.travels.tracer.pages.registry.creator.viewmodel.CreatorVM
+import cs10.apps.travels.tracer.pages.registry.utils.RedSube.Companion.getPercentageToPay
 import cs10.apps.travels.tracer.pages.stops.creator.StopCreator
+import cs10.apps.travels.tracer.utils.Utils
 import java.util.*
 import kotlin.math.roundToInt
 
 class BusTravelCreator : CommonTravelCreator() {
     private lateinit var content: ContentBusTravelCreatorBinding
-    private lateinit var startAdapter: ArrayAdapter<out Parada>
-    private lateinit var endAdapter: ArrayAdapter<out Parada>
-    private lateinit var onStartPlaceSelected: AdapterView.OnItemSelectedListener
-    private lateinit var onEndPlaceSelected: AdapterView.OnItemSelectedListener
+    private lateinit var startDropdown: Dropdown<Parada>
+    private lateinit var endDropdown: Dropdown<Parada>
     private lateinit var client: FusedLocationProviderClient
-    private var startIndex = 0
-    private var endIndex = 0
 
     private lateinit var creatorVM: CreatorVM
 
@@ -48,8 +43,6 @@ class BusTravelCreator : CommonTravelCreator() {
         binding.toolbarLayout.title = getString(R.string.new_travel)
 
         content = binding.contentTravelCreator
-        onStartPlaceSelected = OnStartPlaceSelected()
-        onEndPlaceSelected = OnEndPlaceSelected()
 
         creatorVM = ViewModelProvider(this)[CreatorVM::class.java]
         defineObservers()
@@ -107,17 +100,11 @@ class BusTravelCreator : CommonTravelCreator() {
 
     private fun defineObservers(){
         creatorVM.startParadas.observe(this) {
-            startAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, it)
-            startAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            content.selectorStartPlace.adapter = startAdapter
-            content.selectorStartPlace.onItemSelectedListener = onStartPlaceSelected
+            startDropdown = Dropdown(content.selectorStartPlace, it) { updatePrice() }
         }
 
         creatorVM.endParadas.observe(this) {
-            endAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, it)
-            endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            content.selectorEndPlace.adapter = endAdapter
-            content.selectorEndPlace.onItemSelectedListener = onEndPlaceSelected
+            endDropdown = Dropdown(content.selectorEndPlace, it) { updatePrice() }
         }
 
         creatorVM.likelyTravel.observe(this) { lt ->
@@ -126,20 +113,13 @@ class BusTravelCreator : CommonTravelCreator() {
             lt.viaje.linea?.let { content.etLine.setText(it.toString()) }
             lt.viaje.ramal?.let { content.etRamal.setText(it) }
 
-            startIndex = lt.startIndex
-            endIndex = lt.endIndex
-
-            // update spinners selection
-            content.selectorStartPlace.setSelection(startIndex, true)
-            content.selectorEndPlace.setSelection(endIndex, true)
+            startDropdown.select(lt.startIndex)
+            endDropdown.select(lt.endIndex)
         }
     }
 
     override fun onCheckEntries(viaje: Viaje): Int {
-        val startParadas = creatorVM.startParadas.value
-        val endParadas = creatorVM.endParadas.value
-
-        if (startParadas.isNullOrEmpty() || endParadas.isNullOrEmpty()) return 6
+        if (!startDropdown.isValidSelection() || !endDropdown.isValidSelection()) return 6
 
         val line = content.etLine.text.toString().trim()
         val ramal = content.etRamal.text.toString().trim()
@@ -149,8 +129,8 @@ class BusTravelCreator : CommonTravelCreator() {
         val peopleCount = content.etPeopleCount.text.toString().trim()
         val price = content.etPrice.text.toString().trim()
 
-        val startPlace = startParadas[startIndex]
-        val endPlace = endParadas[endIndex]
+        val startPlace = startDropdown.getSelectedItem()
+        val endPlace = endDropdown.getSelectedItem()
 
         if (date.isEmpty() || startHour.isEmpty() || line.isEmpty() || peopleCount.isEmpty()) return 1
         if (startPlace.nombre == endPlace.nombre) return 2
@@ -213,15 +193,12 @@ class BusTravelCreator : CommonTravelCreator() {
         return 0
     }
 
-    fun updatePrice() {
-        val startParadas = creatorVM.startParadas.value
-        val endParadas = creatorVM.endParadas.value
-
-        if (startParadas.isNullOrEmpty() || endParadas.isNullOrEmpty()) return
+    private fun updatePrice() {
+        if (!startDropdown.isValidSelection() || !endDropdown.isValidSelection()) return
 
         doInBackground {
             val dao = MiDB.getInstance(applicationContext).viajesDao()
-            val maxP = dao.getMaxPrice(startParadas[startIndex].nombre, endParadas[endIndex].nombre)
+            val maxP = dao.getMaxPrice(startDropdown.getSelectedItem().nombre, endDropdown.getSelectedItem().nombre)
 
             doInForeground {
                 // remove old ones
@@ -280,25 +257,5 @@ class BusTravelCreator : CommonTravelCreator() {
         override fun onTabReselected(tab: TabLayout.Tab) {
             // called when a tab is reselected
         }
-    }
-
-    // ======================== STOPS SPINNERS ========================== //
-
-    private inner class OnStartPlaceSelected : AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
-            startIndex = i
-            updatePrice()
-        }
-
-        override fun onNothingSelected(adapterView: AdapterView<*>?) {}
-    }
-
-    private inner class OnEndPlaceSelected : AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
-            endIndex = i
-            updatePrice()
-        }
-
-        override fun onNothingSelected(adapterView: AdapterView<*>?) {}
     }
 }

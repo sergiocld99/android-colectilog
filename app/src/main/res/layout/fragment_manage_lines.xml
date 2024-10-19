@@ -6,11 +6,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/tv_sort_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Ordenar por" />
+
+    <Spinner
+        android:id="@+id/spinner_sort_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/tv_sort_by"
+        app:layout_constraintBottom_toBottomOf="@id/tv_sort_by"
+        app:layout_constraintStart_toEndOf="@id/tv_sort_by" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/spinner_sort_by"
         tools:listitem="@layout/item_line" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

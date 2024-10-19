@@ -304,4 +304,8 @@ public class Viaje implements Comparable<Viaje> {
     public boolean isFinished() {
         return getEndHour() != null;
     }
+
+    public int getStartTime() {
+        return getStartHour() * 60 + getStartMinute();
+    }
 }

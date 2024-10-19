@@ -23,10 +23,13 @@ import cs10.apps.travels.tracer.databinding.SimpleImageBinding
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.notification.NotificationCenter
+import cs10.apps.travels.tracer.pages.live.components.LiveCombiningView
 import cs10.apps.travels.tracer.pages.live.components.LiveTravellingView
 import cs10.apps.travels.tracer.pages.live.components.LiveWaitingView
+import cs10.apps.travels.tracer.pages.live.model.CurrentCombination
 import cs10.apps.travels.tracer.pages.live.model.Stage
 import cs10.apps.travels.tracer.pages.live.utils.MediumStopsManager
+import cs10.apps.travels.tracer.pages.live.viewmodel.CombineVM
 import cs10.apps.travels.tracer.pages.live.viewmodel.LiveVM
 import cs10.apps.travels.tracer.pages.live.viewmodel.WaitingVM
 import cs10.apps.travels.tracer.pages.registry.editor.BusTravelEditor
@@ -50,6 +53,7 @@ class LiveTravelFragment : CS_Fragment() {
     private lateinit var liveVM: LiveVM
     private lateinit var locationVM: LocationVM
     private lateinit var waitingVM: WaitingVM
+    private lateinit var combineVM: CombineVM
 
     // View Binding
     private lateinit var binding: FragmentLiveTravelBinding
@@ -57,6 +61,7 @@ class LiveTravelFragment : CS_Fragment() {
     // Custom Views
     private lateinit var liveWaitingView: LiveWaitingView
     private lateinit var liveTravellingView: LiveTravellingView
+    private lateinit var liveCombiningView: LiveCombiningView
 
     /* ====================== MAIN FUNCTIONS ==================================== */
 
@@ -71,12 +76,14 @@ class LiveTravelFragment : CS_Fragment() {
         // inflate custom views
         liveWaitingView = LiveWaitingView(binding.waitingLayout)
         liveTravellingView = LiveTravellingView(binding.travellingLayout)
+        liveCombiningView = LiveCombiningView(binding.combiningLayout)
 
         // view model observers
         rootVM = ViewModelProvider(requireActivity())[RootVM::class.java]
         liveVM = ViewModelProvider(requireActivity())[LiveVM::class.java]
         locationVM = ViewModelProvider(requireActivity())[LocationVM::class.java]
         waitingVM = ViewModelProvider(requireActivity())[WaitingVM::class.java]
+        combineVM = ViewModelProvider(requireActivity())[CombineVM::class.java]
 
         // progress bar
         rootVM.loading.observe(requireActivity()) { binding.root.isVisible = !it }
@@ -89,12 +96,22 @@ class LiveTravelFragment : CS_Fragment() {
 
         waitingVM.stopHere.observe(viewLifecycleOwner) {
             liveWaitingView.setStopHere(it, requireActivity())
+            // DO NOT call showWaitingView() because travellingView() has more priority (when both tabs have content to show)
         }
 
         locationVM.getLiveData().observe(viewLifecycleOwner) {
             liveTravellingView.onUpdateLocation()
             liveVM.recalculateDistances(it.location) { rootVM.disableLoading() }
+            combineVM.updateWithLocation(it.location)
             waitingVM.updateLocation(it.location)
+        }
+
+        combineVM.stages.observe(viewLifecycleOwner) {
+            liveCombiningView.onUpdateStages(it)
+        }
+
+        combineVM.distanceToCombinationStop.observe(viewLifecycleOwner) {
+            liveCombiningView.onUpdateDistanceToCombination(it)
         }
 
         return binding.root
@@ -102,23 +119,35 @@ class LiveTravelFragment : CS_Fragment() {
 
     private fun showWaitingView(forceTabMov: Boolean = true) {
         liveTravellingView.hide()
+        liveCombiningView.hide()
         liveWaitingView.show()
+
         if (forceTabMov) updateTabs(true)
         resetViews()
     }
 
     private fun showTravellingView(t: ColoredTravel) {
-        liveTravellingView.show()
         liveWaitingView.hide()
-        updateTabs(false)
+        liveCombiningView.hide()
+        liveTravellingView.show()
 
+        updateTabs(false)
         liveTravellingView.setTravel(t)
+        rootVM.disableLoading()
+    }
+
+    private fun showCombiningView(cc: CurrentCombination) {
+        liveWaitingView.hide()
+        liveTravellingView.hide()
+        liveCombiningView.show()
+
+        updateTabs(false, combining = true)
+        liveCombiningView.setCombination(cc)
         rootVM.disableLoading()
     }
 
     private fun observeLiveVM() {
         liveVM.travel.observe(viewLifecycleOwner) {
-            // si no estoy viajando, mostrar "esperando"
             if (it == null) showWaitingView()
             else showTravellingView(it)
         }
@@ -133,6 +162,10 @@ class LiveTravelFragment : CS_Fragment() {
 
         liveVM.progress.observe(viewLifecycleOwner) {
             liveTravellingView.onUpdateProgress(it, liveVM.estData.value, liveVM.minutesFromStart.value)
+
+            if (it != null && it > 0.7) liveVM.combinationReference.value?.let { cc ->
+                showCombiningView(cc)
+            }
         }
 
         liveVM.endDistance.observe(viewLifecycleOwner) {
@@ -280,12 +313,15 @@ class LiveTravelFragment : CS_Fragment() {
     // ------------------------------- DONE -------------------------------
 
     private fun reloadData() {
-        liveVM.findLastTravel(locationVM) { rootVM.disableLoading() }
+        liveVM.findLastTravel(locationVM, combineVM) { rootVM.disableLoading() }
     }
 
+    // Avoids to overlap several subviews (tab content)
     private fun resetViews() {
         liveTravellingView.hide()
         liveTravellingView.reset()
+        liveCombiningView.hide()
+        liveCombiningView.reset()
         rootVM.disableLoading()
     }
 
@@ -386,10 +422,9 @@ class LiveTravelFragment : CS_Fragment() {
 
     // ==================== TABS ===================================
 
-    private fun updateTabs(waiting: Boolean) {
-        //binding.roundedTabs.isEnabled = !waiting
-        // binding.roundedTabs.touchables.forEach { it.isClickable = !waiting }
+    private fun updateTabs(waiting: Boolean, combining: Boolean = false) {
         if (waiting) binding.roundedTabs.getTabAt(0)?.select()
+        else if (combining) binding.roundedTabs.getTabAt(2)?.select()
         else binding.roundedTabs.getTabAt(1)?.select()
     }
 

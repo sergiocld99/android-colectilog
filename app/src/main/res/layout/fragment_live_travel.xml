@@ -71,6 +71,10 @@
                 android:id="@+id/travelling_layout"
                 tools:visibility="visible" />
 
+            <include layout="@layout/content_live_combining"
+                android:id="@+id/combining_layout"
+                tools:visibility="gone" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Zona actual -->

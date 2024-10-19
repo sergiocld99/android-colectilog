@@ -2,6 +2,7 @@ package cs10.apps.travels.tracer.pages.registry.db
 
 import androidx.room.Dao
 import androidx.room.Query
+import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.model.joins.PriceSum
 import cs10.apps.travels.tracer.pages.month_summary.model.TimeLineStat
 
@@ -44,4 +45,21 @@ interface TravelsDao {
             "where year = :year and month = :month and endHour not null and lineNumber > 0 " +
             "GROUP BY lineNumber ORDER BY timeSpent DESC LIMIT 5")
     suspend fun getTimeSpentInMonth(month: Int, year: Int): List<TimeLineStat>
+
+    @Query("SELECT V2.* FROM Viaje V1 INNER JOIN Viaje V2 " +
+            "ON V1.endHour = V2.startHour AND V1.nombrePdaFin = V2.nombrePdaInicio " +
+            "AND V1.day = V2.day AND V1.month = V2.month AND V1.year = V2.year " +
+            "WHERE V1.linea = :line AND V1.nombrePdaFin = :stop AND V1.endHour = :hour " +
+            "ORDER BY V2.year DESC, V2.month DESC, V2.day DESC")
+    suspend fun getBusCombinations(line: Int, stop: String, hour: Int): List<Viaje>
+
+    @Query("SELECT AVG(V2.startMinute - V1.endMinute) FROM Viaje V1 INNER JOIN Viaje V2 " +
+            "ON V1.endHour = V2.startHour AND V1.nombrePdaFin = V2.nombrePdaInicio " +
+            "AND V1.day = V2.day AND V1.month = V2.month AND V1.year = V2.year " +
+            "WHERE V1.linea = :line1 AND V1.nombrePdaFin = :stop " +
+            "AND V2.linea = :line2 AND V2.nombrePdaInicio = :stop")
+    suspend fun getBusCombinationWaiting(line1: Int, line2: Int, stop: String): Double
+
+    @Query("SELECT * FROM Viaje WHERE day = :day AND month = :month AND year = :year AND linea = :line")
+    suspend fun getBusStartedTravels(day: Int, month: Int, year: Int, line: Int) : List<Viaje>
 }

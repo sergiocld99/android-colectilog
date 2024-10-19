@@ -3,33 +3,27 @@ package cs10.apps.travels.tracer.pages.registry.creator
 import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.utils.Utils
+import cs10.apps.travels.tracer.common.components.Dropdown
+import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.databinding.ActivityTrainTravelCreatorBinding
 import cs10.apps.travels.tracer.databinding.ContentTrainTravelCreatorBinding
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
+import cs10.apps.travels.tracer.utils.Utils
 import java.util.*
 
 class CarTravelCreator : CommonTravelCreator() {
     private lateinit var content: ContentTrainTravelCreatorBinding
-    private lateinit var startAdapter: ArrayAdapter<out Parada>
-    private lateinit var endAdapter: ArrayAdapter<out Parada>
-    private lateinit var onStartPlaceSelected: AdapterView.OnItemSelectedListener
-    private lateinit var onEndPlaceSelected: AdapterView.OnItemSelectedListener
+    private lateinit var startDropdown: Dropdown<Parada>
+    private lateinit var endDropdown: Dropdown<Parada>
     private lateinit var client: FusedLocationProviderClient
     private var paradas = mutableListOf<Parada>()
     private var endParadas = mutableListOf<Parada>()
-    private var startIndex = 0
-    private var endIndex = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,8 +35,6 @@ class CarTravelCreator : CommonTravelCreator() {
         binding.toolbarLayout.title = getString(R.string.new_travel_by_car)
 
         content = binding.content
-        onStartPlaceSelected = OnStartPlaceSelected()
-        onEndPlaceSelected = OnEndPlaceSelected()
 
         // default config init
         super.setDoneFabBehavior(binding.fab)
@@ -116,16 +108,8 @@ class CarTravelCreator : CommonTravelCreator() {
     }
 
     private fun setSpinners() {
-        startAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, paradas)
-        endAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, endParadas)
-
-        startAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-        content.selectorStartPlace.adapter = startAdapter
-        content.selectorEndPlace.adapter = endAdapter
-        content.selectorStartPlace.onItemSelectedListener = onStartPlaceSelected
-        content.selectorEndPlace.onItemSelectedListener = onEndPlaceSelected
+        startDropdown = Dropdown(content.selectorStartPlace, paradas)
+        endDropdown = Dropdown(content.selectorEndPlace, endParadas)
     }
 
     override fun onCheckEntries(viaje: Viaje): Int {
@@ -137,8 +121,8 @@ class CarTravelCreator : CommonTravelCreator() {
         val peopleCount = content.etPeopleCount.text.toString().trim()
         val price = content.etPrice.text.toString().trim()
 
-        val startPlace = paradas[startIndex]
-        val endPlace = endParadas[endIndex]
+        val startPlace = startDropdown.getSelectedItem()
+        val endPlace = endDropdown.getSelectedItem()
 
         if (date.isEmpty() || startHour.isEmpty() || peopleCount.isEmpty()) return 1
         if (startPlace.nombre == endPlace.nombre) return 2
@@ -203,25 +187,5 @@ class CarTravelCreator : CommonTravelCreator() {
 
     override fun onDateSet(day: Int, month: Int, year: Int) {
         content.etDate.setText(Utils.dateFormat(day, month, year))
-    }
-
-    // ======================== STOPS SPINNERS ========================== //
-
-    private inner class OnStartPlaceSelected : AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
-            startIndex = i
-            // updatePrice()
-        }
-
-        override fun onNothingSelected(adapterView: AdapterView<*>?) {}
-    }
-
-    private inner class OnEndPlaceSelected : AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
-            endIndex = i
-            // updatePrice()
-        }
-
-        override fun onNothingSelected(adapterView: AdapterView<*>?) {}
     }
 }

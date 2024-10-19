@@ -33,6 +33,7 @@ import cs10.apps.travels.tracer.model.joins.ColoredTravel
 import cs10.apps.travels.tracer.model.roca.RamalSchedule
 import cs10.apps.travels.tracer.pages.live.hooks.GetCurrentTravelUseCase
 import cs10.apps.travels.tracer.pages.live.model.Countdown
+import cs10.apps.travels.tracer.pages.live.model.CurrentCombination
 import cs10.apps.travels.tracer.pages.live.model.EstimationData
 import cs10.apps.travels.tracer.pages.live.model.PredictionBase
 import cs10.apps.travels.tracer.pages.live.model.Stage
@@ -87,7 +88,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     val rate = MutableLiveData<Double?>()
     val nextZones = MutableLiveData<MutableList<NextZone>>()
     private val deviation = MutableLiveData(0.0)
-    val progressEntries = MutableLiveData<MutableList<FloatEntry>>()
+    private val progressEntries = MutableLiveData<MutableList<FloatEntry>>()
     val finishData = MutableLiveData(false)
     val angle = MutableLiveData<Double>()
 
@@ -109,9 +110,11 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     // medium stops
     var mediumStopsManager: MediumStopsManager? = null
 
+    val combinationReference = MutableLiveData<CurrentCombination?>()
+
     // --------------------------- FUNCTIONS ---------------------------------
 
-    fun findLastTravel(locationVM: LocationVM, newTravelRunnable: Runnable) {
+    fun findLastTravel(locationVM: LocationVM, combineVM: CombineVM, newTravelRunnable: Runnable) {
         viewModelScope.launch(Dispatchers.IO) {
             val t: ColoredTravel? = getCurrentTravelUseCase()
 
@@ -155,6 +158,15 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                         it.location,
                         newTravelRunnable
                     )
+                }
+
+                // predict combination
+                if (estimation != null) {
+                    combineVM.evaluatePossibleCombination(t, estimation)?.let {
+                        combinationReference.postValue(it)
+                        combineVM.buildStagesForCombination(it, st)
+                        combineVM.createUpcomingTravel(it)
+                    }
                 }
             }
         }
@@ -447,6 +459,7 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
     fun eraseAll() {
         travel.postValue(null)
         minutesFromStart.postValue(null)
+        combinationReference.postValue(null)
         resetAllButTravel()
     }
 

@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import cs10.apps.common.android.ui.CS_Fragment
+import cs10.apps.travels.tracer.common.components.Dropdown
 import cs10.apps.travels.tracer.databinding.FragmentManageLinesBinding
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
 import cs10.apps.travels.tracer.pages.manage_lines.adapter.LineManagerAdapter
@@ -19,6 +20,7 @@ class LineManagerFragment : CS_Fragment() {
     private lateinit var binding: FragmentManageLinesBinding
     private lateinit var rootVM: RootVM
     private lateinit var lineManagerVM: LineManagerVM
+    private lateinit var sorterBy: Dropdown<String>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,6 +42,10 @@ class LineManagerFragment : CS_Fragment() {
         val adapter = LineManagerAdapter(listOf()) { line -> onLineClick(line) }
         binding.recycler.adapter = adapter
         binding.recycler.layoutManager = LinearLayoutManager(requireContext())
+
+        sorterBy = Dropdown(binding.spinnerSortBy, listOf("Favoritos", "Velocidad")) {
+
+        }
 
         lineManagerVM.observe(viewLifecycleOwner) { list ->
             val ogSize = adapter.itemCount

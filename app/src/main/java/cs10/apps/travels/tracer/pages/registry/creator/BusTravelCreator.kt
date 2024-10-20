@@ -100,7 +100,10 @@ class BusTravelCreator : CommonTravelCreator() {
 
     private fun defineObservers(){
         creatorVM.startParadas.observe(this) {
-            startDropdown = Dropdown(content.selectorStartPlace, it) { updatePrice() }
+            startDropdown = Dropdown(content.selectorStartPlace, it) {
+                updateStartHour()
+                updatePrice()
+            }
         }
 
         creatorVM.endParadas.observe(this) {
@@ -191,6 +194,14 @@ class BusTravelCreator : CommonTravelCreator() {
         }
 
         return 0
+    }
+
+    private fun updateStartHour() {
+        val startP = startDropdown.getSelectedItem()
+        val minutesElapsed = ((startP.distance / 10) * 60).toInt() + 1
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.MINUTE, minutesElapsed.times(-1))
+        content.etStartHour.setText(Utils.hourFormat(calendar))
     }
 
     private fun updatePrice() {

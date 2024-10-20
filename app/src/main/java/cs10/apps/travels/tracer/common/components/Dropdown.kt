@@ -10,7 +10,7 @@ class Dropdown<T>(
     private val listOptions: List<T>,
     private val onSelectItem: (index: Int) -> Unit = {}
 ) {
-    private var selectedIndex = -1
+    var selectedIndex = -1
 
     init {
         val adapter = ArrayAdapter(sorter.context, android.R.layout.simple_spinner_item, listOptions)

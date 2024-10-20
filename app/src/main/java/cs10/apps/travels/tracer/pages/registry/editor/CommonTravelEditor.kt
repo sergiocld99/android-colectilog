@@ -13,8 +13,9 @@ import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
-import cs10.apps.travels.tracer.pages.registry.utils.RedSube
+import cs10.apps.travels.tracer.pages.live.model.StagedTravel
 import cs10.apps.travels.tracer.pages.registry.editor.model.MeasuredTravel
+import cs10.apps.travels.tracer.pages.registry.utils.RedSube
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -62,9 +63,10 @@ abstract class CommonTravelEditor : FormActivity() {
             val count = RedSube(applicationContext).getLast2HoursQuantity(viaje)
 
             // calcular distancia y velocidad
+            val st = StagedTravel.from(viaje, db)
             val td = db.viajesDao().getTravelDistanceFromId(viaje.id)
             val direction = td.calculateDirection()
-            this@CommonTravelEditor.mt = MeasuredTravel(viaje, td.distance, direction)
+            this@CommonTravelEditor.mt = MeasuredTravel(viaje, st.totalKmDist, direction)
 
             awaitAll(a)
 

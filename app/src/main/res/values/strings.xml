@@ -114,6 +114,7 @@
     <string name="from_stop">Desde %1$s</string>
     <string name="speed_kmh">Velocidad: %1$.1f km/h</string>
     <string name="linear_distance_km">Distancia recta: %1$.1f km</string>
+    <string name="total_distance_km">Distancia total: %1$.1f km</string>
     <string name="waiting">Esperar</string>
     <string name="travelling">En viaje</string>
     <string name="arriving">Llegando</string>
@@ -139,4 +140,7 @@
     <string name="line_number">Línea %1$d</string>
     <string name="compass">Brújula</string>
     <string name="continue_straight">Sigue derecho</string>
+    <string name="from">Desde</string>
+    <string name="to">Hasta</string>
+    <string name="sort_by">Ordenar por</string>
 </resources>

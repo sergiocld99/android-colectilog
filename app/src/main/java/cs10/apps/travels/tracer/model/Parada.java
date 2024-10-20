@@ -107,6 +107,9 @@ public class Parada extends Localizable implements Comparable<Parada> {
         return doubleHistory;
     }
 
+    /**
+     * @return current linear distance to the stop in kilometers
+     */
     public double getDistance(){
         double hyp = NumberUtils.Companion.hyp(deltaX, deltaY);
         return NumberUtils.Companion.coordsDistanceToKm(hyp);

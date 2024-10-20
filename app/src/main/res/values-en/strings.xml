@@ -15,6 +15,7 @@
     <string name="path">Path</string>
     <string name="this_month">This month</string>
     <string name="colectivos">Buses</string>
+    <string name="coffee">Coffee</string>
     <string name="mount">Amount</string>
     <string name="confirm">Confirm</string>
     <string name="destination_full">To %1$s (%2$s)</string>
@@ -41,8 +42,10 @@
     <string name="car_travel">Car Travel</string>
     <string name="speed_kmh">Speed: %1$.1f km/h</string>
     <string name="linear_distance_km">Linear Distance: %1$.1f km</string>
+    <string name="total_distance_km">Total Distance: %1$.1f km</string>
     <string name="waiting">Wait</string>
     <string name="travelling">Moving</string>
+    <string name="arriving">Arriving</string>
     <string name="edit">Edit</string>
     <string name="metro">Metro</string>
     <string name="car">Car</string>
@@ -61,4 +64,6 @@
     <string name="spent_by_line">Spent by line</string>
     <string name="time_by_line">Time by line</string>
     <string name="line_number">Line %1$d</string>
+    <string name="compass">Compass</string>
+    <string name="continue_straight">Continue straight</string>
 </resources>

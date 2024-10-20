@@ -78,8 +78,9 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
                 TransportType.METRO.ordinal))
             lines.add(subways)
 
-            // Sort everything by speed
+            // CUSTOM SORT
             lines.sort()
+
             myLines.postValue(lines)
 
             rootVM.disableLoading()

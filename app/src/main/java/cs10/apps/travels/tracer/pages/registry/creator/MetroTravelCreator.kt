@@ -14,7 +14,6 @@ import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding
 import cs10.apps.travels.tracer.databinding.ContentBusTravelCreatorBinding
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.pages.registry.creator.viewmodel.CreatorVM
 import cs10.apps.travels.tracer.pages.registry.utils.RedSube.Companion.getPercentageToPay
@@ -25,10 +24,7 @@ import kotlin.math.roundToInt
 
 class MetroTravelCreator : CommonTravelCreator() {
     private lateinit var content: ContentBusTravelCreatorBinding
-    private lateinit var startDropdown: Dropdown<Parada>
-    private lateinit var endDropdown: Dropdown<Parada>
     private lateinit var client: FusedLocationProviderClient
-
     private lateinit var creatorVM: CreatorVM
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,7 +77,10 @@ class MetroTravelCreator : CommonTravelCreator() {
 
     private fun defineObservers(){
         creatorVM.startParadas.observe(this) {
-            startDropdown = Dropdown(content.selectorStartPlace, it) { updatePrice() }
+            startDropdown = Dropdown(content.selectorStartPlace, it) {
+                updateStartHour(content.etStartHour)
+                updatePrice()
+            }
         }
 
         creatorVM.endParadas.observe(this) {

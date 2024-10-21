@@ -19,8 +19,6 @@ import java.util.*
 
 class CarTravelCreator : CommonTravelCreator() {
     private lateinit var content: ContentTrainTravelCreatorBinding
-    private lateinit var startDropdown: Dropdown<Parada>
-    private lateinit var endDropdown: Dropdown<Parada>
     private lateinit var client: FusedLocationProviderClient
     private var paradas = mutableListOf<Parada>()
     private var endParadas = mutableListOf<Parada>()
@@ -108,7 +106,10 @@ class CarTravelCreator : CommonTravelCreator() {
     }
 
     private fun setSpinners() {
-        startDropdown = Dropdown(content.selectorStartPlace, paradas)
+        startDropdown = Dropdown(content.selectorStartPlace, paradas) {
+            updateStartHour(content.etStartHour)
+        }
+
         endDropdown = Dropdown(content.selectorEndPlace, endParadas)
     }
 

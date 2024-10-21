@@ -2,10 +2,10 @@ package cs10.apps.travels.tracer.pages.live.adapter
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import cs10.apps.travels.tracer.utils.Utils
 import cs10.apps.travels.tracer.databinding.ItemStageProgressBinding
 import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.pages.live.model.Stage
+import cs10.apps.travels.tracer.utils.Utils
 
 class StageVH(view: View) : RecyclerView.ViewHolder(view) {
     private val binding = ItemStageProgressBinding.bind(view)
@@ -24,8 +24,14 @@ class StageVH(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         stage.endTime?.let {
-            if (travelStartTime != null && it <= travelStartTime) binding.endTime.text = null
-            else binding.endTime.text = Utils.hourFormat(it / 60, it % 60)
+            if (stage.isFinished()) binding.endTime.text = null
+            else {
+                val eta = Utils.hourFormat(it / 60, it % 60)
+                val distance = String.format("%.1f km", stage.getLeftDistance() ?: 0.0)
+
+                if (distance.startsWith("0")) binding.endTime.text = eta
+                else binding.endTime.text = String.format("%s > %s", distance, eta)
+            }
         }
     }
 }

@@ -16,7 +16,6 @@ import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.databinding.ActivityTravelCreatorBinding
 import cs10.apps.travels.tracer.databinding.ContentBusTravelCreatorBinding
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
 import cs10.apps.travels.tracer.pages.registry.creator.viewmodel.CreatorVM
 import cs10.apps.travels.tracer.pages.registry.utils.RedSube.Companion.getPercentageToPay
@@ -27,10 +26,7 @@ import kotlin.math.roundToInt
 
 class BusTravelCreator : CommonTravelCreator() {
     private lateinit var content: ContentBusTravelCreatorBinding
-    private lateinit var startDropdown: Dropdown<Parada>
-    private lateinit var endDropdown: Dropdown<Parada>
     private lateinit var client: FusedLocationProviderClient
-
     private lateinit var creatorVM: CreatorVM
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +97,7 @@ class BusTravelCreator : CommonTravelCreator() {
     private fun defineObservers(){
         creatorVM.startParadas.observe(this) {
             startDropdown = Dropdown(content.selectorStartPlace, it) {
-                updateStartHour()
+                updateStartHour(content.etStartHour)
                 updatePrice()
             }
         }
@@ -194,14 +190,6 @@ class BusTravelCreator : CommonTravelCreator() {
         }
 
         return 0
-    }
-
-    private fun updateStartHour() {
-        val startP = startDropdown.getSelectedItem()
-        val minutesElapsed = ((startP.distance / 10) * 60).toInt() + 1
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.MINUTE, minutesElapsed.times(-1))
-        content.etStartHour.setText(Utils.hourFormat(calendar))
     }
 
     private fun updatePrice() {

@@ -2,9 +2,6 @@ package cs10.apps.travels.tracer.pages.registry.creator;
 
 import android.location.Location;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 
@@ -14,23 +11,20 @@ import com.google.android.gms.location.LocationServices;
 import java.util.List;
 
 import cs10.apps.travels.tracer.R;
-import cs10.apps.travels.tracer.utils.Utils;
-import cs10.apps.travels.tracer.data.generator.Station;
+import cs10.apps.travels.tracer.common.components.Dropdown;
+import cs10.apps.travels.tracer.common.enums.TransportType;
 import cs10.apps.travels.tracer.data.generator.FareData;
+import cs10.apps.travels.tracer.data.generator.Station;
 import cs10.apps.travels.tracer.databinding.ActivityTrainTravelCreatorBinding;
 import cs10.apps.travels.tracer.db.MiDB;
-import cs10.apps.travels.tracer.pages.stops.db.ParadasDao;
-import cs10.apps.travels.tracer.common.enums.TransportType;
 import cs10.apps.travels.tracer.model.Parada;
 import cs10.apps.travels.tracer.model.Viaje;
+import cs10.apps.travels.tracer.pages.stops.db.ParadasDao;
+import cs10.apps.travels.tracer.utils.Utils;
 
 public class TrainTravelCreator extends CommonTravelCreator {
     private ActivityTrainTravelCreatorBinding binding;
-    private ArrayAdapter<? extends Parada> startAdapter, endAdapter;
-    private AdapterView.OnItemSelectedListener onStartPlaceSelected, onEndPlaceSelected;
     private FusedLocationProviderClient client;
-    private List<Parada> paradas;
-    private int startIndex, endIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +36,6 @@ public class TrainTravelCreator extends CommonTravelCreator {
         setSupportActionBar(binding.toolbar);
         Utils.loadTrainBanner(binding.appbarImage);
         binding.toolbarLayout.setTitle(getString(R.string.new_train_travel));
-
-        onStartPlaceSelected = new OnStartPlaceSelected();
-        onEndPlaceSelected = new OnEndPlaceSelected();
 
         // default init config
         super.setDoneFabBehavior(binding.fab);
@@ -66,35 +57,35 @@ public class TrainTravelCreator extends CommonTravelCreator {
     private void loadStops(Location location){
         new Thread(() -> {
             ParadasDao dao = MiDB.getInstance(this).paradasDao();
-            paradas = dao.getCustomTrainStops();
+            List<Parada> paradas = dao.getCustomTrainStops();
             if (location != null) Utils.orderByProximity(paradas, location.getLatitude(), location.getLongitude());
-            runOnUiThread(this::setSpinners);
+            runOnUiThread(() -> setSpinners(paradas));
         }, "loadTrainStops").start();
     }
 
-    private void setSpinners(){
-        startAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, paradas);
-        endAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, paradas);
+    private void setSpinners(List<Parada> paradas){
+        startDropdown = new Dropdown<>(binding.content.selectorStartPlace, paradas, (index) -> {
+            updateStartHour(binding.content.etStartHour);
+            updatePrice();
+            return null;
+        });
 
-        startAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        binding.content.selectorStartPlace.setAdapter(startAdapter);
-        binding.content.selectorEndPlace.setAdapter(endAdapter);
-        binding.content.selectorStartPlace.setOnItemSelectedListener(onStartPlaceSelected);
-        binding.content.selectorEndPlace.setOnItemSelectedListener(onEndPlaceSelected);
+        endDropdown = new Dropdown<>(binding.content.selectorEndPlace, paradas, (index) -> {
+            updatePrice();
+            return null;
+        });
     }
 
     @Override
     public int onCheckEntries(@NonNull Viaje viaje){
-        if (paradas == null || paradas.isEmpty()) return 6;
+        if (!startDropdown.isValidSelection() || !endDropdown.isValidSelection()) return 6;
 
         String date = binding.content.etDate.getText().toString().trim();
         String startHour = binding.content.etStartHour.getText().toString().trim();
         String peopleCount = binding.content.etPeopleCount.getText().toString().trim();
         String price = binding.content.etPrice.getText().toString().replace("$","").trim();
-        Parada startPlace = paradas.get(startIndex);
-        Parada endPlace = paradas.get(endIndex);
+        Parada startPlace = startDropdown.getSelectedItem();
+        Parada endPlace = endDropdown.getSelectedItem();
 
         if (date.isEmpty() || startHour.isEmpty() || peopleCount.isEmpty()) return 1;
         if (startPlace.equals(endPlace)) return 2;
@@ -133,9 +124,9 @@ public class TrainTravelCreator extends CommonTravelCreator {
     }
 
     public void updatePrice(){
-        if (paradas != null && !paradas.isEmpty()) {
-            Station s1 = Station.findByNombre(paradas.get(startIndex).getNombre());
-            Station s2 = Station.findByNombre(paradas.get(endIndex).getNombre());
+        if (startDropdown.isValidSelection() && endDropdown.isValidSelection()) {
+            Station s1 = Station.findByNombre(startDropdown.getSelectedItem().getNombre());
+            Station s2 = Station.findByNombre(endDropdown.getSelectedItem().getNombre());
 
             if (s1 != null && s2 != null){
                 // use tarifa data
@@ -150,33 +141,4 @@ public class TrainTravelCreator extends CommonTravelCreator {
     public void onDateSet(int day, int month, int year) {
         binding.content.etDate.setText(Utils.dateFormat(day, month, year));
     }
-
-    private class OnStartPlaceSelected implements AdapterView.OnItemSelectedListener {
-
-        @Override
-        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-            startIndex = i;
-            updatePrice();
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-
-        }
-    }
-
-    private class OnEndPlaceSelected implements AdapterView.OnItemSelectedListener {
-
-        @Override
-        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-            endIndex = i;
-            updatePrice();
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-
-        }
-    }
-
 }

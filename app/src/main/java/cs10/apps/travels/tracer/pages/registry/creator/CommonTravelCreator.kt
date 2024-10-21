@@ -7,17 +7,21 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import cs10.apps.common.android.ui.DatePickerFragment
 import cs10.apps.common.android.ui.FormActivity
 import cs10.apps.travels.tracer.R
-import cs10.apps.travels.tracer.utils.Utils
+import cs10.apps.travels.tracer.common.components.Dropdown
 import cs10.apps.travels.tracer.common.constants.ResultCodes
 import cs10.apps.travels.tracer.databinding.ModuleRedSubeBinding
 import cs10.apps.travels.tracer.db.DatabaseFinder
 import cs10.apps.travels.tracer.db.MiDB
+import cs10.apps.travels.tracer.model.Parada
 import cs10.apps.travels.tracer.model.Viaje
-import cs10.apps.travels.tracer.pages.registry.utils.RedSube.Companion.getPercentageToPay
 import cs10.apps.travels.tracer.notification.NotificationCenter
+import cs10.apps.travels.tracer.pages.registry.utils.RedSube.Companion.getPercentageToPay
+import cs10.apps.travels.tracer.utils.Utils
 import java.util.Calendar
 
 abstract class CommonTravelCreator : FormActivity() {
+    lateinit var startDropdown: Dropdown<Parada>
+    lateinit var endDropdown: Dropdown<Parada>
 
     var redSubeCount = 0
 
@@ -106,6 +110,14 @@ abstract class CommonTravelCreator : FormActivity() {
     }
 
     abstract fun onCheckEntries(viaje: Viaje): Int
+
+    fun updateStartHour(editText: EditText) {
+        val startP = startDropdown.getSelectedItem()
+        val minutesElapsed = ((startP.distance / 10) * 60).toInt() + 1
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.MINUTE, minutesElapsed.times(-1))
+        editText.setText(Utils.hourFormat(calendar))
+    }
 
     // ---------------------- PICKER FRAGMENTS --------------------
 

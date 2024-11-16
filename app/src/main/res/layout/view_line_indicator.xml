@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:cardBackgroundColor="@android:color/holo_blue_dark"
+    app:cardBackgroundColor="@color/train"
     app:cardCornerRadius="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,7 +21,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginHorizontal="18dp"
-            tools:text="338"
+            tools:text="152"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/black"/>

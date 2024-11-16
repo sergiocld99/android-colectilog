@@ -149,6 +149,11 @@ public interface ViajesDao {
             "order by COUNT(*) desc limit 1")
     Viaje getLikelyTravelFromUsingType(String targetStart, int sinceHour, int type);
 
+    @Query("SELECT * FROM Viaje where linea = :line and nombrePdaInicio = :targetStart " +
+            "group by linea, ramal, nombrePdaInicio, nombrePdaFin having count(*) > 2 " +
+            "order by COUNT(*) desc limit 1")
+    Viaje getLikelyTravelFromUsingLine(String targetStart, int line);
+
     @Query("SELECT * FROM Viaje where tipo = :type and nombrePdaInicio = :targetStart " +
             "group by linea, ramal, nombrePdaInicio, nombrePdaFin having count(*) > 2 " +
             "order by COUNT(*)")

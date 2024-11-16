@@ -28,6 +28,7 @@ class BusTravelCreator : CommonTravelCreator() {
     private lateinit var content: ContentBusTravelCreatorBinding
     private lateinit var client: FusedLocationProviderClient
     private lateinit var creatorVM: CreatorVM
+    private var presetLine: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +51,10 @@ class BusTravelCreator : CommonTravelCreator() {
         // 2024-07-18: users can now set end hour on travel creation
         //content.etEndHour.isEnabled = false
 
+        presetLine = intent.getIntExtra("line", 0)
+        if (presetLine == 0) presetLine = null
+        else binding.contentTravelCreator.etLine.setText(presetLine?.toString())
+
         // hint values
         // content.etRamal.setOnClickListener { autoFillRamals() }
         Handler(mainLooper).postDelayed({ autoFillRamals() }, 700)
@@ -67,13 +72,11 @@ class BusTravelCreator : CommonTravelCreator() {
         }
     }
 
-
     @SuppressLint("MissingPermission")
     private fun getLocation(){
         if (Utils.checkPermissions(this)){
             client.lastLocation.addOnSuccessListener {
-                //loadStops(it)
-                creatorVM.loadInBackground(it)
+                creatorVM.loadInBackgroundWithPreset(it, presetLine)
             }
         }
     }

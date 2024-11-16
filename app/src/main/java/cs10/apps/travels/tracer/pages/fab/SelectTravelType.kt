@@ -2,6 +2,7 @@ package cs10.apps.travels.tracer.pages.fab
 
 import android.os.Bundle
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import cs10.apps.common.android.ui.CSActivity
 import cs10.apps.travels.tracer.R
@@ -53,12 +54,18 @@ class SelectTravelType : CSActivity() {
     }
 
     private fun renderLines(lines: List<CustomBusLine>) {
-        val targetViews = listOf(binding.line1, binding.line2, binding.line3)
+        val targetViews = mutableListOf(binding.line1, binding.line2, binding.line3)
+        targetViews.forEach {
+            it.root.setOnClickListener { }
+            it.root.isVisible = false
+        }
 
         lines.forEachIndexed { index, customBusLine ->
+            targetViews[index].root.isVisible = true
             val view = targetViews[index].lineIndicator
             view.textLineNumber.text = customBusLine.number.toString()
             view.root.setCardBackgroundColor(customBusLine.color)
+            view.root.setOnClickListener { returnBusCreation(customBusLine.number!!) }
         }
     }
 
@@ -102,6 +109,11 @@ class SelectTravelType : CSActivity() {
 
     private fun returnType(option: SelectOption) {
         setResult(option.ordinal)
+        finish()
+    }
+
+    private fun returnBusCreation(line: Int) {
+        setResult(-line)
         finish()
     }
 

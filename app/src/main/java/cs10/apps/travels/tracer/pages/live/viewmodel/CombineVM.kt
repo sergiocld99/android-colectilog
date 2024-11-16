@@ -2,6 +2,7 @@ package cs10.apps.travels.tracer.pages.live.viewmodel
 
 import android.app.Application
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import cs10.apps.travels.tracer.common.enums.TransportType
@@ -34,8 +35,9 @@ class CombineVM(application: Application) : AndroidViewModel(application) {
 
             // Be careful, the previous result can be empty
             if (historicalNextTravels.isEmpty()) return null
-            
-            val bestLine = historicalNextTravels.groupBy { it.linea }.maxOf { it.value.size }
+
+            val bestLine = historicalNextTravels.groupBy { it.linea }.toList().maxBy { it.second.size }.first
+            Log.i("FATAL BEST LINE", bestLine.toString())
             val expectedNextTravel = historicalNextTravels.first { it.linea == bestLine }
             val result = CurrentCombination(t, expectedNextTravel, eta)
             this.combination = result
@@ -94,6 +96,7 @@ class CombineVM(application: Application) : AndroidViewModel(application) {
                 it.nombrePdaInicio = this.nombrePdaInicio
                 it.nombrePdaFin = this.nombrePdaFin
                 it.ramal = this.ramal
+                it.weekDay = this.weekDay
             }
 
             it.startHour = expectedNextStartTime / 60

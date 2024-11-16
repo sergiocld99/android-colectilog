@@ -163,8 +163,8 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.progress.observe(viewLifecycleOwner) {
             liveTravellingView.onUpdateProgress(it, liveVM.estData.value, liveVM.minutesFromStart.value)
 
-            if (it != null && it > 0.7) liveVM.combinationReference.value?.let { cc ->
-                showCombiningView(cc)
+            liveVM.combinationReference.value?.let { cc ->
+                toggleCombiningView(cc)
             }
         }
 
@@ -248,6 +248,15 @@ class LiveTravelFragment : CS_Fragment() {
         liveVM.rate.observe(viewLifecycleOwner) {
             liveTravellingView.onUpdateRate(it)
         }
+    }
+
+    private fun toggleCombiningView(cc: CurrentCombination) {
+        if (liveTravellingView.isVisible()) selectTab(2)
+        else selectTab(1)
+    }
+
+    private fun selectTab(n: Int) {
+        binding.roundedTabs.getTabAt(n)?.select()
     }
 
     private fun showAddMediumStopDialog(
@@ -435,7 +444,7 @@ class LiveTravelFragment : CS_Fragment() {
         }
 
         override fun onTabReselected(tab: TabLayout.Tab?) {
-            tab?.let { checkPosition(it) }
+            // tab?.let { checkPosition(it) }
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -444,11 +453,27 @@ class LiveTravelFragment : CS_Fragment() {
 
         fun checkPosition(tab: TabLayout.Tab) {
             if (tab.position > 0 && liveVM.travel.value == null) {
-                binding.roundedTabs.getTabAt(0)?.select()
+                selectTab(0)
+                return
             }
 
             if (tab.position == 0 && liveVM.travel.value != null) {
-                binding.roundedTabs.getTabAt(1)?.select()
+                selectTab(1)
+                return
+            }
+
+            if (tab.position == 1){
+                liveVM.travel.value?.let { showTravellingView(it) }
+                return
+            }
+
+            if (tab.position == 2) {
+                val cr = liveVM.combinationReference.value
+
+                if (cr == null) selectTab(1)
+                else showCombiningView(cr)
+
+                return
             }
         }
     }

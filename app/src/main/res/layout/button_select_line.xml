@@ -3,22 +3,22 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/button_card"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         app:cardCornerRadius="15dp"
-        tools:cardBackgroundColor="@color/bus">
+        app:cardBackgroundColor="@color/bus">
 
-        <ImageView
-            android:id="@+id/button_drawing"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_margin="10dp"
-            tools:src="@drawable/ic_bus" />
+        <include layout="@layout/view_line_indicator"
+            android:id="@+id/line_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_gravity="center_horizontal"
+            />
 
     </androidx.cardview.widget.CardView>
 

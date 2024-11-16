@@ -6,22 +6,17 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
-import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
 import cs10.apps.travels.tracer.pages.manage_lines.db.LinesDao
+import cs10.apps.travels.tracer.pages.manage_lines.types.Since
+import cs10.apps.travels.tracer.pages.registry.db.TravelsDao
 import cs10.apps.travels.tracer.utils.Utils
 import cs10.apps.travels.tracer.viewmodel.RootVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
-
-/**
- * SUGERENCIAS
- * 1. Crear un filtro para líneas recientes (este mes y el anterior)
- */
-
 
 /**
  * ViewModel para la administración de líneas de colectivos
@@ -40,6 +35,7 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
             val currentTime = Calendar.getInstance()
             val currentYear = currentTime.get(Calendar.YEAR)
             val startMonth = currentTime.get(Calendar.MONTH) - 2
+            val since = Since(currentYear, startMonth)
 
             // load all lines from travel table
             val lines = if (recent) linesDao.getAllRecentWithRates(currentYear, startMonth)
@@ -53,38 +49,28 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
                 }
             }
 
-            // TRAIN travels
-            val train = RatedBusLine(-1, -1, "En Tren", R.color.train,
-                avgUserRate = rootVM.database.travelsDao().getAverageRateForType(TransportType.TRAIN.ordinal),
-                reviewsCount = rootVM.database.travelsDao().getReviewsCountForType(TransportType.TRAIN.ordinal))
-            train.speed = Utils.calculateAverageSpeed(
-                rootVM.database.viajesDao().getRecentFinishedTravelsFromType(TransportType.TRAIN.ordinal))
-            lines.add(train)
-
-            // CAR travels
-            val cars = RatedBusLine(-2, -1, "En Auto", R.color.bus_159,
-                avgUserRate = rootVM.database.travelsDao().getAverageRateForType(TransportType.CAR.ordinal),
-                reviewsCount = rootVM.database.travelsDao().getReviewsCountForType(TransportType.CAR.ordinal))
-            cars.speed = Utils.calculateAverageSpeed(
-                rootVM.database.viajesDao().getRecentFinishedTravelsFromType(TransportType.CAR.ordinal))
-            lines.add(cars)
-
-            // METRO travels
-            val subways = RatedBusLine(-3, -1, "En Subte", R.color.bus_148,
-                rootVM.database.travelsDao().getAverageRateForType(TransportType.METRO.ordinal),
-                rootVM.database.travelsDao().getReviewsCountForType(TransportType.METRO.ordinal))
-
-            subways.speed = Utils.calculateAverageSpeed(rootVM.database.viajesDao().getRecentFinishedTravelsFromType(
-                TransportType.METRO.ordinal))
-            lines.add(subways)
-
-            // CUSTOM SORT
-            lines.sort()
-
+            buildOtherTransportTypes(rootVM.database.travelsDao(), lines, since)
             myLines.postValue(lines)
-
             rootVM.disableLoading()
         }
+    }
+
+    private suspend fun buildOtherTransportTypes(dao: TravelsDao, lines: MutableList<RatedBusLine>, since: Since) {
+        lines.apply {
+            buildTransportType(dao, TransportType.CAR, "En Auto", since)?.let { this.add(it) }
+            buildTransportType(dao, TransportType.METRO, "En Subte", since)?.let { this.add(it) }
+            buildTransportType(dao, TransportType.TRAIN, "En Tren", since)?.let { this.add(it) }
+        }
+    }
+
+    private suspend fun buildTransportType(dao: TravelsDao, type: TransportType, label: String, since: Since): RatedBusLine? {
+        val avgRate = dao.getAverageRateForTypeSince(type.ordinal, since.currentYear, since.startMonth) ?: return null
+        val reviewsCount = dao.getReviewsCountForTypeSince(type.ordinal, since.currentYear, since.startMonth)
+        val recentTravelStats = dao.getRecentFinishedTravelsFromType(type.ordinal)
+
+        val line = RatedBusLine(-type.ordinal, -1, label, type.getColor(), avgRate, reviewsCount)
+        line.speed = Utils.calculateAverageSpeed(recentTravelStats)
+        return line
     }
 
     fun observe(lifecycleOwner: LifecycleOwner, observer: Observer<List<RatedBusLine>>) {
@@ -93,16 +79,5 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
 
     fun selectEditing(line: CustomBusLine) {
         editingLine = line
-    }
-
-    fun updateColor(linesDao: LinesDao, color: Int, rootVM: RootVM) {
-        editingLine.color = color
-
-        viewModelScope.launch(Dispatchers.IO) {
-            linesDao.update(editingLine)
-
-            // force reload
-            load(linesDao, rootVM)
-        }
     }
 }

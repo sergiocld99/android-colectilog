@@ -5,9 +5,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import cs10.apps.common.android.ui.FormActivity
+import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.databinding.ActivityTrainDetailsBinding
 import cs10.apps.travels.tracer.db.MiDB
-import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.pages.manage_lines.adapter.CommonLineInfoAdapter
 import cs10.apps.travels.tracer.pages.manage_lines.model.TrainInfo
 import cs10.apps.travels.tracer.pages.manage_lines.utils.SpeedCalculator
@@ -33,7 +33,7 @@ class TrainDetail : FormActivity(), TabLayout.OnTabSelectedListener {
         setSupportActionBar(binding.toolbar)
         Utils.loadTrainBanner(binding.appbarImage)
 
-        binding.toolbarLayout.title = "Línea Roca"
+        binding.toolbarLayout.title = "En Tren"
 
         // switch tabs
         binding.lineTabs.addOnTabSelectedListener(this)

@@ -31,6 +31,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
 
+import cs10.apps.common.android.TimedLocation;
 import cs10.apps.common.android.ui.CSActivity;
 import cs10.apps.travels.tracer.R;
 import cs10.apps.travels.tracer.common.constants.RequestCodes;
@@ -45,6 +46,7 @@ import cs10.apps.travels.tracer.databinding.ActivityDrawerBinding;
 import cs10.apps.travels.tracer.db.MiDB;
 import cs10.apps.travels.tracer.model.Viaje;
 import cs10.apps.travels.tracer.pages.coffee.CoffeeCreator;
+import cs10.apps.travels.tracer.pages.fab.SelectTravelType;
 import cs10.apps.travels.tracer.pages.manage_zones.ZoneCreator;
 import cs10.apps.travels.tracer.pages.registry.creator.BusTravelCreator;
 import cs10.apps.travels.tracer.pages.registry.creator.CarTravelCreator;
@@ -75,7 +77,15 @@ public class DrawerActivity extends CSActivity {
         @NonNull
         @Override
         public Intent createIntent(@NonNull Context context, Object input) {
-            return new Intent(context, SelectTravelType.class);
+            Intent i = new Intent(context, SelectTravelType.class);
+            TimedLocation loc = locationVM.getLiveData().getValue();
+
+            if (loc != null) {
+                i.putExtra("x", loc.getLocation().getLatitude());
+                i.putExtra("y", loc.getLocation().getLongitude());
+            }
+
+            return i;
         }
 
         @Override

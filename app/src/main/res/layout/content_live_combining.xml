@@ -178,10 +178,8 @@
             android:id="@+id/combine_btn"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:visibility="gone"
             app:cardBackgroundColor="@color/bus_324"
-            app:cardCornerRadius="30dp"
-            tools:visibility="visible">
+            app:cardCornerRadius="30dp">
 
             <ImageView
                 android:layout_width="40dp"

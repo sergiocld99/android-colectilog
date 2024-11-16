@@ -6,6 +6,15 @@ import cs10.apps.travels.tracer.R
 enum class TransportType {
     BUS, TRAIN, CAR, METRO;
 
+    fun getColor(): Int {
+        return when(this){
+            TRAIN -> R.color.train
+            CAR -> R.color.bus_159
+            METRO -> R.color.bus_148
+            BUS -> R.color.bus
+        }
+    }
+
     companion object {
         fun fromOrdinal(ordinal: Int): TransportType {
             return when(ordinal) {

@@ -39,8 +39,8 @@
             android:exported="false"
             android:theme="@style/Theme.TravelTracer.Buses" />
         <activity
-            android:name=".pages.SelectTravelType"
-            android:label="Seleccione el objeto a crear" />
+            android:name=".pages.fab.SelectTravelType"
+            android:label="Indique viaje a crear" />
         <activity
             android:name=".pages.coffee.CoffeeCreator"
             android:theme="@style/Theme.TravelTracer.Coffee" />

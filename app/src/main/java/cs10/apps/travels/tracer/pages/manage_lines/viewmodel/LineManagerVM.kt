@@ -37,12 +37,8 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
             val startMonth = currentTime.get(Calendar.MONTH) - 2
             val since = Since(currentYear, startMonth)
 
-            // remove failed creations
-            rootVM.database.linesDao().deleteLine(-1)
-
             // create lines from travels that don't exist in lines dao yet
-            val pendingLines = rootVM.database.travelsDao().getPendingToCreateLines()
-            pendingLines.forEach {
+            rootVM.database.travelsDao().getPendingToCreateLines().forEach {
                 linesDao.insert(CustomBusLine(0, it, null, 0))
             }
 

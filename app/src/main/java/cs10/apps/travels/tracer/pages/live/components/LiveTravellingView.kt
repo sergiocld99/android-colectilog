@@ -162,6 +162,14 @@ class LiveTravellingView(private val binding: ContentLiveTravellingBinding) :
                 )
             )
         }
+
+        // change text color to orange when distance diff > 300 m
+        val leftDistanceByST = stagedTravel?.getLeftKmDistance() ?: 0.0
+        if (distance != null && (distance - leftDistanceByST) > 0.3) {
+            basicSwitcher.changeColor(ContextCompat.getColor(getContext(), R.color.bus_202))
+        } else {
+            basicSwitcher.changeColor(ContextCompat.getColor(getContext(), R.color.bus))
+        }
     }
 
     fun onUpdateCountdown(secondsLeft: Int) {
@@ -191,6 +199,8 @@ class LiveTravellingView(private val binding: ContentLiveTravellingBinding) :
         } else if (angle > 90 && angle < 180) {
             val angleToLeft = angle.toFloat() - 90f
             binding.compassText.text = String.format("Girar a la izquierda %.0f°", angleToLeft)
+        } else {
+            binding.compassText.text = null
         }
     }
 

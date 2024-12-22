@@ -90,13 +90,13 @@ public class DrawerActivity extends CSActivity {
 
         @Override
         public Intent parseResult(int resultCode, @Nullable Intent intent) {
-            if (resultCode < 0) {
+            if (resultCode >= 100) {
                 Intent i = new Intent(DrawerActivity.this, BusTravelCreator.class);
-                i.putExtra("line", -resultCode);
+                i.putExtra("line", resultCode - 100);
                 return i;
             }
 
-            if (resultCode >= SelectOption.values().length) return null;
+            if (resultCode < 0 || resultCode >= SelectOption.values().length) return null;
             SelectOption opSelected = SelectOption.values()[resultCode];
 
             switch (opSelected){

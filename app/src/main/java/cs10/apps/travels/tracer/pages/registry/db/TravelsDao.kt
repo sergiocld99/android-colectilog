@@ -83,4 +83,10 @@ interface TravelsDao {
 
     @Query("SELECT * FROM Viaje WHERE day = :day AND month = :month AND year = :year AND linea = :line")
     suspend fun getBusStartedTravels(day: Int, month: Int, year: Int, line: Int) : List<Viaje>
+
+    @Query("SELECT DISTINCT linea from viaje WHERE linea is not null")
+    suspend fun getAllLines(): List<Int>
+
+    @Query("SELECT DISTINCT linea from viaje where linea not in (select number from lines)")
+    suspend fun getPendingToCreateLines(): List<Int>
 }

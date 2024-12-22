@@ -1,5 +1,6 @@
 package cs10.apps.travels.tracer.pages.fab.db
 
+import cs10.apps.travels.tracer.common.constants.Quantities
 import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Parada
@@ -17,9 +18,9 @@ class LikelyBusFinder(private val currentLocation: Point, private val db: MiDB) 
         return predict(allStops).mapNotNull { db.linesDao().getByNumber(it) }
     }
 
-    private fun predict(sortedStopsByProximity: List<Parada>, attempts: Int = 3): List<Int> {
-        val lineCandidates = LimitedSet<Int>(attempts)
-        val stopNames = sortedStopsByProximity.map { it.nombre }
+    private fun predict(sortedStopsByProximity: List<Parada>, maxSize: Int = 3): List<Int> {
+        val lineCandidates = LimitedSet<Int>(maxSize)
+        val stopNames = sortedStopsByProximity.subList(0, Quantities.NEAREST_STOPS_SEARCH_LIMIT).map { it.nombre }
 
         for (p in stopNames) {
             val viajes = db.viajesDao().getLikelyTravelsFromUsingType(p, TransportType.BUS.ordinal)

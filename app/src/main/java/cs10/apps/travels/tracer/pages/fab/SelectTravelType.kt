@@ -113,7 +113,7 @@ class SelectTravelType : CSActivity() {
     }
 
     private fun returnBusCreation(line: Int) {
-        setResult(-line)
+        setResult(100 + line)
         finish()
     }
 

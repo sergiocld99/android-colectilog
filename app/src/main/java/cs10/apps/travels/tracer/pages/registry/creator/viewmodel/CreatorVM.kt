@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import cs10.apps.travels.tracer.common.constants.Quantities
 import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.db.MiDB
 import cs10.apps.travels.tracer.model.Parada
@@ -67,7 +68,7 @@ class CreatorVM(application: Application) : AndroidViewModel(application) {
 
             for (p in startOnes){
                 v = db.viajesDao().getLikelyTravelFromUsingType(p.nombre, h, TransportType.BUS.ordinal)
-                if (v != null || startIndex == 4) break else startIndex++
+                if (v != null || startIndex == Quantities.NEAREST_STOPS_SEARCH_LIMIT) break else startIndex++
             }
         } else {
             for (p in startOnes){

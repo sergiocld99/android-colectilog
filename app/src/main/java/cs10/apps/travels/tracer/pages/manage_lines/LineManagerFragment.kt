@@ -71,7 +71,7 @@ class LineManagerFragment : CS_Fragment() {
         super.onResume()
 
         // reload
-        lineManagerVM.load(rootVM.database.linesDao(), rootVM)
+        lineManagerVM.load(rootVM)
     }
 
     private fun onSort(optionIndex: Int, list: List<RatedBusLine>) {

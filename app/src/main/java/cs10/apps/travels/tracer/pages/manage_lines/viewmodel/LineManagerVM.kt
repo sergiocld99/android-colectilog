@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.model.joins.RatedBusLine
 import cs10.apps.travels.tracer.model.lines.CustomBusLine
-import cs10.apps.travels.tracer.pages.manage_lines.db.LinesDao
 import cs10.apps.travels.tracer.pages.manage_lines.types.Since
 import cs10.apps.travels.tracer.pages.registry.db.TravelsDao
 import cs10.apps.travels.tracer.utils.Utils
@@ -28,14 +27,24 @@ class LineManagerVM(application: Application) : AndroidViewModel(application) {
     private lateinit var editingLine: CustomBusLine
 
 
-    fun load(linesDao: LinesDao, rootVM: RootVM, recent: Boolean = true){
+    fun load(rootVM: RootVM, recent: Boolean = true){
         rootVM.enableLoading()
 
         viewModelScope.launch(Dispatchers.IO){
+            val linesDao = rootVM.database.linesDao()
             val currentTime = Calendar.getInstance()
             val currentYear = currentTime.get(Calendar.YEAR)
             val startMonth = currentTime.get(Calendar.MONTH) - 2
             val since = Since(currentYear, startMonth)
+
+            // remove failed creations
+            rootVM.database.linesDao().deleteLine(-1)
+
+            // create lines from travels that don't exist in lines dao yet
+            val pendingLines = rootVM.database.travelsDao().getPendingToCreateLines()
+            pendingLines.forEach {
+                linesDao.insert(CustomBusLine(0, it, null, 0))
+            }
 
             // load all lines from travel table
             val lines = if (recent) linesDao.getAllRecentWithRates(currentYear, startMonth)

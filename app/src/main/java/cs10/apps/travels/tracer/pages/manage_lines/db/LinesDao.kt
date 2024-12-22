@@ -23,6 +23,9 @@ interface LinesDao {
     @Update
     fun update(customBusLine: CustomBusLine)
 
+    @Query("DELETE FROM LINES WHERE id = :id")
+    suspend fun deleteLine(id: Int)
+
     @Query("SELECT * FROM lines")
     fun getAll() : MutableList<CustomBusLine>
 

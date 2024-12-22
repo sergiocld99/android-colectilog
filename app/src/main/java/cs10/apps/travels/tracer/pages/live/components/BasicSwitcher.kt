@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.widget.TextSwitcher
+import android.widget.TextView
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.pages.live.model.SwitcherText
 
@@ -109,6 +110,13 @@ class BasicSwitcher(private var textSwitcher: TextSwitcher, private val autoRepe
 
     private fun getContext() : Context {
         return textSwitcher.context
+    }
+
+    fun changeColor(color: Int) {
+        (0..1).forEach {
+            val tv = textSwitcher.getChildAt(it) as TextView
+            tv.setTextColor(color)
+        }
     }
 
     private enum class LastAction {

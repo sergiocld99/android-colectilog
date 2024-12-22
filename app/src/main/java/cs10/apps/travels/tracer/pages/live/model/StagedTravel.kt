@@ -61,6 +61,16 @@ class StagedTravel(val stages: List<Stage>) {
         }
     }
 
+    fun getLeftKmDistance(): Double {
+        return stages.sumOf {
+            when {
+                it.isFinished() -> 0.0
+                it.isStarted() -> it.getLeftDistance() ?: 0.0
+                else -> it.kmDistance
+            }
+        }
+    }
+
     fun updateStagesETA(minutesLeftToEach: List<Double>) {
         val currentTs = Utils.getCurrentTs()
 

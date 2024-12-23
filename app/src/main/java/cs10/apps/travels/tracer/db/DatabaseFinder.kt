@@ -10,7 +10,7 @@ import kotlin.math.roundToInt
 
 class DatabaseFinder(val db: MiDB) {
 
-    fun countTravelsLast2Hours(exceptCar: Boolean): Int {
+    fun countTravelsLast2Hours(exceptCar: Boolean, onlyPaid: Boolean = true): Int {
         val calendar = Calendar.getInstance()
         val day = calendar[Calendar.DAY_OF_MONTH]
         val month = calendar[Calendar.MONTH] + 1
@@ -21,7 +21,12 @@ class DatabaseFinder(val db: MiDB) {
         val end = standardTime(hour, minute-2)
         val exceptedType = if (exceptCar) TransportType.CAR.ordinal else -1
 
-        return db.viajesDao().countTravelsInTimeRange(year, month, day, start, end, exceptedType)
+        return if (onlyPaid) {
+            db.viajesDao().countPaidTravelsInTimeRange(year, month, day, start, end, exceptedType)
+        } else {
+            db.viajesDao().countTravelsInTimeRange(year, month, day, start, end, exceptedType)
+        }
+
     }
 
     fun countTravels2HoursBefore(viaje: Viaje, exceptCar: Boolean): Int {

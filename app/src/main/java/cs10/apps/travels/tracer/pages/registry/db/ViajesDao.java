@@ -84,6 +84,12 @@ public interface ViajesDao {
             "and (startHour * 60 + startMinute between :start and :end)")
     int countTravelsInTimeRange(int year, int month, int day, int start, int end, int exceptedType);
 
+    @Query("SELECT COUNT(*) FROM Viaje WHERE (tipo is not :exceptedType) and " +
+            "costo is not null and costo > 0 and " +
+            "year = :year and month = :month and day = :day " +
+            "and (startHour * 60 + startMinute between :start and :end)")
+    int countPaidTravelsInTimeRange(int year, int month, int day, int start, int end, int exceptedType);
+
     // ------------------------------- LIVE --------------------------------------------
 
     // Comentario: solo se devuelve UN viaje INCOMPLETO empezado HOY, se verifica hora y minuto

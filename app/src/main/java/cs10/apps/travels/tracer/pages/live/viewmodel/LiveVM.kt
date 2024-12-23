@@ -210,8 +210,8 @@ class LiveVM(application: Application) : AndroidViewModel(application) {
                 val endKmDistance = st.currentKmDistanceToFinish(currentPoint)
 
                 // angle
-                val start = st.getCurrentStage()?.start ?: startStop
-                val end = st.getCurrentStage()?.end ?: endStop
+                val start = st.getCurrentStageStart()
+                val end = st.getCurrentStageEnd()
                 val compass = Compass(start.getX(), start.getY(), location, end)
                 angle.postValue(compass.getAngleToDestination())
 

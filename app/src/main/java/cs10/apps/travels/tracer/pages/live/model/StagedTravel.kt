@@ -38,8 +38,37 @@ class StagedTravel(val stages: List<Stage>) {
         return stages.last()
     }
 
+    // 2024-12: FIX THIS
     fun getCurrentStage(): Stage? {
         return stages.find { it.progress in 10..90 }
+    }
+
+    fun getCurrentStageStart(): Localizable {
+        val currentStage = getCurrentStage()
+        if (currentStage != null) {
+            return currentStage.start
+        }
+
+        val lastCompletedStage = stages.lastOrNull { it.progress > 90 }
+        if (lastCompletedStage != null) {
+            return lastCompletedStage.start
+        }
+
+        return start
+    }
+
+    fun getCurrentStageEnd(): Localizable {
+        val currentStage = getCurrentStage()
+        if (currentStage != null) {
+            return currentStage.end
+        }
+
+        val firstUnstartedStage = stages.firstOrNull { it.progress < 10 }
+        if (firstUnstartedStage != null) {
+            return firstUnstartedStage.end
+        }
+
+        return end
     }
 
     fun currentProgress(currentPos: Localizable) : Double {

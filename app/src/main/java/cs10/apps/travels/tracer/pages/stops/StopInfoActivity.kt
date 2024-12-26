@@ -84,7 +84,7 @@ class StopInfoActivity : FormActivity(), OnItemSelectedListener {
             // populate spinner
             val spinnerAdapter = ArrayAdapter(this@StopInfoActivity, android.R.layout.simple_spinner_item, hoursPrintable)
             val currentHour = Calendar.getInstance()[Calendar.HOUR_OF_DAY]
-            hours.indexOf(currentHour).let { if (it != 1) selectedIndex = it }
+            hours.indexOf(currentHour).let { if (it != -1) selectedIndex = it }
 
             this.launch(Dispatchers.Main) {
                 spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)

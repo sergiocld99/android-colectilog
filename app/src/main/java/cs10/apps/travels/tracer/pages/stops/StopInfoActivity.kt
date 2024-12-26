@@ -107,6 +107,8 @@ class StopInfoActivity : FormActivity(), OnItemSelectedListener {
             adapter.notifyItemRangeRemoved(0, prevCount)
         }
 
+        if (selectedIndex < 0 || selectedIndex >= hours.size) return
+
         lifecycleScope.launch(Dispatchers.IO){
             val db = MiDB.getInstance(this@StopInfoActivity)
             val timetable = db.trainsDao().findArrivalsAt(stopName, hours[selectedIndex])

@@ -20,8 +20,8 @@ interface TravelsDao {
     @Query("UPDATE Viaje SET nombrePdaFin = :newName WHERE nombrePdaFin = :oldName")
     suspend fun renameEndPlaces(oldName: String, newName: String)
 
-    @Query("SELECT SUM(costo) FROM viaje where id > :travelId")
-    suspend fun getTotalSpentSince(travelId: Long) : Double?
+    @Query("SELECT SUM(costo) FROM viaje where id > :travelId and tipo is not :exceptType")
+    suspend fun getTotalSpentSince(travelId: Long, exceptType: Int) : Double?
 
     @Query("SELECT SUM(costo) FROM viaje where tipo = :type and id > :travelId")
     suspend fun getTotalSpentInTypeSince(travelId: Long, type: Int) : Double?

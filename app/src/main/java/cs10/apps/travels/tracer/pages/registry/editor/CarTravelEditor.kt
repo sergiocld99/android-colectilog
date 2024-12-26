@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
-import androidx.core.view.isVisible
 import cs10.apps.travels.tracer.R
 import cs10.apps.travels.tracer.common.enums.TransportType
 import cs10.apps.travels.tracer.databinding.ActivityTrainTravelEditorBinding
@@ -37,12 +36,7 @@ class CarTravelEditor : CommonTravelEditor() {
 
         // content
         with (binding.contentTravelCreator){
-            this.etPrice.isEnabled = false
-            this.etPrice.isEnabled = false
-            this.tvPrice.isVisible = false
-            this.etPrice.isVisible = false
-            this.tvTimes.isVisible = false
-            this.etPeopleCount.isVisible = false
+            this.etPeopleCount.isEnabled = false
         }
 
         // fab
@@ -73,7 +67,8 @@ class CarTravelEditor : CommonTravelEditor() {
         binding.contentTravelCreator.selectorStartPlace.setSelection(startIndex)
         binding.contentTravelCreator.selectorEndPlace.setSelection(endIndex)
 
-        // rating
+        // others
+        if (v.costo > 0) binding.contentTravelCreator.etPrice.setText(v.costo.toString())
         binding.contentTravelCreator.ratingBar.rating = (v.rate ?: 0).toFloat()
     }
 
@@ -95,6 +90,7 @@ class CarTravelEditor : CommonTravelEditor() {
             val date = this.etDate.text.toString().trim()
             val startTime = this.etStartHour.text.toString().trim()
             val endTime = this.etEndHour.text.toString().trim()
+            val price = this.etPrice.text.toString().trim()
             if (date.isEmpty() || startTime.isEmpty()) return 1
 
             startTime.split(":").let {
@@ -135,6 +131,8 @@ class CarTravelEditor : CommonTravelEditor() {
             // actualizar resto de atributos
             viaje.nombrePdaInicio = paradas[startIndex].nombre
             viaje.nombrePdaFin = paradas[endIndex].nombre
+            viaje.costo = price.toDoubleOrNull() ?: 0.0
+            viaje.rate = ratingBar.rating.toInt()
             viaje.tipo = TransportType.CAR.ordinal
         }
 

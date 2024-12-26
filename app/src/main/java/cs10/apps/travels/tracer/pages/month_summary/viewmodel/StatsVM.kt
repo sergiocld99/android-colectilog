@@ -83,7 +83,7 @@ class StatsVM(application: Application) : AndroidViewModel(application) {
                 val chargeId = prefs.getLong("chargeId", 0)
                 val savedBalance = prefs.getFloat("balance", 0f)
 
-                val sinceTravel = database.travelsDao().getTotalSpentSince(travelId) ?: 0.0
+                val sinceTravel = database.travelsDao().getTotalSpentSince(travelId, TransportType.CAR.ordinal) ?: 0.0
                 val sinceCoffee = database.coffeeDao().getSpentSince(coffeeId) ?: 0.0
                 val charges = database.recargaDao().getTotalChargedSince(chargeId) ?: 0.0
                 val money = savedBalance - sinceTravel - sinceCoffee + charges

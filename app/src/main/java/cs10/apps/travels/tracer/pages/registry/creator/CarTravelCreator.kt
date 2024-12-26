@@ -39,10 +39,8 @@ class CarTravelCreator : CommonTravelCreator() {
         super.setCurrentTime(content.etDate, content.etStartHour, null)
 
         with(content) {
-            this.tvPrice.isVisible = false
-            this.etPrice.isVisible = false
-            this.tvTimes.isVisible = false
-            this.etPeopleCount.isVisible = false
+            this.etPeopleCount.isEnabled = false
+            this.travelRatingContainer.isVisible = false
         }
 
         // order stops by last location
